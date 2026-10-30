@@ -23,11 +23,27 @@ class AccountingReconciliation
 
         // 1. every account the journal touched: journal net vs the statement-log mirror rows (the legacy balances' source)
         $bad = DB::select("SELECT a.id, a.name,
-                (SELECT COALESCE(SUM(l.debit - l.credit),0) FROM journal_lines l WHERE l.account_id = a.id) AS j,
+                (SELECT COALESCE(SUM(l.debit - l.credit),0) FROM journal_lines l WHERE l.account_id = a.id AND l.mirrored = 0) AS j,
                 (SELECT COALESCE(SUM(s.debit - s.credit),0) FROM account_statement_logs s WHERE s.account_id = a.id AND s.transaction_type = 'journal') AS m
-            FROM chart_of_accounts a WHERE EXISTS (SELECT 1 FROM journal_lines x WHERE x.account_id = a.id)");
+            FROM chart_of_accounts a WHERE EXISTS (SELECT 1 FROM journal_lines x WHERE x.account_id = a.id AND x.mirrored = 0)");
         $bad = array_values(array_filter($bad, fn ($r) => abs((float) $r->j - (float) $r->m) > 0.009));
         $add('journal_vs_statement_mirror', 'Accounts where the journal and the statement-log mirror disagree (the legacy balance would be wrong)', count($bad), array_map(fn ($r) => "{$r->name}: journal {$f($r->j)} vs mirror {$f($r->m)}", $bad), $bad ? 'critical' : 'ok');
+
+        // 1b. ledger drift: balance now - balance at baseline - journal movement since = what was posted without a journal entry
+        $base = DB::table('ledger_baselines')->count();
+        if (!$base) {
+            $add('ledger_drift', 'Ledger drift not measurable: no baseline yet (run accounting:baseline just before enabling the flag)', 0, [], 'medium');
+        } else {
+            $drift = DB::select("SELECT a.id, a.name, a.type, a.current_balance, b.balance AS base,
+                    COALESCE((SELECT SUM(CASE WHEN a.type IN ('asset','expense') THEN l.debit - l.credit ELSE l.credit - l.debit END)
+                              FROM journal_lines l JOIN journal_entries e ON e.id = l.journal_entry_id WHERE l.account_id = a.id AND e.posted_at >= b.taken_at), 0) AS moved
+                FROM chart_of_accounts a JOIN ledger_baselines b ON b.account_id = a.id");
+            $drift = array_values(array_filter($drift, fn ($r) => abs((float) $r->current_balance - (float) $r->base - (float) $r->moved) > 0.009));
+            $add('ledger_drift', 'Accounts whose balance moved without a matching journal entry since the baseline (posted outside the bridge, e.g. console fix-up commands or SQL)', count($drift),
+                array_map(fn ($r) => "{$r->name}: balance {$f($r->current_balance)} vs baseline {$f($r->base)} + journal {$f($r->moved)}", $drift), $drift ? 'high' : 'ok');
+        }
+        $susp = (float) DB::table('chart_of_accounts')->where('id', SystemAccounts::id('suspense'))->value('current_balance');
+        $add('legacy_suspense', "Legacy Posting Suspense balance ({$f($susp)}): one-sided amounts the old screens posted without a counter-account (informational; review, do not net away)", $f($susp), [], abs($susp) > 0.009 ? 'info' : 'ok');
 
         // 2. Accounts Payable vs open invoices vs supplier dues
         $payable = (float) DB::table('chart_of_accounts')->where('id', SystemAccounts::id('payable'))->value('current_balance');

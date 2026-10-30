@@ -16,6 +16,7 @@ class AccountingReconciliationTest extends InventoryV2TestCase
 
     public function test_a_normal_receive_invoice_pay_cycle_reconciles_clean()
     {
+        $this->artisan('accounting:baseline')->assertExitCode(0);
         $p = $this->productAtZero();
         $r = $this->receive($p, '', 10, '100');
         $this->assertSame('ok', $this->sev()['grni_vs_uninvoiced']);
@@ -49,5 +50,16 @@ class AccountingReconciliationTest extends InventoryV2TestCase
         $keys = array_keys(app(\App\Services\Inventory\InventoryReconciliation::class)->report());
         $this->assertContains('acct_trial_balance', $keys);
         $this->assertSame($before, DB::table('chart_of_accounts')->sum('current_balance') . '|' . DB::table('journal_entries')->count());
+    }
+
+    public function test_a_balance_moved_outside_the_bridge_is_reported_as_drift_and_bridged_legacy_postings_are_not()
+    {
+        $this->artisan('accounting:baseline')->assertExitCode(0);
+        $cash = \App\Models\ChartOfAccount::create(['code' => 'T-D-' . uniqid(), 'name' => 'd' . uniqid(), 'type' => 'asset', 'sub_type' => 'cash', 'opening_balance' => 0, 'current_balance' => 100, 'status' => 'active', 'is_deleted' => 0]);
+        $this->artisan('accounting:baseline')->assertExitCode(0); // baseline for the new account
+        DB::transaction(fn () => \App\Models\ChartOfAccount::where('id', $cash->id)->increment('current_balance', 10)); // legacy-style posting: journalled by the bridge
+        $this->assertSame('ok', $this->sev()['ledger_drift'], 'a bridged legacy posting reconciles');
+        DB::table('chart_of_accounts')->where('id', $cash->id)->update(['current_balance' => 500]); // raw SQL: nothing journals it
+        $this->assertSame('high', $this->sev()['ledger_drift']);
     }
 }

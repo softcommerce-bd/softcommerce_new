@@ -13,6 +13,7 @@ class SystemAccounts
         'grni' => ['Goods Received Not Invoiced', 'liability', 'payable', 'SYS-GRNI'],
         'variance' => ['Purchase Price Variance', 'expense', 'expense', 'SYS-PPV'],
         'advance' => ['Supplier Advances', 'asset', 'receivable', 'SYS-ADV'],
+        'suspense' => ['Legacy Posting Suspense', 'equity', 'equity', 'SYS-SUSP'],
         'opening' => ['Inventory Opening Adjustment', 'equity', 'equity', 'SYS-OPEN'],
     ];
 
