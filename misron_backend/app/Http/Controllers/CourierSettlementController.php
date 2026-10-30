@@ -19,6 +19,13 @@ use App\Models\PurchaseProduct;
 
 class CourierSettlementController extends Controller
 {
+    public function __construct()
+    {
+        // Authentication is on the route group; these are the per-action role permissions.
+        $this->middleware(['permission:view_courier_settlements'])->only(['index', 'getSettlementDetails', 'report', 'exportPDF', 'details']);
+        $this->middleware(['permission:settle_courier_orders'])->only(['settle', 'unsettle']);
+    }
+
 
     public function details($id)
     {
@@ -293,6 +300,24 @@ public function settle(Request $request)
             // For partial delivered orders, count delivered, exchange, AND return items for COGS
             // (exchange/return items were originally sold, so COGS applies)
             if ($isPartialDelivered && !in_array($detail->delivery_status, ['delivered', 'exchange', 'return'])) {
+                continue;
+            }
+            // Lines of the confirmed-order stock model carry the exact weighted FIFO cost recorded when the goods were dispatched
+            // (possibly across several cost layers). A line with units that had no cost layer ('uncosted') is not given an invented cost.
+            if (($detail->stock_mode ?? 'legacy') === 'v2') {
+                if ($detail->cost_status === 'final' && $detail->quantity > 0) {
+                    $lineCOGS = round((float) $detail->buying_price * $detail->quantity, 2);
+                    $totalCOGS += $lineCOGS;
+                    $inventoryReductionDetails[] = [
+                        'product_id' => $detail->product_id,
+                        'product_name' => $detail->product->name ?? 'Product-' . $detail->product_id,
+                        'variant' => $detail->variation,
+                        'quantity' => $detail->quantity,
+                        'unit_cost' => (float) $detail->buying_price,
+                        'total_cost' => $lineCOGS,
+                        'purchase_id' => $detail->purchase_id,
+                    ];
+                }
                 continue;
             }
             if ($detail->purchase_id && $detail->quantity > 0) {

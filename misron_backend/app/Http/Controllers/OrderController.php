@@ -741,8 +741,16 @@ class OrderController extends Controller
                         return $error;
                     }
                 } else {
+                    $refused = [];
                     foreach ($ids as $id) {
-                        $this->bulkDeliveryStatusChange($id, $status);
+                        try {
+                            $this->bulkDeliveryStatusChange($id, $status);
+                        } catch (\App\Services\Inventory\Exceptions\InsufficientPhysicalStock $e) {
+                            $refused[] = (optional(Order::find($id))->code ?? $id) . ': ' . $e->getMessage(); // this order stays as it was; the others go on
+                        }
+                    }
+                    if ($refused) {
+                        return 'Not changed (stock not in the warehouse yet): ' . implode(' | ', $refused);
                     }
                 }
             }
@@ -1456,6 +1464,10 @@ class OrderController extends Controller
 
     protected function consumePurchaseProductQtyFIFO($productId, $variant, $qtyToConsume)
     {
+        if ($this->editingV2) {
+            return ['total_cost' => 0.0, 'batches' => []];
+        }
+
         // First-in-first-out through the shared stock service: locking reads and conditional updates,
         // so a concurrent sale cannot take the same batch units. A batch shortage is an error the edit
         // screen reports; it used to be silently costed at zero.
@@ -1887,6 +1899,9 @@ class OrderController extends Controller
             }
 
             return response()->json(['success' => true]);
+        } catch (\App\Services\Inventory\Exceptions\InsufficientPhysicalStock $e) {
+            // The goods are not in the warehouse yet: nothing was changed; tell the operator exactly why and what to do.
+            return response()->json(['success' => false, 'status' => 'error', 'message' => $e->getMessage()], 422);
         } catch (Exception $e) {
 
             // Log exception and return error response
@@ -2418,8 +2433,14 @@ class OrderController extends Controller
 
 
 
+    /** True while editing an order whose lines use the confirmed-order stock model: the legacy shelf/FIFO helpers do nothing then. */
+    private $editingV2 = false;
+
     public function orderEditUpdate(Request $request)
     {
+        $this->editingV2 = \App\Services\Inventory\InventoryMode::installed()
+            && OrderDetail::where('order_id', $request->id)->where('stock_mode', 'v2')->exists();
+
         $order = Order::findOrFail($request->id);
 
         if ($order->settlement_status == 'true' || $order->settlement_status == 1) {
@@ -2497,6 +2518,7 @@ class OrderController extends Controller
                         $this->updateStock($oldOrderDetail->product_id, -$oldOrderDetail->quantity, $oldOrderDetail->variation);
 
                         // Step 3: Delete old order detail
+                        $this->releaseV2Demand($oldOrderDetail);
                         $oldOrderDetail->delete();
 
                         $exchangedOrderDetailIds[] = $oldOrderDetailId;
@@ -2635,6 +2657,8 @@ class OrderController extends Controller
             $currentOrderDetailIds = array_filter($orderDetailIds); // Remove null values
             $this->handleRemovedItems($originalOrderDetails, $currentOrderDetailIds, $exchangedOrderDetailIds);
 
+            $this->syncV2Demand($order);
+
             $this->updateOrder($order, $grandTotal);
 
             // Recreate accounting entries for POS orders after successful edit
@@ -2659,6 +2683,10 @@ class OrderController extends Controller
 
     protected function handleFIFOQuantityAdjustment($orderDetail, $oldQuantity, $newQuantity, $productId, $variation)
     {
+        if ($this->editingV2) {
+            return; // cost layers are consumed at dispatch, never while editing
+        }
+
         $quantityDifference = $newQuantity - $oldQuantity;
 
         if ($quantityDifference == 0) {
@@ -2684,6 +2712,10 @@ class OrderController extends Controller
 
     protected function returnPurchaseProductQtyFIFO($productId, $variant, $qtyToReturn, $orderDetail = null)
     {
+        if ($this->editingV2) {
+            return;
+        }
+
         // The line's own batches first, then the newest with room; never above what was bought.
         app(StockLedger::class)->returnBatchUnits((int) $productId, $variant, (int) $qtyToReturn, $orderDetail instanceof OrderDetail ? $orderDetail : null);
     }
@@ -2786,6 +2818,7 @@ class OrderController extends Controller
             );
 
             // Delete the order detail
+            $this->releaseV2Demand($removedOrderDetail);
             $removedOrderDetail->delete();
         }
     }
@@ -2815,8 +2848,50 @@ class OrderController extends Controller
         $orderDetail->save();
     }
 
+    /** A line of a confirmed-order-model order is going away: give back its undispatched demand; goods already shipped block the removal. */
+    protected function releaseV2Demand($detail): void
+    {
+        if (!$this->editingV2 || !$detail) {
+            return;
+        }
+        $demand = DB::table('order_demands')->where('order_detail_id', $detail->id)->first();
+        if ($demand && (int) $demand->qty_dispatched > 0) {
+            throw new \Exception(translate('Part of this line has already been shipped and cannot be removed. Receive the goods back through Returns instead.'));
+        }
+        app(\App\Services\Inventory\DemandService::class)->release($detail);
+    }
+
+    /** After an edit: demand equals the final line quantities (by the difference), and new lines of a confirmed order hold demand. */
+    protected function syncV2Demand(Order $order): void
+    {
+        if (!$this->editingV2) {
+            return;
+        }
+        $demand = app(\App\Services\Inventory\DemandService::class);
+        $status = \App\Services\Inventory\OrderStockTransitions::normalise($order->fresh()->delivery_status);
+        $holds = in_array($status, array_merge(\App\Services\Inventory\OrderStockTransitions::DEMAND_STATUSES, \App\Services\Inventory\OrderStockTransitions::DISPATCH_STATUSES), true);
+        foreach (OrderDetail::where('order_id', $order->id)->where('stock_mode', 'v2')->orderBy('product_id')->orderBy('variation')->get() as $line) {
+            if (strtolower((string) $line->delivery_status) === 'cancelled') {
+                continue;
+            }
+            $row = DB::table('order_demands')->where('order_detail_id', $line->id)->first();
+            if ($row && \App\Services\Inventory\StockBalance::key($line->variation) !== $row->variant) {
+                throw new \Exception(translate('The variation of a confirmed line cannot be changed. Remove the line and add the new variation.'));
+            }
+            if ($row) {
+                $demand->setQuantity($line, (int) $line->quantity);
+            } elseif ($holds) {
+                $demand->confirm($line);
+            }
+        }
+    }
+
     protected function updateStock($productId, $quantity, $variation)
     {
+        if ($this->editingV2) {
+            return; // demand follows the final line quantities (syncV2Demand), not the shelf
+        }
+
         // Positive $quantity takes units off the shelf, negative puts them back. One conditional
         // statement: it cannot go below zero and cannot erase a sale made in between.
         if (!app(StockLedger::class)->adjust((int) $productId, $variation, -(int) $quantity)) {
@@ -3161,13 +3236,20 @@ class OrderController extends Controller
                 $orderDetail->delivery_status = $newStatus;
                 $orderDetail->save();
 
+                // Lines of the confirmed-order model never restock from this screen: a cancel releases the demand that has not shipped;
+                // a return or exchange of shipped goods waits for the return receipt (inspection) before anything becomes stock.
+                $v2Line = \App\Services\Inventory\InventoryMode::lineIsV2((int) $orderDetail->id);
+                if ($v2Line && $statusChanged && $newStatus === 'cancelled') {
+                    app(\App\Services\Inventory\DemandService::class)->release($orderDetail);
+                }
+
                 if ($newStatus === 'delivered') {
                     $deliveredTotal += $orderDetail->price + $orderDetail->shipping_cost;
                 } elseif ($newStatus === 'exchange') {
                     if (!empty($update['exchange_product_id'])) {
                         $exchangeUpdates[] = $update;
                     }
-                    if ($statusChanged) {
+                    if ($statusChanged && !$v2Line) {
                         $this->returnPurchaseProductQtyFIFO(
                             $orderDetail->product_id,
                             $orderDetail->variation,
@@ -3181,7 +3263,7 @@ class OrderController extends Controller
                         );
                     }
                 } elseif ($newStatus === 'return' || $newStatus === 'cancelled') {
-                    if ($statusChanged) {
+                    if ($statusChanged && !$v2Line) {
                         $this->returnPurchaseProductQtyFIFO(
                             $orderDetail->product_id,
                             $orderDetail->variation,

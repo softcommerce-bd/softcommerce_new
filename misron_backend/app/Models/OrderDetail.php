@@ -6,7 +6,16 @@ use Illuminate\Database\Eloquent\Model;
 
 class OrderDetail extends Model
 {
-     
+    protected static function booted()
+    {
+        // New lines follow the confirmed-order model while it is switched on; everything else stays 'legacy'.
+        static::creating(function (OrderDetail $line) {
+            if (!array_key_exists('stock_mode', $line->getAttributes()) && \App\Services\Inventory\InventoryMode::confirmedOnly()) {
+                $line->stock_mode = 'v2';
+            }
+        });
+    }
+
 
     public function order()
     {

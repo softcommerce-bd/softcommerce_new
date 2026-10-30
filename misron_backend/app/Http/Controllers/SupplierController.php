@@ -20,6 +20,16 @@ use Illuminate\Support\Facades\Response;
 
 class SupplierController extends Controller
 {
+    public function __construct()
+    {
+        // Authentication is on the route group; these are the per-action role permissions.
+        $this->middleware(['permission:view_suppliers'])->only(['supplier_index', 'supplierView', 'fetchLedgerData', 'printLedgerPDF', 'printLedgerPdf', 'fetchSupplierData']);
+        $this->middleware(['permission:add_supplier'])->only(['store']);
+        $this->middleware(['permission:edit_supplier'])->only(['supplierEdit', 'supplierUpdate']);
+        $this->middleware(['permission:delete_supplier'])->only(['supplierDelete']);
+        $this->middleware(['permission:make_supplier_payment'])->only(['processPayment']);
+    }
+
 
     public function processPayment(Request $request)
     {

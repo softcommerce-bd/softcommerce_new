@@ -16,6 +16,13 @@ use Illuminate\Support\Facades\Validator;
 
 class SupplierPaymentController extends Controller
 {
+    public function __construct()
+    {
+        // Authentication is on the route group; these are the per-action role permissions.
+        $this->middleware(['permission:view_supplier_payments'])->only(['index', 'show', 'getSupplierDue', 'getAccountsBySubType']);
+        $this->middleware(['permission:make_supplier_payment'])->only(['create', 'store', 'edit', 'update', 'destroy']);
+    }
+
     use StatementLogTrait;
 
     public function index(Request $request)

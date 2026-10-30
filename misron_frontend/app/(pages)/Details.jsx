@@ -179,8 +179,15 @@ export default function Details({
   // product total, so asking whether *any* variant is buyable avoids a
   // first-paint flash of "Currently unavailable" on a stocked product.
   const productHasStock = hasAnyStock(productData);
-  const isOutOfStock = !productHasStock || currentStock <= 0;
-  const isLowStock = !isOutOfStock && currentStock <= 5;
+  // Selling policy from the server: backorder / preorder products stay purchasable at zero stock.
+  const stockState = productData.stock_state; // in_stock | available_on_order | preorder | out_of_stock (undefined on older responses)
+  const orderableWithoutStock =
+    productData.can_order === true &&
+    (stockState === "available_on_order" || stockState === "preorder");
+  const isOutOfStock = orderableWithoutStock
+    ? false
+    : !productHasStock || currentStock <= 0;
+  const isLowStock = !isOutOfStock && !orderableWithoutStock && currentStock <= 5;
 
   // Resolved through the colour+size pair, so `full_variant` on the cart
   // payload names the exact stock row rather than the size rollup.
@@ -198,6 +205,7 @@ export default function Details({
     variant: selectedVariant || "",
     color: selectedColor || "",
     current_stock: currentStock,
+    can_order: productData.can_order,
     name: productData.name,
     price: parseFloat(currentPrice),
     calculable_price: parseFloat(currentPrice),
@@ -406,6 +414,12 @@ export default function Details({
           <div className="flex items-center justify-between text-xs">
             {isOutOfStock ? (
               <span className="font-medium text-stone-500">Currently unavailable</span>
+            ) : orderableWithoutStock ? (
+              <span className="font-medium text-sky-700">
+                {stockState === "preorder"
+                  ? `Preorder${productData.expected_at ? ` — expected ${productData.expected_at}` : ""}`
+                  : "Available on order"}
+              </span>
             ) : (
               <>
                 <span className={optionLabel}>Quantity:</span>

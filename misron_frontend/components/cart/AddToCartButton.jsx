@@ -63,7 +63,11 @@ export default function AddToCartButton({
     setIsClient(true);
   }, []);
 
-  const isOutOfStock = product.current_stock <= 0;
+  // The server decides (selling policy). `can_order` is absent on older API responses: fall back to the old stock test.
+  const isOutOfStock =
+    typeof product.can_order === "boolean"
+      ? !product.can_order
+      : product.current_stock <= 0;
 
   const handleAddToCart = async () => {
     if (isOutOfStock) {

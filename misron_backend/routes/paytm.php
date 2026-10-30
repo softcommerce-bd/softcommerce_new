@@ -28,7 +28,10 @@ Route::controller(ToyyibpayController::class)->group(function () {
 });
 
 //Myfatoorah START
-Route::get('/myfatoorah/callback', [MyfatoorahController::class,'callback'])->name('myfatoorah.callback');
+// The controller class is not in this repository; registering a route to it made `route:list` / `route:cache` crash.
+if (class_exists(MyfatoorahController::class)) {
+    Route::get('/myfatoorah/callback', [MyfatoorahController::class,'callback'])->name('myfatoorah.callback');
+}
 
 //Khalti START
 Route::any('/khalti/payment/done', [KhaltiController::class,'paymentDone'])->name('khalti.success');

@@ -20,6 +20,16 @@ use Illuminate\Support\Facades\Log;
 
 class PurchaseController extends Controller
 {
+    public function __construct()
+    {
+        // Authentication is on the route group; these are the per-action role permissions.
+        $this->middleware(['permission:view_purchases'])->only(['purchaseIndex', 'purchaseView', 'getSupplierBalance', 'search', 'searchProducts', 'getLastPurchasePrice', 'getPaymentAccounts', 'purchaseReturnList']);
+        $this->middleware(['permission:add_purchase'])->only(['create', 'store']);
+        $this->middleware(['permission:edit_purchase'])->only(['purchaseEdit', 'update', 'purchaseUpdatePayment']);
+        $this->middleware(['permission:delete_purchase'])->only(['purchaseDelete']);
+        $this->middleware(['permission:manage_purchase_returns'])->only(['purchaseReturnAdd', 'storePurchaseReturn', 'purchaseReturnEdit', 'updatePurchaseReturn']);
+    }
+
     use StatementLogTrait;
 
     /**

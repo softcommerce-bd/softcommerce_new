@@ -92,6 +92,10 @@ use App\Http\Controllers\IpTrackingController;
   | contains the "web" middleware group. Now create something great!
   |
  */
+// Everything below, down to the /admin dashboard route, used to be registered with only the "web" middleware, which
+// left the updater, supplier, purchase, purchase-order, draft and courier-settlement routes open to anonymous visitors.
+// The URLs are unchanged; only the middleware is new. Permissions are enforced in each controller.
+Route::middleware(['auth', 'admin', 'prevent-back-history'])->group(function () {
 //Update Routes
 Route::controller(UpdateController::class)->group(function () {
     Route::post('/update', 'step0')->name('update');
@@ -128,7 +132,7 @@ Route::controller(CourierSettlementController::class)->prefix('/courier-settleme
 Route::controller(DraftController::class)->prefix('/draft')->name('draft.')->group(function () {
     Route::get('/index', 'index')->name('index');
     Route::get('/show/{id}', 'show')->name('show');
-    Route::get('/delete/{id}', 'delete')->name('delete');
+    Route::delete('/delete/{id}', 'delete')->name('delete');
 });
 
 //supplier controller
@@ -137,7 +141,7 @@ Route::controller(SupplierController::class)->group(function () {
     Route::get('/supplier/view/{id}', 'supplierView')->name('supplier.view');
     Route::get('/supplier/edit/{id}', 'supplierEdit')->name('supplier.edit');
     Route::post('/supplier/update/{id}', 'supplierUpdate')->name('supplier.update');
-    Route::get('/supplier/delete/{id}', 'supplierDelete')->name('supplier.delete');
+    Route::delete('/supplier/delete/{id}', 'supplierDelete')->name('supplier.delete');
     Route::post('/supplier/store', 'store')->name('supplier.store');
     Route::get('/fetch-ledger-data', 'fetchLedgerData')->name('ledger_data');
     Route::get('/supplier/ledger/pdf', 'printLedgerPDF')->name('supplier.ledger.pdf');
@@ -151,7 +155,7 @@ Route::controller(PurchaseController::class)->group(function () {
     Route::get('/purchase/index', 'purchaseIndex')->name('purchase.index');
     Route::get('/purchase/edit/{id}', 'purchaseEdit')->name('purchase.edit');
     Route::get('/purchase/view/{id}', 'purchaseView')->name('purchase.view');
-    Route::get('/purchase/delete/{id}', 'purchaseDelete')->name('purchase.delete');
+    Route::delete('/purchase/delete/{id}', 'purchaseDelete')->name('purchase.delete');
     Route::get('/products/search/ajax', 'search')->name('product.ajaxsearch');
     Route::post('/purchase/store', 'store')->name('purchase.store');
     Route::put('/purchase/update/{id}', 'update')->name('purchase.update');
@@ -182,7 +186,7 @@ Route::controller(PurchaseOrderController::class)->prefix('/purchase-order')->gr
     Route::get('/index', 'purchaseOrderIndex')->name('purchase.order.index');
     Route::get('/edit/{id}', 'purchaseOrderEdit')->name('purchase.order.edit');
     Route::get('/view/{id}', 'purchaseOrderView')->name('purchase.order.view');
-    Route::get('/delete/{id}', 'purchaseOrderDelete')->name('purchase.order.delete');
+    Route::delete('/delete/{id}', 'purchaseOrderDelete')->name('purchase.order.delete');
     Route::get('/products/search/ajax', 'search')->name('purchase.order.ajaxsearch');
     Route::post('/store', 'store')->name('purchase.order.store');
     Route::post('/update/{id}', 'update')->name('purchase.order.update');
@@ -194,14 +198,18 @@ Route::controller(PurchaseOrderController::class)->prefix('/purchase-order')->gr
     // Route::get('/pdf', 'downloadPdfPO')->name('purchase.order.pdf');
     Route::get('/{id}/download-pdf', 'downloadPdfSinglePO')->name('purchase.order.pdf');
 });
+});
 
+
+// Smart Purchase Manager (purchasing, receiving, requirements, stock views). Permissions are set in the controller.
+Route::middleware(['auth', 'admin', 'prevent-back-history'])->prefix('admin/purchasing')->name('purchasing.')->group(base_path('routes/purchasing.php'));
 
 Route::get('/admin', [AdminController::class, 'admin_dashboard'])->name('admin.dashboard')->middleware(['auth', 'admin', 'prevent-back-history']);
 
-Route::get('/dashboard/order-status', [AdminController::class, 'doughnutData'])->name('dashboard.doughnut.get');
-Route::get('/dashboard/sales-review', [AdminController::class, 'salesChartData'])->name('dashboard.sales.chart');
-Route::get('/dashboard/top-categories', [AdminController::class, 'getTopCategories'])->name('dashboard.top.categories');
-Route::get('/dashboard/top-selling-products', [AdminController::class, 'getTopSellingProducts'])->name('dashboard.top.products');
+Route::get('/dashboard/order-status', [AdminController::class, 'doughnutData'])->name('dashboard.doughnut.get')->middleware(['auth', 'admin', 'prevent-back-history']);
+Route::get('/dashboard/sales-review', [AdminController::class, 'salesChartData'])->name('dashboard.sales.chart')->middleware(['auth', 'admin', 'prevent-back-history']);
+Route::get('/dashboard/top-categories', [AdminController::class, 'getTopCategories'])->name('dashboard.top.categories')->middleware(['auth', 'admin', 'prevent-back-history']);
+Route::get('/dashboard/top-selling-products', [AdminController::class, 'getTopSellingProducts'])->name('dashboard.top.products')->middleware(['auth', 'admin', 'prevent-back-history']);
 
 
 Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-back-history']], function () {
@@ -706,7 +714,7 @@ Route::prefix('transaction-method')->group(function () {
         Route::post('/order-edit/update', 'orderEditUpdate')->name('order.edit.update');
         Route::get('/order/edit/product', 'orderEditProductPart')->name('order.edit.product');
         Route::get('/order/edit/variation', 'orderEditVariationPart')->name('order.edit.variation');
-        Route::get('order/edit/delete', 'orderEditDelete')->name('order.edit.delete');
+        Route::post('order/edit/delete', 'orderEditDelete')->name('order.edit.delete');
 
         Route::get('/orders/{order}/items', 'fetchOrderItemsJson')->name('orders.items');
         Route::post('/orders/update-items-status','processUpdateItemsStatus')->name('orders.update-items-status');

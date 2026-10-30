@@ -731,6 +731,34 @@
                     </li>
                 @endcanany
 
+                {{-- Smart Purchase Manager --}}
+                @canany(['view_purchases', 'add_purchase', 'view_purchase_requirements', 'receive_goods', 'view_inventory_reports'])
+                    <li class="aiz-side-nav-item mx-2">
+                        <a href="#" class="aiz-side-nav-link">
+                            <div class="aiz-side-nav-icon"><i class="las la-boxes"></i></div>
+                            <span class="aiz-side-nav-text">{{ translate('Purchasing & Stock') }}</span>
+                            <span class="aiz-side-nav-arrow"></span>
+                        </a>
+                        <ul class="aiz-side-nav-list level-2">
+                            @can('view_purchases')<li class="aiz-side-nav-item mx-2"><a href="{{ route('purchasing.dashboard') }}" class="aiz-side-nav-link"><span class="aiz-side-nav-text">{{ translate('Purchase Dashboard') }}</span></a></li>@endcan
+                            @can('add_purchase')<li class="aiz-side-nav-item mx-2"><a href="{{ route('purchasing.quick') }}" class="aiz-side-nav-link"><span class="aiz-side-nav-text">{{ translate('Quick Purchase') }}</span></a></li>@endcan
+                            @can('view_purchase_requirements')<li class="aiz-side-nav-item mx-2"><a href="{{ route('purchasing.requirements') }}" class="aiz-side-nav-link"><span class="aiz-side-nav-text">{{ translate('Purchase Requirements') }}</span></a></li>@endcan
+                            @can('view_purchase_orders')<li class="aiz-side-nav-item mx-2"><a href="{{ route('purchasing.report', 'purchase-orders') }}" class="aiz-side-nav-link"><span class="aiz-side-nav-text">{{ translate('Purchase Orders') }}</span></a></li>@endcan
+                            @can('receive_goods')<li class="aiz-side-nav-item mx-2"><a href="{{ route('purchasing.receiving.index') }}" class="aiz-side-nav-link"><span class="aiz-side-nav-text">{{ translate('Goods Receiving') }}</span></a></li>@endcan
+                            @can('view_purchases')<li class="aiz-side-nav-item mx-2"><a href="{{ route('purchase.index') }}" class="aiz-side-nav-link"><span class="aiz-side-nav-text">{{ translate('Purchase History') }}</span></a></li>@endcan
+                            @can('view_supplier_payments')<li class="aiz-side-nav-item mx-2"><a href="{{ route('purchasing.supplier.outstanding') }}" class="aiz-side-nav-link"><span class="aiz-side-nav-text">{{ translate('Supplier Outstanding') }}</span></a></li>@endcan
+                            @can('view_inventory_reports')
+                                <li class="aiz-side-nav-item mx-2"><a href="{{ route('purchasing.stock') }}" class="aiz-side-nav-link"><span class="aiz-side-nav-text">{{ translate('Stock Overview') }}</span></a></li>
+                                <li class="aiz-side-nav-item mx-2"><a href="{{ route('purchasing.movements') }}" class="aiz-side-nav-link"><span class="aiz-side-nav-text">{{ translate('Stock Movements') }}</span></a></li>
+                                <li class="aiz-side-nav-item mx-2"><a href="{{ route('purchasing.backorders') }}" class="aiz-side-nav-link"><span class="aiz-side-nav-text">{{ translate('Backorders') }}</span></a></li>
+                                <li class="aiz-side-nav-item mx-2"><a href="{{ route('purchasing.valuation') }}" class="aiz-side-nav-link"><span class="aiz-side-nav-text">{{ translate('Inventory Valuation') }}</span></a></li>
+                                <li class="aiz-side-nav-item mx-2"><a href="{{ route('purchasing.report', 'trial-balance') }}" class="aiz-side-nav-link"><span class="aiz-side-nav-text">{{ translate('Trial Balance (journal)') }}</span></a></li>
+                                <li class="aiz-side-nav-item mx-2"><a href="{{ route('purchasing.report', 'reconciliation') }}" class="aiz-side-nav-link"><span class="aiz-side-nav-text">{{ translate('Reconciliation') }}</span></a></li>
+                            @endcan
+                        </ul>
+                    </li>
+                @endcanany
+
                 {{-- Unified Chat --}}
                 @can('view_unified_chat')
                     <li class="aiz-side-nav-item mx-2">

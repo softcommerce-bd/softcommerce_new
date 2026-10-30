@@ -136,7 +136,7 @@ class OrderEditTest extends InventoryTestCase
         [$product, $order, $line] = $this->orderOfThree('720008', ['M' => 10, 'L' => 10]);
         $admin = $this->makeAdmin();
 
-        $this->actingAs($admin)->get(route('order.edit.delete', ['id' => $line->id, 'variation' => 'L']))->assertOk();
+        $this->actingAs($admin)->post(route('order.edit.delete'), ['id' => $line->id, 'variation' => 'L'])->assertOk();
 
         $this->assertSame(10, $this->stockQty($product, 'M'));
         $this->assertSame(10, $this->batchRemaining($product, 'M'));
@@ -152,7 +152,7 @@ class OrderEditTest extends InventoryTestCase
         $this->actingAs($admin)->post('/admin/orders/update_delivery_status', ['order_id' => $order->id, 'status' => 'cancelled'])->assertOk();
         $this->assertSame(10, $this->stockQty($product, 'M'));
 
-        $this->get(route('order.edit.delete', ['id' => $line->id]))->assertOk();
+        $this->post(route('order.edit.delete'), ['id' => $line->id])->assertOk();
 
         $this->assertSame(10, $this->stockQty($product, 'M'));
         $this->assertSame(10, $this->batchRemaining($product, 'M'));

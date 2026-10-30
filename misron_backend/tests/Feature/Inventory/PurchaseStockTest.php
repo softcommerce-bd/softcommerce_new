@@ -25,12 +25,24 @@ class PurchaseStockTest extends InventoryTestCase
     protected function setUp(): void
     {
         parent::setUp();
+        // The purchase routes now require a signed-in admin (they were open to anonymous visitors before).
+        $this->actingAs($this->makeAdmin());
 
         foreach ([['Inventory', 'asset', 'inventory', '1-15001'], ['Accounts Payable', 'liability', 'payable', '2-21001']] as [$name, $type, $sub, $code]) {
             ChartOfAccount::create(['code' => $code . '-' . random_int(100, 999), 'name' => $name, 'type' => $type, 'sub_type' => $sub, 'is_deleted' => '0', 'status' => 'active']);
         }
         $this->supplier = Supplier::create(['business_name' => 'Test Supplier', 'mobile' => '01711111111', 'opening_balance' => '0']);
         $this->actingAs($this->makeAdmin());
+    }
+
+    /** A shopper's order signs the admin out of the test session; the admin screens now need the login again. */
+    private function guestOrderThenAdmin(array $lines)
+    {
+        $response = $this->placeGuestOrder($lines);
+        $this->forgetAuth();
+        $this->actingAs($this->makeAdmin());
+
+        return $response;
     }
 
     protected function tearDown(): void
@@ -114,7 +126,7 @@ class PurchaseStockTest extends InventoryTestCase
         $product = $this->plainProduct(0);
         $purchase = $this->receive($product, 10);
         // A shopper buys 4 units through the storefront while the purchase form is open.
-        $this->placeGuestOrder([[$product, '', 4]])->assertJson(['result' => true]);
+        $this->guestOrderThenAdmin([[$product, '', 4]])->assertJson(['result' => true]);
         $this->assertSame(6, $this->shelf($product));
 
         // The form still shows 10; the admin raises it to 15.
@@ -129,7 +141,7 @@ class PurchaseStockTest extends InventoryTestCase
     {
         $product = $this->plainProduct(0);
         $purchase = $this->receive($product, 10);
-        $this->placeGuestOrder([[$product, '', 6]])->assertJson(['result' => true]);
+        $this->guestOrderThenAdmin([[$product, '', 6]])->assertJson(['result' => true]);
 
         $response = $this->put(route('purchase.update', $purchase->id), $this->purchaseBody($product, 5));
 
@@ -144,16 +156,16 @@ class PurchaseStockTest extends InventoryTestCase
     {
         $sold = $this->plainProduct(0);
         $purchaseSold = $this->receive($sold, 10);
-        $this->placeGuestOrder([[$sold, '', 2]])->assertJson(['result' => true]);
+        $this->guestOrderThenAdmin([[$sold, '', 2]])->assertJson(['result' => true]);
 
-        $this->get(route('purchase.delete', $purchaseSold->id));
+        $this->delete(route('purchase.delete', $purchaseSold->id));
         $this->assertNotNull(Purchase::find($purchaseSold->id), 'a purchase whose units were sold stays');
         $this->assertSame(8, $this->shelf($sold));
 
         $fresh = $this->plainProduct(3);
         $purchaseFresh = $this->receive($fresh, 7);
         $this->assertSame(10, $this->shelf($fresh));
-        $this->get(route('purchase.delete', $purchaseFresh->id));
+        $this->delete(route('purchase.delete', $purchaseFresh->id));
         $this->assertNull(Purchase::find($purchaseFresh->id));
         $this->assertSame(3, $this->shelf($fresh));
         $this->assertSame(0, PurchaseProduct::where('product_id', $fresh->id)->count());
@@ -194,7 +206,7 @@ class PurchaseStockTest extends InventoryTestCase
     {
         $product = $this->plainProduct(0);
         $purchase = $this->receive($product, 10);
-        $this->placeGuestOrder([[$product, '', 8]])->assertJson(['result' => true]);
+        $this->guestOrderThenAdmin([[$product, '', 8]])->assertJson(['result' => true]);
         $batch = $this->batch($product);
 
         $response = $this->post(route('purchase-return.store'), $this->returnBody($purchase, $batch, $product, 5));

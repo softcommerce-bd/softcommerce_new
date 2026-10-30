@@ -151,7 +151,7 @@ class CartController extends Controller
                 'nav_cart_view' => view('frontend.partials.cart.cart')->render(),
             );
         }
-        if ($product_stock->qty < $cart->quantity + $request['quantity']) {
+        if (\App\Services\Inventory\StockPolicy::effectiveQty($product_stock) < $cart->quantity + $request['quantity']) {
             return array(
                 'status' => 0,
                 'cart_count' => count($carts),
@@ -239,7 +239,7 @@ class CartController extends Controller
 
     $product_stock = $product->stocks->where('variant', CartUtility::create_cart_variant2($product, $request->all()))->first();
 
-    if (!$product_stock || $product_stock->qty < ($request->quantity ?? 1)) {
+    if (!$product_stock || \App\Services\Inventory\StockPolicy::effectiveQty($product_stock) < ($request->quantity ?? 1)) {
         return $this->responseWithCart(0, $carts, 'frontend.partials.outOfStockCart');
     }
 
@@ -352,7 +352,7 @@ private function responseWithCart($status, $carts, $modalView, $data = [])
 //                     'nav_cart_view' => view('frontend.'.get_setting('homepage_select').'.partials.cart')->render(),
 //                 );
 //             }
-//             if ($product_stock->qty < $cart->quantity + $request['quantity']) {
+//             if (\App\Services\Inventory\StockPolicy::effectiveQty($product_stock) < $cart->quantity + $request['quantity']) {
 //                 return array(
 //                     'status' => 0,
 //                     'cart_count' => count($carts),
@@ -461,7 +461,7 @@ private function responseWithCart($status, $carts, $modalView, $data = [])
                     'nav_cart_view' => view('frontend.'.get_setting('homepage_select').'.partials.cart')->render(),
                 );
             }
-            if ($product_stock->qty < $cart->quantity + $request['quantity']) {
+            if (\App\Services\Inventory\StockPolicy::effectiveQty($product_stock) < $cart->quantity + $request['quantity']) {
                 return array(
                     'status' => 0,
                     'cart_count' => count($carts),
@@ -589,7 +589,7 @@ private function responseWithCart($status, $carts, $modalView, $data = [])
         if ($product->max_qty > 0) {
             $quantity = min($product->max_qty, $request->quantity);
         } else {
-            $quantity = min($product_stock->qty, $request->quantity);
+            $quantity = min(\App\Services\Inventory\StockPolicy::effectiveQty($product_stock), $request->quantity);
         }
 
         $price = $product_stock->price;

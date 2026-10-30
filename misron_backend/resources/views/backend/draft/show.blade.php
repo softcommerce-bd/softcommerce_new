@@ -12,7 +12,7 @@
             <a href="{{ route('draft.index') }}" class="btn btn-light">
                 <i class="las la-arrow-left"></i> {{ translate('Back to List') }}
             </a>
-            <a href="#" class="btn btn-danger confirm-delete" data-href="{{route('draft.delete', $draft->id)}}">
+            <a href="#" class="btn btn-danger" onclick="if (confirm('Delete this draft?')) { postDelete('{{ route('draft.delete', $draft->id) }}'); } return false;">
                 <i class="las la-trash"></i> {{ translate('Delete Draft') }}
             </a>
         </div>
@@ -219,6 +219,15 @@
 @endsection
 
 @section('script')
+<script>
+    // State-changing actions are DELETE requests with the CSRF token, never plain links.
+    function postDelete(url) {
+        var f = document.createElement('form'); f.method = 'POST'; f.action = url;
+        [['_token', '{{ csrf_token() }}'], ['_method', 'DELETE']].forEach(function (p) { var i = document.createElement('input'); i.type = 'hidden'; i.name = p[0]; i.value = p[1]; f.appendChild(i); });
+        document.body.appendChild(f); f.submit();
+    }
+</script>
+
 <script type="text/javascript">
     $(document).ready(function() {
         // Initialize AIZ plugins if needed

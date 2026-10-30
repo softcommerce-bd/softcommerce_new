@@ -1,5 +1,4 @@
-# Unified Chat – progress (resume from here)
-Branch claude/peaceful-planck-elqcki. See misron_backend/docs/UNIFIED_CHAT.md (deploy) and UNIFIED_CHAT_PROVIDER_STATUS.md (what is verified).
-Done: core inbox, gateway, MySQL-verified chat orders, WhatsApp Embedded Signup (+coexistence flag), templates, health verify, queue/scheduler smoke, two-installation isolation test, polling race fix.
-Open: live provider tests, Meta approvals, Embedded Signup v4, coexistence history sync, WebSockets, Instagram Login onboarding, TikTok.
-Local verification DB: MariaDB 10.11 throwaway (misron_test) built from empty_misron.sql with data tables truncated; env in /tmp (not committed).
+# Progress (resume from here)
+Branch claude/peaceful-planck-elqcki. Unified Chat: see misron_backend/docs/UNIFIED_CHAT*.md.
+Inventory/Purchasing/Accounting upgrade: see misron_backend/docs/INVENTORY_PURCHASING_UPGRADE.md (model, workflows, deployment, rollback, data plan, limits).
+Local test DBs (MariaDB, throwaway, not committed): inv_v2_test (all suites), dumpcopy_test/dumpcopy2_test (migration rehearsals on misron.sql). Env: APP_KEY, DB_* , SERVER_NAME=localhost.

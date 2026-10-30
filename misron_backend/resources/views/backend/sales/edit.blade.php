@@ -984,7 +984,8 @@
 
             $.ajax({
                 url: "{{ route('order.edit.delete') }}",
-                method: 'get',
+                method: 'post',
+                headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}'},
                 data: {
                     id: id,
                     variation: variation,

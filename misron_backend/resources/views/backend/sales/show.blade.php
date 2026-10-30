@@ -6,6 +6,17 @@
     <div class="card">
         <div class="card-header">
             <h1 class="h2 fs-16 mb-0">{{ translate('Order Details') }}</h1>
+            @if (\App\Services\Inventory\InventoryMode::installed() && ($v2Demand = \Illuminate\Support\Facades\DB::table('order_demands')->where('order_id', $order->id)->where('status', 'open')->selectRaw('COALESCE(SUM(qty_confirmed - qty_dispatched - qty_cancelled),0) outstanding, COALESCE(SUM(qty_allocated),0) allocated')->first()) && $v2Demand->outstanding > 0)
+                {{-- Stock position of this order under the confirmed-order model --}}
+                <span class="ml-3 badge badge-inline {{ $v2Demand->allocated >= $v2Demand->outstanding ? 'badge-success' : 'badge-warning' }}">
+                    {{ translate('Confirmed demand') }}: {{ $v2Demand->outstanding }} · {{ translate('in stock for this order') }}: {{ $v2Demand->allocated }}
+                </span>
+                @if ($v2Demand->allocated < $v2Demand->outstanding)
+                    @can('view_purchase_requirements')
+                        <a class="btn btn-sm btn-primary ml-2" href="{{ route('purchasing.requirements', ['order_id' => $order->id, 'only_shortage' => 1]) }}">{{ translate('Purchase Required Products') }}</a>
+                    @endcan
+                @endif
+            @endif
         </div>
         <div class="card-body">
             <div class="row gutters-5">

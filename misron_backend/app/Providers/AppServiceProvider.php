@@ -18,6 +18,7 @@ class AppServiceProvider extends ServiceProvider
    */
   public function boot()
   {
+    \App\Models\Order::observe(\App\Observers\OrderStockObserver::class);
     Schema::defaultStringLength(191);
     Paginator::useBootstrap();
   

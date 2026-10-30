@@ -19,6 +19,13 @@ use Illuminate\Support\Facades\Validator;
 
 class StockAdjustmentController extends Controller
 {
+    public function __construct()
+    {
+        // Authentication is on the route group; these are the per-action role permissions.
+        $this->middleware(['permission:view_stock_adjustments'])->only(['index', 'show', 'searchProduct', 'exportCsv', 'exportExcel', 'exportPdf']);
+        $this->middleware(['permission:manage_stock_adjustments'])->only(['create', 'store', 'destroy']);
+    }
+
     /**
      * Display a listing of stock adjustments.
      */
