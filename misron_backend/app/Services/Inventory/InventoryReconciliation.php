@@ -108,6 +108,9 @@ class InventoryReconciliation
             $add('unbalanced_entries', 'Unbalanced journal entries', count($unbal), array_map(fn ($u) => $u->journal_entry_id, $unbal), $unbal ? 'critical' : 'ok');
             $unc = DB::table('order_details')->where('cost_status', 'uncosted')->pluck('id')->all();
             $add('uncosted_dispatches', 'Dispatched order lines with units that had no FIFO cost layer (cost unknown; excluded from profit until resolved)', count($unc), $unc, $unc ? 'high' : 'ok');
+            foreach ((new AccountingReconciliation())->checks() as $c) {
+                $add('acct_' . $c['key'], $c['label'], $c['count'], $c['samples'], $c['severity']);
+            }
             $add('open_demand', 'Confirmed outstanding demand (units) / of which unallocated', (int) DB::table('stock_balances')->sum('demand') . ' / ' . ((int) DB::table('stock_balances')->sum('demand') - (int) DB::table('stock_balances')->sum('allocated')), [], 'info');
         }
 
