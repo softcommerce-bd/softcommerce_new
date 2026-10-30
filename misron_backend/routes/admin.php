@@ -249,7 +249,7 @@ Route::prefix('transaction-method')->group(function () {
         });
 
     // ========== NEW ACCOUNTS ROUTES ==========
-    Route::prefix('accounts')->name('accounts.')->group(function () {
+    Route::prefix('accounts')->name('accounts.')->middleware('accounting.access')->group(function () {
 
         Route::controller(AccountController::class)->group(function () {
             Route::get('/', 'index')->name('index');

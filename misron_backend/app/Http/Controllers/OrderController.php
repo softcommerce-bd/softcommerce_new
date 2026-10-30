@@ -64,6 +64,9 @@ class OrderController extends Controller
         $this->middleware(['permission:view_all_orders|view_inhouse_orders|view_seller_orders|view_pickup_point_orders'])->only('all_orders');
         $this->middleware(['permission:view_order_details'])->only('show');
         $this->middleware(['permission:delete_order'])->only('destroy', 'bulk_order_delete');
+        // these permissions existed in Staff > Roles but were never enforced
+        $this->middleware(['permission:update_order_delivery_status'])->only('update_delivery_status', 'bulk_order_status', 'updateItemsStatus', 'processUpdateItemsStatus');
+        $this->middleware(['permission:update_order_payment_status'])->only('update_payment_status');
     }
 
 

@@ -73,6 +73,7 @@ class Kernel extends HttpKernel
         'app_language' => AppLanguage::class,
         'app_user_unbanned' => IsAppUserUnbanned::class,
         'admin' => IsAdmin::class,
+        'accounting.access' => \App\Http\Middleware\AccountingAccess::class,
         'seller' => IsSeller::class,
         'customer' => IsCustomer::class,
         'user' => IsUser::class,
