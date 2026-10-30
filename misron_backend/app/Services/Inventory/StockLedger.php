@@ -85,7 +85,7 @@ class StockLedger
      * @throws InventoryBusy        contention outlasted the retry limit
      * @throws InvalidStockRequest  a malformed line
      */
-    public function take(array $lines): StockTake
+    public function take(array $lines, array $options = []): StockTake
     {
         if (DB::transactionLevel() < 1) {
             throw new LogicException('StockLedger::take() must run inside a database transaction.');
@@ -93,6 +93,16 @@ class StockLedger
 
         $prepared = $this->prepare($lines);
         $take = new StockTake($this->fifoIsTransactional());
+
+        // Confirmed-order-only model: placing an order deducts nothing and consumes no cost layer. The selling policy
+        // decides whether the order may be placed; stock moves when the order is confirmed and dispatched
+        // (DemandService). Callers that sell goods on the spot (POS) pass ['immediate' => true] and keep the old behaviour.
+        if (InventoryMode::confirmedOnly()) {
+            if (empty($options['immediate'])) {
+                return $this->deferred($prepared, $take);
+            }
+            $this->assertFreePhysical($prepared); // an immediate sale must not take units earmarked for confirmed orders
+        }
 
         try {
             // A savepoint: if any line is refused, the lines already taken inside
@@ -108,6 +118,40 @@ class StockLedger
         }
 
         return $take;
+    }
+
+    /** @param array<int, array> $prepared */
+    private function deferred(array $prepared, StockTake $take): StockTake
+    {
+        $perItem = [];
+        foreach ($prepared as $line) {
+            if ($line['digital']) {
+                $take->setLine($line['key'], ['cost' => 0.0, 'avg_cost' => 0.0, 'batches' => []]);
+                continue;
+            }
+            $k = $line['product_id'] . '|' . $line['variant'];
+            $perItem[$k] = ($perItem[$k] ?? 0) + $line['quantity']; // two lines of one item in one order count together
+            StockPolicy::assertCanOrder($line['product_id'], $line['variant'], $perItem[$k]);
+            $take->setLine($line['key'], ['cost' => 0.0, 'avg_cost' => 0.0, 'batches' => []]);
+        }
+
+        return $take;
+    }
+
+    /** @param array<int, array> $prepared */
+    private function assertFreePhysical(array $prepared): void
+    {
+        foreach ($prepared as $line) {
+            if ($line['digital']) {
+                continue;
+            }
+            $b = StockBalance::lock($line['product_id'], $line['variant']);
+            $free = StockBalance::onHandLocked($line['product_id'], $line['variant']) - (int) $b->allocated;
+            if ($free < $line['quantity']) {
+                throw new OutOfStock("Product {$line['product_id']} '{$line['variant']}': {$free} unreserved, {$line['quantity']} wanted.",
+                    ['product_id' => $line['product_id'], 'variant' => $line['variant'], 'requested' => $line['quantity'], 'available' => max(0, $free)]);
+            }
+        }
     }
 
     /**
@@ -164,6 +208,15 @@ class StockLedger
             $detail->delivery_status = 'cancelled';
             $detail->syncOriginalAttribute('delivery_status');
 
+            // A line created under the confirmed-order model holds demand, not stock: cancelling releases whatever
+            // has not shipped. Units that already left are untouched (they come back through a return receipt).
+            if (InventoryMode::lineIsV2((int) $detail->id)) {
+                app(DemandService::class)->release($detail);
+                DB::update('UPDATE products SET num_of_sale = GREATEST(COALESCE(num_of_sale, 0) - ?, 0) WHERE id = ?', [(int) $detail->quantity, $detail->product_id]);
+
+                return true;
+            }
+
             $quantity = (int) $detail->quantity;
             if ($quantity < 1) {
                 return true;
@@ -201,7 +254,7 @@ class StockLedger
      *
      * Moves product_stocks only; purchase batches are the caller's business.
      */
-    public function adjust(int $productId, ?string $variant, int $delta): bool
+    public function adjust(int $productId, ?string $variant, int $delta, bool $ignoreAllocation = false): bool
     {
         if ($delta === 0) {
             return true;
@@ -212,6 +265,11 @@ class StockLedger
         if ($delta < 0) {
             $sql .= ' AND qty + ? >= 0';
             $bind[] = $delta;
+            // Units earmarked for confirmed orders cannot be taken off the shelf by an edit, adjustment or return; only dispatch consumes them.
+            if (!$ignoreAllocation && InventoryMode::installed()) {
+                $sql .= ' AND (qty + ?) >= COALESCE((SELECT b.allocated FROM stock_balances b WHERE b.product_id = product_stocks.product_id AND b.variant = product_stocks.variant), 0)';
+                $bind[] = $delta;
+            }
         }
 
         return DB::update($sql . ' ORDER BY id LIMIT 1', $bind) > 0;
@@ -288,6 +346,10 @@ class StockLedger
         if ($delta < 0) {
             $sql .= ' AND qty + ? >= 0';
             $bind[] = $delta;
+            if (true && InventoryMode::installed()) {
+                $sql .= ' AND (qty + ?) >= COALESCE((SELECT b.allocated FROM stock_balances b WHERE b.product_id = product_stocks.product_id AND b.variant = product_stocks.variant), 0)';
+                $bind[] = $delta;
+            }
         }
 
         return DB::update($sql, $bind) > 0;

@@ -15,6 +15,13 @@ use Mpdf\Mpdf;
 
 class PurchaseOrderController extends Controller
 {
+    public function __construct()
+    {
+        // Authentication is on the route group; these are the per-action role permissions.
+        $this->middleware(['permission:view_purchase_orders'])->only(['purchaseOrderIndex', 'purchaseOrderView', 'getSupplierBalance', 'search', 'searchProducts', 'getReviewModalData', 'downloadPdfSinglePO']);
+        $this->middleware(['permission:manage_purchase_orders'])->only(['create', 'purchaseOrderEdit', 'store', 'update', 'purchaseUpdatePayment', 'purchaseOrderDelete', 'convertToPurchase']);
+    }
+
     // purchase List 
     public function purchaseOrderIndex()
     {

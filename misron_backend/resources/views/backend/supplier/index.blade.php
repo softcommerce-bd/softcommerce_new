@@ -63,8 +63,8 @@
                                                 </a>--}}
                                                 <a 
                                                     class="dropdown-item d-flex align-items-center text-danger" 
-                                                    href="{{ route('supplier.delete', $supplier->id) }}" 
-                                                    onclick="return confirm('Are you sure you want to delete this supplier?');">
+                                                    href="#"
+                                                    onclick="if (confirm('Are you sure you want to delete this supplier?')) { postDelete('{{ route('supplier.delete', $supplier->id) }}'); } return false;">
                                                     <i class="fas fa-trash mr-2 text-danger"></i>
                                                 </a>
 
@@ -99,6 +99,15 @@
 
 <!-- Scripts -->
 @section('script')
+<script>
+    // State-changing actions are DELETE requests with the CSRF token, never plain links.
+    function postDelete(url) {
+        var f = document.createElement('form'); f.method = 'POST'; f.action = url;
+        [['_token', '{{ csrf_token() }}'], ['_method', 'DELETE']].forEach(function (p) { var i = document.createElement('input'); i.type = 'hidden'; i.name = p[0]; i.value = p[1]; f.appendChild(i); });
+        document.body.appendChild(f); f.submit();
+    }
+</script>
+
 <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap4.min.js"></script>
 <script>

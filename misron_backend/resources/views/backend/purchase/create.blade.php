@@ -1,6 +1,7 @@
 @extends('backend.layouts.app')
 @section('content')
     <form action="{{ route('purchase.store') }}" method="POST" enctype="multipart/form-data" id="purchase_store_form">
+        <input type="hidden" name="op_key" value="{{ \Illuminate\Support\Str::uuid() }}">
         @csrf
 
         <!-- Supplier Section -->

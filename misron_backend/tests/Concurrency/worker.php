@@ -172,6 +172,29 @@ try {
             $result['ok'] = true;
             break;
 
+        // ---- inventory v2 / purchasing (run with INVENTORY_CONFIRMED_ONLY=true) ----
+        case 'v2_status':
+            $order = App\Models\Order::findOrFail($job['order_id']);
+            $order->delivery_status = $job['status'];
+            $order->save();
+            $result['ok'] = true;
+            break;
+
+        case 'v2_receive':
+            $result['receipt'] = app(App\Services\Purchasing\GoodsReceiptService::class)->receive($job['key'], $job['data']);
+            $result['ok'] = true;
+            break;
+
+        case 'v2_pay':
+            $result['payment'] = app(App\Services\Purchasing\SupplierLedgerService::class)->pay($job['key'], $job['invoice_id'], $job['account_id'], $job['amount']);
+            $result['ok'] = true;
+            break;
+
+        case 'v2_journal':
+            $result['entry'] = app(App\Services\Accounting\JournalService::class)->post($job['key'], '2026-01-01', $job['lines']);
+            $result['ok'] = true;
+            break;
+
         default:
             throw new InvalidArgumentException('Unknown action ' . $job['action']);
     }

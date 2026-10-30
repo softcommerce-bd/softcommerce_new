@@ -233,8 +233,8 @@ class CartController extends Controller
                     'message' => translate('This auction product is already added to your cart.')
                 ], 200);
             }
-            if ($product_stock->qty < $cart->quantity + $request['quantity']) {
-                if ($product_stock->qty == 0) {
+            if (\App\Services\Inventory\StockPolicy::effectiveQty($product_stock) < $cart->quantity + $request['quantity']) {
+                if (\App\Services\Inventory\StockPolicy::effectiveQty($product_stock) == 0) {
                     return response()->json([
                         'result' => false,
                         'temp_user_id' => $temp_user_id,
@@ -281,7 +281,7 @@ class CartController extends Controller
             if ($product->auction_product == 1) {
                 return response()->json(['result' => false, 'message' => translate('Maximum available quantity reached')], 200);
             }
-            if ($cart->product->stocks->where('variant', $cart->variation)->first()->qty >= $request->quantity) {
+            if (\App\Services\Inventory\StockPolicy::effectiveQty($cart->product->stocks->where('variant', $cart->variation)->first()) >= $request->quantity) {
                 $cart->update([
                     'quantity' => $request->quantity
                 ]);
@@ -310,7 +310,7 @@ class CartController extends Controller
                     return response()->json(['result' => false, 'message' => translate("Minimum") . " {$product->min_qty} " . translate("item(s) should be ordered for") . " {$product->name}"], 200);
                 }
 
-                $stock = $cart_item->product->stocks->where('variant', $cart_item->variation)->first()->qty;
+                $stock = \App\Services\Inventory\StockPolicy::effectiveQty($cart_item->product->stocks->where('variant', $cart_item->variation)->first());
                 $variant_string = $cart_item->variation != null && $cart_item->variation != "" ? " ($cart_item->variation)" : "";
                 if ($stock >= $cart_quantities[$i] || $product->digital == 1) {
                     $cart_item->update([

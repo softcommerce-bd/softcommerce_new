@@ -4,6 +4,22 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Confirmed-order-only stock (inventory v2)
+    |--------------------------------------------------------------------------
+    |
+    | false (default): today's behaviour: stock is deducted when an order is created.
+    | true: a new order line deducts nothing while pending. Confirming the order creates confirmed demand
+    | (available to sell = on-hand - outstanding demand, may go negative); stock physically leaves, and FIFO cost
+    | is consumed, only when the order is dispatched. Orders already in the system keep the old behaviour
+    | (order_details.stock_mode = 'legacy'); new lines are 'v2'.
+    |
+    | Turn this on only after: the inventory_v2 migrations ran, purchase_products is InnoDB (see
+    | sqlupdates/inventory_v2_innodb_conversion.sql) and `php artisan inventory:preflight` passes.
+    */
+    'confirmed_only' => (bool) env('INVENTORY_CONFIRMED_ONLY', false),
+
+    /*
+    |--------------------------------------------------------------------------
     | Do purchase batches roll back with a database transaction?
     |--------------------------------------------------------------------------
     |

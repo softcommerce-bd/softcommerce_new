@@ -96,11 +96,20 @@ class InventoryAudit
         $views = $this->db->select('SELECT table_name AS name FROM information_schema.views WHERE table_schema = ?', [$database]);
         $routines = $this->db->select('SELECT routine_name AS name FROM information_schema.routines WHERE routine_schema = ?', [$database]);
 
-        $server = (array) ($this->db->selectOne(
-            'SELECT VERSION() AS version, @@version_comment AS comment, @@sql_mode AS sql_mode, @@transaction_isolation AS isolation,
-                    @@innodb_lock_wait_timeout AS lock_wait_timeout, @@innodb_file_per_table AS file_per_table,
-                    @@innodb_default_row_format AS default_row_format, @@log_bin AS log_bin'
-        ) ?? []);
+        // MySQL 8 exposes @@transaction_isolation; MariaDB 10.x only has @@tx_isolation
+        $server = [];
+        foreach (['transaction_isolation', 'tx_isolation'] as $isolationVar) {
+            try {
+                $server = (array) ($this->db->selectOne(
+                    "SELECT VERSION() AS version, @@version_comment AS comment, @@sql_mode AS sql_mode, @@{$isolationVar} AS isolation,
+                            @@innodb_lock_wait_timeout AS lock_wait_timeout, @@innodb_file_per_table AS file_per_table,
+                            @@innodb_default_row_format AS default_row_format, @@log_bin AS log_bin"
+                ) ?? []);
+                break;
+            } catch (\Throwable $e) {
+                continue;
+            }
+        }
 
         return [
             'database' => $database,

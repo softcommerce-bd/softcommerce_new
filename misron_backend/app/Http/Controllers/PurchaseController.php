@@ -20,6 +20,16 @@ use Illuminate\Support\Facades\Log;
 
 class PurchaseController extends Controller
 {
+    public function __construct()
+    {
+        // Authentication is on the route group; these are the per-action role permissions.
+        $this->middleware(['permission:view_purchases'])->only(['purchaseIndex', 'purchaseView', 'getSupplierBalance', 'search', 'searchProducts', 'getLastPurchasePrice', 'getPaymentAccounts', 'purchaseReturnList']);
+        $this->middleware(['permission:add_purchase'])->only(['create', 'store']);
+        $this->middleware(['permission:edit_purchase'])->only(['purchaseEdit', 'update', 'purchaseUpdatePayment']);
+        $this->middleware(['permission:delete_purchase'])->only(['purchaseDelete']);
+        $this->middleware(['permission:manage_purchase_returns'])->only(['purchaseReturnAdd', 'storePurchaseReturn', 'purchaseReturnEdit', 'updatePurchaseReturn']);
+    }
+
     use StatementLogTrait;
 
     /**
@@ -190,6 +200,7 @@ class PurchaseController extends Controller
         try {
             // Fetch the purchase record
             $purchase = Purchase::findOrFail($request->purchase_id);
+            $this->refuseLedgerPurchase((int) $purchase->id);
 
             // Fetch the supplier record
             $supplier = Supplier::findOrFail($request->supplier_id);
@@ -294,6 +305,18 @@ class PurchaseController extends Controller
             }
 
             $request->validate($rules);
+
+            // A double click / retry of the same form carries the same op_key and must not create a second purchase.
+            // The key row lives in this transaction, so a failed save releases it and the user can resubmit.
+            if ($request->filled('op_key') && \App\Services\Inventory\InventoryMode::installed()) {
+                try {
+                    DB::table('idempotency_keys')->insert(['scope' => 'legacy_purchase', 'key' => substr((string) $request->op_key, 0, 120), 'created_at' => now(), 'updated_at' => now()]);
+                } catch (\Illuminate\Database\QueryException $dup) {
+                    DB::rollBack();
+
+                    return response()->json(['success' => true, 'duplicate' => true, 'message' => 'This purchase was already saved.', 'redirect_url' => route('purchase.index')]);
+                }
+            }
 
             // Calculate totals
             $netTotal = 0;
@@ -471,6 +494,7 @@ class PurchaseController extends Controller
         DB::beginTransaction();
         try {
             $purchase = Purchase::findOrFail($purchaseId);
+            $this->refuseLedgerPurchase((int) $purchase->id);
             $oldSupplierId = $purchase->supplier_id;
 
             // Validation
@@ -780,6 +804,23 @@ class PurchaseController extends Controller
     }
 
 
+
+    /**
+     * Purchases created by goods receiving (and opening-cost layers) are owned by the receipt / supplier-invoice ledger and carry journal
+     * entries. Editing, deleting or returning them through the legacy screens would change stock without reversing those entries, so it
+     * is refused; the Purchasing screens (supplier returns, invoices, payments) are the way to change them.
+     */
+    protected function refuseLedgerPurchase(int $purchaseId): void
+    {
+        if (!\App\Services\Inventory\InventoryMode::installed()) {
+            return;
+        }
+        $ledger = DB::table('goods_receipts')->where('purchase_id', $purchaseId)->exists()
+            || DB::table('purchases')->where('id', $purchaseId)->where('reference_no', 'like', 'OPEN-%')->exists();
+        if ($ledger) {
+            throw new \Exception('This purchase was created by Goods Receiving. Use Purchasing > Goods Receiving / Supplier Payments / Return to supplier to change it.');
+        }
+    }
 
     protected function updateProductStockVariant($productId, $variant, $qtyDifference)
     {
@@ -1308,6 +1349,7 @@ public function searchProducts(Request $request)
 
             $purchaseId = $request->purchase_id[0];
             $purchase = Purchase::findOrFail($purchaseId);
+            $this->refuseLedgerPurchase((int) $purchaseId);
             $supplier = Supplier::findOrFail($request->supplier_id);
 
             $purchaseReturn = PurchaseReturn::create([
@@ -1956,6 +1998,7 @@ public function searchProducts(Request $request)
         DB::beginTransaction();
         try {
             $purchase = Purchase::findOrFail($id);
+            $this->refuseLedgerPurchase((int) $purchase->id);
             $supplier = Supplier::find($purchase->supplier_id);
 
             // Revert advance amount

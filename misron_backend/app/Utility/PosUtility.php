@@ -800,7 +800,7 @@ public static function orderStore($data)
                 ];
             }
             try {
-                $stockTake = app(StockLedger::class)->take($stockLines);
+                $stockTake = app(StockLedger::class)->take($stockLines, ['immediate' => true]); // POS sells goods on the spot: stock and FIFO cost move now
             } catch (InventoryException $e) {
                 DB::rollBack();
                 $context = $e->context();
@@ -834,6 +834,9 @@ public static function orderStore($data)
                     $totalCOGS += $totalCost; // Accumulate COGS
 
                     $order_detail = new OrderDetail;
+                    if (\App\Services\Inventory\InventoryMode::installed()) {
+                        $order_detail->stock_mode = 'legacy'; // already deducted above; never part of the confirmed-order model
+                    }
                     $order_detail->order_id = $order->id;
                     $order_detail->seller_id = $product->user_id;
                     $order_detail->product_id = $product->id;

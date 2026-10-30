@@ -192,6 +192,8 @@ Route::group(['prefix' => 'v2', 'middleware' => ['app_language']], function () {
         Route::get('order/guest-details/{id}', [OrderController::class, 'getOrderDetails']);
         Route::get('order/details/{id}', [OrderController::class, 'getOrderDetails'])->middleware('auth:sanctum');
 
+        Route::post('order/cancel/{id}', [OrderController::class, 'order_cancel'])->middleware('auth:sanctum');
+        // Deprecated: kept only so already-installed mobile apps keep working. Bearer-token authenticated (no ambient cookie), but new clients must use POST.
         Route::get('order/cancel/{id}', [OrderController::class, 'order_cancel'])->middleware('auth:sanctum');
         
         

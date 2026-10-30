@@ -102,6 +102,16 @@ class ProductDetailCollection extends ResourceCollection
                 // that other colours still stocked. Sizes are therefore summed
                 // across colours, and the full variant is also published under
                 // its own key so a colour+size pair can be resolved exactly.
+                // Product-level availability: the best state any variation offers.
+                $availability = ['state' => 'out_of_stock', 'can_order' => false, 'policy' => 'stock_only', 'expected_at' => null];
+                $rank = ['in_stock' => 3, 'available_on_order' => 2, 'preorder' => 1, 'out_of_stock' => 0];
+                foreach ($data->stocks as $stockRow) {
+                    $one = \App\Services\Inventory\StockPolicy::storefrontState((int) $data->id, $stockRow->variant);
+                    if ($rank[$one['state']] >= $rank[$availability['state']] && ($one['can_order'] || !$availability['can_order'])) {
+                        $availability = $one;
+                    }
+                }
+
                 foreach ($data->stocks as $stock) {
                     if ($stock->variant) {
                         $variant_parts = explode('-', $stock->variant);
@@ -231,6 +241,12 @@ class ProductDetailCollection extends ResourceCollection
                     
                     // Keep current_stock for backward compatibility
                     'current_stock' => $data->stocks->sum('qty'),
+
+                    // Selling policy as the server sees it (server-side checks stay authoritative): in_stock | available_on_order | preorder | out_of_stock
+                    'stock_policy' => $availability['policy'],
+                    'stock_state' => $availability['state'],
+                    'can_order' => $availability['can_order'],
+                    'expected_at' => $availability['expected_at'],
                     
                     // Variant-specific stock (now mapped to size only)
                     'variant_stocks' => $variant_stocks,

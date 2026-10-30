@@ -17,6 +17,9 @@ class DraftController extends Controller
     {
         $this->draft = $draft;
         $this->product = $product;
+
+        $this->middleware(['permission:view_drafts'])->only(['index', 'show']);
+        $this->middleware(['permission:manage_drafts'])->only(['delete', 'createOrUpdate']);
     }
 
 

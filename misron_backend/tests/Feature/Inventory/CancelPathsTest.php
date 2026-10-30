@@ -105,7 +105,7 @@ class CancelPathsTest extends InventoryTestCase
         [$productA, $orderA] = $this->orderOfThree('710006');
         [$productB, $orderB] = $this->orderOfThree('710007');
 
-        $this->actingAs($this->makeAdmin())->get(route('all_orders.index', ['bulk_delivery_status' => 'cancelled', 'id' => [$orderA->id, $orderB->id]]));
+        $this->actingAs($this->makeAdmin())->post(route('bulk-order-status'), ['bulk_delivery_status' => 'cancelled', 'id' => [$orderA->id, $orderB->id]]);
 
         $this->assertSame('cancelled', $orderA->fresh()->delivery_status);
         $this->assertSame('cancelled', $orderB->fresh()->delivery_status);
@@ -114,7 +114,7 @@ class CancelPathsTest extends InventoryTestCase
         $this->assertSame(['cancelled'], OrderDetail::whereIn('order_id', [$orderA->id, $orderB->id])->pluck('delivery_status')->unique()->all());
 
         // Running the same bulk action again changes nothing.
-        $this->get(route('all_orders.index', ['bulk_delivery_status' => 'cancelled', 'id' => [$orderA->id, $orderB->id]]));
+        $this->post(route('bulk-order-status'), ['bulk_delivery_status' => 'cancelled', 'id' => [$orderA->id, $orderB->id]]);
         $this->assertShelfAndBatches($productA, 10, 'order A again');
     }
 
@@ -163,10 +163,10 @@ class CancelPathsTest extends InventoryTestCase
         // The web screen is for signed-in, verified customers.
         $user->forceFill(['user_type' => 'customer', 'email_verified_at' => now()])->save();
 
-        $this->actingAs($user->fresh())->get(route('purchase_history.destroy', $order->id));
+        $this->actingAs($user->fresh())->post(route('purchase_history.destroy', $order->id));
         $this->assertShelfAndBatches($product, 10, 'after the web cancel');
 
-        $this->get(route('purchase_history.destroy', $order->id));
+        $this->post(route('purchase_history.destroy', $order->id));
         $this->assertShelfAndBatches($product, 10, 'after a second press');
     }
 
