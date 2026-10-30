@@ -1,0 +1,8 @@
+{
+    "name": "softtech/messaging-gateway",
+    "description": "Softtech Messaging Integration Gateway: routes official provider webhooks and OAuth to independent SoftCommerce installations. Holds no customer conversations.",
+    "type": "project",
+    "require": { "php": ">=8.0", "ext-pdo": "*", "ext-sodium": "*", "ext-curl": "*", "ext-json": "*" },
+    "autoload": { "psr-4": { "Gateway\\": "src/" } },
+    "config": { "sort-packages": true }
+}

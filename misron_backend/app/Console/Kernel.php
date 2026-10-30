@@ -51,6 +51,9 @@ class Kernel extends ConsoleKernel
             ->dailyAt('03:30')
             ->withoutOverlapping();
 
+        // Unified Chat: retry stuck webhook events, auto-close idle chats, retention.
+        $schedule->command('chat:maintain')->everyFiveMinutes()->withoutOverlapping();
+
         $schedule->command('queue:work --once')
             ->everyMinute()
             ->withoutOverlapping();

@@ -1,0 +1,21 @@
+#!/usr/bin/env php
+<?php
+// Usage: php bin/gateway <command> [args]
+//   migrate | installation:create <name> <domain> <https-callback-url> | installation:rotate <id> | installation:revoke <id>
+//   deliver (cron every minute) | dead (list dead-lettered deliveries) | requeue <delivery-id>
+require __DIR__ . '/../src/bootstrap.php';
+
+[$script, $cmd] = $argv + [null, 'help'];
+$arg = array_slice($argv, 2);
+switch ($cmd) {
+    case 'migrate': echo "ok\n"; break;
+    case 'installation:create':
+        $r = $store->createInstallation($arg[0] ?? 'unnamed', $arg[1] ?? '', $arg[2] ?? '');
+        echo "installation id: {$r['id']}\nsecret (shown once): {$r['secret']}\nSet CHAT_INSTALLATION_ID / CHAT_INSTALLATION_SECRET in that installation's .env\n"; break;
+    case 'installation:rotate': echo "new secret (shown once): " . $store->rotate($arg[0] ?? '') . "\nThe previous secret keeps working for 1 hour.\n"; break;
+    case 'installation:revoke': $store->revoke($arg[0] ?? ''); echo "revoked; routes removed, pending deliveries dead-lettered\n"; break;
+    case 'deliver': echo $deliverer->retryDue() . " retried\n"; break;
+    case 'dead': foreach ($store->db->query("SELECT id,installation_id,platform,attempts,last_error FROM deliveries WHERE status='dead'") as $r) echo implode("\t", [$r['id'], $r['installation_id'], $r['platform'], $r['attempts'], $r['last_error']]) . "\n"; break;
+    case 'requeue': $store->run("UPDATE deliveries SET status='pending', attempts=0, next_attempt_at=? WHERE id=? AND status='dead'", [time(), (int) ($arg[0] ?? 0)]); echo "requeued\n"; break;
+    default: echo "commands: migrate, installation:create, installation:rotate, installation:revoke, deliver, dead, requeue\n";
+}
