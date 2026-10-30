@@ -360,7 +360,7 @@ Route::group(['middleware' => ['customer', 'verified', 'unbanned']], function ()
     Route::resource('purchase_history', PurchaseHistoryController::class);
     Route::controller(PurchaseHistoryController::class)->group(function () {
         Route::get('/purchase_history/details/{id}', 'purchase_history_details')->name('purchase_history.details');
-        Route::get('/purchase_history/destroy/{id}', 'order_cancel')->name('purchase_history.destroy');
+        Route::post('/purchase_history/destroy/{id}', 'order_cancel')->name('purchase_history.destroy'); // was GET: a state change must carry the CSRF token
         Route::get('digital-purchase-history', 'digital_index')->name('digital_purchase_history.index');
         Route::get('/digital-products/download/{id}', 'download')->name('digital-products.download');
 

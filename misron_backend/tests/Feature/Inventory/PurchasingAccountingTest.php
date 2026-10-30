@@ -112,13 +112,61 @@ class PurchasingAccountingTest extends InventoryV2TestCase
         $inv = $svc->recordInvoice('inv-1', ['supplier_id' => $this->supplierId, 'goods_receipt_id' => $r['goods_receipt_id'], 'invoice_no' => 'S-1', 'subtotal' => '1050']);
         $this->assertEquals(0.0, $this->bal(SystemAccounts::id('grni')), 'the receipt clearing account is cleared');
         $this->assertEquals(1050.0, $this->bal(SystemAccounts::id('payable')));
-        $this->assertEquals(50.0, $this->bal(SystemAccounts::id('variance')), 'the 50 difference is a visible variance; physical stock and FIFO layers are untouched');
+        $this->assertEquals(0.0, $this->bal(SystemAccounts::id('variance')), 'all 10 units are unsold so the whole difference is capitalised, none is expensed');
+        $this->assertEquals(1050.0, $this->bal(SystemAccounts::id('inventory')), 'inventory is revalued to the invoice price');
         $this->assertEquals(1050.0, (float) DB::table('suppliers')->where('id', $this->supplierId)->value('due_amount'));
-        $this->assertSame(10, $this->stockQty($p, ''));
-        $this->assertEquals(100.0, (float) DB::table('purchase_products')->where('product_id', $p->id)->value('buying_unit_cost'));
+        $this->assertSame(10, $this->stockQty($p, ''), 'physical stock is untouched');
+        $this->assertEquals(105.0, (float) DB::table('purchase_products')->where('product_id', $p->id)->value('buying_unit_cost'), 'the unsold layer carries the invoiced cost');
 
         $this->expectException(InvalidArgumentException::class);
         $svc->recordInvoice('inv-2', ['supplier_id' => $this->supplierId, 'goods_receipt_id' => $r['goods_receipt_id'], 'invoice_no' => 'S-2', 'subtotal' => '1000']); // receipt already invoiced
+    }
+
+    public function test_invoice_difference_on_units_already_sold_is_expensed_and_history_is_not_rewritten()
+    {
+        $p = $this->productAtZero();
+        $r = $this->receive($p, '', 10, '100');
+        // 4 units leave the layer before the supplier invoice arrives (sold at cost 100 each)
+        DB::table('purchase_products')->where('product_id', $p->id)->update(['remaining_qty' => 6]);
+        DB::table('product_stocks')->where('product_id', $p->id)->update(['qty' => 6]);
+        app(SupplierLedgerService::class)->recordInvoice('inv-s', ['supplier_id' => $this->supplierId, 'goods_receipt_id' => $r['goods_receipt_id'], 'invoice_no' => 'S-9', 'subtotal' => '1050']);
+        $this->assertEquals(1050.0, $this->bal(SystemAccounts::id('payable')));
+        $this->assertEquals(20.0, $this->bal(SystemAccounts::id('variance')), '4 of 10 units are gone: 40% of the 50 difference is expensed');
+        $this->assertEquals(1030.0, $this->bal(SystemAccounts::id('inventory')), 'the 6 unsold units are revalued: 1000 + 30');
+        $this->assertEquals(105.0, (float) DB::table('purchase_products')->where('product_id', $p->id)->value('buying_unit_cost'));
+        $this->assertTrue(JournalService::trialBalance(now()->toDateString())['balanced']);
+    }
+
+    public function test_supplier_return_of_uninvoiced_goods_clears_grni_and_invoiced_goods_credits_the_payable()
+    {
+        $p = $this->productAtZero();
+        $r = $this->receive($p, '', 10, '100');
+        $line = (int) DB::table('goods_receipt_lines')->where('goods_receipt_id', $r['goods_receipt_id'])->value('id');
+        $svc = app(\App\Services\Purchasing\SupplierReturnService::class);
+        $out = $svc->returnGoods('ret-1', $line, 3);
+        $this->assertSame($out['returned'], $svc->returnGoods('ret-1', $line, 3)['returned']); // retry returns the stored result
+        $this->assertSame(7, $this->stockQty($p, ''), 'a retried return takes the stock once');
+        $this->assertEquals(700.0, $this->bal(SystemAccounts::id('inventory')));
+        $this->assertEquals(700.0, $this->bal(SystemAccounts::id('grni')));
+
+        app(SupplierLedgerService::class)->recordInvoice('inv-r', ['supplier_id' => $this->supplierId, 'goods_receipt_id' => $r['goods_receipt_id'], 'invoice_no' => 'R-1', 'subtotal' => '1000']);
+        $svc->returnGoods('ret-2', $line, 2);
+        $this->assertSame(5, $this->stockQty($p, ''));
+        $this->assertEquals(500.0, $this->bal(SystemAccounts::id('inventory')));
+        $this->assertTrue(JournalService::trialBalance(now()->toDateString())['balanced']);
+
+        $this->expectException(InvalidArgumentException::class);
+        $svc->returnGoods('ret-3', $line, 6); // only 5 left to return on this line
+    }
+
+    public function test_supplier_return_refuses_units_held_for_a_confirmed_order()
+    {
+        $p = $this->productAtZero();
+        $r = $this->receive($p, '', 5, '100');
+        $line = (int) DB::table('goods_receipt_lines')->where('goods_receipt_id', $r['goods_receipt_id'])->value('id');
+        $this->makeOrder([[$p, '', 5]], 'confirmed');
+        $this->expectException(InvalidArgumentException::class);
+        app(\App\Services\Purchasing\SupplierReturnService::class)->returnGoods('ret-h', $line, 1);
     }
 
     public function test_duplicate_invoice_number_and_replayed_invoice_post_once()

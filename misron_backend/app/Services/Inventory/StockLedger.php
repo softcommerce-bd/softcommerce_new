@@ -254,7 +254,7 @@ class StockLedger
      *
      * Moves product_stocks only; purchase batches are the caller's business.
      */
-    public function adjust(int $productId, ?string $variant, int $delta): bool
+    public function adjust(int $productId, ?string $variant, int $delta, bool $ignoreAllocation = false): bool
     {
         if ($delta === 0) {
             return true;
@@ -265,6 +265,11 @@ class StockLedger
         if ($delta < 0) {
             $sql .= ' AND qty + ? >= 0';
             $bind[] = $delta;
+            // Units earmarked for confirmed orders cannot be taken off the shelf by an edit, adjustment or return; only dispatch consumes them.
+            if (!$ignoreAllocation && InventoryMode::installed()) {
+                $sql .= ' AND (qty + ?) >= COALESCE((SELECT b.allocated FROM stock_balances b WHERE b.product_id = product_stocks.product_id AND b.variant = product_stocks.variant), 0)';
+                $bind[] = $delta;
+            }
         }
 
         return DB::update($sql . ' ORDER BY id LIMIT 1', $bind) > 0;
@@ -341,6 +346,10 @@ class StockLedger
         if ($delta < 0) {
             $sql .= ' AND qty + ? >= 0';
             $bind[] = $delta;
+            if (true && InventoryMode::installed()) {
+                $sql .= ' AND (qty + ?) >= COALESCE((SELECT b.allocated FROM stock_balances b WHERE b.product_id = product_stocks.product_id AND b.variant = product_stocks.variant), 0)';
+                $bind[] = $delta;
+            }
         }
 
         return DB::update($sql, $bind) > 0;

@@ -424,15 +424,27 @@ class OrderController extends Controller
         }
     }
 
+    /** POST: apply a bulk delivery/payment status change to the ticked orders (the same rules as changing one order at a time). */
+    public function bulk_order_status(Request $request)
+    {
+        $request->validate(['id' => 'required|array|min:1', 'id.*' => 'integer', 'bulk_delivery_status' => 'nullable|string|max:40', 'bulk_payment_status' => 'nullable|string|max:40']);
+        $error = $this->bulkStatusChange($request);
+        if ($error) {
+            flash(translate($error))->error();
+        } else {
+            flash(translate('Statuses updated.'))->success();
+        }
+
+        return back();
+    }
+
     public function all_orders(Request $request)
     {
         // dd($request->all());
         if (!is_null($request->bulk_delivery_status) || !is_null($request->bulk_payment_status)) {
-            $error = $this->bulkStatusChange($request);
-            if ($error) {
-                flash(translate($error))->error();
-                return back();
-            }
+            // Changing statuses from a link or a GET query string is no longer accepted (it could be triggered by any web page); bulk changes are POSTed to orders/bulk-status.
+            flash(translate('Bulk status changes must be submitted from the orders list.'))->warning();
+            return redirect()->route('all_orders.index');
         }
         $perPage = $request->per_page ?? 10;
 

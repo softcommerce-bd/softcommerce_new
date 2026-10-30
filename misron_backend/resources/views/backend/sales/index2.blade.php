@@ -589,7 +589,15 @@
                 $('#bulk_payment_status').val(status);
             }
 
-            $('#sort_orders').submit();
+            // A bulk change is a POST with the CSRF token and the ticked order ids, never part of the (GET) filter form.
+            let ids = $('.check-one:checked').map(function () { return this.value; }).get();
+            if (!ids.length) { $(this).val(''); return; }
+            let f = $('<form method="POST" action="{{ route('bulk-order-status') }}"></form>');
+            f.append($('<input type="hidden" name="_token">').val('{{ csrf_token() }}'));
+            ids.forEach(function (id) { f.append($('<input type="hidden" name="id[]">').val(id)); });
+            f.append($('<input type="hidden" name="bulk_delivery_status">').val($('#bulk_delivery_status').val()));
+            f.append($('<input type="hidden" name="bulk_payment_status">').val($('#bulk_payment_status').val()));
+            $('body').append(f); f.trigger('submit');
         });
 
         $('#page-size-select').on('change', function() {

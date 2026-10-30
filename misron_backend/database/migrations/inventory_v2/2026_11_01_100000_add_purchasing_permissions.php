@@ -8,9 +8,12 @@ use Spatie\Permission\PermissionRegistrar;
  * Permissions for the purchasing, supplier, draft, courier-settlement and stock-adjustment screens. Until now these
  * routes had no permission checks at all (and several had no login check), so any staff account could use them.
  *
- * To avoid locking out current staff on deployment, every EXISTING role receives the new permissions once, which
- * is exactly the access those roles had before. Roles created later start empty. Tighten roles afterwards in
- * Staff > Roles (section "Purchasing & Inventory"). Super Admin passes every check through Gate::before.
+ * SECURE BY DEFAULT: the migration creates the permissions and grants them to NO role (Super Admin passes every check through
+ * Gate::before). Right after deploying, assign them per role with the reviewable command
+ *     php artisan inventory:grant-permissions "<role name>" <profile> [--dry-run]
+ * (profiles: purchasing_clerk, warehouse, inventory_viewer, finance, manager, preserve_previous_access), or tick them in
+ * Staff > Roles (section "Purchasing Inventory"). `preserve_previous_access` reproduces the old everyone-can-do-everything behaviour
+ * for a role if you need a same-day fallback.
  */
 class AddPurchasingPermissions extends Migration
 {
@@ -31,12 +34,6 @@ class AddPurchasingPermissions extends Migration
             if (!$id) {
                 $id = DB::table('permissions')->insertGetId(['name' => $name, 'section' => 'purchasing_inventory', 'guard_name' => 'web', 'created_at' => $now, 'updated_at' => $now]);
                 $newIds[] = $id;
-            }
-        }
-        // Only permissions created by THIS run are granted, so re-running never re-grants something an admin revoked.
-        foreach (DB::table('roles')->where('name', '!=', 'Super Admin')->pluck('id') as $roleId) {
-            foreach ($newIds as $permissionId) {
-                DB::table('role_has_permissions')->updateOrInsert(['permission_id' => $permissionId, 'role_id' => $roleId], []);
             }
         }
         app(PermissionRegistrar::class)->forgetCachedPermissions();

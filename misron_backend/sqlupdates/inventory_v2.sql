@@ -6,8 +6,7 @@
 --
 -- PREREQUISITES (this file does NOT do them): full backup, and sqlupdates/inventory_v2_innodb_conversion.sql on a restored copy first.
 -- Additive: new tables; new nullable/defaulted columns; account_statement_logs.transaction_type widened ENUM -> VARCHAR(50) (every stored
--- value, including blanks, is kept); purchase_orders.status widened to VARCHAR(20). Every EXISTING role receives the new purchasing permissions
--- once (today's effective access); tighten them afterwards in Staff > Roles. Nothing is switched on: INVENTORY_CONFIRMED_ONLY stays false.
+-- value, including blanks, is kept); purchase_orders.status widened to VARCHAR(20). The new purchasing permissions are granted to NO role (secure by default); assign them after importing. Nothing is switched on: INVENTORY_CONFIRMED_ONLY stays false.
 -- IMPORT ONCE (the ALTERs are not re-runnable); undo with inventory_v2_rollback.sql.
 
 CREATE TABLE IF NOT EXISTS `idempotency_keys` (`id` bigint unsigned not null auto_increment primary key, `scope` varchar(40) not null, `key` varchar(120) not null, `result` longtext null, `created_at` timestamp null, `updated_at` timestamp null) default character set utf8mb4 collate 'utf8mb4_unicode_ci';
@@ -147,10 +146,8 @@ SELECT p.name, 'purchasing_inventory', 'web', NOW(), NOW() FROM (
   SELECT 'manage_returns_receiving'
 ) p WHERE NOT EXISTS (SELECT 1 FROM `permissions` e WHERE e.`name` = p.name AND e.`guard_name` = 'web');
 
--- Grant the permissions created above to every existing role except Super Admin (who passes every check anyway).
-INSERT INTO `role_has_permissions` (`permission_id`, `role_id`)
-SELECT p.id, r.id FROM `permissions` p JOIN `roles` r ON r.name <> 'Super Admin'
-WHERE p.section = 'purchasing_inventory' AND NOT EXISTS (SELECT 1 FROM `role_has_permissions` x WHERE x.permission_id = p.id AND x.role_id = r.id);
+-- The permissions are granted to NO role here (secure by default). After importing, assign them per role in Staff > Roles, or with
+--   php artisan inventory:grant-permissions "<role>" <profile>   (see docs/INVENTORY_PURCHASING_UPGRADE.md for the recommended profiles).
 
 INSERT INTO `chart_of_accounts` (`code`,`name`,`type`,`sub_type`,`opening_balance`,`current_balance`,`status`,`is_deleted`,`description`,`created_at`,`updated_at`)
 SELECT 'SYS-INV','Inventory','asset','inventory',0,0,'active',0,'Created by the inventory/purchasing upgrade.',NOW(),NOW() FROM DUAL

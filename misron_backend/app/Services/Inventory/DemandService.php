@@ -164,7 +164,7 @@ class DemandService
             }
 
             // 1. physical stock leaves (never below zero)
-            if (!$this->ledger->adjust($productId, $variant, -$qty)) {
+            if (!$this->ledger->adjust($productId, $variant, -$qty, true)) { // dispatch is the one operation allowed to consume allocated units
                 throw new InsufficientPhysicalStock('Physical stock is lower than the allocation: run inventory:reconcile.', ['product_id' => $productId, 'variant' => $variant]);
             }
             DB::table('products')->where('id', $productId)->where('current_stock', '>=', $qty)->decrement('current_stock', $qty);

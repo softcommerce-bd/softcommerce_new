@@ -100,11 +100,7 @@ class OrderChannelsV2Test extends InventoryV2TestCase
         $ok = $this->makeOrder([[$have, 'M', 1]], 'confirmed');
         $stuck = $this->makeOrder([[$none, '', 1]], 'confirmed');
         $admin = $this->makeAdmin();
-        // The orders list applies bulk changes from its own query string (all_orders); the page itself may not render in this test schema, the effect is what matters.
-        try {
-            $this->actingAs($admin)->get('/admin/all_orders?' . http_build_query(['id' => [$stuck->id, $ok->id], 'bulk_delivery_status' => 'picked_up']));
-        } catch (\Throwable $e) {
-        }
+        $this->actingAs($admin)->post(route('bulk-order-status'), ['id' => [$stuck->id, $ok->id], 'bulk_delivery_status' => 'picked_up'])->assertSessionHas('flash_notification');
         $this->assertSame('picked_up', DB::table('orders')->where('id', $ok->id)->value('delivery_status'));
         $this->assertSame('confirmed', DB::table('orders')->where('id', $stuck->id)->value('delivery_status'), 'the order without stock stays confirmed');
         $this->assertSame(4, $this->stockQty($have, 'M'));

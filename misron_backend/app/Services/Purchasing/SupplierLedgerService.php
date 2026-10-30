@@ -6,6 +6,7 @@ use App\Services\Accounting\JournalService;
 use App\Services\Accounting\Money;
 use App\Services\Accounting\SystemAccounts;
 use App\Services\Inventory\Idempotency;
+use App\Services\Inventory\StockBalance;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 
@@ -63,30 +64,77 @@ class SupplierLedgerService
 
             $totalCents = Money::cents($total);
             $goodsCents = Money::cents($goods);
-            $variance = $totalCents - $goodsCents; // price differences, discounts, tax and freight not capitalised at receipt
+            // Price difference on the goods themselves (after discount) vs what was received at. Tax and freight on the invoice are not
+            // part of that: they are a period cost (Purchase Price Variance). The goods difference is allocated to the receipt's units:
+            // units still on the shelf are REVALUED (inventory), units already sold go to the variance account; sold history is not rewritten.
+            $priceDiff = $receipt ? Money::cents($sub - $disc) - $goodsCents : 0;
+            $extra = $totalCents - $goodsCents - $priceDiff; // tax + freight (+ everything when there is no receipt)
+            $reval = $receipt ? $this->revalue($receipt->id, $priceDiff, $no) : ['inventory' => 0, 'variance' => 0, 'units' => 0];
+            $variance = $reval['variance'] + $extra;
             $lines = [['account' => SystemAccounts::id('payable'), 'credit' => $totalCents, 'supplier_id' => $supplierId, 'memo' => "Invoice {$no}"]];
             if ($goodsCents > 0) {
                 $lines[] = ['account' => SystemAccounts::id('grni'), 'debit' => $goodsCents, 'supplier_id' => $supplierId, 'memo' => "Invoice {$no}"];
             }
+            if ($reval['inventory'] > 0) {
+                $lines[] = ['account' => SystemAccounts::id('inventory'), 'debit' => $reval['inventory'], 'memo' => "Invoice {$no}: revalued {$reval['units']} unsold unit(s)"];
+            } elseif ($reval['inventory'] < 0) {
+                $lines[] = ['account' => SystemAccounts::id('inventory'), 'credit' => -$reval['inventory'], 'memo' => "Invoice {$no}: revalued {$reval['units']} unsold unit(s)"];
+            }
             if ($variance > 0) {
-                $lines[] = ['account' => SystemAccounts::id('variance'), 'debit' => $variance, 'memo' => "Invoice {$no} difference"];
+                $lines[] = ['account' => SystemAccounts::id('variance'), 'debit' => $variance, 'memo' => "Invoice {$no}: price difference on sold units, tax, freight"];
             } elseif ($variance < 0) {
-                $lines[] = ['account' => SystemAccounts::id('variance'), 'credit' => -$variance, 'memo' => "Invoice {$no} difference"];
+                $lines[] = ['account' => SystemAccounts::id('variance'), 'credit' => -$variance, 'memo' => "Invoice {$no}: price difference on sold units, tax, freight"];
             }
             // Without a receipt there is nothing to clear: the whole invoice goes to the variance account until it is matched.
             $date = $d['invoice_date'] ?? now()->toDateString();
             $j = $this->journal->post('inv:' . $key, $date, $lines, 'supplier_invoice', null, "Supplier invoice {$no}", $by);
 
             $id = DB::table('supplier_invoices')->insertGetId(['supplier_id' => $supplierId, 'goods_receipt_id' => $receipt->id ?? null, 'invoice_no' => $no, 'invoice_date' => $date, 'subtotal' => Money::decimal($sub),
-                'discount' => Money::decimal($disc), 'tax' => Money::decimal($tax), 'freight' => Money::decimal($freight), 'total' => Money::decimal($total), 'price_variance' => Money::decimal($variance * 100), 'journal_entry_id' => $j['journal_entry_id'],
+                'discount' => Money::decimal($disc), 'tax' => Money::decimal($tax), 'freight' => Money::decimal($freight), 'total' => Money::decimal($total), 'price_variance' => Money::decimal(($priceDiff + $extra) * 100), 'journal_entry_id' => $j['journal_entry_id'],
                 'status' => 'open', 'idempotency_key' => $key, 'created_by' => $by, 'created_at' => now(), 'updated_at' => now()]);
             if ($receipt) {
                 DB::table('goods_receipts')->where('id', $receipt->id)->update(['invoice_status' => 'invoiced', 'updated_at' => now()]);
             }
             DB::update('UPDATE suppliers SET due_amount = due_amount + ?, updated_at = NOW() WHERE id = ?', [$totalCents / 100, $supplierId]);
 
-            return ['supplier_invoice_id' => $id, 'total' => Money::decimal($total), 'price_variance' => Money::decimal($variance * 100, 2), 'journal_entry_id' => $j['journal_entry_id']];
+            return ['supplier_invoice_id' => $id, 'total' => Money::decimal($total), 'price_variance' => Money::decimal(($priceDiff + $extra) * 100, 2), 'revalued_inventory' => Money::decimal($reval['inventory'] * 100, 2), 'variance_expensed' => Money::decimal($variance * 100, 2), 'journal_entry_id' => $j['journal_entry_id']];
         });
+    }
+
+    /**
+     * Spreads a goods price difference (cents) over the receipt's lines by goods value and splits each share between the units still in
+     * the line's FIFO layer (inventory revaluation: the layer's unit cost moves) and the units already gone (variance account).
+     *
+     * @return array{inventory:int, variance:int, units:int} cents / units
+     */
+    private function revalue(int $receiptId, int $diffCents, string $invoiceNo): array
+    {
+        $out = ['inventory' => 0, 'variance' => 0, 'units' => 0];
+        if ($diffCents === 0) {
+            return $out;
+        }
+        $lines = DB::table('goods_receipt_lines')->where('goods_receipt_id', $receiptId)->orderBy('id')->get();
+        $weights = $lines->mapWithKeys(fn ($l) => [$l->id => max(1, (int) ($l->qty * Money::micro($l->unit_cost) / 100))])->all();
+        $shares = Money::allocate(abs($diffCents), $weights);
+        $sign = $diffCents < 0 ? -1 : 1;
+        foreach ($lines as $l) {
+            $share = $sign * $shares[$l->id];
+            $layer = $l->purchase_product_id ? DB::table('purchase_products')->where('id', $l->purchase_product_id)->lockForUpdate()->first() : null;
+            $unsold = $layer ? max(0, min((int) $layer->remaining_qty, (int) $l->qty)) : 0;
+            $toInventory = $l->qty > 0 ? $sign * intdiv(abs($share) * $unsold * 2 + (int) $l->qty, 2 * (int) $l->qty) : 0;
+            if ($unsold > 0 && $toInventory !== 0) {
+                // the unit cost of the unsold units moves; layers already consumed (sold) are untouched
+                $newCost = Money::micro($layer->buying_unit_cost) + (int) round($toInventory * 100 / $unsold);
+                DB::table('purchase_products')->where('id', $layer->id)->update(['buying_unit_cost' => Money::decimal(max(0, $newCost)), 'updated_at' => now()]);
+                StockBalance::movement(['product_id' => $l->product_id, 'variant' => $l->variant, 'type' => 'revaluation', 'source_type' => 'goods_receipt_line', 'source_id' => $l->id,
+                    'note' => "Invoice {$invoiceNo}: {$unsold} unsold unit(s) revalued by " . number_format($toInventory / 100, 2, '.', '')]);
+            }
+            $out['inventory'] += $toInventory;
+            $out['variance'] += $share - $toInventory;
+            $out['units'] += $unsold;
+        }
+
+        return $out;
     }
 
     /** Pays (part of) one invoice from a cash/bank/mobile account. */
