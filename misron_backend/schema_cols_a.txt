@@ -1,0 +1,1772 @@
+account_statement_logs	account_id	bigint(20) unsigned	NO	NULL
+account_statement_logs	balance	decimal(15,2)	NO	NULL
+account_statement_logs	created_at	timestamp	YES	NULL
+account_statement_logs	credit	decimal(15,2)	NO	0.00
+account_statement_logs	debit	decimal(15,2)	NO	0.00
+account_statement_logs	description	text	YES	NULL
+account_statement_logs	id	bigint(20) unsigned	NO	NULL
+account_statement_logs	order_id	bigint(20) unsigned	YES	NULL
+account_statement_logs	reference_no	varchar(191)	NO	NULL
+account_statement_logs	source_id	bigint(20)	YES	NULL
+account_statement_logs	source_type	varchar(300)	YES	NULL
+account_statement_logs	transaction_date	date	NO	NULL
+account_statement_logs	transaction_type	varchar(50)	YES	NULL
+account_statement_logs	updated_at	timestamp	YES	NULL
+account_statement_logs	voucher_id	bigint(20) unsigned	YES	NULL
+account_transfers	amount	decimal(15,2)	NO	NULL
+account_transfers	created_at	timestamp	YES	NULL
+account_transfers	created_by	bigint(20) unsigned	NO	NULL
+account_transfers	deleted_at	timestamp	YES	NULL
+account_transfers	description	text	YES	NULL
+account_transfers	from_account_id	bigint(20) unsigned	NO	NULL
+account_transfers	id	bigint(20) unsigned	NO	NULL
+account_transfers	status	enum('pending','completed','cancelled')	NO	'pending'
+account_transfers	to_account_id	bigint(20) unsigned	NO	NULL
+account_transfers	transfer_date	date	NO	NULL
+account_transfers	transfer_no	varchar(191)	NO	NULL
+account_transfers	updated_at	timestamp	YES	NULL
+account_transfers	voucher_id	bigint(20) unsigned	YES	NULL
+addons	activated	int(11)	NO	1
+addons	created_at	timestamp	YES	current_timestamp()
+addons	id	int(11)	NO	NULL
+addons	image	varchar(1000)	YES	NULL
+addons	name	varchar(255)	YES	NULL
+addons	purchase_code	varchar(255)	YES	NULL
+addons	unique_identifier	varchar(255)	YES	NULL
+addons	updated_at	timestamp	NO	current_timestamp()
+addons	version	varchar(255)	YES	NULL
+addresses	address	varchar(255)	YES	NULL
+addresses	city_id	int(11)	YES	NULL
+addresses	country_id	int(11)	YES	NULL
+addresses	created_at	timestamp	NO	current_timestamp()
+addresses	email	varchar(255)	YES	NULL
+addresses	id	int(11)	NO	NULL
+addresses	latitude	float(17,15)	YES	NULL
+addresses	longitude	float(17,15)	YES	NULL
+addresses	name	varchar(255)	YES	NULL
+addresses	order_note	varchar(300)	YES	NULL
+addresses	phone	varchar(255)	YES	NULL
+addresses	postal_code	varchar(255)	YES	NULL
+addresses	set_default	int(11)	NO	0
+addresses	state_id	int(11)	NO	NULL
+addresses	updated_at	timestamp	NO	current_timestamp()
+addresses	user_id	int(11)	NO	NULL
+affiliate_configs	created_at	timestamp	NO	current_timestamp()
+affiliate_configs	id	int(11)	NO	NULL
+affiliate_configs	type	varchar(1000)	YES	NULL
+affiliate_configs	updated_at	timestamp	NO	current_timestamp()
+affiliate_configs	value	text	YES	NULL
+affiliate_logs	affiliate_type	varchar(255)	NO	NULL
+affiliate_logs	amount	double(20,2)	NO	NULL
+affiliate_logs	created_at	timestamp	NO	current_timestamp()
+affiliate_logs	guest_id	int(11)	YES	NULL
+affiliate_logs	id	int(11)	NO	NULL
+affiliate_logs	order_detail_id	bigint(20)	YES	NULL
+affiliate_logs	order_id	bigint(20)	YES	NULL
+affiliate_logs	referred_by_user	int(11)	NO	NULL
+affiliate_logs	status	tinyint(4)	NO	0
+affiliate_logs	updated_at	timestamp	NO	current_timestamp()
+affiliate_logs	user_id	int(11)	YES	NULL
+affiliate_options	created_at	timestamp	NO	current_timestamp()
+affiliate_options	details	longtext	YES	NULL
+affiliate_options	id	int(11)	NO	NULL
+affiliate_options	percentage	double	NO	0
+affiliate_options	status	int(11)	NO	1
+affiliate_options	type	varchar(255)	YES	NULL
+affiliate_options	updated_at	timestamp	NO	current_timestamp()
+affiliate_payments	affiliate_user_id	int(11)	NO	NULL
+affiliate_payments	amount	double(8,2)	NO	NULL
+affiliate_payments	created_at	timestamp	NO	current_timestamp()
+affiliate_payments	id	int(11)	NO	NULL
+affiliate_payments	payment_details	longtext	YES	NULL
+affiliate_payments	payment_method	varchar(255)	NO	NULL
+affiliate_payments	updated_at	timestamp	NO	current_timestamp()
+affiliate_stats	affiliate_user_id	int(11)	NO	NULL
+affiliate_stats	created_at	timestamp	NO	current_timestamp()
+affiliate_stats	id	int(11)	NO	NULL
+affiliate_stats	no_of_cancel	int(11)	NO	0
+affiliate_stats	no_of_click	int(11)	NO	0
+affiliate_stats	no_of_delivered	int(11)	NO	0
+affiliate_stats	no_of_order_item	int(11)	NO	0
+affiliate_stats	updated_at	timestamp	NO	current_timestamp()
+affiliate_users	balance	double(10,2)	NO	0.00
+affiliate_users	bank_information	text	YES	NULL
+affiliate_users	created_at	timestamp	NO	current_timestamp()
+affiliate_users	id	int(11)	NO	NULL
+affiliate_users	informations	text	YES	NULL
+affiliate_users	paypal_email	varchar(255)	YES	NULL
+affiliate_users	status	int(11)	NO	0
+affiliate_users	updated_at	timestamp	NO	current_timestamp()
+affiliate_users	user_id	int(11)	NO	NULL
+affiliate_withdraw_requests	amount	double(10,2)	NO	NULL
+affiliate_withdraw_requests	created_at	timestamp	NO	current_timestamp()
+affiliate_withdraw_requests	id	int(11)	NO	NULL
+affiliate_withdraw_requests	status	int(11)	NO	NULL
+affiliate_withdraw_requests	updated_at	timestamp	NO	current_timestamp()
+affiliate_withdraw_requests	user_id	int(11)	NO	NULL
+app_translations	created_at	timestamp	NO	current_timestamp()
+app_translations	id	int(11)	NO	NULL
+app_translations	lang	varchar(10)	YES	NULL
+app_translations	lang_key	varchar(255)	YES	NULL
+app_translations	lang_value	varchar(255)	YES	NULL
+app_translations	updated_at	timestamp	NO	current_timestamp()
+attributes	created_at	timestamp	NO	current_timestamp()
+attributes	id	int(11)	NO	NULL
+attributes	name	varchar(255)	YES	NULL
+attributes	updated_at	timestamp	NO	current_timestamp()
+attribute_category	attribute_id	int(11)	NO	NULL
+attribute_category	category_id	int(11)	NO	NULL
+attribute_category	created_at	timestamp	NO	current_timestamp()
+attribute_category	id	int(11)	NO	NULL
+attribute_category	updated_at	timestamp	NO	current_timestamp()
+attribute_translations	attribute_id	bigint(20)	NO	NULL
+attribute_translations	created_at	timestamp	NO	current_timestamp()
+attribute_translations	id	bigint(20)	NO	NULL
+attribute_translations	lang	varchar(100)	NO	NULL
+attribute_translations	name	varchar(50)	NO	NULL
+attribute_translations	updated_at	timestamp	NO	current_timestamp()
+attribute_values	attribute_id	int(11)	NO	NULL
+attribute_values	color_code	varchar(100)	YES	NULL
+attribute_values	created_at	timestamp	NO	current_timestamp()
+attribute_values	id	int(11)	NO	NULL
+attribute_values	updated_at	timestamp	NO	current_timestamp()
+attribute_values	value	varchar(255)	NO	NULL
+balance_transfers	amount	decimal(15,2)	NO	NULL
+balance_transfers	charge	decimal(15,2)	NO	0.00
+balance_transfers	cost_center_id	bigint(20) unsigned	YES	NULL
+balance_transfers	created_at	timestamp	YES	NULL
+balance_transfers	created_by	bigint(20) unsigned	NO	NULL
+balance_transfers	date	date	NO	NULL
+balance_transfers	deleted_at	timestamp	YES	NULL
+balance_transfers	from_account_id	bigint(20) unsigned	NO	NULL
+balance_transfers	id	bigint(20) unsigned	NO	NULL
+balance_transfers	note	text	YES	NULL
+balance_transfers	reference_no	varchar(100)	YES	NULL
+balance_transfers	status	enum('pending','approved','rejected','cancelled')	NO	'approved'
+balance_transfers	to_account_id	bigint(20) unsigned	NO	NULL
+balance_transfers	transaction_type	enum('withdraw','deposit','transfer','cashout')	NO	NULL
+balance_transfers	updated_at	timestamp	YES	NULL
+balance_transfers	voucher_no	varchar(50)	NO	NULL
+bank_transactions	amount	decimal(15,2)	NO	NULL
+bank_transactions	cheque_date	date	YES	NULL
+bank_transactions	cheque_no	varchar(191)	YES	NULL
+bank_transactions	clearing_date	date	YES	NULL
+bank_transactions	created_at	timestamp	YES	NULL
+bank_transactions	created_by	bigint(20) unsigned	NO	NULL
+bank_transactions	deleted_at	timestamp	YES	NULL
+bank_transactions	description	text	YES	NULL
+bank_transactions	from_account_id	bigint(20) unsigned	YES	NULL
+bank_transactions	id	bigint(20) unsigned	NO	NULL
+bank_transactions	reference	varchar(191)	YES	NULL
+bank_transactions	status	enum('pending','completed','cancelled','cleared')	NO	'pending'
+bank_transactions	to_account_id	bigint(20) unsigned	YES	NULL
+bank_transactions	transaction_date	date	NO	NULL
+bank_transactions	transaction_no	varchar(191)	NO	NULL
+bank_transactions	type	enum('deposit','withdraw','transfer','cash_out','cheque_clearing')	NO	NULL
+bank_transactions	updated_at	timestamp	YES	NULL
+bank_transactions	voucher_id	bigint(20) unsigned	YES	NULL
+barcodes	barcode_number	varchar(255)	YES	NULL
+barcodes	barcode_type	varchar(255)	YES	'C39'
+barcodes	created_at	timestamp	YES	NULL
+barcodes	id	bigint(20)	NO	NULL
+barcodes	product_name	varchar(255)	YES	NULL
+barcodes	updated_at	timestamp	YES	NULL
+bdcouriers	created_at	datetime(6)	YES	NULL
+bdcouriers	id	bigint(20)	NO	NULL
+bdcouriers	token	varchar(255)	NO	NULL
+bdcouriers	updated_at	datetime(6)	YES	NULL
+blocked_ips	blocked_at	timestamp	YES	NULL
+blocked_ips	blocked_by	bigint(20) unsigned	YES	NULL
+blocked_ips	created_at	timestamp	YES	NULL
+blocked_ips	customer_email	varchar(191)	YES	NULL
+blocked_ips	customer_name	varchar(191)	YES	NULL
+blocked_ips	customer_phone	varchar(191)	YES	NULL
+blocked_ips	id	bigint(20) unsigned	NO	NULL
+blocked_ips	ip_address	varchar(191)	NO	NULL
+blocked_ips	notes	text	YES	NULL
+blocked_ips	status	enum('active','blocked')	NO	'active'
+blocked_ips	updated_at	timestamp	YES	NULL
+blocked_ips	user_id	bigint(20) unsigned	YES	NULL
+blogs	banner	int(11)	YES	NULL
+blogs	category_id	int(11)	NO	NULL
+blogs	created_at	timestamp	YES	NULL
+blogs	deleted_at	timestamp	YES	NULL
+blogs	description	longtext	YES	NULL
+blogs	id	bigint(20) unsigned	NO	NULL
+blogs	meta_description	text	YES	NULL
+blogs	meta_img	int(11)	YES	NULL
+blogs	meta_keywords	text	YES	NULL
+blogs	meta_title	varchar(255)	YES	NULL
+blogs	short_description	text	YES	NULL
+blogs	slug	varchar(255)	NO	NULL
+blogs	status	int(11)	NO	1
+blogs	title	varchar(255)	NO	NULL
+blogs	updated_at	timestamp	YES	NULL
+blog_categories	category_name	varchar(255)	NO	NULL
+blog_categories	created_at	timestamp	YES	NULL
+blog_categories	deleted_at	timestamp	YES	NULL
+blog_categories	id	bigint(20) unsigned	NO	NULL
+blog_categories	slug	varchar(255)	NO	NULL
+blog_categories	updated_at	timestamp	YES	NULL
+brands	added_by	varchar(10)	YES	'admin'
+brands	created_at	timestamp	NO	current_timestamp()
+brands	id	int(11)	NO	NULL
+brands	logo	varchar(100)	YES	NULL
+brands	meta_description	text	YES	NULL
+brands	meta_title	varchar(255)	YES	NULL
+brands	name	varchar(50)	NO	NULL
+brands	slug	varchar(255)	YES	NULL
+brands	top	int(11)	NO	0
+brands	updated_at	timestamp	NO	current_timestamp()
+brand_translations	brand_id	bigint(20)	NO	NULL
+brand_translations	created_at	timestamp	NO	current_timestamp()
+brand_translations	id	bigint(20)	NO	NULL
+brand_translations	lang	varchar(100)	NO	NULL
+brand_translations	name	varchar(50)	NO	NULL
+brand_translations	updated_at	timestamp	NO	current_timestamp()
+business_settings	created_at	timestamp	NO	current_timestamp()
+business_settings	id	int(11)	NO	NULL
+business_settings	lang	varchar(30)	YES	NULL
+business_settings	type	varchar(30)	NO	NULL
+business_settings	updated_at	timestamp	YES	current_timestamp()
+business_settings	value	longtext	YES	NULL
+business_settings	whatsapp_number	varchar(255)	YES	NULL
+career_banners	banner_image	varchar(255)	YES	NULL
+career_banners	created_at	timestamp	YES	current_timestamp()
+career_banners	description	text	YES	NULL
+career_banners	id	int(11)	NO	NULL
+career_banners	title	text	YES	NULL
+career_banners	updated_at	timestamp	YES	current_timestamp()
+career_departments	created_at	timestamp	YES	current_timestamp()
+career_departments	department_name	varchar(100)	YES	NULL
+career_departments	id	bigint(20)	NO	NULL
+career_departments	order_level	int(11)	YES	NULL
+career_departments	status	int(11)	YES	1
+career_departments	updated_at	timestamp	YES	current_timestamp()
+career_job_posts	created_at	timestamp	YES	current_timestamp()
+career_job_posts	department_id	int(11)	YES	NULL
+career_job_posts	id	bigint(20)	NO	NULL
+career_job_posts	job_details	longtext	YES	NULL
+career_job_posts	job_title	varchar(255)	YES	NULL
+career_job_posts	short_description	text	YES	NULL
+career_job_posts	status	int(11)	YES	1
+career_job_posts	updated_at	timestamp	YES	current_timestamp()
+carriers	created_at	timestamp	NO	current_timestamp()
+carriers	free_shipping	tinyint(1)	NO	0
+carriers	id	int(11)	NO	NULL
+carriers	logo	int(11)	YES	NULL
+carriers	name	varchar(255)	NO	NULL
+carriers	status	tinyint(1)	NO	1
+carriers	transit_time	varchar(255)	NO	NULL
+carriers	updated_at	timestamp	NO	current_timestamp()
+carrier_ranges	billing_type	varchar(20)	NO	NULL
+carrier_ranges	carrier_id	int(11)	NO	NULL
+carrier_ranges	created_at	timestamp	NO	current_timestamp()
+carrier_ranges	delimiter1	double(25,2)	NO	NULL
+carrier_ranges	delimiter2	double(25,2)	NO	NULL
+carrier_ranges	id	int(11)	NO	NULL
+carrier_ranges	updated_at	timestamp	NO	current_timestamp()
+carrier_range_prices	carrier_id	int(11)	NO	NULL
+carrier_range_prices	carrier_range_id	int(11)	NO	NULL
+carrier_range_prices	created_at	timestamp	NO	current_timestamp()
+carrier_range_prices	id	int(11)	NO	NULL
+carrier_range_prices	price	double(8,2)	NO	NULL
+carrier_range_prices	updated_at	timestamp	NO	current_timestamp()
+carrier_range_prices	zone_id	int(11)	NO	NULL
+carts	address_id	int(11)	NO	0
+carts	carrier_id	int(11)	YES	NULL
+carts	coupon_applied	tinyint(4)	NO	0
+carts	coupon_code	varchar(255)	YES	NULL
+carts	created_at	timestamp	YES	current_timestamp()
+carts	discount	double(10,2)	NO	0.00
+carts	id	int(10) unsigned	NO	NULL
+carts	owner_id	int(11)	YES	NULL
+carts	pickup_point	int(11)	YES	NULL
+carts	price	double(20,2)	YES	0.00
+carts	product_id	int(11)	YES	NULL
+carts	product_referral_code	varchar(255)	YES	NULL
+carts	quantity	int(11)	NO	0
+carts	shipping_cost	double(20,2)	NO	0.00
+carts	shipping_type	varchar(30)	NO	''
+carts	status	tinyint(1)	NO	1
+carts	tax	double(20,2)	YES	0.00
+carts	temp_user_id	varchar(255)	YES	NULL
+carts	updated_at	timestamp	YES	current_timestamp()
+carts	user_id	int(11)	YES	NULL
+carts	variation	text	YES	NULL
+categories	added_by	varchar(10)	YES	'admin'
+categories	banner	varchar(100)	YES	NULL
+categories	commision_rate	double(8,2)	NO	0.00
+categories	cover_image	varchar(100)	YES	NULL
+categories	created_at	timestamp	NO	current_timestamp()
+categories	digital	int(11)	NO	0
+categories	featured	int(11)	NO	0
+categories	header_banner_images	varchar(255)	YES	NULL
+categories	header_banner_links	varchar(255)	YES	NULL
+categories	icon	varchar(100)	YES	NULL
+categories	id	int(11)	NO	NULL
+categories	level	int(11)	NO	0
+categories	meta_description	text	YES	NULL
+categories	meta_title	varchar(255)	YES	NULL
+categories	name	varchar(50)	NO	NULL
+categories	order_level	int(11)	NO	0
+categories	parent_id	int(11)	YES	0
+categories	slug	varchar(255)	YES	NULL
+categories	sub_order_level	int(11)	NO	0
+categories	top	int(11)	NO	0
+categories	updated_at	timestamp	YES	current_timestamp()
+category_translations	category_id	bigint(20)	NO	NULL
+category_translations	created_at	timestamp	NO	current_timestamp()
+category_translations	id	bigint(20)	NO	NULL
+category_translations	lang	varchar(100)	NO	NULL
+category_translations	name	varchar(50)	NO	NULL
+category_translations	updated_at	timestamp	NO	current_timestamp()
+chart_of_accounts	account_number	varchar(191)	YES	NULL
+chart_of_accounts	bank_name	varchar(191)	YES	NULL
+chart_of_accounts	cashout_charge	decimal(5,2)	NO	0.00
+chart_of_accounts	code	varchar(50)	NO	NULL
+chart_of_accounts	created_at	timestamp	YES	NULL
+chart_of_accounts	current_balance	decimal(15,2)	NO	0.00
+chart_of_accounts	deleted_at	timestamp	YES	NULL
+chart_of_accounts	description	text	YES	NULL
+chart_of_accounts	id	bigint(20) unsigned	NO	NULL
+chart_of_accounts	is_deleted	int(11)	NO	1
+chart_of_accounts	mobile_number	varchar(191)	YES	NULL
+chart_of_accounts	name	varchar(191)	NO	NULL
+chart_of_accounts	opening_balance	decimal(15,2)	NO	0.00
+chart_of_accounts	parent_id	bigint(20) unsigned	YES	NULL
+chart_of_accounts	status	enum('active','inactive')	NO	'active'
+chart_of_accounts	sub_type	enum('cash','bank','mobile_bank','receivable','inventory','payable','tax','sales','revenue','equity','expense','income','cost_of_sales')	YES	NULL
+chart_of_accounts	type	enum('asset','liability','equity','income','expense')	NO	NULL
+chart_of_accounts	updated_at	timestamp	YES	NULL
+checkout_otps	created_at	timestamp	YES	NULL
+checkout_otps	expires_at	timestamp	YES	NULL
+checkout_otps	id	bigint(20) unsigned	NO	NULL
+checkout_otps	is_verified	tinyint(1)	NO	0
+checkout_otps	otp	varchar(10)	NO	NULL
+checkout_otps	phone	varchar(20)	NO	NULL
+checkout_otps	session_id	varchar(100)	YES	NULL
+checkout_otps	temp_user_id	varchar(100)	YES	NULL
+checkout_otps	updated_at	timestamp	YES	NULL
+checkout_otps	user_id	bigint(20) unsigned	YES	NULL
+cities	cost	double(20,2)	NO	0.00
+cities	created_at	timestamp	NO	current_timestamp()
+cities	deleted_at	timestamp	YES	NULL
+cities	id	bigint(20)	NO	NULL
+cities	name	varchar(255)	NO	NULL
+cities	state_id	int(11)	NO	NULL
+cities	status	int(11)	NO	1
+cities	updated_at	timestamp	NO	current_timestamp()
+city_translations	city_id	int(11)	NO	NULL
+city_translations	created_at	timestamp	NO	current_timestamp()
+city_translations	id	int(11)	NO	NULL
+city_translations	lang	varchar(10)	NO	NULL
+city_translations	name	varchar(255)	NO	NULL
+city_translations	updated_at	timestamp	NO	current_timestamp()
+club_points	convert_status	int(11)	NO	NULL
+club_points	created_at	timestamp	NO	current_timestamp()
+club_points	id	int(11)	NO	NULL
+club_points	order_id	int(11)	NO	NULL
+club_points	points	double(18,2)	NO	NULL
+club_points	updated_at	timestamp	NO	current_timestamp()
+club_points	user_id	int(11)	NO	NULL
+club_point_details	club_point_id	int(11)	NO	NULL
+club_point_details	converted_amount	double(8,2)	YES	0.00
+club_point_details	created_at	timestamp	NO	current_timestamp()
+club_point_details	id	int(11)	NO	NULL
+club_point_details	point	double(8,2)	NO	NULL
+club_point_details	product_id	int(11)	NO	NULL
+club_point_details	product_qty	int(11)	NO	NULL
+club_point_details	refunded	int(11)	NO	0
+club_point_details	updated_at	timestamp	NO	current_timestamp()
+colors	code	varchar(10)	YES	NULL
+colors	created_at	timestamp	NO	current_timestamp()
+colors	id	int(11)	NO	NULL
+colors	name	varchar(30)	YES	NULL
+colors	updated_at	timestamp	NO	current_timestamp()
+combined_orders	created_at	timestamp	NO	current_timestamp()
+combined_orders	grand_total	double(20,2)	NO	0.00
+combined_orders	id	int(11)	NO	NULL
+combined_orders	shipping_address	text	YES	NULL
+combined_orders	temp_user_id	varchar(300)	YES	NULL
+combined_orders	updated_at	timestamp	NO	current_timestamp()
+combined_orders	user_id	int(11)	YES	NULL
+commission_histories	admin_commission	double(25,2)	NO	NULL
+commission_histories	created_at	timestamp	NO	current_timestamp()
+commission_histories	id	int(11)	NO	NULL
+commission_histories	order_detail_id	int(11)	NO	NULL
+commission_histories	order_id	int(11)	NO	NULL
+commission_histories	seller_earning	double(25,2)	NO	NULL
+commission_histories	seller_id	int(11)	NO	NULL
+commission_histories	updated_at	timestamp	NO	current_timestamp()
+conversations	created_at	timestamp	NO	current_timestamp()
+conversations	id	int(11)	NO	NULL
+conversations	receiver_id	int(11)	NO	NULL
+conversations	receiver_viewed	int(11)	NO	0
+conversations	sender_id	int(11)	NO	NULL
+conversations	sender_viewed	int(11)	NO	1
+conversations	title	varchar(1000)	YES	NULL
+conversations	updated_at	timestamp	NO	current_timestamp()
+cost_centers	address	text	YES	NULL
+cost_centers	budget	decimal(15,2)	NO	0.00
+cost_centers	code	varchar(50)	NO	NULL
+cost_centers	created_at	timestamp	YES	NULL
+cost_centers	created_by	bigint(20) unsigned	NO	NULL
+cost_centers	current_expense	decimal(15,2)	NO	0.00
+cost_centers	deleted_at	timestamp	YES	NULL
+cost_centers	description	text	YES	NULL
+cost_centers	email	varchar(100)	YES	NULL
+cost_centers	id	bigint(20) unsigned	NO	NULL
+cost_centers	manager_id	bigint(20) unsigned	YES	NULL
+cost_centers	name	varchar(100)	NO	NULL
+cost_centers	parent_id	bigint(20) unsigned	YES	NULL
+cost_centers	phone	varchar(20)	YES	NULL
+cost_centers	status	enum('active','inactive')	NO	'active'
+cost_centers	updated_at	timestamp	YES	NULL
+countries	code	varchar(2)	NO	''
+countries	created_at	timestamp	YES	current_timestamp()
+countries	deleted_at	timestamp	YES	NULL
+countries	id	int(11)	NO	NULL
+countries	name	varchar(100)	NO	''
+countries	status	int(11)	NO	1
+countries	updated_at	timestamp	YES	NULL
+countries	zone_id	int(11)	NO	0
+coupons	code	varchar(255)	NO	NULL
+coupons	created_at	timestamp	NO	current_timestamp()
+coupons	details	longtext	NO	NULL
+coupons	discount	double(20,2)	NO	NULL
+coupons	discount_type	varchar(100)	NO	NULL
+coupons	end_date	int(11)	YES	NULL
+coupons	id	int(11)	NO	NULL
+coupons	start_date	int(11)	YES	NULL
+coupons	status	tinyint(1)	NO	1
+coupons	type	varchar(255)	NO	NULL
+coupons	updated_at	timestamp	NO	current_timestamp()
+coupons	user_id	int(11)	NO	NULL
+coupon_usages	coupon_id	int(11)	NO	NULL
+coupon_usages	created_at	timestamp	NO	current_timestamp()
+coupon_usages	id	int(11)	NO	NULL
+coupon_usages	updated_at	timestamp	NO	current_timestamp()
+coupon_usages	user_id	int(11)	NO	NULL
+courier_settlements	account_id	bigint(20) unsigned	YES	NULL
+courier_settlements	account_name	varchar(191)	YES	NULL
+courier_settlements	bad_debt_amount	decimal(10,2)	NO	0.00
+courier_settlements	courier_fee	decimal(15,2)	NO	NULL
+courier_settlements	courier_income_amount	decimal(10,2)	NO	0.00
+courier_settlements	courier_name	varchar(191)	NO	NULL
+courier_settlements	created_at	timestamp	YES	NULL
+courier_settlements	given_customer	double(20,2)	YES	NULL
+courier_settlements	id	bigint(20) unsigned	NO	NULL
+courier_settlements	is_paid_and_delivered	tinyint(1)	NO	0
+courier_settlements	net_payable	decimal(15,2)	NO	NULL
+courier_settlements	notes	text	YES	NULL
+courier_settlements	order_id	bigint(20) unsigned	NO	NULL
+courier_settlements	partial_payment_choice	varchar(255)	YES	NULL
+courier_settlements	sales_account_id	bigint(20)	YES	NULL
+courier_settlements	sales_amount	decimal(15,2)	NO	0.00
+courier_settlements	settlement_charge_percentage	decimal(5,2)	NO	NULL
+courier_settlements	settlement_date	timestamp	YES	NULL
+courier_settlements	settlement_fee	decimal(15,2)	NO	NULL
+courier_settlements	settlement_no	varchar(191)	NO	NULL
+courier_settlements	status	enum('pending','settled','cancelled')	NO	'pending'
+courier_settlements	total_amount	decimal(15,2)	NO	NULL
+courier_settlements	total_shipping_cost	decimal(10,2)	NO	0.00
+courier_settlements	updated_at	timestamp	YES	NULL
+courier_settlements	user_id	bigint(20) unsigned	YES	NULL
+courier_settlement_details	buying_price	decimal(15,2)	NO	NULL
+courier_settlement_details	cost_price	decimal(15,2)	YES	NULL
+courier_settlement_details	courier_settlement_details	text	YES	NULL
+courier_settlement_details	courier_settlement_id	bigint(20) unsigned	NO	NULL
+courier_settlement_details	created_at	timestamp	YES	NULL
+courier_settlement_details	delivery_status	varchar(191)	YES	NULL
+courier_settlement_details	id	bigint(20) unsigned	NO	NULL
+courier_settlement_details	order_detail_id	bigint(20) unsigned	NO	NULL
+courier_settlement_details	payment_status	varchar(191)	YES	NULL
+courier_settlement_details	price	decimal(15,2)	NO	NULL
+courier_settlement_details	product_id	bigint(20) unsigned	NO	NULL
+courier_settlement_details	product_name	varchar(191)	YES	NULL
+courier_settlement_details	profit	decimal(15,2)	NO	NULL
+courier_settlement_details	quantity	int(11)	NO	NULL
+courier_settlement_details	selling_price	decimal(15,2)	NO	NULL
+courier_settlement_details	shipping_cost	decimal(15,2)	NO	0.00
+courier_settlement_details	tax	decimal(15,2)	NO	0.00
+courier_settlement_details	updated_at	timestamp	YES	NULL
+courier_stats	created_at	timestamp	YES	NULL
+courier_stats	data	longtext	YES	NULL
+courier_stats	id	bigint(20) unsigned	NO	NULL
+courier_stats	phone	varchar(191)	NO	NULL
+courier_stats	updated_at	timestamp	YES	NULL
+currencies	code	varchar(20)	YES	NULL
+currencies	created_at	timestamp	NO	current_timestamp()
+currencies	exchange_rate	double(10,5)	NO	NULL
+currencies	id	int(11)	NO	NULL
+currencies	name	varchar(255)	NO	NULL
+currencies	status	int(11)	NO	0
+currencies	symbol	varchar(255)	NO	NULL
+currencies	updated_at	timestamp	NO	current_timestamp()
+customer_packages	amount	double(20,2)	YES	NULL
+customer_packages	created_at	timestamp	YES	NULL
+customer_packages	id	int(11)	NO	NULL
+customer_packages	logo	varchar(150)	YES	NULL
+customer_packages	name	varchar(255)	YES	NULL
+customer_packages	product_upload	int(11)	YES	NULL
+customer_packages	updated_at	timestamp	YES	NULL
+customer_package_payments	amount	double(20,2)	NO	NULL
+customer_package_payments	approval	int(11)	NO	1
+customer_package_payments	created_at	timestamp	NO	current_timestamp()
+customer_package_payments	customer_package_id	int(11)	NO	NULL
+customer_package_payments	id	int(11)	NO	NULL
+customer_package_payments	offline_payment	int(11)	NO	2
+customer_package_payments	payment_details	longtext	NO	NULL
+customer_package_payments	payment_method	varchar(255)	NO	NULL
+customer_package_payments	reciept	varchar(150)	NO	NULL
+customer_package_payments	updated_at	timestamp	NO	current_timestamp()
+customer_package_payments	user_id	int(11)	NO	NULL
+customer_package_translations	created_at	timestamp	NO	current_timestamp()
+customer_package_translations	customer_package_id	bigint(20)	NO	NULL
+customer_package_translations	id	bigint(20)	NO	NULL
+customer_package_translations	lang	varchar(100)	NO	NULL
+customer_package_translations	name	varchar(50)	NO	NULL
+customer_package_translations	updated_at	timestamp	NO	current_timestamp()
+customer_payments	amount	decimal(15,2)	NO	NULL
+customer_payments	created_at	timestamp	YES	NULL
+customer_payments	created_by	bigint(20) unsigned	NO	NULL
+customer_payments	customer_id	bigint(20) unsigned	NO	NULL
+customer_payments	deleted_at	timestamp	YES	NULL
+customer_payments	due_amount	decimal(15,2)	NO	0.00
+customer_payments	id	bigint(20) unsigned	NO	NULL
+customer_payments	notes	text	YES	NULL
+customer_payments	payment_account_id	bigint(20) unsigned	NO	NULL
+customer_payments	payment_date	date	NO	NULL
+customer_payments	payment_no	varchar(191)	NO	NULL
+customer_payments	payment_type	enum('advance','partial','full')	NO	NULL
+customer_payments	received_amount	decimal(15,2)	NO	0.00
+customer_payments	reference_no	varchar(191)	YES	NULL
+customer_payments	status	enum('pending','received','partial','cancelled')	NO	'pending'
+customer_payments	transaction_method_id	bigint(20) unsigned	NO	NULL
+customer_payments	updated_at	timestamp	YES	NULL
+customer_payments	voucher_id	bigint(20) unsigned	YES	NULL
+customer_products	added_by	varchar(50)	YES	NULL
+customer_products	brand_id	int(11)	YES	NULL
+customer_products	category_id	int(11)	YES	NULL
+customer_products	conditon	varchar(50)	YES	NULL
+customer_products	created_at	timestamp	NO	current_timestamp()
+customer_products	description	mediumtext	YES	NULL
+customer_products	id	int(11)	NO	NULL
+customer_products	location	text	YES	NULL
+customer_products	meta_description	varchar(500)	YES	NULL
+customer_products	meta_img	varchar(150)	YES	NULL
+customer_products	meta_title	varchar(200)	YES	NULL
+customer_products	name	varchar(255)	YES	NULL
+customer_products	pdf	varchar(200)	YES	NULL
+customer_products	photos	varchar(255)	YES	NULL
+customer_products	published	int(11)	NO	0
+customer_products	slug	varchar(200)	YES	NULL
+customer_products	status	int(11)	NO	0
+customer_products	subcategory_id	int(11)	YES	NULL
+customer_products	subsubcategory_id	int(11)	YES	NULL
+customer_products	tags	varchar(255)	YES	NULL
+customer_products	thumbnail_img	varchar(150)	YES	NULL
+customer_products	unit	varchar(200)	YES	NULL
+customer_products	unit_price	double(20,2)	YES	0.00
+customer_products	updated_at	timestamp	NO	current_timestamp()
+customer_products	user_id	int(11)	YES	NULL
+customer_products	video_link	varchar(200)	YES	NULL
+customer_products	video_provider	varchar(100)	YES	NULL
+customer_product_translations	created_at	timestamp	NO	current_timestamp()
+customer_product_translations	customer_product_id	bigint(20)	NO	NULL
+customer_product_translations	description	longtext	YES	NULL
+customer_product_translations	id	bigint(20)	NO	NULL
+customer_product_translations	lang	varchar(100)	NO	NULL
+customer_product_translations	name	varchar(200)	YES	NULL
+customer_product_translations	unit	varchar(20)	YES	NULL
+customer_product_translations	updated_at	timestamp	NO	current_timestamp()
+custom_alerts	background_color	varchar(191)	YES	NULL
+custom_alerts	banner	varchar(191)	YES	NULL
+custom_alerts	created_at	timestamp	NO	current_timestamp()
+custom_alerts	description	text	NO	NULL
+custom_alerts	id	int(10) unsigned	NO	NULL
+custom_alerts	link	varchar(191)	NO	NULL
+custom_alerts	status	int(11)	NO	0
+custom_alerts	text_color	varchar(191)	YES	NULL
+custom_alerts	type	varchar(191)	NO	NULL
+custom_alerts	updated_at	timestamp	NO	current_timestamp()
+delivery_boys	created_at	timestamp	NO	current_timestamp()
+delivery_boys	earning	double(25,2)	NO	0.00
+delivery_boys	id	int(11)	NO	NULL
+delivery_boys	monthly_salary	double(25,2)	YES	NULL
+delivery_boys	order_commission	double(25,2)	YES	NULL
+delivery_boys	total_collection	double(25,2)	NO	0.00
+delivery_boys	updated_at	timestamp	NO	current_timestamp()
+delivery_boys	user_id	int(11)	NO	NULL
+delivery_boy_collections	collection_amount	varchar(255)	YES	NULL
+delivery_boy_collections	created_at	timestamp	YES	current_timestamp()
+delivery_boy_collections	id	bigint(20)	NO	NULL
+delivery_boy_collections	updated_at	timestamp	YES	current_timestamp()
+delivery_boy_collections	user_id	int(11)	YES	NULL
+delivery_boy_payments	created_at	timestamp	YES	NULL
+delivery_boy_payments	id	bigint(20)	NO	NULL
+delivery_boy_payments	payment	varchar(255)	YES	NULL
+delivery_boy_payments	updated_at	timestamp	YES	NULL
+delivery_boy_payments	user_id	int(11)	YES	NULL
+delivery_histories	created_at	timestamp	NO	current_timestamp()
+delivery_histories	delivery_boy_id	int(11)	YES	NULL
+delivery_histories	delivery_status	varchar(50)	NO	'pending'
+delivery_histories	id	int(11)	NO	NULL
+delivery_histories	order_id	int(11)	NO	NULL
+delivery_histories	payment_type	varchar(100)	YES	'cash_on_delivery'
+delivery_histories	updated_at	timestamp	NO	current_timestamp()
+drafts	address	varchar(255)	YES	NULL
+drafts	city_id	varchar(100)	YES	NULL
+drafts	created_at	timestamp	YES	current_timestamp()
+drafts	delivery_type	varchar(100)	YES	NULL
+drafts	email	varchar(255)	YES	NULL
+drafts	id	bigint(20)	NO	NULL
+drafts	name	varchar(255)	YES	NULL
+drafts	order_note	text	YES	NULL
+drafts	phone	varchar(255)	YES	NULL
+drafts	pickup_point_id	bigint(20)	YES	NULL
+drafts	products_id	longtext	NO	NULL
+drafts	session_id	varchar(255)	NO	NULL
+drafts	updated_at	timestamp	YES	current_timestamp()
+dynamic_popups	banner	varchar(191)	YES	NULL
+dynamic_popups	btn_background_color	varchar(191)	YES	NULL
+dynamic_popups	btn_link	varchar(191)	NO	NULL
+dynamic_popups	btn_text	varchar(191)	YES	NULL
+dynamic_popups	btn_text_color	varchar(191)	YES	NULL
+dynamic_popups	created_at	timestamp	NO	current_timestamp()
+dynamic_popups	id	int(10) unsigned	NO	NULL
+dynamic_popups	show_subscribe_form	varchar(191)	YES	NULL
+dynamic_popups	status	int(11)	NO	0
+dynamic_popups	summary	text	NO	NULL
+dynamic_popups	title	varchar(191)	NO	NULL
+dynamic_popups	updated_at	timestamp	NO	current_timestamp()
+expense_payments	cost_center_id	bigint(20) unsigned	YES	NULL
+expense_payments	created_at	timestamp	YES	NULL
+expense_payments	created_by	bigint(20) unsigned	NO	NULL
+expense_payments	date	date	NO	NULL
+expense_payments	deleted_at	timestamp	YES	NULL
+expense_payments	id	bigint(20) unsigned	NO	NULL
+expense_payments	note	text	YES	NULL
+expense_payments	payment_account_id	bigint(20) unsigned	NO	NULL
+expense_payments	status	enum('pending','approved','rejected','cancelled')	NO	'approved'
+expense_payments	total_amount	decimal(15,2)	NO	0.00
+expense_payments	updated_at	timestamp	YES	NULL
+expense_payments	voucher_no	varchar(50)	NO	NULL
+expense_payment_details	amount	decimal(15,2)	NO	NULL
+expense_payment_details	created_at	timestamp	YES	NULL
+expense_payment_details	expense_account_id	bigint(20) unsigned	NO	NULL
+expense_payment_details	expense_payment_id	bigint(20) unsigned	NO	NULL
+expense_payment_details	id	bigint(20) unsigned	NO	NULL
+expense_payment_details	note	text	YES	NULL
+expense_payment_details	updated_at	timestamp	YES	NULL
+featured_collections	created_at	timestamp	YES	current_timestamp()
+featured_collections	id	bigint(20)	NO	NULL
+featured_collections	image	varchar(255)	YES	NULL
+featured_collections	link	varchar(255)	YES	NULL
+featured_collections	slug	varchar(255)	YES	NULL
+featured_collections	title	varchar(255)	YES	NULL
+featured_collections	updated_at	timestamp	YES	current_timestamp()
+firebase_notifications	created_at	timestamp	NO	current_timestamp()
+firebase_notifications	id	int(11)	NO	NULL
+firebase_notifications	is_read	tinyint(1)	NO	0
+firebase_notifications	item_type	varchar(255)	NO	NULL
+firebase_notifications	item_type_id	int(11)	NO	NULL
+firebase_notifications	receiver_id	int(11)	NO	NULL
+firebase_notifications	text	text	YES	NULL
+firebase_notifications	title	varchar(255)	YES	NULL
+firebase_notifications	updated_at	timestamp	NO	current_timestamp()
+flash_deals	background_color	varchar(255)	YES	NULL
+flash_deals	banner	varchar(255)	YES	NULL
+flash_deals	created_at	timestamp	YES	current_timestamp()
+flash_deals	end_date	int(11)	YES	NULL
+flash_deals	featured	int(11)	NO	0
+flash_deals	id	int(11)	NO	NULL
+flash_deals	slug	varchar(255)	YES	NULL
+flash_deals	start_date	int(11)	YES	NULL
+flash_deals	status	int(11)	NO	0
+flash_deals	text_color	varchar(255)	YES	NULL
+flash_deals	title	varchar(255)	YES	NULL
+flash_deals	updated_at	timestamp	NO	current_timestamp()
+flash_deal_products	created_at	timestamp	NO	current_timestamp()
+flash_deal_products	discount	double(20,2)	YES	0.00
+flash_deal_products	discount_type	varchar(20)	YES	NULL
+flash_deal_products	flash_deal_id	int(11)	NO	NULL
+flash_deal_products	id	int(11)	NO	NULL
+flash_deal_products	product_id	int(11)	NO	NULL
+flash_deal_products	updated_at	timestamp	NO	current_timestamp()
+flash_deal_translations	created_at	timestamp	NO	current_timestamp()
+flash_deal_translations	flash_deal_id	bigint(20)	NO	NULL
+flash_deal_translations	id	bigint(20)	NO	NULL
+flash_deal_translations	lang	varchar(100)	NO	NULL
+flash_deal_translations	title	varchar(50)	NO	NULL
+flash_deal_translations	updated_at	timestamp	NO	current_timestamp()
+follow_sellers	shop_id	bigint(20)	NO	NULL
+follow_sellers	user_id	bigint(20)	NO	NULL
+frequently_bought_products	category_id	int(11)	YES	NULL
+frequently_bought_products	frequently_bought_product_id	int(11)	YES	NULL
+frequently_bought_products	product_id	int(11)	NO	NULL
+frequently_brought_products	category_id	int(11)	YES	NULL
+frequently_brought_products	frequently_brought_product_id	int(11)	YES	NULL
+frequently_brought_products	product_id	bigint(20)	YES	NULL
+goods_receipts	created_at	timestamp	YES	NULL
+goods_receipts	created_by	int(10) unsigned	YES	NULL
+goods_receipts	goods_total	decimal(20,4)	NO	0.0000
+goods_receipts	id	bigint(20) unsigned	NO	NULL
+goods_receipts	idempotency_key	varchar(120)	NO	NULL
+goods_receipts	invoice_status	varchar(15)	NO	'not_invoiced'
+goods_receipts	journal_entry_id	bigint(20) unsigned	YES	NULL
+goods_receipts	landed_cost	decimal(20,4)	NO	0.0000
+goods_receipts	note	varchar(500)	YES	NULL
+goods_receipts	purchase_id	bigint(20) unsigned	YES	NULL
+goods_receipts	purchase_order_id	bigint(20) unsigned	YES	NULL
+goods_receipts	receipt_no	varchar(40)	NO	NULL
+goods_receipts	received_at	date	NO	NULL
+goods_receipts	status	varchar(12)	NO	'posted'
+goods_receipts	supplier_id	bigint(20) unsigned	NO	NULL
+goods_receipts	total	decimal(20,4)	NO	0.0000
+goods_receipts	updated_at	timestamp	YES	NULL
+goods_receipt_lines	created_at	timestamp	YES	NULL
+goods_receipt_lines	goods_receipt_id	bigint(20) unsigned	NO	NULL
+goods_receipt_lines	id	bigint(20) unsigned	NO	NULL
+goods_receipt_lines	landed_unit_cost	decimal(20,4)	NO	NULL
+goods_receipt_lines	line_total	decimal(20,4)	NO	NULL
+goods_receipt_lines	product_id	bigint(20) unsigned	NO	NULL
+goods_receipt_lines	purchase_order_detail_id	bigint(20) unsigned	YES	NULL
+goods_receipt_lines	purchase_product_id	bigint(20) unsigned	YES	NULL
+goods_receipt_lines	qty	int(11)	NO	NULL
+goods_receipt_lines	unit_cost	decimal(20,4)	NO	NULL
+goods_receipt_lines	updated_at	timestamp	YES	NULL
+goods_receipt_lines	variant	varchar(255)	NO	''
+home_categories	category_id	int(11)	NO	NULL
+home_categories	created_at	timestamp	NO	current_timestamp()
+home_categories	id	int(11)	NO	NULL
+home_categories	status	int(11)	NO	1
+home_categories	subsubcategories	varchar(1000)	YES	NULL
+home_categories	updated_at	timestamp	NO	current_timestamp()
+idempotency_keys	created_at	timestamp	YES	NULL
+idempotency_keys	id	bigint(20) unsigned	NO	NULL
+idempotency_keys	key	varchar(120)	NO	NULL
+idempotency_keys	result	longtext	YES	NULL
+idempotency_keys	scope	varchar(40)	NO	NULL
+idempotency_keys	updated_at	timestamp	YES	NULL
+incomes	cost_center_id	bigint(20) unsigned	YES	NULL
+incomes	created_at	timestamp	YES	NULL
+incomes	created_by	bigint(20) unsigned	NO	NULL
+incomes	customer_id	bigint(20) unsigned	YES	NULL
+incomes	date	date	NO	NULL
+incomes	deleted_at	timestamp	YES	NULL
+incomes	id	bigint(20) unsigned	NO	NULL
+incomes	note	text	YES	NULL
+incomes	received_account_id	bigint(20) unsigned	NO	NULL
+incomes	status	enum('pending','approved','rejected','cancelled')	NO	'approved'
+incomes	total_amount	decimal(15,2)	NO	0.00
+incomes	updated_at	timestamp	YES	NULL
+incomes	voucher_no	varchar(50)	NO	NULL
+income_details	amount	decimal(15,2)	NO	NULL
+income_details	created_at	timestamp	YES	NULL
+income_details	id	bigint(20) unsigned	NO	NULL
+income_details	income_account_id	bigint(20) unsigned	NO	NULL
+income_details	income_id	bigint(20) unsigned	NO	NULL
+income_details	note	text	YES	NULL
+income_details	updated_at	timestamp	YES	NULL
+jobs	attempts	tinyint(3) unsigned	NO	NULL
+jobs	available_at	int(10) unsigned	NO	NULL
+jobs	created_at	int(10) unsigned	NO	NULL
+jobs	id	bigint(20) unsigned	NO	NULL
+jobs	payload	longtext	NO	NULL
+jobs	queue	varchar(191)	NO	NULL
+jobs	reserved_at	int(10) unsigned	YES	NULL
+job_applications	cover_letter	text	YES	NULL
+job_applications	created_at	timestamp	YES	NULL
+job_applications	cv	varchar(255)	YES	NULL
+job_applications	department_id	int(11)	YES	NULL
+job_applications	email	varchar(100)	YES	NULL
+job_applications	id	bigint(20)	NO	NULL
+job_applications	job_id	varchar(50)	YES	NULL
+job_applications	name	varchar(200)	YES	NULL
+job_applications	phone_number	varchar(20)	YES	NULL
+job_applications	updated_at	timestamp	YES	NULL
+journal_entries	created_by	int(10) unsigned	YES	NULL
+journal_entries	description	varchar(255)	YES	NULL
+journal_entries	entry_date	date	NO	NULL
+journal_entries	entry_no	varchar(40)	NO	NULL
+journal_entries	id	bigint(20) unsigned	NO	NULL
+journal_entries	idempotency_key	varchar(120)	NO	NULL
+journal_entries	posted_at	timestamp	YES	NULL
+journal_entries	reversal_of_id	bigint(20) unsigned	YES	NULL
+journal_entries	source_id	bigint(20) unsigned	YES	NULL
+journal_entries	source_type	varchar(40)	YES	NULL
+journal_lines	account_id	bigint(20) unsigned	NO	NULL
+journal_lines	credit	decimal(20,2)	NO	0.00
+journal_lines	debit	decimal(20,2)	NO	0.00
+journal_lines	id	bigint(20) unsigned	NO	NULL
+journal_lines	journal_entry_id	bigint(20) unsigned	NO	NULL
+journal_lines	memo	varchar(255)	YES	NULL
+journal_lines	mirrored	tinyint(1)	NO	0
+journal_lines	supplier_id	bigint(20) unsigned	YES	NULL
+languages	app_lang_code	varchar(255)	YES	'en'
+languages	code	varchar(100)	NO	NULL
+languages	created_at	timestamp	NO	current_timestamp()
+languages	id	int(11)	NO	NULL
+languages	name	varchar(100)	NO	NULL
+languages	rtl	int(11)	NO	0
+languages	status	tinyint(1)	NO	1
+languages	updated_at	timestamp	NO	current_timestamp()
+last_viewed_products	created_at	timestamp	NO	current_timestamp()
+last_viewed_products	id	int(11)	NO	NULL
+last_viewed_products	product_id	int(11)	NO	NULL
+last_viewed_products	session_id	varchar(255)	YES	NULL
+last_viewed_products	updated_at	timestamp	NO	current_timestamp()
+last_viewed_products	user_id	int(11)	YES	NULL
+ledger_baselines	account_id	bigint(20) unsigned	NO	NULL
+ledger_baselines	balance	decimal(20,2)	NO	NULL
+ledger_baselines	taken_at	timestamp	YES	NULL
+ledger_baselines	taken_by	varchar(80)	YES	NULL
+measurement_points	created_at	timestamp	NO	current_timestamp()
+measurement_points	id	int(11)	NO	NULL
+measurement_points	name	varchar(191)	NO	NULL
+measurement_points	updated_at	timestamp	NO	current_timestamp()
+messages	conversation_id	int(11)	NO	NULL
+messages	created_at	timestamp	NO	current_timestamp()
+messages	id	int(11)	NO	NULL
+messages	message	text	YES	NULL
+messages	updated_at	timestamp	NO	current_timestamp()
+messages	user_id	int(11)	NO	NULL
+migrations	batch	int(11)	NO	NULL
+migrations	id	int(10) unsigned	NO	NULL
+migrations	migration	varchar(191)	NO	NULL
+model_has_permissions	model_id	bigint(20) unsigned	NO	NULL
+model_has_permissions	model_type	varchar(191)	NO	NULL
+model_has_permissions	permission_id	bigint(20) unsigned	NO	NULL
+model_has_roles	model_id	bigint(20) unsigned	NO	NULL
+model_has_roles	model_type	varchar(191)	NO	NULL
+model_has_roles	role_id	bigint(20) unsigned	NO	NULL
+notifications	created_at	timestamp	YES	NULL
+notifications	data	text	NO	NULL
+notifications	id	char(36)	NO	NULL
+notifications	notifiable_id	bigint(20) unsigned	NO	NULL
+notifications	notifiable_type	varchar(191)	NO	NULL
+notifications	notification_type_id	int(11)	NO	NULL
+notifications	read_at	timestamp	YES	NULL
+notifications	type	varchar(191)	NO	NULL
+notifications	updated_at	timestamp	YES	NULL
+notification_types	created_at	timestamp	NO	current_timestamp()
+notification_types	default_text	varchar(255)	NO	NULL
+notification_types	id	int(11)	NO	NULL
+notification_types	image	varchar(100)	YES	NULL
+notification_types	name	varchar(100)	NO	NULL
+notification_types	status	tinyint(4)	NO	1
+notification_types	type	varchar(50)	NO	NULL
+notification_types	updated_at	timestamp	NO	current_timestamp()
+notification_types	user_type	varchar(20)	NO	'customer'
+notification_type_translations	created_at	timestamp	NO	current_timestamp()
+notification_type_translations	default_text	varchar(255)	NO	NULL
+notification_type_translations	id	bigint(20)	NO	NULL
+notification_type_translations	lang	varchar(100)	NO	NULL
+notification_type_translations	name	varchar(100)	NO	NULL
+notification_type_translations	notification_type_id	int(11)	NO	NULL
+notification_type_translations	updated_at	timestamp	NO	current_timestamp()
+orders	additional_info	longtext	YES	NULL
+orders	assign_delivery_boy	varchar(255)	YES	NULL
+orders	cancel_request	varchar(255)	YES	'0'
+orders	carrier_id	int(11)	YES	NULL
+orders	code	mediumtext	YES	NULL
+orders	combined_order_id	int(11)	YES	NULL
+orders	commission_calculated	int(11)	NO	0
+orders	coupon_discount	double(20,2)	NO	0.00
+orders	courier_fee	double(15,2)	NO	0.00
+orders	courier_name	varchar(250)	YES	NULL
+orders	courier_status	varchar(250)	YES	NULL
+orders	courier_status_updated_at	timestamp	YES	NULL
+orders	courier_tracking_id	varchar(250)	YES	NULL
+orders	created_at	timestamp	NO	current_timestamp()
+orders	customer_ip	varchar(300)	YES	NULL
+orders	date	int(11)	NO	NULL
+orders	delivery_history_date	int(11)	NO	NULL
+orders	delivery_status	varchar(20)	YES	'pending'
+orders	delivery_viewed	int(11)	NO	1
+orders	due_amount	double(20,2)	YES	0.00
+orders	extra_discount	double	YES	0
+orders	given_customer	double(20,2)	YES	NULL
+orders	grand_total	double(20,2)	YES	NULL
+orders	guest_id	int(11)	YES	NULL
+orders	id	int(11)	NO	NULL
+orders	notified	tinyint(1)	NO	0
+orders	order_from	varchar(20)	NO	'web'
+orders	order_note	text	YES	NULL
+orders	partial_paid_amount	double(20,2)	YES	0.00
+orders	partial_payment_choice	varchar(255)	YES	NULL
+orders	pathao_id	varchar(255)	YES	NULL
+orders	pathao_status	varchar(255)	YES	NULL
+orders	pathao_status_updated_at	datetime	YES	NULL
+orders	payment_amounts	longtext	YES	NULL
+orders	payment_details	longtext	YES	NULL
+orders	payment_methods	longtext	YES	NULL
+orders	payment_status	varchar(20)	YES	'unpaid'
+orders	payment_status_viewed	int(11)	YES	1
+orders	payment_type	varchar(20)	YES	NULL
+orders	pickup_point_id	int(11)	NO	0
+orders	seller_id	int(11)	YES	NULL
+orders	settlement_account_id	bigint(20)	YES	NULL
+orders	settlement_charge	decimal(15,2)	NO	0.00
+orders	settlement_date	datetime	YES	NULL
+orders	settlement_fee	double(15,2)	NO	0.00
+orders	settlement_status	enum('true','false')	NO	'false'
+orders	shipping_address	longtext	YES	NULL
+orders	shipping_type	varchar(50)	NO	NULL
+orders	steadfast_id	varchar(250)	YES	NULL
+orders	steadfast_status	varchar(250)	YES	NULL
+orders	steadfast_status_updated_at	datetime	YES	NULL
+orders	temp_user_id	varchar(300)	YES	NULL
+orders	tracking_code	varchar(255)	YES	NULL
+orders	updated_at	timestamp	NO	current_timestamp()
+orders	update_grand_total	varchar(255)	YES	NULL
+orders	user_id	int(11)	YES	NULL
+orders	viewed	int(11)	NO	0
+order_demands	confirmed_at	timestamp	YES	NULL
+order_demands	created_at	timestamp	YES	NULL
+order_demands	id	bigint(20) unsigned	NO	NULL
+order_demands	order_detail_id	bigint(20) unsigned	NO	NULL
+order_demands	order_id	bigint(20) unsigned	NO	NULL
+order_demands	product_id	bigint(20) unsigned	NO	NULL
+order_demands	qty_allocated	int(11)	NO	0
+order_demands	qty_cancelled	int(11)	NO	0
+order_demands	qty_confirmed	int(11)	NO	NULL
+order_demands	qty_dispatched	int(11)	NO	0
+order_demands	status	varchar(12)	NO	'open'
+order_demands	updated_at	timestamp	YES	NULL
+order_demands	variant	varchar(255)	NO	''
+order_details	buying_price	double(20,2)	YES	NULL
+order_details	cost_price	double(20,2)	YES	NULL
+order_details	cost_status	varchar(12)	YES	NULL
+order_details	created_at	timestamp	NO	current_timestamp()
+order_details	delivery_status	varchar(20)	YES	'pending'
+order_details	earn_point	double(25,2)	NO	0.00
+order_details	estimated_unit_cost	decimal(20,4)	YES	NULL
+order_details	fifo_batch_info	text	YES	NULL
+order_details	id	int(11)	NO	NULL
+order_details	order_id	int(11)	NO	NULL
+order_details	payment_status	varchar(10)	NO	'unpaid'
+order_details	pickup_point_id	int(11)	YES	NULL
+order_details	price	double(20,2)	YES	NULL
+order_details	product_id	int(11)	NO	NULL
+order_details	product_referral_code	varchar(255)	YES	NULL
+order_details	profit	double(20,2)	YES	NULL
+order_details	provisional_cost	decimal(20,4)	YES	NULL
+order_details	purchase_id	bigint(20)	YES	NULL
+order_details	quantity	int(11)	YES	NULL
+order_details	seller_id	int(11)	YES	NULL
+order_details	selling_price	double(20,2)	YES	NULL
+order_details	shipping_cost	double(20,2)	NO	0.00
+order_details	shipping_type	varchar(255)	YES	NULL
+order_details	stock_mode	varchar(8)	NO	'legacy'
+order_details	supplier_id	bigint(20)	YES	NULL
+order_details	tax	double(20,2)	NO	0.00
+order_details	updated_at	timestamp	NO	current_timestamp()
+order_details	variation	longtext	YES	NULL
+order_payment_mappings	amount_applied	decimal(15,2)	NO	NULL
+order_payment_mappings	created_at	timestamp	YES	NULL
+order_payment_mappings	customer_payment_id	bigint(20) unsigned	NO	NULL
+order_payment_mappings	id	bigint(20) unsigned	NO	NULL
+order_payment_mappings	order_id	bigint(20) unsigned	NO	NULL
+order_payment_mappings	updated_at	timestamp	YES	NULL
+otp_configurations	created_at	timestamp	NO	current_timestamp()
+otp_configurations	id	int(11)	NO	NULL
+otp_configurations	type	varchar(200)	YES	NULL
+otp_configurations	updated_at	timestamp	NO	current_timestamp()
+otp_configurations	value	varchar(255)	YES	NULL
+pages	content	longtext	YES	NULL
+pages	created_at	timestamp	NO	current_timestamp()
+pages	id	int(11)	NO	NULL
+pages	keywords	varchar(1000)	YES	NULL
+pages	meta_description	varchar(1000)	YES	NULL
+pages	meta_image	varchar(255)	YES	NULL
+pages	meta_title	text	YES	NULL
+pages	slug	varchar(255)	YES	NULL
+pages	title	varchar(255)	YES	NULL
+pages	type	varchar(50)	NO	NULL
+pages	updated_at	timestamp	NO	current_timestamp()
+page_translations	content	longtext	NO	NULL
+page_translations	created_at	timestamp	NO	current_timestamp()
+page_translations	id	bigint(20)	NO	NULL
+page_translations	lang	varchar(100)	NO	NULL
+page_translations	page_id	bigint(20)	NO	NULL
+page_translations	title	varchar(255)	NO	NULL
+page_translations	updated_at	timestamp	NO	current_timestamp()
+password_resets	created_at	timestamp	YES	NULL
+password_resets	email	varchar(191)	NO	NULL
+password_resets	token	varchar(191)	NO	NULL
+pathao_courier_settings	base_url	varchar(255)	YES	NULL
+pathao_courier_settings	client_id	varchar(255)	YES	NULL
+pathao_courier_settings	client_secret	varchar(255)	YES	NULL
+pathao_courier_settings	created_at	timestamp	YES	current_timestamp()
+pathao_courier_settings	id	bigint(20)	NO	NULL
+pathao_courier_settings	password	varchar(255)	YES	NULL
+pathao_courier_settings	sandbox	tinyint(1)	NO	0
+pathao_courier_settings	settlement_charge	decimal(5,2)	NO	0.00
+pathao_courier_settings	store_id	varchar(255)	YES	NULL
+pathao_courier_settings	updated_at	timestamp	YES	current_timestamp()
+pathao_courier_settings	username	varchar(255)	YES	NULL
+payku_payments	additional_parameters	varchar(191)	YES	NULL
+payku_payments	authorization_code	varchar(191)	NO	NULL
+payku_payments	card_type	varchar(191)	YES	NULL
+payku_payments	created_at	timestamp	YES	NULL
+payku_payments	currency	varchar(191)	NO	NULL
+payku_payments	end	date	NO	NULL
+payku_payments	installments	varchar(191)	YES	NULL
+payku_payments	last_4_digits	int(10) unsigned	YES	NULL
+payku_payments	media	varchar(191)	NO	NULL
+payku_payments	payment_key	varchar(255)	YES	NULL
+payku_payments	start	date	NO	NULL
+payku_payments	transaction_id	varchar(191)	NO	NULL
+payku_payments	transaction_key	varchar(255)	YES	NULL
+payku_payments	updated_at	timestamp	YES	NULL
+payku_payments	verification_key	varchar(191)	NO	NULL
+payku_transactions	amount	int(10) unsigned	YES	NULL
+payku_transactions	created_at	timestamp	YES	NULL
+payku_transactions	email	varchar(191)	YES	NULL
+payku_transactions	id	varchar(191)	NO	NULL
+payku_transactions	notified_at	datetime	YES	NULL
+payku_transactions	order	varchar(191)	YES	NULL
+payku_transactions	status	varchar(191)	YES	NULL
+payku_transactions	subject	varchar(191)	YES	NULL
+payku_transactions	updated_at	timestamp	YES	NULL
+payku_transactions	url	text	YES	NULL
+payments	amount	double(20,2)	NO	0.00
+payments	created_at	timestamp	NO	current_timestamp()
+payments	id	int(11)	NO	NULL
+payments	payment_details	longtext	YES	NULL
+payments	payment_method	varchar(255)	YES	NULL
+payments	seller_id	int(11)	NO	NULL
+payments	txn_code	varchar(100)	YES	NULL
+payments	updated_at	timestamp	NO	current_timestamp()
+payment_methods	active	tinyint(1)	NO	0
+payment_methods	addon_identifier	varchar(191)	YES	NULL
+payment_methods	created_at	timestamp	NO	current_timestamp()
+payment_methods	id	tinyint(3) unsigned	NO	NULL
+payment_methods	name	varchar(255)	NO	NULL
+payment_methods	updated_at	timestamp	NO	current_timestamp()
+permissions	created_at	timestamp	YES	current_timestamp()
+permissions	guard_name	varchar(191)	NO	NULL
+permissions	id	bigint(20) unsigned	NO	NULL
+permissions	name	varchar(191)	NO	NULL
+permissions	section	varchar(50)	YES	NULL
+permissions	updated_at	timestamp	YES	NULL
+personal_access_tokens	abilities	text	YES	NULL
+personal_access_tokens	created_at	timestamp	YES	NULL
+personal_access_tokens	id	bigint(20) unsigned	NO	NULL
+personal_access_tokens	last_used_at	timestamp	YES	NULL
+personal_access_tokens	name	varchar(191)	NO	NULL
+personal_access_tokens	token	varchar(64)	NO	NULL
+personal_access_tokens	tokenable_id	bigint(20) unsigned	NO	NULL
+personal_access_tokens	tokenable_type	varchar(191)	NO	NULL
+personal_access_tokens	updated_at	timestamp	YES	NULL
+pickup_points	address	mediumtext	NO	NULL
+pickup_points	cash_on_pickup_status	int(11)	YES	NULL
+pickup_points	created_at	timestamp	NO	current_timestamp()
+pickup_points	id	int(11)	NO	NULL
+pickup_points	name	varchar(255)	NO	NULL
+pickup_points	phone	varchar(15)	NO	NULL
+pickup_points	pick_up_status	int(11)	YES	NULL
+pickup_points	staff_id	int(11)	NO	NULL
+pickup_points	updated_at	timestamp	NO	current_timestamp()
+pickup_point_translations	address	text	NO	NULL
+pickup_point_translations	created_at	timestamp	NO	current_timestamp()
+pickup_point_translations	id	bigint(20)	NO	NULL
+pickup_point_translations	lang	varchar(100)	NO	NULL
+pickup_point_translations	name	varchar(50)	NO	NULL
+pickup_point_translations	pickup_point_id	bigint(20)	NO	NULL
+pickup_point_translations	updated_at	timestamp	NO	current_timestamp()
+products	added_by	varchar(6)	NO	'admin'
+products	approved	tinyint(1)	NO	1
+products	attributes	varchar(1000)	NO	'[]'
+products	auction_product	int(11)	NO	0
+products	barcode	varchar(255)	YES	NULL
+products	best_pick	int(11)	NO	0
+products	brand_id	int(11)	YES	NULL
+products	cash_on_delivery	tinyint(1)	NO	0
+products	category_id	int(11)	NO	NULL
+products	choice_options	mediumtext	YES	NULL
+products	colors	mediumtext	YES	NULL
+products	created_at	timestamp	NO	current_timestamp()
+products	current_stock	int(11)	NO	0
+products	custom_video	varchar(300)	YES	NULL
+products	description	longtext	YES	NULL
+products	digital	int(11)	NO	0
+products	discount	double(20,2)	NO	0.00
+products	discount_end_date	int(11)	YES	NULL
+products	discount_start_date	int(11)	YES	NULL
+products	discount_type	varchar(10)	NO	'amount'
+products	earn_point	double(8,2)	NO	0.00
+products	estimated_purchase_cost	decimal(20,4)	YES	NULL
+products	est_shipping_days	int(11)	YES	NULL
+products	external_link	varchar(500)	YES	NULL
+products	external_link_btn	varchar(255)	YES	'Buy Now'
+products	featured	int(11)	NO	0
+products	file_name	varchar(255)	YES	NULL
+products	file_path	varchar(255)	YES	NULL
+products	frequently_bought_selection_type	varchar(19)	YES	'product'
+products	id	int(11)	NO	NULL
+products	is_quantity_multiplied	tinyint(1)	NO	0
+products	low_stock_quantity	int(11)	YES	NULL
+products	max_backorder_qty	int(10) unsigned	YES	NULL
+products	max_preorder_qty	int(10) unsigned	YES	NULL
+products	max_qty	int(11)	NO	0
+products	meta_description	longtext	YES	NULL
+products	meta_img	varchar(255)	YES	NULL
+products	meta_title	mediumtext	YES	NULL
+products	min_qty	int(11)	NO	1
+products	name	varchar(200)	NO	NULL
+products	num_of_sale	int(11)	NO	0
+products	pdf	varchar(255)	YES	NULL
+products	photos	varchar(2000)	YES	NULL
+products	preferred_supplier_id	bigint(20) unsigned	YES	NULL
+products	preorder_available_at	date	YES	NULL
+products	published	int(11)	NO	1
+products	purchase_price	double(20,2)	YES	NULL
+products	question_answer	text	YES	NULL
+products	rating	double(8,2)	NO	0.00
+products	refundable	int(11)	NO	0
+products	sales_name	varchar(255)	YES	NULL
+products	search_order	varchar(255)	YES	NULL
+products	seasonal_highlight	int(11)	NO	0
+products	seller_featured	int(11)	NO	0
+products	shipping_cost	double(20,2)	NO	0.00
+products	shipping_type	varchar(20)	YES	'flat_rate'
+products	slug	mediumtext	NO	NULL
+products	specification	text	YES	NULL
+products	stock_policy	varchar(12)	NO	'stock_only'
+products	stock_visibility_state	varchar(10)	NO	'quantity'
+products	supplier_lead_time_days	smallint(5) unsigned	YES	NULL
+products	tags	varchar(500)	YES	NULL
+products	tax	double(20,2)	YES	NULL
+products	tax_type	varchar(10)	YES	NULL
+products	thumbnail_img	varchar(100)	YES	NULL
+products	todays_deal	int(11)	NO	0
+products	top_pick	int(11)	NO	0
+products	trending_now	int(11)	NO	0
+products	unit	varchar(20)	YES	NULL
+products	unit_price	double(20,2)	NO	NULL
+products	unit_selling_price	varchar(255)	YES	NULL
+products	updated_at	timestamp	NO	current_timestamp()
+products	user_id	int(11)	NO	NULL
+products	variant_product	int(11)	NO	0
+products	variations	text	YES	NULL
+products	video_link	varchar(100)	YES	NULL
+products	video_provider	varchar(20)	YES	NULL
+products	weight	double(8,2)	NO	0.00
+products	wholesale_product	int(11)	NO	0
+product_categories	category_id	int(11)	NO	NULL
+product_categories	product_id	int(11)	NO	NULL
+product_detail_accordians	content	text	YES	NULL
+product_detail_accordians	created_at	timestamp	YES	current_timestamp()
+product_detail_accordians	id	int(11)	NO	NULL
+product_detail_accordians	title	text	YES	NULL
+product_detail_accordians	updated_at	timestamp	YES	current_timestamp()
+product_queries	created_at	timestamp	YES	NULL
+product_queries	customer_id	int(11)	NO	NULL
+product_queries	id	bigint(20) unsigned	NO	NULL
+product_queries	product_id	int(11)	NO	NULL
+product_queries	question	longtext	NO	NULL
+product_queries	reply	longtext	YES	NULL
+product_queries	seller_id	int(11)	NO	NULL
+product_queries	updated_at	timestamp	YES	NULL
+product_stocks	created_at	timestamp	NO	current_timestamp()
+product_stocks	id	int(11)	NO	NULL
+product_stocks	image	int(11)	YES	NULL
+product_stocks	price	double(20,2)	NO	0.00
+product_stocks	product_id	int(11)	NO	NULL
+product_stocks	qty	int(11)	NO	0
+product_stocks	sku	varchar(255)	YES	NULL
+product_stocks	updated_at	timestamp	NO	current_timestamp()
+product_stocks	variant	varchar(255)	NO	NULL
+product_taxes	created_at	timestamp	NO	current_timestamp()
+product_taxes	id	int(11)	NO	NULL
+product_taxes	product_id	int(11)	NO	NULL
+product_taxes	tax	double(20,2)	NO	NULL
+product_taxes	tax_id	int(11)	NO	NULL
+product_taxes	tax_type	varchar(10)	NO	NULL
+product_taxes	updated_at	timestamp	NO	current_timestamp()
+product_translations	created_at	timestamp	NO	current_timestamp()
+product_translations	description	longtext	YES	NULL
+product_translations	id	bigint(20)	NO	NULL
+product_translations	lang	varchar(100)	NO	NULL
+product_translations	name	varchar(200)	YES	NULL
+product_translations	product_id	bigint(20)	NO	NULL
+product_translations	unit	varchar(20)	YES	NULL
+product_translations	updated_at	timestamp	NO	current_timestamp()
+proxypay_payments	amount	double(25,2)	NO	0.00
+proxypay_payments	created_at	timestamp	NO	current_timestamp()
+proxypay_payments	id	int(11)	NO	NULL
+proxypay_payments	order_id	int(11)	YES	NULL
+proxypay_payments	package_id	int(11)	YES	NULL
+proxypay_payments	payment_type	varchar(20)	NO	NULL
+proxypay_payments	reference_id	varchar(20)	NO	NULL
+proxypay_payments	updated_at	timestamp	NO	current_timestamp()
+proxypay_payments	user_id	int(11)	NO	NULL
+purchases	advanced_amount	double(13,2)	YES	NULL
+purchases	advanced_paid_on	varchar(255)	YES	NULL
+purchases	business_location	varchar(255)	YES	NULL
+purchases	created_at	timestamp	YES	current_timestamp()
+purchases	document	text	YES	NULL
+purchases	id	bigint(20)	NO	NULL
+purchases	net_total_amount	double(13,2)	YES	NULL
+purchases	opening_balance_used	decimal(15,2)	NO	0.00
+purchases	payment_account_id	bigint(20)	YES	NULL
+purchases	payment_method	varchar(255)	YES	NULL
+purchases	payment_method_type	varchar(100)	YES	NULL
+purchases	payment_note	text	YES	NULL
+purchases	pay_term	varchar(255)	YES	NULL
+purchases	pay_term_type	varchar(255)	YES	NULL
+purchases	purchase_date	varchar(255)	YES	NULL
+purchases	reference_no	varchar(255)	YES	NULL
+purchases	supplier_id	int(11)	YES	NULL
+purchases	total_advance_amount	varchar(255)	YES	'0'
+purchases	total_bank_transfer_amount	varchar(255)	YES	'0'
+purchases	total_cash_amount	varchar(255)	YES	'0'
+purchases	total_cheque_amount	varchar(255)	YES	'0'
+purchases	total_item	int(11)	YES	NULL
+purchases	total_paid	decimal(15,2)	NO	0.00
+purchases	total_payment_due	varchar(255)	YES	NULL
+purchases	updated_at	timestamp	YES	current_timestamp()
+purchase_orders	advanced_amount	decimal(15,2)	NO	0.00
+purchase_orders	advanced_paid_on	varchar(255)	YES	NULL
+purchase_orders	business_location	varchar(191)	YES	NULL
+purchase_orders	created_at	timestamp	YES	NULL
+purchase_orders	date	date	YES	NULL
+purchase_orders	document	varchar(191)	YES	NULL
+purchase_orders	expected_delivery_date	date	YES	NULL
+purchase_orders	id	bigint(20) unsigned	NO	NULL
+purchase_orders	net_total_amount	decimal(15,2)	NO	0.00
+purchase_orders	payment_method	varchar(191)	YES	NULL
+purchase_orders	payment_note	text	YES	NULL
+purchase_orders	pay_term	int(11)	YES	NULL
+purchase_orders	pay_term_type	varchar(191)	YES	NULL
+purchase_orders	purchase_date	date	YES	NULL
+purchase_orders	reference_no	varchar(191)	YES	NULL
+purchase_orders	status	varchar(20)	NO	'draft'
+purchase_orders	supplier_id	bigint(20) unsigned	YES	NULL
+purchase_orders	total_advance_amount	decimal(15,2)	NO	0.00
+purchase_orders	total_bank_transfer_amount	decimal(15,2)	NO	0.00
+purchase_orders	total_cash_amount	decimal(15,2)	NO	0.00
+purchase_orders	total_cheque_amount	decimal(15,2)	NO	0.00
+purchase_orders	total_item	int(11)	NO	0
+purchase_orders	total_payment_due	decimal(15,2)	NO	0.00
+purchase_orders	updated_at	timestamp	YES	NULL
+purchase_order_details	buying_unit_cost	decimal(15,2)	NO	0.00
+purchase_order_details	created_at	timestamp	YES	NULL
+purchase_order_details	id	bigint(20) unsigned	NO	NULL
+purchase_order_details	pending_quantity	decimal(15,2)	YES	NULL
+purchase_order_details	product_id	bigint(20) unsigned	NO	NULL
+purchase_order_details	product_name	varchar(191)	NO	NULL
+purchase_order_details	product_tax	decimal(15,2)	NO	0.00
+purchase_order_details	purchase_order_id	bigint(20) unsigned	NO	NULL
+purchase_order_details	purchase_quantity	decimal(15,2)	NO	0.00
+purchase_order_details	recieved_quantity	decimal(15,2)	NO	0.00
+purchase_order_details	remaining_quantity	decimal(15,2)	NO	0.00
+purchase_order_details	total_cost	decimal(15,2)	NO	0.00
+purchase_order_details	unit_selling_price	decimal(15,2)	NO	0.00
+purchase_order_details	updated_at	timestamp	YES	NULL
+purchase_order_details	variant	varchar(255)	YES	NULL
+purchase_products	buying_unit_cost	varchar(255)	YES	NULL
+purchase_products	created_at	timestamp	YES	current_timestamp()
+purchase_products	id	bigint(20)	NO	NULL
+purchase_products	product_id	int(11)	YES	NULL
+purchase_products	product_name	varchar(255)	YES	NULL
+purchase_products	product_tax	varchar(255)	YES	NULL
+purchase_products	purchase_id	int(11)	YES	NULL
+purchase_products	purchase_quantity	varchar(255)	YES	NULL
+purchase_products	remaining_qty	bigint(20)	YES	NULL
+purchase_products	total_cost	varchar(255)	YES	NULL
+purchase_products	unit_selling_price	varchar(255)	YES	NULL
+purchase_products	updated_at	timestamp	YES	current_timestamp()
+purchase_products	variant	varchar(300)	YES	NULL
+purchase_requirement_links	created_at	timestamp	YES	NULL
+purchase_requirement_links	id	bigint(20) unsigned	NO	NULL
+purchase_requirement_links	order_demand_id	bigint(20) unsigned	NO	NULL
+purchase_requirement_links	purchase_order_detail_id	bigint(20) unsigned	NO	NULL
+purchase_requirement_links	qty_linked	int(11)	NO	NULL
+purchase_requirement_links	qty_received	int(11)	NO	0
+purchase_requirement_links	status	varchar(12)	NO	'open'
+purchase_requirement_links	updated_at	timestamp	YES	NULL
+purchase_returns	created_at	timestamp	YES	current_timestamp()
+purchase_returns	document	varchar(255)	YES	NULL
+purchase_returns	id	bigint(20)	NO	NULL
+purchase_returns	purchase_id	int(11)	YES	NULL
+purchase_returns	reference_no	varchar(255)	YES	NULL
+purchase_returns	supplier_id	int(11)	YES	NULL
+purchase_returns	transaction_date	varchar(255)	YES	NULL
+purchase_returns	updated_at	timestamp	YES	current_timestamp()
+purchase_return_products	buying_unit_cost	varchar(255)	YES	NULL
+purchase_return_products	created_at	timestamp	YES	current_timestamp()
+purchase_return_products	id	int(11)	NO	NULL
+purchase_return_products	product_id	int(11)	YES	NULL
+purchase_return_products	product_name	varchar(255)	YES	NULL
+purchase_return_products	purchase_quantity	varchar(50)	YES	NULL
+purchase_return_products	purchase_return_id	int(11)	YES	NULL
+purchase_return_products	total_cost	varchar(255)	YES	NULL
+purchase_return_products	updated_at	timestamp	YES	current_timestamp()
+purchase_return_products	variant	varchar(300)	YES	NULL
+refund_requests	admin_approval	int(11)	NO	0
+refund_requests	admin_seen	int(11)	NO	NULL
+refund_requests	created_at	timestamp	NO	current_timestamp()
+refund_requests	id	int(11)	NO	NULL
+refund_requests	order_detail_id	int(11)	NO	NULL
+refund_requests	order_id	int(11)	NO	NULL
+refund_requests	reason	longtext	YES	NULL
+refund_requests	refund_amount	double(8,2)	NO	0.00
+refund_requests	refund_status	int(11)	NO	0
+refund_requests	reject_reason	longtext	YES	NULL
+refund_requests	seller_approval	int(11)	NO	0
+refund_requests	seller_id	int(11)	NO	NULL
+refund_requests	updated_at	timestamp	NO	current_timestamp()
+refund_requests	user_id	int(11)	NO	NULL
+reviews	comment	mediumtext	NO	NULL
+reviews	created_at	timestamp	NO	current_timestamp()
+reviews	id	int(11)	NO	NULL
+reviews	photos	varchar(191)	YES	NULL
+reviews	product_id	int(11)	NO	NULL
+reviews	rating	int(11)	NO	0
+reviews	status	int(11)	NO	1
+reviews	updated_at	timestamp	NO	current_timestamp()
+reviews	user_id	int(11)	NO	NULL
+reviews	viewed	int(11)	NO	0
+roles	created_at	timestamp	YES	NULL
+roles	guard_name	varchar(191)	NO	NULL
+roles	id	bigint(20) unsigned	NO	NULL
+roles	name	varchar(191)	NO	NULL
+roles	updated_at	timestamp	YES	NULL
+role_has_permissions	permission_id	bigint(20) unsigned	NO	NULL
+role_has_permissions	role_id	bigint(20) unsigned	NO	NULL
+role_translations	created_at	timestamp	NO	current_timestamp()
+role_translations	id	bigint(20)	NO	NULL
+role_translations	lang	varchar(100)	NO	NULL
+role_translations	name	varchar(50)	NO	NULL
+role_translations	role_id	bigint(20)	NO	NULL
+role_translations	updated_at	timestamp	NO	current_timestamp()
+searches	count	int(11)	NO	1
+searches	created_at	timestamp	NO	current_timestamp()
+searches	id	int(11)	NO	NULL
+searches	query	varchar(1000)	NO	NULL
+searches	updated_at	timestamp	NO	current_timestamp()
+sellers	admin_to_pay	double(20,2)	NO	0.00
+sellers	bank_acc_name	varchar(200)	YES	NULL
+sellers	bank_acc_no	varchar(50)	YES	NULL
+sellers	bank_name	varchar(255)	YES	NULL
+sellers	bank_payment_status	int(11)	NO	0
+sellers	bank_routing_no	int(11)	YES	NULL
+sellers	cash_on_delivery_status	int(11)	NO	0
+sellers	created_at	timestamp	NO	current_timestamp()
+sellers	id	int(11)	NO	NULL
+sellers	num_of_reviews	int(11)	NO	0
+sellers	num_of_sale	int(11)	NO	0
+sellers	rating	double(3,2)	NO	0.00
+sellers	updated_at	timestamp	NO	current_timestamp()
+sellers	user_id	int(11)	NO	NULL
+sellers	verification_info	longtext	YES	NULL
+sellers	verification_status	int(11)	NO	0
+seller_withdraw_requests	amount	double(20,2)	YES	NULL
+seller_withdraw_requests	created_at	timestamp	NO	current_timestamp()
+seller_withdraw_requests	id	int(11)	NO	NULL
+seller_withdraw_requests	message	longtext	YES	NULL
+seller_withdraw_requests	status	int(11)	YES	NULL
+seller_withdraw_requests	updated_at	timestamp	NO	current_timestamp()
+seller_withdraw_requests	user_id	int(11)	YES	NULL
+seller_withdraw_requests	viewed	int(11)	YES	NULL
+shops	address	varchar(500)	YES	NULL
+shops	admin_to_pay	double(20,2)	NO	0.00
+shops	bank_acc_name	varchar(200)	YES	NULL
+shops	bank_acc_no	varchar(50)	YES	NULL
+shops	bank_name	varchar(255)	YES	NULL
+shops	bank_payment_status	int(11)	NO	0
+shops	bank_routing_no	int(11)	YES	NULL
+shops	banners_half_width	varchar(191)	YES	NULL
+shops	banner_full_width_1	varchar(191)	YES	NULL
+shops	banner_full_width_2	varchar(191)	YES	NULL
+shops	cash_on_delivery_status	int(11)	NO	0
+shops	created_at	timestamp	NO	current_timestamp()
+shops	delivery_pickup_latitude	float(17,15)	YES	NULL
+shops	delivery_pickup_longitude	float(17,15)	YES	NULL
+shops	facebook	varchar(255)	YES	NULL
+shops	google	varchar(255)	YES	NULL
+shops	id	int(11)	NO	NULL
+shops	instagram	varchar(255)	YES	NULL
+shops	logo	varchar(255)	YES	NULL
+shops	meta_description	text	YES	NULL
+shops	meta_title	varchar(255)	YES	NULL
+shops	name	varchar(200)	YES	NULL
+shops	nid	varchar(255)	YES	NULL
+shops	num_of_reviews	int(11)	NO	0
+shops	num_of_sale	int(11)	NO	0
+shops	package_invalid_at	date	YES	NULL
+shops	phone	varchar(255)	YES	NULL
+shops	pick_up_point_id	text	YES	NULL
+shops	product_upload_limit	int(11)	NO	0
+shops	rating	double(3,2)	NO	0.00
+shops	seller_package_id	int(11)	YES	NULL
+shops	shipping_cost	double(20,2)	NO	0.00
+shops	sliders	longtext	YES	NULL
+shops	slug	varchar(255)	YES	NULL
+shops	thermal_printer_width	int(11)	YES	NULL
+shops	top_banner	varchar(191)	YES	NULL
+shops	trade_license	varchar(255)	YES	NULL
+shops	twitter	varchar(255)	YES	NULL
+shops	updated_at	timestamp	YES	current_timestamp()
+shops	user_id	int(11)	NO	NULL
+shops	verification_info	longtext	YES	NULL
+shops	verification_status	int(11)	NO	0
+shops	youtube	varchar(255)	YES	NULL
+size_charts	category_id	int(11)	NO	NULL
+size_charts	created_at	timestamp	NO	current_timestamp()
+size_charts	description	text	YES	NULL
+size_charts	fit_type	varchar(191)	YES	NULL
+size_charts	id	int(10) unsigned	NO	NULL
+size_charts	measurement_option	varchar(191)	YES	NULL
+size_charts	measurement_points	varchar(255)	NO	NULL
+size_charts	name	varchar(255)	NO	NULL
+size_charts	photos	varchar(191)	YES	NULL
+size_charts	size_options	varchar(255)	NO	NULL
+size_charts	stretch_type	varchar(191)	YES	NULL
+size_charts	updated_at	timestamp	NO	current_timestamp()
+size_chart_details	attribute_value_id	int(11)	NO	NULL
+size_chart_details	cen_value	varchar(191)	YES	NULL
+size_chart_details	created_at	timestamp	NO	current_timestamp()
+size_chart_details	id	int(10) unsigned	NO	NULL
+size_chart_details	inch_value	varchar(191)	YES	NULL
+size_chart_details	measurement_point_id	int(11)	NO	NULL
+size_chart_details	size_chart_id	int(11)	NO	NULL
+size_chart_details	updated_at	timestamp	NO	current_timestamp()
+sms_templates	created_at	timestamp	NO	current_timestamp()
+sms_templates	id	int(11)	NO	NULL
+sms_templates	identifier	varchar(100)	NO	NULL
+sms_templates	sms_body	longtext	NO	NULL
+sms_templates	status	tinyint(1)	NO	1
+sms_templates	template_id	varchar(100)	YES	NULL
+sms_templates	updated_at	timestamp	NO	current_timestamp()
+social_credentials	access_token	text	YES	NULL
+social_credentials	avatar	varchar(191)	YES	NULL
+social_credentials	created_at	timestamp	YES	NULL
+social_credentials	email	varchar(191)	YES	NULL
+social_credentials	expires_at	varchar(191)	YES	NULL
+social_credentials	id	bigint(20) unsigned	NO	NULL
+social_credentials	name	varchar(191)	YES	NULL
+social_credentials	nickname	varchar(191)	YES	NULL
+social_credentials	provider_id	varchar(191)	YES	NULL
+social_credentials	provider_name	varchar(191)	YES	NULL
+social_credentials	refresh_token	text	YES	NULL
+social_credentials	updated_at	timestamp	YES	NULL
+social_credentials	user_id	bigint(20)	NO	NULL
+staff	created_at	timestamp	NO	current_timestamp()
+staff	id	int(11)	NO	NULL
+staff	role_id	int(11)	NO	NULL
+staff	updated_at	timestamp	NO	current_timestamp()
+staff	user_id	int(11)	NO	NULL
+states	country_id	int(11)	NO	NULL
+states	created_at	timestamp	NO	current_timestamp()
+states	deleted_at	timestamp	YES	NULL
+states	id	bigint(20)	NO	NULL
+states	name	varchar(255)	NO	NULL
+states	status	int(11)	NO	0
+states	updated_at	timestamp	NO	current_timestamp()
+steadfast_settings	created_at	timestamp	YES	current_timestamp()
+steadfast_settings	id	bigint(20)	NO	NULL
+steadfast_settings	settlement_charge	decimal(5,2)	NO	0.00
+steadfast_settings	steadfast_api_key	varchar(255)	YES	NULL
+steadfast_settings	steadfast_secret_key	varchar(255)	YES	NULL
+steadfast_settings	updated_at	timestamp	YES	current_timestamp()
+stock_adjustments	additional_notes	text	YES	NULL
+stock_adjustments	adjustment_type	enum('normal','abnormal')	NO	'normal'
+stock_adjustments	created_at	timestamp	YES	NULL
+stock_adjustments	created_by	bigint(20) unsigned	NO	NULL
+stock_adjustments	deleted_at	timestamp	YES	NULL
+stock_adjustments	id	bigint(20) unsigned	NO	NULL
+stock_adjustments	reference_no	varchar(191)	NO	NULL
+stock_adjustments	total_amount	decimal(20,2)	NO	0.00
+stock_adjustments	total_amount_recovered	decimal(20,2)	NO	0.00
+stock_adjustments	transaction_date	datetime	NO	NULL
+stock_adjustments	updated_at	timestamp	YES	NULL
+stock_adjustment_lines	created_at	timestamp	YES	NULL
+stock_adjustment_lines	id	bigint(20) unsigned	NO	NULL
+stock_adjustment_lines	product_id	bigint(20) unsigned	NO	NULL
+stock_adjustment_lines	product_stock_id	bigint(20) unsigned	NO	NULL
+stock_adjustment_lines	quantity	decimal(20,4)	NO	0.0000
+stock_adjustment_lines	stock_adjustment_id	bigint(20) unsigned	NO	NULL
+stock_adjustment_lines	subtotal	decimal(20,2)	NO	0.00
+stock_adjustment_lines	unit_price	decimal(20,2)	NO	0.00
+stock_adjustment_lines	updated_at	timestamp	YES	NULL
+stock_allocations	action	varchar(12)	NO	NULL
+stock_allocations	created_at	timestamp	YES	NULL
+stock_allocations	fifo_batch_info	varchar(1000)	YES	NULL
+stock_allocations	id	bigint(20) unsigned	NO	NULL
+stock_allocations	order_demand_id	bigint(20) unsigned	NO	NULL
+stock_allocations	qty	int(11)	NO	NULL
+stock_allocations	stock_movement_id	bigint(20) unsigned	YES	NULL
+stock_balances	allocated	int(11)	NO	0
+stock_balances	created_at	timestamp	YES	NULL
+stock_balances	damaged	int(11)	NO	0
+stock_balances	demand	int(11)	NO	0
+stock_balances	id	bigint(20) unsigned	NO	NULL
+stock_balances	product_id	bigint(20) unsigned	NO	NULL
+stock_balances	updated_at	timestamp	YES	NULL
+stock_balances	variant	varchar(255)	NO	''
+stock_movements	allocated_delta	int(11)	NO	0
+stock_movements	created_at	timestamp	YES	NULL
+stock_movements	created_by	int(10) unsigned	YES	NULL
+stock_movements	demand_delta	int(11)	NO	0
+stock_movements	id	bigint(20) unsigned	NO	NULL
+stock_movements	note	varchar(255)	YES	NULL
+stock_movements	on_hand_delta	int(11)	NO	0
+stock_movements	order_detail_id	bigint(20) unsigned	YES	NULL
+stock_movements	product_id	bigint(20) unsigned	NO	NULL
+stock_movements	source_id	bigint(20) unsigned	YES	NULL
+stock_movements	source_type	varchar(40)	YES	NULL
+stock_movements	type	varchar(30)	NO	NULL
+stock_movements	variant	varchar(255)	NO	''
+stock_return_receipts	condition	varchar(12)	NO	NULL
+stock_return_receipts	created_at	timestamp	YES	NULL
+stock_return_receipts	id	bigint(20) unsigned	NO	NULL
+stock_return_receipts	idempotency_key	varchar(120)	NO	NULL
+stock_return_receipts	note	varchar(255)	YES	NULL
+stock_return_receipts	order_detail_id	bigint(20) unsigned	NO	NULL
+stock_return_receipts	qty	int(11)	NO	NULL
+stock_return_receipts	received_by	int(10) unsigned	YES	NULL
+stock_return_receipts	stock_movement_id	bigint(20) unsigned	YES	NULL
+stock_return_receipts	updated_at	timestamp	YES	NULL
+subscribers	created_at	timestamp	YES	current_timestamp()
+subscribers	email	varchar(50)	NO	NULL
+subscribers	id	int(11)	NO	NULL
+subscribers	updated_at	timestamp	NO	current_timestamp()
+suppliers	address	varchar(255)	YES	NULL
+suppliers	business_name	varchar(255)	YES	NULL
+suppliers	contact_id	varchar(100)	YES	NULL
+suppliers	contact_person_name	varchar(255)	YES	NULL
+suppliers	created_at	timestamp	YES	current_timestamp()
+suppliers	due_amount	decimal(15,2)	NO	0.00
+suppliers	email	varchar(255)	YES	NULL
+suppliers	id	bigint(20)	NO	NULL
+suppliers	mobile	varchar(255)	YES	NULL
+suppliers	opening_balance	varchar(255)	YES	NULL
+suppliers	paid_amount	double(13,2)	NO	0.00
+suppliers	pay_term	varchar(255)	YES	NULL
+suppliers	slug	varchar(255)	YES	NULL
+suppliers	tax_number	varchar(255)	YES	NULL
+suppliers	updated_at	timestamp	YES	current_timestamp()
+supplier_invoices	created_at	timestamp	YES	NULL
+supplier_invoices	created_by	int(10) unsigned	YES	NULL
+supplier_invoices	discount	decimal(20,4)	NO	0.0000
+supplier_invoices	freight	decimal(20,4)	NO	0.0000
+supplier_invoices	goods_receipt_id	bigint(20) unsigned	YES	NULL
+supplier_invoices	id	bigint(20) unsigned	NO	NULL
+supplier_invoices	idempotency_key	varchar(120)	NO	NULL
+supplier_invoices	invoice_date	date	NO	NULL
+supplier_invoices	invoice_no	varchar(80)	NO	NULL
+supplier_invoices	journal_entry_id	bigint(20) unsigned	YES	NULL
+supplier_invoices	paid	decimal(20,4)	NO	0.0000
+supplier_invoices	price_variance	decimal(20,4)	NO	0.0000
+supplier_invoices	status	varchar(12)	NO	'open'
+supplier_invoices	subtotal	decimal(20,4)	NO	NULL
+supplier_invoices	supplier_id	bigint(20) unsigned	NO	NULL
+supplier_invoices	tax	decimal(20,4)	NO	0.0000
+supplier_invoices	total	decimal(20,4)	NO	NULL
+supplier_invoices	updated_at	timestamp	YES	NULL
+supplier_invoice_payments	account_id	bigint(20) unsigned	NO	NULL
+supplier_invoice_payments	amount	decimal(20,4)	NO	NULL
+supplier_invoice_payments	created_at	timestamp	YES	NULL
+supplier_invoice_payments	created_by	int(10) unsigned	YES	NULL
+supplier_invoice_payments	id	bigint(20) unsigned	NO	NULL
+supplier_invoice_payments	idempotency_key	varchar(120)	NO	NULL
+supplier_invoice_payments	journal_entry_id	bigint(20) unsigned	YES	NULL
+supplier_invoice_payments	kind	varchar(12)	NO	NULL
+supplier_invoice_payments	paid_on	date	NO	NULL
+supplier_invoice_payments	supplier_id	bigint(20) unsigned	NO	NULL
+supplier_invoice_payments	supplier_invoice_id	bigint(20) unsigned	YES	NULL
+supplier_invoice_payments	updated_at	timestamp	YES	NULL
+supplier_payments	amount	decimal(15,2)	NO	NULL
+supplier_payments	attachments	longtext	YES	NULL
+supplier_payments	bank_name	varchar(255)	YES	NULL
+supplier_payments	branch_name	varchar(100)	YES	NULL
+supplier_payments	cheque_no	varchar(255)	YES	NULL
+supplier_payments	created_at	timestamp	YES	NULL
+supplier_payments	created_by	bigint(20) unsigned	NO	NULL
+supplier_payments	deleted_at	timestamp	YES	NULL
+supplier_payments	due_amount	decimal(15,2)	NO	0.00
+supplier_payments	encash_date	date	YES	NULL
+supplier_payments	id	bigint(20) unsigned	NO	NULL
+supplier_payments	notes	text	YES	NULL
+supplier_payments	paid_amount	decimal(15,2)	NO	0.00
+supplier_payments	paid_from	varchar(300)	YES	NULL
+supplier_payments	payment_account_id	bigint(20) unsigned	NO	NULL
+supplier_payments	payment_date	date	NO	NULL
+supplier_payments	payment_method	bigint(20)	YES	NULL
+supplier_payments	payment_no	varchar(191)	NO	NULL
+supplier_payments	payment_type	enum('advance','partial','full')	NO	NULL
+supplier_payments	reference_no	varchar(191)	YES	NULL
+supplier_payments	status	enum('pending','paid','partial','cancelled')	NO	'pending'
+supplier_payments	supplier_id	bigint(20) unsigned	NO	NULL
+supplier_payments	transaction_method_id	bigint(20) unsigned	NO	NULL
+supplier_payments	transaction_no	varchar(255)	YES	NULL
+supplier_payments	updated_at	timestamp	YES	NULL
+supplier_payments	voucher_id	bigint(20) unsigned	YES	NULL
+supplier_payment_purchases	created_at	timestamp	YES	NULL
+supplier_payment_purchases	id	bigint(20) unsigned	NO	NULL
+supplier_payment_purchases	paid_amount	decimal(15,2)	NO	NULL
+supplier_payment_purchases	purchase_id	bigint(20) unsigned	NO	NULL
+supplier_payment_purchases	supplier_payment_id	bigint(20) unsigned	NO	NULL
+supplier_payment_purchases	updated_at	timestamp	YES	NULL
+taxes	created_at	timestamp	YES	current_timestamp()
+taxes	id	int(11)	NO	NULL
+taxes	name	varchar(255)	NO	NULL
+taxes	tax_status	tinyint(1)	NO	1
+taxes	updated_at	timestamp	NO	current_timestamp()
+tickets	client_viewed	int(11)	NO	0
+tickets	code	bigint(20)	NO	NULL
+tickets	created_at	timestamp	NO	current_timestamp()
+tickets	details	longtext	YES	NULL
+tickets	files	longtext	YES	NULL
+tickets	id	int(11)	NO	NULL
+tickets	status	varchar(10)	NO	'pending'
+tickets	subject	varchar(255)	NO	NULL
+tickets	updated_at	timestamp	NO	current_timestamp()
+tickets	user_id	int(11)	NO	NULL
+tickets	viewed	int(11)	NO	0
+ticket_replies	created_at	timestamp	NO	current_timestamp()
+ticket_replies	files	longtext	YES	NULL
+ticket_replies	id	int(11)	NO	NULL
+ticket_replies	reply	longtext	NO	NULL
+ticket_replies	ticket_id	int(11)	NO	NULL
+ticket_replies	updated_at	timestamp	NO	current_timestamp()
+ticket_replies	user_id	int(11)	NO	NULL
+transactions	additional_content	text	YES	NULL
+transactions	created_at	timestamp	NO	current_timestamp()
+transactions	gateway	varchar(255)	YES	NULL
+transactions	id	int(11)	NO	NULL
+transactions	mpesa_receipt	varchar(255)	YES	NULL
+transactions	mpesa_request	varchar(255)	YES	NULL
+transactions	payment_type	varchar(255)	YES	NULL
+transactions	status	int(11)	NO	0
+transactions	updated_at	timestamp	NO	current_timestamp()
+transactions	user_id	int(11)	NO	NULL
+transaction_methods	account_number	varchar(191)	YES	NULL
+transaction_methods	bank_account_id	bigint(20) unsigned	YES	NULL
+transaction_methods	charge	decimal(8,2)	NO	0.00
+transaction_methods	created_at	timestamp	YES	NULL
+transaction_methods	deleted_at	timestamp	YES	NULL
+transaction_methods	deposit_type	enum('auto','manual')	NO	'auto'
+transaction_methods	description	text	YES	NULL
+transaction_methods	id	bigint(20) unsigned	NO	NULL
+transaction_methods	name	varchar(191)	NO	NULL
+transaction_methods	source_account_id	bigint(20) unsigned	YES	NULL
+transaction_methods	status	enum('active','inactive')	NO	'active'
+transaction_methods	type	enum('cash','bank','mobile_bank','card','online','cheque')	NO	'cash'
+transaction_methods	updated_at	timestamp	YES	NULL
+translations	created_at	timestamp	NO	current_timestamp()
+translations	id	int(11)	NO	NULL
+translations	lang	varchar(10)	YES	NULL
+translations	lang_key	text	YES	NULL
+translations	lang_value	text	YES	NULL
+translations	updated_at	timestamp	NO	current_timestamp()
+uploads	created_at	timestamp	NO	current_timestamp()
+uploads	deleted_at	timestamp	YES	NULL
+uploads	extension	varchar(10)	YES	NULL
+uploads	external_link	varchar(500)	YES	NULL
+uploads	file_name	varchar(255)	YES	NULL
+uploads	file_original_name	varchar(255)	YES	NULL
+uploads	file_size	int(11)	YES	NULL
+uploads	id	int(11)	NO	NULL
+uploads	type	varchar(15)	YES	NULL
+uploads	updated_at	timestamp	NO	current_timestamp()
+uploads	user_id	int(11)	YES	NULL
+users	access_token	longtext	YES	NULL
+users	address	varchar(300)	YES	NULL
+users	avatar	varchar(256)	YES	NULL
+users	avatar_original	varchar(256)	YES	NULL
+users	balance	double(20,2)	NO	0.00
+users	banned	tinyint(4)	NO	0
+users	city	varchar(30)	YES	NULL
+users	country	varchar(30)	YES	NULL
+users	courier_stats	longtext	YES	NULL
+users	courier_stats_updated_at	timestamp	YES	NULL
+users	created_at	timestamp	YES	NULL
+users	customer_ip	varchar(300)	YES	NULL
+users	customer_package_id	int(11)	YES	NULL
+users	device_token	varchar(255)	YES	NULL
+users	email	varchar(191)	YES	NULL
+users	email_verified_at	timestamp	YES	NULL
+users	guest_email	varchar(255)	YES	NULL
+users	guest_phone	varchar(255)	YES	NULL
+users	id	int(10) unsigned	NO	NULL
+users	last_ip	varchar(300)	YES	NULL
+users	name	varchar(191)	NO	NULL
+users	new_email_verificiation_code	text	YES	NULL
+users	password	varchar(191)	YES	NULL
+users	phone	varchar(20)	YES	NULL
+users	postal_code	varchar(20)	YES	NULL
+users	provider	varchar(255)	YES	NULL
+users	provider_id	varchar(50)	YES	NULL
+users	referral_code	varchar(255)	YES	NULL
+users	referred_by	int(11)	YES	NULL
+users	refresh_token	text	YES	NULL
+users	remaining_uploads	int(11)	YES	0
+users	remember_token	varchar(100)	YES	NULL
+users	state	varchar(30)	YES	NULL
+users	updated_at	timestamp	YES	NULL
+users	user_type	varchar(20)	NO	'customer'
+users	verification_code	text	YES	NULL
+user_coupons	coupon_code	varchar(255)	NO	NULL
+user_coupons	coupon_id	int(11)	NO	NULL
+user_coupons	discount	double(20,2)	NO	NULL
+user_coupons	discount_type	varchar(20)	NO	NULL
+user_coupons	expiry_date	int(11)	NO	NULL
+user_coupons	min_buy	double(20,2)	NO	NULL
+user_coupons	user_id	int(11)	NO	NULL
+user_coupons	validation_days	int(11)	NO	NULL
+vouchers	amount	decimal(15,2)	NO	NULL
+vouchers	approved_at	timestamp	YES	NULL
+vouchers	approved_by	bigint(20) unsigned	YES	NULL
+vouchers	created_at	timestamp	YES	NULL
+vouchers	created_by	bigint(20) unsigned	NO	NULL
+vouchers	date	date	NO	NULL
+vouchers	deleted_at	timestamp	YES	NULL
+vouchers	description	text	YES	NULL
+vouchers	id	bigint(20) unsigned	NO	NULL
+vouchers	reference_no	varchar(191)	YES	NULL
+vouchers	status	enum('draft','approved','rejected','posted')	NO	'draft'
+vouchers	type	enum('CP','BP','CR','BR','JV','CV')	NO	NULL
+vouchers	updated_at	timestamp	YES	NULL
+vouchers	voucher_no	varchar(191)	NO	NULL
+voucher_details	account_id	bigint(20) unsigned	NO	NULL
+voucher_details	created_at	timestamp	YES	NULL
+voucher_details	credit	decimal(15,2)	NO	0.00
+voucher_details	customer_id	bigint(20) unsigned	YES	NULL
+voucher_details	debit	decimal(15,2)	NO	0.00
+voucher_details	id	bigint(20) unsigned	NO	NULL
+voucher_details	narration	text	YES	NULL
+voucher_details	order_id	bigint(20) unsigned	YES	NULL
+voucher_details	supplier_id	bigint(20) unsigned	YES	NULL
+voucher_details	updated_at	timestamp	YES	NULL
+voucher_details	voucher_id	bigint(20) unsigned	NO	NULL
+wallets	amount	double(20,2)	NO	NULL
+wallets	created_at	timestamp	NO	current_timestamp()
+wallets	id	int(11)	NO	NULL
+wallets	payment_details	longtext	YES	NULL
+wallets	payment_method	varchar(255)	YES	NULL
+wallets	updated_at	timestamp	NO	current_timestamp()
+wallets	user_id	int(11)	NO	NULL
+wholesale_prices	created_at	timestamp	NO	current_timestamp()
+wholesale_prices	id	int(11)	NO	NULL
+wholesale_prices	max_qty	int(11)	NO	0
+wholesale_prices	min_qty	int(11)	NO	0
+wholesale_prices	price	double(20,2)	NO	0.00
+wholesale_prices	product_stock_id	int(11)	NO	NULL
+wholesale_prices	updated_at	timestamp	NO	current_timestamp()
+wishlists	created_at	timestamp	YES	current_timestamp()
+wishlists	id	int(11)	NO	NULL
+wishlists	product_id	int(11)	NO	NULL
+wishlists	updated_at	timestamp	NO	current_timestamp()
+wishlists	user_id	int(11)	NO	NULL
+zones	created_at	timestamp	NO	current_timestamp()
+zones	id	int(11)	NO	NULL
+zones	name	varchar(255)	NO	NULL
+zones	status	tinyint(1)	NO	NULL
+zones	updated_at	timestamp	NO	current_timestamp()

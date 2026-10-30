@@ -1,0 +1,1010 @@
+[
+ {
+  "area": "Dashboard",
+  "name": "desktop: /admin/purchasing loads (200, no server error text)",
+  "pass": true,
+  "detail": "status 200"
+ },
+ {
+  "area": "Dashboard",
+  "name": "desktop: /admin/purchasing no horizontal page overflow",
+  "pass": true,
+  "detail": "overflow 0px"
+ },
+ {
+  "area": "Dashboard",
+  "name": "desktop: /admin/purchasing no page JS errors",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Dashboard",
+  "name": "desktop: shows cards and navigation",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Quick Purchase",
+  "name": "desktop: /admin/purchasing/quick-purchase loads (200, no server error text)",
+  "pass": true,
+  "detail": "status 200"
+ },
+ {
+  "area": "Quick Purchase",
+  "name": "desktop: /admin/purchasing/quick-purchase no horizontal page overflow",
+  "pass": true,
+  "detail": "overflow 0px"
+ },
+ {
+  "area": "Quick Purchase",
+  "name": "desktop: /admin/purchasing/quick-purchase no page JS errors",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Quick Purchase",
+  "name": "desktop: empty submit is refused with a message",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Quick Purchase",
+  "name": "desktop: \"+ New\" supplier creates and selects the supplier",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Quick Purchase",
+  "name": "desktop: product search \"SAMPLE Blender\" returns results",
+  "pass": true,
+  "detail": "1 hits"
+ },
+ {
+  "area": "Quick Purchase",
+  "name": "desktop: product search \"SAMPLE Travel\" returns results",
+  "pass": true,
+  "detail": "1 hits"
+ },
+ {
+  "area": "Quick Purchase",
+  "name": "desktop: two lines added",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Quick Purchase",
+  "name": "desktop: calculations (subtotal 500, discount 20, goods incl. freight 510)",
+  "pass": true,
+  "detail": "sub 500.00 disc 20.00 goods 510.00"
+ },
+ {
+  "area": "Quick Purchase",
+  "name": "desktop: Save draft shows a success message and clears the form",
+  "pass": true,
+  "detail": "Draft saved: PO-261030-9F4EC2"
+ },
+ {
+  "area": "Quick Purchase",
+  "name": "desktop: double click on Receive keeps the success message (the reported bug)",
+  "pass": true,
+  "detail": "Goods received: GRN-261030-6D5809 · invoice recorded"
+ },
+ {
+  "area": "Quick Purchase",
+  "name": "desktop: the double click created exactly one receipt",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Dashboard",
+  "name": "mobile: /admin/purchasing loads (200, no server error text)",
+  "pass": true,
+  "detail": "status 200"
+ },
+ {
+  "area": "Dashboard",
+  "name": "mobile: /admin/purchasing no horizontal page overflow",
+  "pass": true,
+  "detail": "overflow 0px"
+ },
+ {
+  "area": "Dashboard",
+  "name": "mobile: /admin/purchasing no page JS errors",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Dashboard",
+  "name": "mobile: shows cards and navigation",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Quick Purchase",
+  "name": "mobile: /admin/purchasing/quick-purchase loads (200, no server error text)",
+  "pass": true,
+  "detail": "status 200"
+ },
+ {
+  "area": "Quick Purchase",
+  "name": "mobile: /admin/purchasing/quick-purchase no horizontal page overflow",
+  "pass": true,
+  "detail": "overflow 0px"
+ },
+ {
+  "area": "Quick Purchase",
+  "name": "mobile: /admin/purchasing/quick-purchase no page JS errors",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Quick Purchase",
+  "name": "mobile: empty submit is refused with a message",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Quick Purchase",
+  "name": "mobile: product search \"SAMPLE Blender\" returns results",
+  "pass": true,
+  "detail": "1 hits"
+ },
+ {
+  "area": "Quick Purchase",
+  "name": "mobile: product search \"SAMPLE Travel\" returns results",
+  "pass": true,
+  "detail": "1 hits"
+ },
+ {
+  "area": "Quick Purchase",
+  "name": "mobile: two lines added",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Quick Purchase",
+  "name": "mobile: calculations (subtotal 500, discount 20, goods incl. freight 510)",
+  "pass": true,
+  "detail": "sub 500.00 disc 20.00 goods 510.00"
+ },
+ {
+  "area": "Quick Purchase",
+  "name": "mobile: Save draft shows a success message and clears the form",
+  "pass": true,
+  "detail": "Draft saved: PO-261030-29B03B"
+ },
+ {
+  "area": "Requirements",
+  "name": "desktop: /admin/purchasing/requirements loads (200, no server error text)",
+  "pass": true,
+  "detail": "status 200"
+ },
+ {
+  "area": "Requirements",
+  "name": "desktop: /admin/purchasing/requirements no horizontal page overflow",
+  "pass": true,
+  "detail": "overflow 0px"
+ },
+ {
+  "area": "Requirements",
+  "name": "desktop: /admin/purchasing/requirements no page JS errors",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Requirements",
+  "name": "desktop: shows the confirmed backorder shortage for SAMPLE Gift Mug Set",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Purchase Orders",
+  "name": "desktop: /admin/purchasing/reports/purchase-orders loads (200, no server error text)",
+  "pass": true,
+  "detail": "status 200"
+ },
+ {
+  "area": "Purchase Orders",
+  "name": "desktop: /admin/purchasing/reports/purchase-orders no horizontal page overflow",
+  "pass": true,
+  "detail": "overflow 0px"
+ },
+ {
+  "area": "Purchase Orders",
+  "name": "desktop: /admin/purchasing/reports/purchase-orders no page JS errors",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Goods Receiving",
+  "name": "desktop: /admin/purchasing/receiving loads (200, no server error text)",
+  "pass": true,
+  "detail": "status 200"
+ },
+ {
+  "area": "Goods Receiving",
+  "name": "desktop: /admin/purchasing/receiving no horizontal page overflow",
+  "pass": true,
+  "detail": "overflow 0px"
+ },
+ {
+  "area": "Goods Receiving",
+  "name": "desktop: /admin/purchasing/receiving no page JS errors",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Goods Receiving",
+  "name": "desktop: receive form opens from the list",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Goods Receiving",
+  "name": "desktop: partial receipt recorded and the order becomes partially received",
+  "pass": true,
+  "detail": "receipt lines 2, statuses partially_received,partially_received"
+ },
+ {
+  "area": "Goods Receiving",
+  "name": "desktop: the success flash (\"Goods received: GRN-…\") is in the response",
+  "pass": true,
+  "detail": "theme toast rendering is not available in the stand-in, so the flash payload in the page is checked"
+ },
+ {
+  "area": "Goods Receiving",
+  "name": "desktop: /admin/purchasing/receiving loads (200, no server error text)",
+  "pass": true,
+  "detail": "status 200"
+ },
+ {
+  "area": "Goods Receiving",
+  "name": "desktop: /admin/purchasing/receiving no horizontal page overflow",
+  "pass": true,
+  "detail": "overflow 0px"
+ },
+ {
+  "area": "Goods Receiving",
+  "name": "desktop: /admin/purchasing/receiving no page JS errors",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Goods Receiving",
+  "name": "desktop: the order is still listed as partially received",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Supplier Payments",
+  "name": "desktop: /admin/purchasing/supplier-payments loads (200, no server error text)",
+  "pass": true,
+  "detail": "status 200"
+ },
+ {
+  "area": "Supplier Payments",
+  "name": "desktop: /admin/purchasing/supplier-payments no horizontal page overflow",
+  "pass": true,
+  "detail": "overflow 0px"
+ },
+ {
+  "area": "Supplier Payments",
+  "name": "desktop: /admin/purchasing/supplier-payments no page JS errors",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Supplier Payments",
+  "name": "desktop: uninvoiced receipt is offered for an invoice",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Supplier Payments",
+  "name": "desktop: invoice recorded and listed with its due",
+  "pass": true,
+  "detail": "Invoice Date Total Paid Due Status Pay E2E-ALPHA-1 2026-10-30 1200.0000 0.0000 1200.00 open Pay from E2E Bank (89600.00)"
+ },
+ {
+  "area": "Supplier Payments",
+  "name": "desktop: paying more than the due is blocked by form validation",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Supplier Payments",
+  "name": "desktop: partial payment recorded (status partial)",
+  "pass": true,
+  "detail": "Invoice Date Total Paid Due Status Pay E2E-ALPHA-1 2026-10-30 1200.0000 400.0000 800.00 partial Pay from E2E Bank (89200.00) E2E Cash (50000.00) Pay INV-GRN-261"
+ },
+ {
+  "area": "Supplier Ledger",
+  "name": "desktop: /admin/purchasing/reports/supplier-statement?supplier_id=2372 loads (200, no server error text)",
+  "pass": true,
+  "detail": "status 200"
+ },
+ {
+  "area": "Supplier Ledger",
+  "name": "desktop: /admin/purchasing/reports/supplier-statement?supplier_id=2372 no horizontal page overflow",
+  "pass": true,
+  "detail": "overflow 0px"
+ },
+ {
+  "area": "Supplier Ledger",
+  "name": "desktop: /admin/purchasing/reports/supplier-statement?supplier_id=2372 no page JS errors",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Supplier Ledger",
+  "name": "desktop: statement shows the invoice, the payment and a balance equal to the supplier record",
+  "pass": true,
+  "detail": "980.00 / 980.00"
+ },
+ {
+  "area": "Inventory Overview",
+  "name": "desktop: /admin/purchasing/stock loads (200, no server error text)",
+  "pass": true,
+  "detail": "status 200"
+ },
+ {
+  "area": "Inventory Overview",
+  "name": "desktop: /admin/purchasing/stock no horizontal page overflow",
+  "pass": true,
+  "detail": "overflow 0px"
+ },
+ {
+  "area": "Inventory Overview",
+  "name": "desktop: /admin/purchasing/stock no page JS errors",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Inventory Overview",
+  "name": "desktop: search narrows the list",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Stock Policies",
+  "name": "desktop: policy saved and visible after reload",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Purchase Returns (customer)",
+  "name": "desktop: /admin/purchasing/returns loads (200, no server error text)",
+  "pass": true,
+  "detail": "status 200"
+ },
+ {
+  "area": "Purchase Returns (customer)",
+  "name": "desktop: /admin/purchasing/returns no horizontal page overflow",
+  "pass": true,
+  "detail": "overflow 0px"
+ },
+ {
+  "area": "Purchase Returns (customer)",
+  "name": "desktop: /admin/purchasing/returns no page JS errors",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Purchase Returns (supplier)",
+  "name": "desktop: /admin/purchasing/supplier-returns loads (200, no server error text)",
+  "pass": true,
+  "detail": "status 200"
+ },
+ {
+  "area": "Purchase Returns (supplier)",
+  "name": "desktop: /admin/purchasing/supplier-returns no horizontal page overflow",
+  "pass": true,
+  "detail": "overflow 0px"
+ },
+ {
+  "area": "Purchase Returns (supplier)",
+  "name": "desktop: /admin/purchasing/supplier-returns no page JS errors",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Purchase Returns (supplier)",
+  "name": "desktop: return to supplier gives a success flash",
+  "pass": true,
+  "detail": "Returned to supplier. Supplier credit: 40');\n                    \n        $('.dropdown-menu a[data-toggle="
+ },
+ {
+  "area": "Inventory Overview",
+  "name": "desktop: /admin/purchasing/backorders loads (200, no server error text)",
+  "pass": true,
+  "detail": "status 200"
+ },
+ {
+  "area": "Inventory Overview",
+  "name": "desktop: /admin/purchasing/backorders no horizontal page overflow",
+  "pass": true,
+  "detail": "overflow 0px"
+ },
+ {
+  "area": "Inventory Overview",
+  "name": "desktop: /admin/purchasing/backorders no page JS errors",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Inventory Overview",
+  "name": "desktop: /admin/purchasing/valuation loads (200, no server error text)",
+  "pass": true,
+  "detail": "status 200"
+ },
+ {
+  "area": "Inventory Overview",
+  "name": "desktop: /admin/purchasing/valuation no horizontal page overflow",
+  "pass": true,
+  "detail": "overflow 0px"
+ },
+ {
+  "area": "Inventory Overview",
+  "name": "desktop: /admin/purchasing/valuation no page JS errors",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Inventory Overview",
+  "name": "desktop: /admin/purchasing/movements loads (200, no server error text)",
+  "pass": true,
+  "detail": "status 200"
+ },
+ {
+  "area": "Inventory Overview",
+  "name": "desktop: /admin/purchasing/movements no horizontal page overflow",
+  "pass": true,
+  "detail": "overflow 0px"
+ },
+ {
+  "area": "Inventory Overview",
+  "name": "desktop: /admin/purchasing/movements no page JS errors",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Supplier Ledger",
+  "name": "desktop: /admin/purchasing/supplier-outstanding loads (200, no server error text)",
+  "pass": true,
+  "detail": "status 200"
+ },
+ {
+  "area": "Supplier Ledger",
+  "name": "desktop: /admin/purchasing/supplier-outstanding no horizontal page overflow",
+  "pass": true,
+  "detail": "overflow 0px"
+ },
+ {
+  "area": "Supplier Ledger",
+  "name": "desktop: /admin/purchasing/supplier-outstanding no page JS errors",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Order Details",
+  "name": "desktop: /admin/orders/eyJpdiI6Ikp5RUlBWHdNZ3c3V1NTQmhERDNPQ2c9PSIsInZhbHVlIjoiVUZhU081ZEhRZU44cS9WTGxhMXE1UT09IiwibWFjIjoiYmRjY2MxYWRlNzgxNDE1OWZhM2E1NmNiOWUxOGFjYmVlYzQ3NDc1MjE2NjI4OTY1MGI3Y2EyYTliMGE5ZWZjOCIsInRhZyI6IiJ9/show loads (200, no server error text)",
+  "pass": true,
+  "detail": "status 200"
+ },
+ {
+  "area": "Order Details",
+  "name": "desktop: /admin/orders/eyJpdiI6Ikp5RUlBWHdNZ3c3V1NTQmhERDNPQ2c9PSIsInZhbHVlIjoiVUZhU081ZEhRZU44cS9WTGxhMXE1UT09IiwibWFjIjoiYmRjY2MxYWRlNzgxNDE1OWZhM2E1NmNiOWUxOGFjYmVlYzQ3NDc1MjE2NjI4OTY1MGI3Y2EyYTliMGE5ZWZjOCIsInRhZyI6IiJ9/show no horizontal page overflow",
+  "pass": true,
+  "detail": "overflow 0px"
+ },
+ {
+  "area": "Order Details",
+  "name": "desktop: /admin/orders/eyJpdiI6Ikp5RUlBWHdNZ3c3V1NTQmhERDNPQ2c9PSIsInZhbHVlIjoiVUZhU081ZEhRZU44cS9WTGxhMXE1UT09IiwibWFjIjoiYmRjY2MxYWRlNzgxNDE1OWZhM2E1NmNiOWUxOGFjYmVlYzQ3NDc1MjE2NjI4OTY1MGI3Y2EyYTliMGE5ZWZjOCIsInRhZyI6IiJ9/show no page JS errors",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Order Details",
+  "name": "desktop: order page shows the order code and its product line",
+  "pass": true,
+  "detail": "Dashboard Inventory And Purchase Suppliers List Purchases Li"
+ },
+ {
+  "area": "Financial Reports",
+  "name": "desktop: /admin/accounts/reports/balance-sheet loads (200, no server error text)",
+  "pass": true,
+  "detail": "status 200"
+ },
+ {
+  "area": "Financial Reports",
+  "name": "desktop: /admin/accounts/reports/balance-sheet no horizontal page overflow",
+  "pass": true,
+  "detail": "overflow 0px (legacy accounts layout; tolerance 8px for the stand-in theme)"
+ },
+ {
+  "area": "Financial Reports",
+  "name": "desktop: /admin/accounts/reports/balance-sheet no page JS errors",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Financial Reports",
+  "name": "desktop: balance-sheet states its ledger source",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Financial Reports",
+  "name": "desktop: /admin/accounts/reports/profit-loss loads (200, no server error text)",
+  "pass": true,
+  "detail": "status 200"
+ },
+ {
+  "area": "Financial Reports",
+  "name": "desktop: /admin/accounts/reports/profit-loss no horizontal page overflow",
+  "pass": true,
+  "detail": "overflow 0px (legacy accounts layout; tolerance 8px for the stand-in theme)"
+ },
+ {
+  "area": "Financial Reports",
+  "name": "desktop: /admin/accounts/reports/profit-loss no page JS errors",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Financial Reports",
+  "name": "desktop: profit-loss states its ledger source",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Financial Reports",
+  "name": "desktop: /admin/accounts/reports/trial-balance loads (200, no server error text)",
+  "pass": true,
+  "detail": "status 200"
+ },
+ {
+  "area": "Financial Reports",
+  "name": "desktop: /admin/accounts/reports/trial-balance no horizontal page overflow",
+  "pass": true,
+  "detail": "overflow 0px (legacy accounts layout; tolerance 8px for the stand-in theme)"
+ },
+ {
+  "area": "Financial Reports",
+  "name": "desktop: /admin/accounts/reports/trial-balance no page JS errors",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Financial Reports",
+  "name": "desktop: trial-balance states its ledger source",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Financial Reports",
+  "name": "desktop: /admin/accounts/reports/cash-book loads (200, no server error text)",
+  "pass": true,
+  "detail": "status 200"
+ },
+ {
+  "area": "Financial Reports",
+  "name": "desktop: /admin/accounts/reports/cash-book no horizontal page overflow",
+  "pass": true,
+  "detail": "overflow 0px (legacy accounts layout; tolerance 8px for the stand-in theme)"
+ },
+ {
+  "area": "Financial Reports",
+  "name": "desktop: /admin/accounts/reports/cash-book no page JS errors",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Financial Reports",
+  "name": "desktop: /admin/accounts/reports/balance-sheet?date_range=custom&end_date=2020-01-01 loads (200, no server error text)",
+  "pass": true,
+  "detail": "status 200"
+ },
+ {
+  "area": "Financial Reports",
+  "name": "desktop: /admin/accounts/reports/balance-sheet?date_range=custom&end_date=2020-01-01 no horizontal page overflow",
+  "pass": true,
+  "detail": "overflow 4px (legacy accounts layout; tolerance 8px for the stand-in theme)"
+ },
+ {
+  "area": "Financial Reports",
+  "name": "desktop: /admin/accounts/reports/balance-sheet?date_range=custom&end_date=2020-01-01 no page JS errors",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Financial Reports",
+  "name": "desktop: /admin/accounts/reports/balance-sheet?date_range=custom&end_date=2026-10-30 loads (200, no server error text)",
+  "pass": true,
+  "detail": "status 200"
+ },
+ {
+  "area": "Financial Reports",
+  "name": "desktop: /admin/accounts/reports/balance-sheet?date_range=custom&end_date=2026-10-30 no horizontal page overflow",
+  "pass": true,
+  "detail": "overflow 4px (legacy accounts layout; tolerance 8px for the stand-in theme)"
+ },
+ {
+  "area": "Financial Reports",
+  "name": "desktop: /admin/accounts/reports/balance-sheet?date_range=custom&end_date=2026-10-30 no page JS errors",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Financial Reports",
+  "name": "desktop: the Balance Sheet date filter changes the figures",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Financial Reports",
+  "name": "desktop: /admin/purchasing/reports/general-ledger loads (200, no server error text)",
+  "pass": true,
+  "detail": "status 200"
+ },
+ {
+  "area": "Financial Reports",
+  "name": "desktop: /admin/purchasing/reports/general-ledger no horizontal page overflow",
+  "pass": true,
+  "detail": "overflow 0px"
+ },
+ {
+  "area": "Financial Reports",
+  "name": "desktop: /admin/purchasing/reports/general-ledger no page JS errors",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Financial Reports",
+  "name": "desktop: general ledger lists journal lines",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Financial Reports",
+  "name": "desktop: /admin/purchasing/reports/actual-order-profit loads (200, no server error text)",
+  "pass": true,
+  "detail": "status 200"
+ },
+ {
+  "area": "Financial Reports",
+  "name": "desktop: /admin/purchasing/reports/actual-order-profit no horizontal page overflow",
+  "pass": true,
+  "detail": "overflow 0px"
+ },
+ {
+  "area": "Financial Reports",
+  "name": "desktop: /admin/purchasing/reports/actual-order-profit no page JS errors",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Financial Reports",
+  "name": "desktop: order profit separates final from non-final",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Requirements",
+  "name": "mobile: /admin/purchasing/requirements loads (200, no server error text)",
+  "pass": true,
+  "detail": "status 200"
+ },
+ {
+  "area": "Requirements",
+  "name": "mobile: /admin/purchasing/requirements no horizontal page overflow",
+  "pass": true,
+  "detail": "overflow 0px"
+ },
+ {
+  "area": "Requirements",
+  "name": "mobile: /admin/purchasing/requirements no page JS errors",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Requirements",
+  "name": "mobile: shows the confirmed backorder shortage for SAMPLE Gift Mug Set",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Purchase Orders",
+  "name": "mobile: /admin/purchasing/reports/purchase-orders loads (200, no server error text)",
+  "pass": true,
+  "detail": "status 200"
+ },
+ {
+  "area": "Purchase Orders",
+  "name": "mobile: /admin/purchasing/reports/purchase-orders no horizontal page overflow",
+  "pass": true,
+  "detail": "overflow 0px"
+ },
+ {
+  "area": "Purchase Orders",
+  "name": "mobile: /admin/purchasing/reports/purchase-orders no page JS errors",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Goods Receiving",
+  "name": "mobile: /admin/purchasing/receiving loads (200, no server error text)",
+  "pass": true,
+  "detail": "status 200"
+ },
+ {
+  "area": "Goods Receiving",
+  "name": "mobile: /admin/purchasing/receiving no horizontal page overflow",
+  "pass": true,
+  "detail": "overflow 0px"
+ },
+ {
+  "area": "Goods Receiving",
+  "name": "mobile: /admin/purchasing/receiving no page JS errors",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Supplier Payments",
+  "name": "mobile: /admin/purchasing/supplier-payments loads (200, no server error text)",
+  "pass": true,
+  "detail": "status 200"
+ },
+ {
+  "area": "Supplier Payments",
+  "name": "mobile: /admin/purchasing/supplier-payments no horizontal page overflow",
+  "pass": true,
+  "detail": "overflow 0px"
+ },
+ {
+  "area": "Supplier Payments",
+  "name": "mobile: /admin/purchasing/supplier-payments no page JS errors",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Inventory Overview",
+  "name": "mobile: /admin/purchasing/stock loads (200, no server error text)",
+  "pass": true,
+  "detail": "status 200"
+ },
+ {
+  "area": "Inventory Overview",
+  "name": "mobile: /admin/purchasing/stock no horizontal page overflow",
+  "pass": true,
+  "detail": "overflow 0px"
+ },
+ {
+  "area": "Inventory Overview",
+  "name": "mobile: /admin/purchasing/stock no page JS errors",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Purchase Returns (customer)",
+  "name": "mobile: /admin/purchasing/returns loads (200, no server error text)",
+  "pass": true,
+  "detail": "status 200"
+ },
+ {
+  "area": "Purchase Returns (customer)",
+  "name": "mobile: /admin/purchasing/returns no horizontal page overflow",
+  "pass": true,
+  "detail": "overflow 0px"
+ },
+ {
+  "area": "Purchase Returns (customer)",
+  "name": "mobile: /admin/purchasing/returns no page JS errors",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Purchase Returns (supplier)",
+  "name": "mobile: /admin/purchasing/supplier-returns loads (200, no server error text)",
+  "pass": true,
+  "detail": "status 200"
+ },
+ {
+  "area": "Purchase Returns (supplier)",
+  "name": "mobile: /admin/purchasing/supplier-returns no horizontal page overflow",
+  "pass": true,
+  "detail": "overflow 0px"
+ },
+ {
+  "area": "Purchase Returns (supplier)",
+  "name": "mobile: /admin/purchasing/supplier-returns no page JS errors",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Inventory Overview",
+  "name": "mobile: /admin/purchasing/backorders loads (200, no server error text)",
+  "pass": true,
+  "detail": "status 200"
+ },
+ {
+  "area": "Inventory Overview",
+  "name": "mobile: /admin/purchasing/backorders no horizontal page overflow",
+  "pass": true,
+  "detail": "overflow 0px"
+ },
+ {
+  "area": "Inventory Overview",
+  "name": "mobile: /admin/purchasing/backorders no page JS errors",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Inventory Overview",
+  "name": "mobile: /admin/purchasing/valuation loads (200, no server error text)",
+  "pass": true,
+  "detail": "status 200"
+ },
+ {
+  "area": "Inventory Overview",
+  "name": "mobile: /admin/purchasing/valuation no horizontal page overflow",
+  "pass": true,
+  "detail": "overflow 0px"
+ },
+ {
+  "area": "Inventory Overview",
+  "name": "mobile: /admin/purchasing/valuation no page JS errors",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Inventory Overview",
+  "name": "mobile: /admin/purchasing/movements loads (200, no server error text)",
+  "pass": true,
+  "detail": "status 200"
+ },
+ {
+  "area": "Inventory Overview",
+  "name": "mobile: /admin/purchasing/movements no horizontal page overflow",
+  "pass": true,
+  "detail": "overflow 0px"
+ },
+ {
+  "area": "Inventory Overview",
+  "name": "mobile: /admin/purchasing/movements no page JS errors",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Supplier Ledger",
+  "name": "mobile: /admin/purchasing/supplier-outstanding loads (200, no server error text)",
+  "pass": true,
+  "detail": "status 200"
+ },
+ {
+  "area": "Supplier Ledger",
+  "name": "mobile: /admin/purchasing/supplier-outstanding no horizontal page overflow",
+  "pass": true,
+  "detail": "overflow 0px"
+ },
+ {
+  "area": "Supplier Ledger",
+  "name": "mobile: /admin/purchasing/supplier-outstanding no page JS errors",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Order Details",
+  "name": "mobile: /admin/orders/eyJpdiI6IldLVzJjb2tuWXhLaHhkcVpibXNmQVE9PSIsInZhbHVlIjoiRW1SSlZBKzZDNVBwSmRHQk03MXpKQT09IiwibWFjIjoiYTYzZTE4Nzc0ZmNhYTA1NWE2NDRiYmFiNTZiNDI2YjRlOTYxM2Y2Mzc4MzU2OTkwYWE1YTUwN2U0NDI2MTFkNyIsInRhZyI6IiJ9/show loads (200, no server error text)",
+  "pass": true,
+  "detail": "status 200"
+ },
+ {
+  "area": "Order Details",
+  "name": "mobile: /admin/orders/eyJpdiI6IldLVzJjb2tuWXhLaHhkcVpibXNmQVE9PSIsInZhbHVlIjoiRW1SSlZBKzZDNVBwSmRHQk03MXpKQT09IiwibWFjIjoiYTYzZTE4Nzc0ZmNhYTA1NWE2NDRiYmFiNTZiNDI2YjRlOTYxM2Y2Mzc4MzU2OTkwYWE1YTUwN2U0NDI2MTFkNyIsInRhZyI6IiJ9/show no horizontal page overflow",
+  "pass": true,
+  "detail": "overflow 0px"
+ },
+ {
+  "area": "Order Details",
+  "name": "mobile: /admin/orders/eyJpdiI6IldLVzJjb2tuWXhLaHhkcVpibXNmQVE9PSIsInZhbHVlIjoiRW1SSlZBKzZDNVBwSmRHQk03MXpKQT09IiwibWFjIjoiYTYzZTE4Nzc0ZmNhYTA1NWE2NDRiYmFiNTZiNDI2YjRlOTYxM2Y2Mzc4MzU2OTkwYWE1YTUwN2U0NDI2MTFkNyIsInRhZyI6IiJ9/show no page JS errors",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Order Details",
+  "name": "mobile: order page shows the order code and its product line",
+  "pass": true,
+  "detail": "Order Details#683898 Confirmed demand: 6 · in stock for this"
+ },
+ {
+  "area": "Financial Reports",
+  "name": "mobile: /admin/accounts/reports/balance-sheet loads (200, no server error text)",
+  "pass": true,
+  "detail": "status 200"
+ },
+ {
+  "area": "Financial Reports",
+  "name": "mobile: /admin/accounts/reports/balance-sheet no horizontal page overflow",
+  "pass": true,
+  "detail": "overflow 0px (legacy accounts layout; tolerance 8px for the stand-in theme)"
+ },
+ {
+  "area": "Financial Reports",
+  "name": "mobile: /admin/accounts/reports/balance-sheet no page JS errors",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Financial Reports",
+  "name": "mobile: balance-sheet states its ledger source",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Financial Reports",
+  "name": "mobile: /admin/accounts/reports/profit-loss loads (200, no server error text)",
+  "pass": true,
+  "detail": "status 200"
+ },
+ {
+  "area": "Financial Reports",
+  "name": "mobile: /admin/accounts/reports/profit-loss no horizontal page overflow",
+  "pass": true,
+  "detail": "overflow 0px (legacy accounts layout; tolerance 8px for the stand-in theme)"
+ },
+ {
+  "area": "Financial Reports",
+  "name": "mobile: /admin/accounts/reports/profit-loss no page JS errors",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Financial Reports",
+  "name": "mobile: profit-loss states its ledger source",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Financial Reports",
+  "name": "mobile: /admin/accounts/reports/trial-balance loads (200, no server error text)",
+  "pass": true,
+  "detail": "status 200"
+ },
+ {
+  "area": "Financial Reports",
+  "name": "mobile: /admin/accounts/reports/trial-balance no horizontal page overflow",
+  "pass": true,
+  "detail": "overflow 0px (legacy accounts layout; tolerance 8px for the stand-in theme)"
+ },
+ {
+  "area": "Financial Reports",
+  "name": "mobile: /admin/accounts/reports/trial-balance no page JS errors",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Financial Reports",
+  "name": "mobile: trial-balance states its ledger source",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Financial Reports",
+  "name": "mobile: /admin/accounts/reports/cash-book loads (200, no server error text)",
+  "pass": true,
+  "detail": "status 200"
+ },
+ {
+  "area": "Financial Reports",
+  "name": "mobile: /admin/accounts/reports/cash-book no horizontal page overflow",
+  "pass": true,
+  "detail": "overflow 0px (legacy accounts layout; tolerance 8px for the stand-in theme)"
+ },
+ {
+  "area": "Financial Reports",
+  "name": "mobile: /admin/accounts/reports/cash-book no page JS errors",
+  "pass": true,
+  "detail": ""
+ }
+]
