@@ -31,7 +31,7 @@
 //     const url = `${apiUrl}/products/${slug}/`;
     
 //     const response = await fetch(url, {
-//       next: { revalidate: 3600 },
+//       next: { revalidate: 30 }, // stock and availability come from this response; an hour-old copy could offer a sold-out product
 //       headers: {
 //         'Accept': 'application/json',
 //       }
@@ -110,7 +110,7 @@
 //     const url = `${apiUrl}/products/${slug}/`;
     
 //     const response = await fetch(url, {
-//       next: { revalidate: 3600 },
+//       next: { revalidate: 30 }, // stock and availability come from this response; an hour-old copy could offer a sold-out product
 //       headers: {
 //         'Accept': 'application/json',
 //       }
@@ -291,7 +291,7 @@ export async function generateMetadata({ params }) {
     // console.log('🔍 generateMetadata - Fetching:', url);
     
     const response = await fetch(url, {
-      next: { revalidate: 3600 },
+      next: { revalidate: 30 }, // stock and availability come from this response; an hour-old copy could offer a sold-out product
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
@@ -408,7 +408,7 @@ async function getProductData(slug) {
     // console.log(' getProductData - Fetching:', url);
     
     const response = await fetch(url, {
-      next: { revalidate: 3600 },
+      next: { revalidate: 30 }, // stock and availability come from this response; an hour-old copy could offer a sold-out product
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',

@@ -41,15 +41,23 @@ async function fillCheckout(p, phone) {
       await p.close();
     }
   }
-  // variations: Add to Cart without choosing one is refused; choosing S works; M (no stock) cannot be chosen
+  // variations: the first buyable size is preselected, sold-out sizes are disabled, the chosen size goes to the cart
   {
     const p = await product(b, { width: 1300, height: 900 }, slugOf(5331));
-    await p.getByRole('button', { name: /Add to Cart/i }).first().click().catch(() => {}); await p.waitForTimeout(1200);
-    const t = await p.locator('body').innerText();
-    rec('Variations', 'adding without choosing a variation is refused with a message', /select a (variant|size)|please select/i.test(t) && sql("select count(*) from carts") !== null, t.match(/please select[^\n]*/i)?.[0] || '');
-    const optBtns = await p.locator('button, label').evaluateAll((els) => els.map((e) => ({ t: e.innerText.trim(), d: e.disabled || e.getAttribute('aria-disabled') === 'true' || /disabled|opacity-50|line-through|cursor-not-allowed/.test(e.className) })).filter((x) => /^(S|M|L|XL)$/.test(x.t)));
-    rec('Variations', 'size options are listed with the out-of-stock sizes marked', optBtns.length >= 3, JSON.stringify(optBtns));
+    const sizes = await p.locator('button[aria-pressed]').evaluateAll((els) => els.map((e) => ({ t: e.innerText.trim(), d: e.disabled, on: e.getAttribute('aria-pressed') === 'true' })));
+    const by = Object.fromEntries(sizes.map((x) => [x.t, x]));
+    rec('Variations', 'sizes S,M,L,XL are listed; sold-out sizes (M, XL) are disabled, in-stock sizes (S, L) enabled', by.S && by.L && by.M && by.XL && !by.S.d && !by.L.d && by.M.d && by.XL.d, JSON.stringify(sizes));
+    rec('Variations', 'the first buyable size (S) is preselected', !!(by.S && by.S.on));
+    await p.locator('button[aria-pressed]', { hasText: /^L$/ }).click(); await p.waitForTimeout(400);
+    rec('Variations', 'choosing L shows its own stock (3 available)', /3 available/.test(await p.locator('body').innerText()), (await p.locator('body').innerText()).match(/In Stock[^\n]*/)?.[0] || '');
+    const cartsBefore = +sql('select count(*) from carts');
+    await p.getByRole('button', { name: /Add to Cart/i }).first().click(); await p.waitForTimeout(1500);
+    rec('Variations', 'Add to Cart stores the chosen size', +sql('select count(*) from carts') === cartsBefore + 1 && sql("select variation from carts order by id desc limit 1") === 'L', sql("select variation from carts order by id desc limit 1"));
     await p.close();
+    const q = await product(b, { width: 390, height: 800 }, slugOf(5332));
+    const sold = await q.locator('button[aria-pressed]').evaluateAll((els) => els.map((e) => e.disabled));
+    rec('Variations', 'a product whose every size is sold out offers none (mobile)', sold.length === 0 || sold.every(Boolean), JSON.stringify(sold));
+    await q.close();
   }
   // full checkout of an in-stock product: add to cart, express order, confirm -> confirmation; pending order takes nothing
   const flows = [[5327, 'in-stock', 10], [5328, 'zero-stock backorder', 0], [5330, 'negative-available backorder', 0], [5333, 'preorder', 0]];
@@ -73,8 +81,8 @@ async function fillCheckout(p, phone) {
     // cancellation: confirm (reserves demand), then cancel (releases it once), through the order model like the admin screens
     const oid = sql('select id from orders order by id desc limit 1');
     artisan(`$o=\\App\\Models\\Order::find(${oid}); $o->delivery_status='confirmed'; $o->save(); echo 1;`);
-    const conf = snap(id, null);
-    rec('Cancellation', `${desc}: confirming reserves the quantity as demand (+1), physical unchanged`, conf.demand === before.demand + 1 && conf.onHand === before.onHand, `demand ${conf.demand}`);
+    const conf = snap(id, null); const qty = +sql(`select coalesce(sum(quantity),0) from order_details where order_id=${oid}`);
+    rec('Cancellation', `${desc}: confirming reserves the ordered quantity (${qty}) as demand, physical unchanged`, conf.demand === before.demand + qty && conf.onHand === before.onHand, `demand ${before.demand}->${conf.demand}`);
     artisan(`$o=\\App\\Models\\Order::find(${oid}); $o->delivery_status='cancelled'; $o->save(); echo 1;`);
     artisan(`$o=\\App\\Models\\Order::find(${oid}); $o->delivery_status='cancelled'; $o->save(); echo 1;`);
     const canc = snap(id, null);
