@@ -210,6 +210,13 @@ class DemandService
         if (!$everUncosted && $dispatched >= (int) $row->quantity) {
             $update['profit'] = round((float) $row->price - $total, 2); // only when every unit has a real cost layer
         }
+        if ($uncosted > 0 && \Illuminate\Support\Facades\Schema::hasColumn('order_details', 'estimated_unit_cost')) {
+            // A PLANNING figure kept apart from actual cost: never used by the ledger, FIFO layers or finalized profit.
+            $est = DB::table('products')->where('id', $detail->product_id)->value('estimated_purchase_cost');
+            if ($est !== null && (float) $est > 0) {
+                $update['estimated_unit_cost'] = round((float) $est, 4);
+            }
+        }
         if (!$row->purchase_id && $consumed['batches']) {
             $update['purchase_id'] = $consumed['batches'][0]['purchase_id'];
             $update['supplier_id'] = $consumed['batches'][0]['supplier_id'];

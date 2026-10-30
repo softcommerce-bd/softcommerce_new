@@ -91,4 +91,20 @@ class FinancialReportsLedgerTest extends InventoryV2TestCase
         $this->assertStringContainsString('with unknown cost', $html);
         $this->get(route('accounts.reports.profit-loss'))->assertOk()->assertSee('uncosted-note', false);
     }
+
+    public function test_estimated_cost_is_kept_apart_from_actual_cost_and_never_becomes_final_profit()
+    {
+        $p = $this->makeStockedProduct(['M' => 2], 1000, 100, ['estimated_purchase_cost' => 300]);
+        DB::table('purchase_products')->where('product_id', $p->id)->update(['remaining_qty' => 0]);
+        $order = $this->makeOrder([[$p, 'M', 2]], 'picked_up');
+        $line = $this->detail($order);
+        $this->assertSame('uncosted', $line->cost_status);
+        $this->assertEquals(300.0, (float) $line->estimated_unit_cost, 'a planning cost is snapshotted');
+        $this->assertEquals(0.0, (float) $line->buying_price, 'the actual cost stays unknown, not invented');
+        $this->assertEquals(0.0, (float) $line->profit, 'no finalized profit');
+        $html = $this->actingAs($this->makeAdmin())->get(route('purchasing.report', ['name' => 'actual-order-profit']))->getContent();
+        $this->assertStringContainsString('ESTIMATE', $html);
+        $this->assertStringContainsString('not final', $html);
+        $this->assertSame(0.0, (float) DB::table('chart_of_accounts')->where('id', \App\Services\Accounting\SystemAccounts::id('inventory'))->value('current_balance') + 0.0 - 0.0, 'no accounting entry came from an estimate');
+    }
 }

@@ -462,10 +462,11 @@ class PurchasingController extends Controller
                     ->when($from, fn ($q) => $q->whereDate('o.created_at', '>=', $from))->when($to, fn ($q) => $q->whereDate('o.created_at', '<=', $to));
                 $sum = $base()->where('d.cost_status', 'final')->selectRaw('COALESCE(SUM(d.price),0) sales, COALESCE(SUM(d.quantity * d.buying_price),0) cost, COALESCE(SUM(d.profit),0) profit, COUNT(*) n')->first();
                 $pending = $base()->where('d.cost_status', '<>', 'final')->selectRaw("COUNT(*) n, COALESCE(SUM(d.price),0) sales, SUM(d.cost_status = 'uncosted') uncosted")->first();
-                $rows = $base()->orderByDesc('d.id')->paginate(50, ['o.code', 'd.product_id', 'd.quantity', 'd.price', 'd.buying_price', 'd.profit', 'd.cost_status']);
+                $est = $base()->where('d.cost_status', 'uncosted')->whereNotNull('d.estimated_unit_cost')->selectRaw('COALESCE(SUM(d.price - d.quantity * d.estimated_unit_cost),0) p, COUNT(*) n')->first();
+                $rows = $base()->orderByDesc('d.id')->paginate(50, ['o.code', 'd.product_id', 'd.quantity', 'd.price', 'd.buying_price', 'd.profit', 'd.cost_status', 'd.estimated_unit_cost']);
                 $rows->getCollection()->transform(function ($r) {
                     $final = $r->cost_status === 'final';
-                    $r->profit = $final ? $r->profit : 'not final';
+                    $r->profit = $final ? $r->profit : ($r->estimated_unit_cost !== null ? 'ESTIMATE ' . number_format($r->price - $r->quantity * $r->estimated_unit_cost, 2, '.', '') . ' (not final)' : 'not final');
                     $r->buying_price = $final ? $r->buying_price : 'unknown';
                     $r->cost_status = $final ? 'FINAL (FIFO cost)' : strtoupper((string) $r->cost_status) . ' - excluded from profit';
 
@@ -474,7 +475,7 @@ class PurchasingController extends Controller
 
                 return view('backend.purchasing.table', ['title' => translate('Order profit'), 'filters' => ['from' => ['From (YYYY-MM-DD)', $from], 'to' => ['To (YYYY-MM-DD)', $to]],
                     'note' => translate('FINAL profit (actual FIFO cost recorded at dispatch): ') . number_format($sum->profit, 2) . ' ' . translate('on sales of') . ' ' . number_format($sum->sales, 2) . ' (' . $sum->n . ' ' . translate('lines') . '). '
-                        . translate('NOT final, excluded from the profit above: ') . (int) $pending->n . ' ' . translate('lines with sales of') . ' ' . number_format($pending->sales, 2) . ' (' . (int) $pending->uncosted . ' ' . translate('with unknown cost') . ').',
+                        . translate('NOT final, excluded from the profit above: ') . (int) $pending->n . ' ' . translate('lines with sales of') . ' ' . number_format($pending->sales, 2) . ' (' . (int) $pending->uncosted . ' ' . translate('with unknown cost') . '). ' . translate('ESTIMATED profit of lines that have only a planning cost (kept separate, never booked): ') . number_format($est->p, 2) . ' (' . (int) $est->n . ' ' . translate('lines') . ').',
                     'columns' => ['code' => 'Order', 'product_id' => 'Product', 'quantity' => 'Qty', 'price' => 'Sold for', 'buying_price' => 'Unit cost', 'profit' => 'Profit', 'cost_status' => 'Cost'], 'rows' => $rows]);
             case 'reconciliation':
                 $rep = collect((new InventoryReconciliation)->report())->map(fn ($r) => (object) ['severity' => $r['severity'], 'label' => $r['label'], 'count' => $r['count'], 'samples' => implode('; ', $r['samples'])]);
