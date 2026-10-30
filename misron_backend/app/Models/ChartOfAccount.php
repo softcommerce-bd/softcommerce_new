@@ -28,16 +28,7 @@ class ChartOfAccount extends Model
         'is_deleted'
     ];
 
-    protected static function booted()
-    {
-        // Legacy code changes balances with ->save(); the bridge turns each change into a journal entry (flag on only).
-        static::updating(function (self $account) {
-            if ($account->isDirty('current_balance')) {
-                \App\Services\Accounting\LegacyLedgerBridge::record((int) $account->id, (float) $account->current_balance - (float) $account->getOriginal('current_balance'));
-            }
-        });
-    }
-
+    // Legacy code changes balances with ->save() / ->increment(); both reach ChartOfAccountBuilder, where the legacy-ledger bridge records the change.
     public function newEloquentBuilder($query)
     {
         return new \App\Models\Builders\ChartOfAccountBuilder($query);

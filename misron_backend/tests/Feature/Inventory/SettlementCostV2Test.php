@@ -35,6 +35,16 @@ class SettlementCostV2Test extends InventoryV2TestCase
         $this->assertEquals(540.0 - 540.0, (float) DB::table('chart_of_accounts')->where('id', $inv)->value('current_balance'), 'inventory credited by exactly the 540 of FIFO cost that left');
         $cogs = (float) DB::table('chart_of_accounts')->where('sub_type', 'cost_of_sales')->sum('current_balance');
         $this->assertEquals(540.0, $cogs, 'COGS = the actual layer cost, not first-layer-price x quantity (which would be 500)');
+
+        // the same settlement, seen from the journal: one source of truth, nothing posted twice
+        $entries = DB::table('journal_entries')->where('source_type', 'like', 'legacy:%')->get();
+        $this->assertGreaterThanOrEqual(1, $entries->count(), 'the legacy settlement was journalled by the bridge');
+        $lines = DB::table('journal_lines')->whereIn('journal_entry_id', $entries->pluck('id'))->get();
+        $this->assertEqualsWithDelta($lines->sum('debit'), $lines->sum('credit'), 0.001, 'every settlement entry balances');
+        $this->assertEquals(540.0, (float) $lines->where('account_id', $inv)->sum('credit'), 'Inventory credited 540 in the journal');
+        $this->assertEquals(540.0, (float) $lines->whereIn('account_id', DB::table('chart_of_accounts')->where('sub_type', 'cost_of_sales')->pluck('id'))->sum('debit'), 'COGS debited 540 in the journal');
+        $this->assertSame(0, DB::table('account_statement_logs')->where('transaction_type', 'journal')->whereIn('source_id', $entries->pluck('id'))->count(), 'bridged lines add no second statement row');
+        $this->assertTrue(\App\Services\Accounting\JournalService::trialBalance(now()->toDateString())['balanced']);
     }
 
     public function test_an_uncosted_dispatch_is_not_given_an_invented_cost()

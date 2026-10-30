@@ -73,6 +73,13 @@ class InventoryResetCommand extends Command
             return self::FAILURE;
         }
 
+        $isTest = substr($database, -5) === '_test';
+        if (!$isTest && !$this->option('allow-non-test')) {
+            $this->error("{$database} is not a test database (its name does not end in _test). Refusing. Nothing was changed.");
+
+            return self::FAILURE;
+        }
+
         config(['database.connections.inventory_reset' => array_merge(config('database.connections.' . config('database.default')), ['database' => $database])]);
         DB::purge('inventory_reset');
         $db = DB::connection('inventory_reset');
@@ -85,12 +92,6 @@ class InventoryResetCommand extends Command
         }
         $schema = $db->getSchemaBuilder();
 
-        $isTest = substr($database, -5) === '_test';
-        if (!$isTest && !$this->option('allow-non-test')) {
-            $this->error("{$database} is not a test database (its name does not end in _test). Refusing. Nothing was changed.");
-
-            return self::FAILURE;
-        }
 
         $this->line("Database: {$database}" . ($isTest ? ' (test database)' : ' (NOT a test database)') . ", scope: {$scope}");
         $this->report($db, $schema);
