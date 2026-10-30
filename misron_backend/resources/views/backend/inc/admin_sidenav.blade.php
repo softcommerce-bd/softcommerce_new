@@ -731,6 +731,22 @@
                     </li>
                 @endcanany
 
+                {{-- Unified Chat --}}
+                @can('view_unified_chat')
+                    <li class="aiz-side-nav-item mx-2">
+                        <a href="{{ route('unified-chat.index') }}"
+                            class="aiz-side-nav-link {{ areActiveRoutes(['unified-chat.index']) }}">
+                            <div class="aiz-side-nav-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+                                    <path d="M2 2h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H6l-3.5 3v-3H2a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1Z" fill="#575b6a" />
+                                </svg>
+                            </div>
+                            <span class="aiz-side-nav-text">{{ translate('Unified Chat') }}</span>
+                            <span class="badge badge-danger d-none" id="uc-nav-unread"></span>
+                        </a>
+                    </li>
+                @endcan
+
                 <!-- marketing -->
                 @canany(['view_all_flash_deals', 'view_all_dynamic_popups', 'view_all_custom_alerts', 'send_newsletter',
                     'notification_settings', 'view_all_notification_types', 'send_custom_notification',
