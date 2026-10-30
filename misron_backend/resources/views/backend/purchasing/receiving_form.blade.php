@@ -1,7 +1,7 @@
 @extends('backend.layouts.app')
 @section('content')
 <div class="aiz-titlebar text-left mt-2 mb-3"><h1 class="h3">{{ translate('Receive goods') }}: {{ $po->reference_no }} — {{ $supplier->business_name }}</h1></div>
-<form method="post" action="{{ route('purchasing.receiving.receive', $po->id) }}">@csrf
+<form method="post" class="js-once" action="{{ route('purchasing.receiving.receive', $po->id) }}">@csrf
 <input type="hidden" name="op_key" value="{{ $opKey }}">
 <div class="card mb-3"><div class="table-responsive"><table class="table table-sm mb-0">
     <thead><tr><th>{{ translate('Product') }}</th><th>{{ translate('Variation') }}</th><th class="text-right">{{ translate('Ordered') }}</th><th class="text-right">{{ translate('Received') }}</th><th class="text-right">{{ translate('Pending') }}</th><th style="width:110px">{{ translate('Receive now') }}</th><th style="width:120px">{{ translate('Actual unit cost') }}</th></tr></thead>
@@ -22,4 +22,7 @@
     <p class="text-muted small">{{ translate('Receiving, invoicing and paying are recorded as three separate steps. Submitting twice does nothing the second time.') }}</p>
     <button class="btn btn-primary">{{ translate('Receive') }}</button>
 </div></div></form>
+@endsection
+@section('script')
+<script>document.querySelectorAll('form.js-once').forEach(function (f) { f.addEventListener('submit', function (e) { if (f.dataset.sent) { e.preventDefault(); return; } f.dataset.sent = '1'; f.querySelectorAll('button:not([type=button])').forEach(function (b) { b.disabled = true; b.textContent = '{{ translate('Saving…') }}'; }); }); });</script>
 @endsection

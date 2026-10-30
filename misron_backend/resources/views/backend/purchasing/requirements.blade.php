@@ -11,7 +11,7 @@
     <button class="btn btn-secondary mb-2">{{ translate('Filter') }}</button>
 </form>
 @php $statusLabel = ['needs_purchase' => 'Needs Purchase', 'purchase_ordered' => 'Purchase Ordered', 'partially_received' => 'Partially Received', 'ready_for_fulfillment' => 'Ready for Fulfillment', 'fulfilled' => 'Fulfilled', 'cancelled' => 'Cancelled']; @endphp
-<form method="post" action="{{ route('purchasing.requirements.po') }}">@csrf
+<form method="post" class="js-once" action="{{ route('purchasing.requirements.po') }}">@csrf
 <input type="hidden" name="op_key" value="{{ $opKey }}">
 <div class="card"><div class="table-responsive"><table class="table table-sm mb-0">
     <thead><tr><th></th><th>{{ translate('Product') }}</th><th>{{ translate('Variation') }}</th><th class="text-right">{{ translate('Confirmed') }}</th><th class="text-right">{{ translate('Physical') }}</th><th class="text-right">{{ translate('Allocated') }}</th><th class="text-right">{{ translate('Incoming') }}</th><th class="text-right">{{ translate('To buy') }}</th><th>{{ translate('Orders') }}</th><th style="width:90px">{{ translate('Qty') }}</th><th style="width:110px">{{ translate('Unit cost') }}</th></tr></thead>
@@ -37,4 +37,7 @@
     <small class="text-muted ml-3">{{ translate('Buying covers the confirmed demand once: the same units cannot be ordered twice.') }}</small>
 </div>@endif
 </div></form>
+@endsection
+@section('script')
+<script>document.querySelectorAll('form.js-once').forEach(function (f) { f.addEventListener('submit', function (e) { if (f.dataset.sent) { e.preventDefault(); return; } f.dataset.sent = '1'; f.querySelectorAll('button:not([type=button])').forEach(function (b) { b.disabled = true; b.textContent = '{{ translate('Saving…') }}'; }); }); });</script>
 @endsection
