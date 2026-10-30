@@ -32,12 +32,24 @@ abstract class ChatTestCase extends TestCase
             $pdo = new \PDO('sqlite:' . self::$dbFile);
             $pdo->exec('CREATE TABLE categories (id INTEGER PRIMARY KEY, parent_id INTEGER DEFAULT 0, name TEXT)');
         }
-        foreach (['DB_CONNECTION' => 'sqlite', 'DB_DATABASE' => self::$dbFile] as $k => $v) {
+        $keys = ['DB_CONNECTION' => 'sqlite', 'DB_DATABASE' => self::$dbFile];
+        $saved = [];
+        foreach ($keys as $k => $v) {
+            $saved[$k] = [getenv($k), $_ENV[$k] ?? null, $_SERVER[$k] ?? null];
             putenv("$k=$v");
             $_ENV[$k] = $_SERVER[$k] = $v;
         }
 
-        return parent::createApplication();
+        try {
+            return parent::createApplication();
+        } finally {
+            // Only the boot needs the override; never leak it into other test classes in the same run.
+            foreach ($saved as $k => [$env, $_e, $_s]) {
+                $env === false ? putenv($k) : putenv("$k=$env");
+                $_e === null ? \Illuminate\Support\Arr::forget($_ENV, $k) : $_ENV[$k] = $_e;
+                $_s === null ? \Illuminate\Support\Arr::forget($_SERVER, $k) : $_SERVER[$k] = $_s;
+            }
+        }
     }
 
     protected function setUp(): void
