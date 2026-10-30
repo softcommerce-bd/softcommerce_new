@@ -16,4 +16,8 @@ $u = User::where('user_type', 'customer')->first() ?? tap(new User, fn ($x) => $
 $o = new Order(); $o->forceFill(['user_id' => $u->id, 'seller_id' => 1, 'code' => Order::generateUniqueCode(), 'delivery_status' => 'pending', 'payment_status' => 'unpaid', 'payment_type' => 'cash_on_delivery', 'shipping_address' => json_encode(['name' => 'T', 'phone' => '01700000000', 'address' => 'x']), 'grand_total' => 0, 'date' => time(), 'order_from' => 'app'])->save();
 $d = new OrderDetail(); $d->order_id = $o->id; $d->seller_id = 1; $d->product_id = 5330; $d->variation = ''; $d->quantity = 6; $d->price = 6000; $d->selling_price = 1000; $d->tax = 0; $d->shipping_cost = 0; $d->buying_price = 0; $d->profit = 0; $d->delivery_status = 'pending'; $d->save();
 $o->delivery_status = 'confirmed'; $o->save();
+// a Size attribute and choice options so the product page shows size buttons
+if (!DB::table('attributes')->where('id', 9001)->exists()) DB::table('attributes')->insert(['id' => 9001, 'name' => 'Size', 'created_at' => now(), 'updated_at' => now()]);
+DB::table('products')->where('id', 5331)->update(['attributes' => '["9001"]', 'choice_options' => '[{"attribute_id":"9001","values":["S","M","L","XL"]}]']);
+DB::table('products')->where('id', 5332)->update(['attributes' => '["9001"]', 'choice_options' => '[{"attribute_id":"9001","values":["40","41","42","43"]}]']);
 return ['ok' => true];
