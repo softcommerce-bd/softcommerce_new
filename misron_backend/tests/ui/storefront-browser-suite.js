@@ -49,14 +49,15 @@ async function fillCheckout(p, phone) {
     rec('Variations', 'sizes S,M,L,XL are listed; sold-out sizes (M, XL) are disabled, in-stock sizes (S, L) enabled', by.S && by.L && by.M && by.XL && !by.S.d && !by.L.d && by.M.d && by.XL.d, JSON.stringify(sizes));
     rec('Variations', 'the first buyable size (S) is preselected', !!(by.S && by.S.on));
     await p.locator('button[aria-pressed]', { hasText: /^L$/ }).click(); await p.waitForTimeout(400);
-    rec('Variations', 'choosing L shows its own stock (3 available)', /3 available/.test(await p.locator('body').innerText()), (await p.locator('body').innerText()).match(/In Stock[^\n]*/)?.[0] || '');
+    const stockLine = (await p.locator('body').innerText()).match(/(In Stock|Only)[^\n]*/i)?.[0] || '';
+    rec('Variations', 'choosing L shows its own stock (3)', /\b3\b/.test(stockLine), stockLine);
     const cartsBefore = +sql('select count(*) from carts');
     await p.getByRole('button', { name: /Add to Cart/i }).first().click(); await p.waitForTimeout(1500);
     rec('Variations', 'Add to Cart stores the chosen size', +sql('select count(*) from carts') === cartsBefore + 1 && sql("select variation from carts order by id desc limit 1") === 'L', sql("select variation from carts order by id desc limit 1"));
     await p.close();
     const q = await product(b, { width: 390, height: 800 }, slugOf(5332));
-    const sold = await q.locator('button[aria-pressed]').evaluateAll((els) => els.map((e) => e.disabled));
-    rec('Variations', 'a product whose every size is sold out offers none (mobile)', sold.length === 0 || sold.every(Boolean), JSON.stringify(sold));
+    const sold = await q.locator('button[aria-pressed]').evaluateAll((els) => els.filter((e) => /^(40|41|42|43)$/.test(e.innerText.trim())).map((e) => e.disabled));
+    rec('Variations', 'a product whose every size is sold out offers none (mobile)', sold.length === 4 && sold.every(Boolean), JSON.stringify(sold));
     await q.close();
   }
   // full checkout of an in-stock product: add to cart, express order, confirm -> confirmation; pending order takes nothing
