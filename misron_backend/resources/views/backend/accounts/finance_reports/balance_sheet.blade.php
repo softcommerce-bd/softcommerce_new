@@ -6,6 +6,7 @@
         <h5 class="mb-0 h6">{{ translate('Balance Sheet') }}</h5>
     </div>
     <div class="card-body">
+    @include('backend.accounts.finance_reports._notice')
         <!-- Filter Form -->
         <form method="GET" action="{{ route('accounts.reports.balance-sheet') }}" class="mb-4" id="reportForm">
             <div class="form-row align-items-end">

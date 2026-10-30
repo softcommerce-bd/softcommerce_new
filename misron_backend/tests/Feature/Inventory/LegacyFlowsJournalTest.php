@@ -70,4 +70,24 @@ class LegacyFlowsJournalTest extends InventoryV2TestCase
         $this->assertEquals(60.0, (float) $l->where('account_id', SystemAccounts::id('payable'))->sum('credit'));
         $this->assertJournalConsistent();
     }
+
+    public function test_legacy_supplier_payment_is_journalled_once()
+    {
+        $p = $this->productAtZero();
+        $cash = ChartOfAccount::create(['code' => 'SP-CASH-' . uniqid(), 'name' => 'Sp cash', 'type' => 'asset', 'sub_type' => 'cash', 'opening_balance' => 0, 'current_balance' => 1000, 'status' => 'active', 'is_deleted' => 0]);
+        $this->actingAs($this->makeAdmin());
+        $this->postJson(route('purchase.store'), ['op_key' => 'sp-' . uniqid(), 'supplier_id' => $this->supplierId, 'purchase_date' => now()->toDateString(), 'product_id' => [$p->id], 'name' => ['x'], 'variant' => [''],
+            'purchase_quantity' => [5], 'buying_unit_cost' => [20], 'total_cost' => [100]])->assertOk();
+        $purchaseId = (int) DB::table('purchases')->where('supplier_id', $this->supplierId)->value('id');
+        $res = $this->postJson(route('accounts.supplier-payments.store'), ['supplier_id' => $this->supplierId, 'payment_date' => now()->toDateString(), 'amount' => 70, 'payment_method' => 'CASH', 'account_head_id' => $cash->id,
+            'allocations' => json_encode([['purchase_id' => $purchaseId, 'paid_amount' => 70]])]);
+        $this->assertTrue($res->json('success') ?? false, json_encode($res->json()));
+        $this->assertEquals(930.0, (float) $cash->fresh()->current_balance);
+        $e = $this->legacyEntries()->where('source_type', 'legacy:accounts.supplier-payments.store')->first();
+        $this->assertNotNull($e);
+        $l = DB::table('journal_lines')->where('journal_entry_id', $e->id)->get();
+        $this->assertEquals(70.0, (float) $l->where('account_id', $cash->id)->sum('credit'));
+        $this->assertEquals(70.0, (float) $l->where('account_id', SystemAccounts::id('payable'))->sum('debit'));
+        $this->assertJournalConsistent();
+    }
 }

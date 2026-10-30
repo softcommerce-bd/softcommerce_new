@@ -392,10 +392,57 @@ class PurchasingController extends Controller
                 return view('backend.purchasing.table', ['title' => translate('Trial balance (journal) as of ') . $d, 'columns' => ['name' => 'Account', 'type' => 'Type', 'debit' => 'Debit', 'credit' => 'Credit'], 'rows' => $rows]);
             case 'general-ledger':
                 $acc = (int) $request->query('account_id');
-                $rows = DB::table('journal_lines as l')->join('journal_entries as e', 'e.id', '=', 'l.journal_entry_id')->join('chart_of_accounts as a', 'a.id', '=', 'l.account_id')->when($acc, fn ($q) => $q->where('l.account_id', $acc))
-                    ->orderBy('e.entry_date')->orderBy('e.id')->paginate(100, ['e.entry_date', 'e.entry_no', 'a.name as account', 'l.debit', 'l.credit', 'l.memo']);
+                $from = $request->query('from');
+                $to = $request->query('to', $d);
+                $account = $acc ? DB::table('chart_of_accounts')->where('id', $acc)->first() : null;
+                $debitNormal = $account ? in_array($account->type, ['asset', 'expense'], true) : true;
+                $running = 0.0;
+                if ($acc && $from) { // opening = journal movement before the start date
+                    $o = DB::table('journal_lines as l')->join('journal_entries as e', 'e.id', '=', 'l.journal_entry_id')->where('l.account_id', $acc)->where('e.entry_date', '<', $from)->selectRaw('COALESCE(SUM(l.debit),0) d, COALESCE(SUM(l.credit),0) c')->first();
+                    $running = $debitNormal ? $o->d - $o->c : $o->c - $o->d;
+                }
+                $lines = DB::table('journal_lines as l')->join('journal_entries as e', 'e.id', '=', 'l.journal_entry_id')->join('chart_of_accounts as a', 'a.id', '=', 'l.account_id')->when($acc, fn ($q) => $q->where('l.account_id', $acc))
+                    ->when($from, fn ($q) => $q->where('e.entry_date', '>=', $from))->where('e.entry_date', '<=', $to)->orderBy('e.entry_date')->orderBy('e.id')->orderBy('l.id')->limit(2000)
+                    ->get(['e.entry_date', 'e.entry_no', 'e.source_type', 'a.name as account', 'a.type', 'l.debit', 'l.credit', 'l.memo', 'l.mirrored']);
+                $rows = $lines->map(function ($l) use (&$running, $acc, $debitNormal) {
+                    $running += $debitNormal ? $l->debit - $l->credit : $l->credit - $l->debit;
 
-                return view('backend.purchasing.table', ['title' => translate('General ledger'), 'columns' => ['entry_date' => 'Date', 'entry_no' => 'Entry', 'account' => 'Account', 'debit' => 'Debit', 'credit' => 'Credit', 'memo' => 'Memo'], 'rows' => $rows]);
+                    return (object) ['entry_date' => $l->entry_date, 'entry_no' => $l->entry_no, 'source_type' => $l->source_type . ($l->mirrored ? ' (legacy, mirrored)' : ''), 'account' => $l->account, 'debit' => $l->debit, 'credit' => $l->credit, 'balance' => $acc ? number_format($running, 2, '.', '') : '', 'memo' => $l->memo];
+                });
+
+                return view('backend.purchasing.table', ['title' => translate('General ledger (journal)'), 'note' => translate('Journal entries only: history before journalling began is in the account statements. Balance column is running, in the account\'s own sign, and appears when one account is chosen.'),
+                    'filters' => ['account_id' => ['Account ID', $acc ?: ''], 'from' => ['From (YYYY-MM-DD)', $from], 'to' => ['To (YYYY-MM-DD)', $to]],
+                    'columns' => ['entry_date' => 'Date', 'entry_no' => 'Entry', 'source_type' => 'Source', 'account' => 'Account', 'debit' => 'Debit', 'credit' => 'Credit', 'balance' => 'Balance', 'memo' => 'Memo'], 'rows' => $rows]);
+            case 'supplier-statement':
+                $sid = (int) $request->query('supplier_id');
+                $supplier = $sid ? DB::table('suppliers')->where('id', $sid)->first() : null;
+                $ev = collect();
+                if ($supplier) {
+                    foreach (DB::table('supplier_invoices')->where('supplier_id', $sid)->get() as $i) {
+                        $ev->push(['date' => $i->invoice_date, 'ref' => 'Invoice ' . $i->invoice_no, 'debit' => 0, 'credit' => (float) $i->total]);
+                    }
+                    foreach (DB::table('supplier_invoice_payments')->where('supplier_id', $sid)->get() as $pay) {
+                        $ev->push(['date' => $pay->paid_on, 'ref' => ucfirst(str_replace('_', ' ', $pay->kind)), 'debit' => $pay->kind === 'advance' ? 0 : (float) $pay->amount, 'credit' => 0]);
+                    }
+                    foreach (DB::table('purchases')->where('supplier_id', $sid)->whereNotExists(fn ($q) => $q->selectRaw('1')->from('goods_receipts as g')->whereColumn('g.purchase_id', 'purchases.id'))->get() as $pu) {
+                        $ev->push(['date' => $pu->purchase_date, 'ref' => 'Legacy purchase ' . $pu->reference_no, 'debit' => 0, 'credit' => (float) $pu->total_payment_due + (float) $pu->total_paid - (float) $pu->opening_balance_used]);
+                        if ((float) $pu->total_paid > 0) {
+                            $ev->push(['date' => $pu->purchase_date, 'ref' => 'Paid with ' . $pu->reference_no, 'debit' => (float) $pu->total_paid, 'credit' => 0]);
+                        }
+                    }
+                }
+                $run = 0.0;
+                $rows = $ev->sortBy('date')->values()->map(function ($e) use (&$run) {
+                    $run += $e['credit'] - $e['debit'];
+
+                    return (object) ['date' => $e['date'], 'ref' => $e['ref'], 'debit' => number_format($e['debit'], 2, '.', ''), 'credit' => number_format($e['credit'], 2, '.', ''), 'balance' => number_format($run, 2, '.', '')];
+                });
+                if ($supplier) {
+                    $rows->push((object) ['date' => '', 'ref' => 'Statement balance / supplier record due_amount', 'debit' => '', 'credit' => '', 'balance' => number_format($run, 2, '.', '') . ' / ' . number_format((float) $supplier->due_amount, 2, '.', '')]);
+                }
+
+                return view('backend.purchasing.table', ['title' => translate('Supplier statement') . ($supplier ? ': ' . $supplier->business_name : ''), 'note' => translate('Credit = owed to the supplier (invoices, legacy purchases); debit = paid or credited. Goods received but not yet invoiced are not a payable yet.'),
+                    'filters' => ['supplier_id' => ['Supplier ID', $sid ?: '']], 'columns' => ['date' => 'Date', 'ref' => 'Document', 'debit' => 'Paid / credited', 'credit' => 'Owed', 'balance' => 'Balance'], 'rows' => $rows]);
             case 'goods-receiving':
                 $rows = DB::table('goods_receipts as g')->join('suppliers as s', 's.id', '=', 'g.supplier_id')->orderByDesc('g.id')->paginate(50, ['g.receipt_no', 'g.received_at', 's.business_name', 'g.goods_total', 'g.landed_cost', 'g.total', 'g.invoice_status']);
 
@@ -409,10 +456,26 @@ class PurchasingController extends Controller
 
                 return view('backend.purchasing.table', ['title' => translate('Pending purchase requirements'), 'columns' => ['product_name' => 'Product', 'variant' => 'Variation', 'demand' => 'Confirmed demand', 'on_hand' => 'Physical', 'incoming' => 'Incoming', 'shortage' => 'To buy'], 'rows' => collect($items)->map(fn ($i) => (object) $i)]);
             case 'actual-order-profit':
-                $rows = DB::table('order_details as d')->join('orders as o', 'o.id', '=', 'd.order_id')->where('d.stock_mode', 'v2')->where('d.cost_status', 'final')->orderByDesc('d.id')
-                    ->paginate(50, ['o.code', 'd.product_id', 'd.quantity', 'd.price', 'd.buying_price', 'd.profit', 'd.cost_status']);
+                $from = $request->query('from');
+                $to = $request->query('to');
+                $base = fn () => DB::table('order_details as d')->join('orders as o', 'o.id', '=', 'd.order_id')->where('d.stock_mode', 'v2')
+                    ->when($from, fn ($q) => $q->whereDate('o.created_at', '>=', $from))->when($to, fn ($q) => $q->whereDate('o.created_at', '<=', $to));
+                $sum = $base()->where('d.cost_status', 'final')->selectRaw('COALESCE(SUM(d.price),0) sales, COALESCE(SUM(d.quantity * d.buying_price),0) cost, COALESCE(SUM(d.profit),0) profit, COUNT(*) n')->first();
+                $pending = $base()->where('d.cost_status', '<>', 'final')->selectRaw("COUNT(*) n, COALESCE(SUM(d.price),0) sales, SUM(d.cost_status = 'uncosted') uncosted")->first();
+                $rows = $base()->orderByDesc('d.id')->paginate(50, ['o.code', 'd.product_id', 'd.quantity', 'd.price', 'd.buying_price', 'd.profit', 'd.cost_status']);
+                $rows->getCollection()->transform(function ($r) {
+                    $final = $r->cost_status === 'final';
+                    $r->profit = $final ? $r->profit : 'not final';
+                    $r->buying_price = $final ? $r->buying_price : 'unknown';
+                    $r->cost_status = $final ? 'FINAL (FIFO cost)' : strtoupper((string) $r->cost_status) . ' - excluded from profit';
 
-                return view('backend.purchasing.table', ['title' => translate('Actual order profit (finalised FIFO cost only; uncosted lines are excluded)'), 'columns' => ['code' => 'Order', 'product_id' => 'Product', 'quantity' => 'Qty', 'price' => 'Sold for', 'buying_price' => 'Unit cost', 'profit' => 'Profit', 'cost_status' => 'Cost'], 'rows' => $rows]);
+                    return $r;
+                });
+
+                return view('backend.purchasing.table', ['title' => translate('Order profit'), 'filters' => ['from' => ['From (YYYY-MM-DD)', $from], 'to' => ['To (YYYY-MM-DD)', $to]],
+                    'note' => translate('FINAL profit (actual FIFO cost recorded at dispatch): ') . number_format($sum->profit, 2) . ' ' . translate('on sales of') . ' ' . number_format($sum->sales, 2) . ' (' . $sum->n . ' ' . translate('lines') . '). '
+                        . translate('NOT final, excluded from the profit above: ') . (int) $pending->n . ' ' . translate('lines with sales of') . ' ' . number_format($pending->sales, 2) . ' (' . (int) $pending->uncosted . ' ' . translate('with unknown cost') . ').',
+                    'columns' => ['code' => 'Order', 'product_id' => 'Product', 'quantity' => 'Qty', 'price' => 'Sold for', 'buying_price' => 'Unit cost', 'profit' => 'Profit', 'cost_status' => 'Cost'], 'rows' => $rows]);
             case 'reconciliation':
                 $rep = collect((new InventoryReconciliation)->report())->map(fn ($r) => (object) ['severity' => $r['severity'], 'label' => $r['label'], 'count' => $r['count'], 'samples' => implode('; ', $r['samples'])]);
 

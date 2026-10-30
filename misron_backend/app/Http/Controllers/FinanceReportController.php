@@ -158,19 +158,9 @@ class FinanceReportController extends Controller
      */
     private function getPeriodTransactions($accountId, $startDate, $endDate, $type = 'debit')
     {
-        $debits = AccountStatementLog::where('account_id', $accountId)
-            ->whereBetween('transaction_date', [$startDate->copy()->startOfDay(), $endDate->copy()->endOfDay()])
-            ->sum('debit');
+        $net = \App\Services\Accounting\LedgerBalances::netDebitByAccount($startDate->format('Y-m-d'), $endDate->format('Y-m-d'), [(int) $accountId])[(int) $accountId] ?? 0.0;
 
-        $credits = AccountStatementLog::where('account_id', $accountId)
-            ->whereBetween('transaction_date', [$startDate->copy()->startOfDay(), $endDate->copy()->endOfDay()])
-            ->sum('credit');
-
-        if ($type === 'debit') {
-            return $debits - $credits;
-        } else {
-            return $credits - $debits;
-        }
+        return $type === 'debit' ? $net : -$net;
     }
 
     /**
@@ -571,6 +561,8 @@ class FinanceReportController extends Controller
      */
     private function calculateBalanceSheetData($startDate, $endDate)
     {
+        // Every balance is the balance AS AT $endDate (current balance minus later movements), from the ledger source of truth.
+        $asAt = \App\Services\Accounting\LedgerBalances::balancesAsOf(ChartOfAccount::all(['id', 'type', 'current_balance']), $endDate->format('Y-m-d'));
         // Assets (using current_balance from chart_of_accounts directly)
         $assetAccounts = ChartOfAccount::where('type', 'asset')
             ->where('status', 'active')
@@ -589,7 +581,7 @@ class FinanceReportController extends Controller
                 $groupTotal = 0;
                 $items = [];
                 foreach ($accounts as $account) {
-                    $balance = (float) $account->current_balance;
+                    $balance = (float) ($asAt[$account->id] ?? $account->current_balance);
                     if ($balance != 0) {
                         $items[] = ['name' => $account->name, 'code' => $account->code, 'balance' => $balance];
                         $groupTotal += $balance;
@@ -620,7 +612,7 @@ class FinanceReportController extends Controller
                 $groupTotal = 0;
                 $items = [];
                 foreach ($accounts as $account) {
-                    $balance = (float) $account->current_balance;
+                    $balance = (float) ($asAt[$account->id] ?? $account->current_balance);
                     if ($balance != 0) {
                         $items[] = ['name' => $account->name, 'code' => $account->code, 'balance' => $balance];
                         $groupTotal += $balance;
@@ -656,7 +648,7 @@ class FinanceReportController extends Controller
                 $groupTotal = 0;
                 $items = [];
                 foreach ($accounts as $account) {
-                    $balance = (float) $account->current_balance;
+                    $balance = (float) ($asAt[$account->id] ?? $account->current_balance);
                     if ($balance != 0) {
                         $items[] = ['name' => $account->name, 'code' => $account->code, 'balance' => $balance];
                         $groupTotal += $balance;
@@ -683,7 +675,7 @@ class FinanceReportController extends Controller
                 $groupTotal = 0;
                 $items = [];
                 foreach ($accounts as $account) {
-                    $balance = (float) $account->current_balance;
+                    $balance = (float) ($asAt[$account->id] ?? $account->current_balance);
                     if ($balance != 0) {
                         $items[] = ['name' => $account->name, 'code' => $account->code, 'balance' => $balance];
                         $groupTotal += $balance;
@@ -703,7 +695,7 @@ class FinanceReportController extends Controller
         // Equity accounts (sub_type = equity)
         if (isset($allLiabilityAccounts['equity'])) {
             foreach ($allLiabilityAccounts['equity'] as $account) {
-                $balance = (float) $account->current_balance;
+                $balance = (float) ($asAt[$account->id] ?? $account->current_balance);
                 if ($balance != 0) {
                     $equityItems[] = ['name' => $account->name, 'code' => $account->code, 'balance' => $balance];
                     $totalEquityFromAccounts += $balance;
@@ -754,11 +746,12 @@ class FinanceReportController extends Controller
      */
     private function calculateCurrentYearEarnings($endDate)
     {
-        $totalIncome = (float) ChartOfAccount::where('type', 'income')
-            ->sum('current_balance');
-
-        $totalExpenses = (float) ChartOfAccount::where('type', 'expense')
-            ->sum('current_balance');
+        $accounts = ChartOfAccount::whereIn('type', ['income', 'expense'])->get(['id', 'type', 'current_balance']);
+        $bal = \App\Services\Accounting\LedgerBalances::balancesAsOf($accounts, $endDate->format('Y-m-d'));
+        $totalIncome = $totalExpenses = 0.0;
+        foreach ($accounts as $a) {
+            $a->type === 'income' ? $totalIncome += $bal[$a->id] : $totalExpenses += $bal[$a->id];
+        }
 
         return $totalIncome - $totalExpenses;
     }
@@ -961,6 +954,7 @@ private function calculateTrialBalanceData($startDate, $endDate)
         ->get();
 
     $accountIds = $accounts->pluck('id')->toArray();
+    $asAtTb = \App\Services\Accounting\LedgerBalances::balancesAsOf($accounts, $endDate->format('Y-m-d'));
 
     // Fetch all statement logs up to endDate for these accounts
     $allLogs = AccountStatementLog::whereIn('account_id', $accountIds)
@@ -975,7 +969,7 @@ private function calculateTrialBalanceData($startDate, $endDate)
     $totalCredit = 0;
 
     foreach ($accounts as $account) {
-        $balance = (float) $account->current_balance;
+        $balance = (float) ($asAtTb[$account->id] ?? $account->current_balance);
         $netDebit = 0;
         $netCredit = 0;
 
