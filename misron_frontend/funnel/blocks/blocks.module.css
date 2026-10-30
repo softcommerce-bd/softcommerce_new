@@ -1,0 +1,21 @@
+/* Motion for the announcement ribbon. Kept out of Tailwind because it needs
+   its own keyframes. Reduced-motion users get a still ribbon. */
+
+.marquee {
+  animation: fnMarquee 22s linear infinite;
+}
+
+@keyframes fnMarquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee {
+    animation: none;
+  }
+}

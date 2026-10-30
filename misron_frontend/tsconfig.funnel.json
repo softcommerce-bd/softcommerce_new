@@ -1,0 +1,23 @@
+{
+  "//": "Type-checks the funnel modules written with // @ts-check. Named so Next.js does not treat the app as a TypeScript project. Run: npm run typecheck:funnel",
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": true,
+    "strict": true,
+    "noEmit": true,
+    "target": "es2022",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "lib": ["es2022", "dom"],
+    "skipLibCheck": true
+  },
+  "files": [
+    "funnel/core/breakpoints.js",
+    "funnel/core/tree.js",
+    "funnel/core/rules.js",
+    "funnel/core/paths.js",
+    "funnel/core/style.js",
+    "funnel/core/values.js",
+    "funnel/editor/operations.js"
+  ]
+}

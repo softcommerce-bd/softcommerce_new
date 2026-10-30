@@ -1,0 +1,649 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\ChartOfAccount;
+use App\Models\AccountStatementLog;
+use App\Models\Voucher;
+use App\Models\VoucherDetail;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+
+class ChartOfAccountController extends Controller
+{
+    /**
+     * Get account details for editing
+     */
+    public function edit($id)
+    {
+        try {
+            $account = ChartOfAccount::findOrFail($id);
+            
+            Log::info('Editing account:', [
+                'id' => $account->id,
+                'name' => $account->name,
+                'parent_id' => $account->parent_id,
+                'sub_type' => $account->sub_type
+            ]);
+            
+            return response()->json([
+                'success' => true,
+                'data' => $account
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error editing account: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Account not found'
+            ], 404);
+        }
+    }
+    
+    /**
+     * Store a new account
+     */
+    public function store(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|max:255',
+            'type' => 'required|in:asset,liability,equity,income,expense',
+            'sub_type' => 'nullable|string',
+            'opening_balance' => 'nullable|numeric',
+            'cashout_charge' => 'nullable|numeric|min:0|max:100',
+        ]);
+        
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
+        
+        DB::beginTransaction();
+        
+        try {
+            // Auto generate account code
+            $code = $this->generateAccountCode($request->sub_type, $request->type);
+            
+            // Handle parent_id
+            $parentId = null;
+            if ($request->has('parent_id') && !empty($request->parent_id)) {
+                $parentId = $request->parent_id;
+            }
+            
+            // Create account
+            $account = ChartOfAccount::create([
+                'code' => $code,
+                'name' => $request->name,
+                'type' => $request->type,
+                'sub_type' => $request->sub_type,
+                'parent_id' => $parentId,
+                'opening_balance' => $request->opening_balance ?? 0,
+                'current_balance' => $request->opening_balance ?? 0,
+                'bank_name' => $request->bank_name,
+                'account_number' => $request->account_number,
+                'mobile_number' => $request->mobile_number,
+                'status' => $request->status ?? 'active',
+                'description' => $request->description,
+                'cashout_charge' => $request->cashout_charge ?? 0,
+            ]);
+            
+            // Create opening balance statement log if opening balance > 0
+            if ($request->opening_balance > 0) {
+                $this->createOpeningBalanceLog($account, $request->as_of_date ?? now());
+            }
+            
+            DB::commit();
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Account created successfully',
+                'data' => $account
+            ]);
+            
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Store account error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to create account: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+    
+    /**
+     * Update an account
+     */
+  public function update(Request $request, $id)
+{
+    $account = ChartOfAccount::findOrFail($id);
+    
+    $validator = Validator::make($request->all(), [
+        'name' => 'required|max:255',
+        'type' => 'required|in:asset,liability,equity,income,expense',
+        'opening_balance' => 'nullable|numeric',
+        'as_of_date' => 'nullable|date',
+    ]);
+    
+    if ($validator->fails()) {
+        return response()->json([
+            'success' => false,
+            'errors' => $validator->errors()
+        ], 422);
+    }
+    
+    DB::beginTransaction();
+    
+    try {
+        // Prepare update data
+        $updateData = [
+            'name' => $request->name,
+            'type' => $request->type,
+            'sub_type' => $request->sub_type,
+            'bank_name' => $request->bank_name,
+            'account_number' => $request->account_number,
+            'mobile_number' => $request->mobile_number,
+            'status' => $request->status ?? 'active',
+            'description' => $request->description,
+            'cashout_charge' => $request->cashout_charge ?? 0,
+        ];
+        
+        // Handle parent_id
+        $updateData['parent_id'] = ($request->has('parent_id') && !empty($request->parent_id)) 
+            ? $request->parent_id 
+            : null;
+        
+        // Check if opening_balance has changed
+        if ($request->has('opening_balance') && $request->opening_balance != $account->opening_balance) {
+            // Pass the as_of_date from the form
+            $asOfDate = $request->has('as_of_date') ? $request->as_of_date : null;
+            $this->handleOpeningBalanceChange($account, $request->opening_balance, $updateData, $asOfDate);
+        }
+        
+        $account->update($updateData);
+        
+        DB::commit();
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Account updated successfully',
+            'data' => $account
+        ]);
+        
+    } catch (\Exception $e) {
+        DB::rollBack();
+        Log::error('Update account error: ' . $e->getMessage());
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to update account: ' . $e->getMessage()
+        ], 500);
+    }
+}
+    
+    /**
+     * Delete an account
+     */
+    public function destroy($id)
+    {
+        $account = ChartOfAccount::findOrFail($id);
+        
+        // Check if account has children
+        if ($account->children()->count() > 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Cannot delete account with child accounts'
+            ], 422);
+        }
+        
+        // Check if account has balance
+        if ($account->current_balance != 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Cannot delete account with non-zero balance'
+            ], 422);
+        }
+        
+        DB::beginTransaction();
+        
+        try {
+            // Delete statement logs
+            $account->statements()->delete();
+            
+            // Soft delete the account
+            $account->delete();
+            
+            DB::commit();
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Account deleted successfully'
+            ]);
+            
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Delete account error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to delete account'
+            ], 500);
+        }
+    }
+    
+    /**
+     * Update account balance (manual adjustment)
+     */
+    public function updateBalance(Request $request, $id)
+    {
+        $account = ChartOfAccount::findOrFail($id);
+        
+        $validator = Validator::make($request->all(), [
+            'adjustment_amount' => 'required|numeric',
+            'adjustment_type' => 'required|in:add,subtract',
+            'description' => 'required',
+        ]);
+        
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
+        
+        DB::beginTransaction();
+        
+        try {
+            $amount = $request->adjustment_amount;
+            $oldBalance = $account->current_balance;
+            
+            // Update balance
+            if ($request->adjustment_type === 'add') {
+                $account->current_balance += $amount;
+            } else {
+                $account->current_balance -= $amount;
+            }
+            $account->save();
+            
+            // Create adjustment log
+            AccountStatementLog::create([
+                'account_id' => $account->id,
+                'transaction_date' => now(),
+                'reference_no' => 'ADJ' . time(),
+                'transaction_type' => 'journal_entry',
+                'debit' => ($request->adjustment_type === 'add' && $account->type === 'asset') ? $amount : 0,
+                'credit' => ($request->adjustment_type === 'subtract' && $account->type === 'asset') ? $amount : 0,
+                'balance' => $account->current_balance,
+                'description' => $request->description,
+            ]);
+            
+            DB::commit();
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Balance adjusted successfully',
+                'new_balance' => $account->current_balance,
+                'old_balance' => $oldBalance
+            ]);
+            
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Balance adjustment error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to adjust balance'
+            ], 500);
+        }
+    }
+    
+    /**
+     * Get parent accounts for dropdown
+     */
+    public function getParentAccounts(Request $request)
+    {
+        try {
+            $subType = $request->get('sub_type');
+            $currentAccountId = $request->get('current_id', null);
+            
+            $query = ChartOfAccount::where('type', 'asset')
+                ->where('sub_type', $subType)
+                ->where('status', 'active')
+                ->where('is_deleted', 0); // Only show non-deleted accounts
+            
+            // Exclude current account
+            if ($currentAccountId) {
+                $query->where('id', '!=', $currentAccountId);
+            }
+            
+            $accounts = $query->orderBy('name', 'asc')->get(['id', 'name']);
+            
+            return response()->json([
+                'success' => true,
+                'accounts' => $accounts
+            ]);
+            
+        } catch (\Exception $e) {
+            Log::error('Get parent accounts error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'accounts' => []
+            ], 500);
+        }
+    }
+    
+    /**
+     * Generate account code
+     */
+/**
+ * Generate account code based on sub_type
+ */
+private function generateAccountCode($subType, $type)
+{
+    $prefixes = [
+        'cash' => '1-110',
+        'bank' => '1-120',
+        'mobile_bank' => '1-130',
+        'receivable' => '1-140',
+        'inventory' => '1-150',
+        'payable' => '2-210',
+        'tax' => '2-220',
+        'equity_account' => '3-310',
+        'sales' => '4-410',
+        'revenue' => '4-420',
+        'expense' => '5-510',
+    ];
+    
+    $typePrefixes = [
+        'asset' => '1-100',
+        'liability' => '2-200',
+        'equity' => '3-300',
+        'income' => '4-400',
+        'expense' => '5-500',
+    ];
+    
+    $prefix = $prefixes[$subType] ?? $typePrefixes[$type] ?? '1-100';
+    
+    // Get the maximum number for this prefix (including soft deleted)
+    $existingCodes = ChartOfAccount::where('code', 'like', $prefix . '%')
+        ->withTrashed()  // Include soft deleted records
+        ->pluck('code')
+        ->map(function($code) use ($prefix) {
+            $number = intval(substr($code, strlen($prefix)));
+            \Log::info('Found existing code: ' . $code . ' with number: ' . $number);
+            return $number;
+        })
+        ->sort()
+        ->values()
+        ->toArray();
+    
+    \Log::info('All existing numbers for prefix ' . $prefix . ': ', $existingCodes);
+    
+    // Find the next available number (starting from 1)
+    $newNumber = 1;
+    $maxNumber = !empty($existingCodes) ? max($existingCodes) + 1 : 1;
+    
+    // Try to find the smallest available number
+    for ($i = 1; $i <= $maxNumber; $i++) {
+        if (!in_array($i, $existingCodes)) {
+            $newNumber = $i;
+            break;
+        }
+    }
+    
+    $newCode = $prefix . str_pad($newNumber, 2, '0', STR_PAD_LEFT);
+    \Log::info('Generated new code: ' . $newCode);
+    
+    return $newCode;
+}
+    
+    /**
+     * Create opening balance log
+     */
+    private function createOpeningBalanceLog($account, $asOfDate)
+    {
+        AccountStatementLog::create([
+            'account_id' => $account->id,
+            'transaction_date' => $asOfDate,
+            'reference_no' => 'OPENING',
+            'transaction_type' => 'opening_balance',
+            'debit' => $account->type === 'asset' ? $account->opening_balance : 0,
+            'credit' => $account->type === 'liability' || $account->type === 'equity' ? $account->opening_balance : 0,
+            'balance' => $account->opening_balance,
+            'description' => 'Opening Balance',
+        ]);
+    }
+    
+    /**
+     * Handle opening balance change with journal entry
+     */
+    // private function handleOpeningBalanceChange($account, $newOpeningBalance, &$updateData)
+    // {
+    //     $oldBalance = $account->opening_balance;
+    //     $difference = $newOpeningBalance - $oldBalance;
+        
+    //     if ($difference == 0) {
+    //         return;
+    //     }
+        
+    //     // Update balances
+    //     $updateData['opening_balance'] = $newOpeningBalance;
+    //     $updateData['current_balance'] = $account->current_balance + $difference;
+        
+    //     // Get or create adjustment account
+    //     $adjustmentAccount = ChartOfAccount::firstOrCreate(
+    //         ['code' => '3-9999'],
+    //         [
+    //             'name' => 'Opening Balance Adjustment',
+    //             'type' => 'equity',
+    //             'sub_type' => 'equity_account',
+    //             'status' => 'active',
+    //             // 'is_deleted' => 0,
+    //         ]
+    //     );
+        
+    //     // Create voucher for adjustment
+    //     $voucher = Voucher::create([
+    //         'voucher_no' => $this->generateVoucherNumber(),
+    //         'type' => 'journal',
+    //         'date' => now(),
+    //         'amount' => abs($difference),
+    //         'description' => "Opening balance adjustment for {$account->name} from {$oldBalance} to {$newOpeningBalance}",
+    //         'status' => 'posted',
+    //         'created_by' => auth()->id(),
+    //         'approved_by' => auth()->id(),
+    //         'approved_at' => now(),
+    //     ]);
+        
+    //     // Create voucher details based on account type and difference
+    //     if ($difference > 0) {
+    //         // Balance increased
+    //         VoucherDetail::create([
+    //             'voucher_id' => $voucher->id,
+    //             'account_id' => $account->id,
+    //             'dc' => $account->type === 'asset' ? 'debit' : 'credit',
+    //             'amount' => $difference,
+    //             'narration' => "Opening balance adjustment increase",
+    //         ]);
+            
+    //         VoucherDetail::create([
+    //             'voucher_id' => $voucher->id,
+    //             'account_id' => $adjustmentAccount->id,
+    //             'dc' => $account->type === 'asset' ? 'credit' : 'debit',
+    //             'amount' => $difference,
+    //             'narration' => "Opening balance adjustment",
+    //         ]);
+    //     } else {
+    //         $amount = abs($difference);
+    //         // Balance decreased
+    //         VoucherDetail::create([
+    //             'voucher_id' => $voucher->id,
+    //             'account_id' => $account->id,
+    //             'dc' => $account->type === 'asset' ? 'credit' : 'debit',
+    //             'amount' => $amount,
+    //             'narration' => "Opening balance adjustment decrease",
+    //         ]);
+            
+    //         VoucherDetail::create([
+    //             'voucher_id' => $voucher->id,
+    //             'account_id' => $adjustmentAccount->id,
+    //             'dc' => $account->type === 'asset' ? 'debit' : 'credit',
+    //             'amount' => $amount,
+    //             'narration' => "Opening balance adjustment",
+    //         ]);
+    //     }
+        
+    //     // Post to account statements
+    //     $this->postVoucherToStatements($voucher);
+        
+    //     Log::info('Opening balance adjustment created', [
+    //         'account_id' => $account->id,
+    //         'old_balance' => $oldBalance,
+    //         'new_balance' => $newOpeningBalance,
+    //         'voucher_no' => $voucher->voucher_no
+    //     ]);
+    // }
+
+    /**
+ * Handle opening balance change with journal entry
+ */
+private function handleOpeningBalanceChange($account, $newOpeningBalance, &$updateData, $asOfDate = null)
+{
+    $oldBalance = $account->opening_balance;
+    $difference = $newOpeningBalance - $oldBalance;
+    
+    if ($difference == 0) {
+        return;
+    }
+    
+    // Use the provided as_of_date or current date
+    $transactionDate = $asOfDate ?: now();
+    
+    // Update balances
+    $updateData['opening_balance'] = $newOpeningBalance;
+    $updateData['current_balance'] = $account->current_balance + $difference;
+    
+    // Get or create adjustment account
+    $adjustmentAccount = ChartOfAccount::firstOrCreate(
+        ['code' => '3-9999'],
+        [
+            'name' => 'Opening Balance Adjustment',
+            'type' => 'equity',
+            'sub_type' => 'equity_account',
+            'status' => 'active',
+        ]
+    );
+    
+    DB::beginTransaction();
+    
+    try {
+        // Create voucher for adjustment with the provided date
+        $voucher = Voucher::create([
+            'voucher_no' => $this->generateVoucherNumber(),
+            'type' => 'journal',
+            'date' => $transactionDate,  // Use the provided date
+            'amount' => abs($difference),
+            'description' => "Opening balance adjustment for {$account->name} from {$oldBalance} to {$newOpeningBalance}",
+            'status' => 'posted',
+            'created_by' => auth()->id(),
+            'approved_by' => auth()->id(),
+            'approved_at' => now(),
+        ]);
+        
+        // Create voucher details
+        if ($difference > 0) {
+            // Balance increased
+            VoucherDetail::create([
+                'voucher_id' => $voucher->id,
+                'account_id' => $account->id,
+                'dc' => $account->type === 'asset' ? 'debit' : 'credit',
+                'amount' => $difference,
+                'narration' => "Opening balance adjustment increase as of {$transactionDate}",
+            ]);
+            
+            VoucherDetail::create([
+                'voucher_id' => $voucher->id,
+                'account_id' => $adjustmentAccount->id,
+                'dc' => $account->type === 'asset' ? 'credit' : 'debit',
+                'amount' => $difference,
+                'narration' => "Opening balance adjustment",
+            ]);
+        } else {
+            $amount = abs($difference);
+            // Balance decreased
+            VoucherDetail::create([
+                'voucher_id' => $voucher->id,
+                'account_id' => $account->id,
+                'dc' => $account->type === 'asset' ? 'credit' : 'debit',
+                'amount' => $amount,
+                'narration' => "Opening balance adjustment decrease as of {$transactionDate}",
+            ]);
+            
+            VoucherDetail::create([
+                'voucher_id' => $voucher->id,
+                'account_id' => $adjustmentAccount->id,
+                'dc' => $account->type === 'asset' ? 'debit' : 'credit',
+                'amount' => $amount,
+                'narration' => "Opening balance adjustment",
+            ]);
+        }
+        
+        // Post to account statements
+        $this->postVoucherToStatements($voucher);
+        
+        DB::commit();
+        
+        Log::info('Opening balance adjustment created', [
+            'account_id' => $account->id,
+            'old_balance' => $oldBalance,
+            'new_balance' => $newOpeningBalance,
+            'as_of_date' => $transactionDate,
+            'voucher_no' => $voucher->voucher_no
+        ]);
+        
+    } catch (\Exception $e) {
+        DB::rollBack();
+        Log::error('Failed to create adjustment voucher: ' . $e->getMessage());
+        throw $e;
+    }
+}
+    
+    /**
+     * Generate voucher number
+     */
+    private function generateVoucherNumber()
+    {
+        $lastVoucher = Voucher::orderBy('id', 'desc')->first();
+        if ($lastVoucher) {
+            $lastNumber = intval(substr($lastVoucher->voucher_no, 3));
+            $newNumber = $lastNumber + 1;
+        } else {
+            $newNumber = 1;
+        }
+        return 'ADJ' . str_pad($newNumber, 6, '0', STR_PAD_LEFT);
+    }
+    
+    /**
+     * Post voucher to account statements
+     */
+    private function postVoucherToStatements($voucher)
+    {
+        foreach ($voucher->details as $detail) {
+            $account = ChartOfAccount::find($detail->account_id);
+            if ($account) {
+                AccountStatementLog::create([
+                    'account_id' => $detail->account_id,
+                    'transaction_date' => $voucher->date,
+                    'reference_no' => $voucher->voucher_no,
+                    'transaction_type' => 'journal_entry',
+                    'debit' => $detail->dc === 'debit' ? $detail->amount : 0,
+                    'credit' => $detail->dc === 'credit' ? $detail->amount : 0,
+                    'balance' => $account->current_balance,
+                    'description' => $detail->narration ?? $voucher->description,
+                    'voucher_id' => $voucher->id,
+                ]);
+            }
+        }
+    }
+
+    
+}

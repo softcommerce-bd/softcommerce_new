@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit backupGlobals="false"
+         backupStaticAttributes="false"
+         bootstrap="vendor/autoload.php"
+         colors="true"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         processIsolation="false"
+         stopOnFailure="false">
+    <testsuites>
+        <testsuite name="Unit">
+            <directory suffix="Test.php">./tests/Unit</directory>
+        </testsuite>
+
+        <testsuite name="Feature">
+            <directory suffix="Test.php">./tests/Feature</directory>
+        </testsuite>
+    </testsuites>
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">./app</directory>
+        </whitelist>
+    </filter>
+    <php>
+        <env name="APP_ENV" value="testing"/>
+        <env name="BCRYPT_ROUNDS" value="4"/>
+        <env name="CACHE_DRIVER" value="array"/>
+        <env name="SESSION_DRIVER" value="array"/>
+        <env name="QUEUE_CONNECTION" value="sync"/>
+        <env name="MAIL_DRIVER" value="array"/>
+        <!-- Tests write to the database. Never point this at a real one:
+             create it with `php tests/create_test_database.php`. -->
+        <env name="DB_DATABASE" value="misron_test"/>
+        <env name="FUNNEL_EDITOR_URL" value="http://editor.test"/>
+        <env name="FUNNEL_PUBLIC_URL" value="http://shop.test"/>
+        <!-- Tests set these themselves where they matter; pinned so a developer's .env cannot change them. -->
+        <env name="FUNNEL_REQUIRE_CHECKOUT" value="false"/>
+        <env name="FUNNEL_CHECKOUT_ENABLED" value="false"/>
+        <env name="FUNNEL_REVALIDATE_URL" value=""/>
+        <env name="FUNNEL_REVALIDATE_SECRET" value=""/>
+    </php>
+</phpunit>

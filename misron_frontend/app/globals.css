@@ -1,0 +1,1557 @@
+@import "tailwindcss";
+
+/* Swiper's own stylesheets, imported once here rather than in each of the five
+   components that mount a carousel. Importing them per-component meant the
+   same rules were pulled into several route chunks; the bundler dedupes the
+   bytes, but every one of those routes still had to wait on the CSS. */
+@import "swiper/css";
+@import "swiper/css/navigation";
+@import "swiper/css/pagination";
+@import "swiper/css/thumbs";
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MISRON DESIGN SYSTEM
+   ───────────────────────────────────────────────────────────────────────────
+   One source of truth for colour, space, radius, type, elevation and motion.
+   Pages consume these tokens through Tailwind utilities (bg-surface, text-ink,
+   rounded-lg, shadow-e2 …) and never redeclare raw values.
+
+   Light theme only. The previous `prefers-color-scheme: dark` block inverted
+   the palette (white background on a light theme) and was overridden by an
+   `!important` body rule anyway, so it has been removed rather than repaired.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ── Colour: neutrals ─────────────────────────────────────────────────────
+     A neutral grey ramp, tuned to sit on the site's off-white canvas rather
+     than on pure white. `ink` is text, `surface` is anything that sits above
+     the canvas, `hairline` is the only border colour.
+
+     The ramp carries no hue of its own. It used to be tinted towards the brand
+     teal, which meant every skeleton, well and hairline pulled the brand colour
+     into states that are meant to read as empty — and kept reading teal even
+     after the admin picked a different brand colour. */
+  --canvas: #faf8f5;          /* page background: the reference's warm cream */
+  --canvas-sunken: #ebebed;   /* wells, inset areas, image placeholders */
+  --surface: #ffffff;         /* cards, sheets, inputs */
+  --surface-raised: #ffffff;  /* dropdowns, modals — same hue, more elevation */
+  --surface-hover: #f2f2f4;   /* row / list-item hover */
+
+  --ink: #131315;             /* primary text */
+  --ink-secondary: #52525b;   /* supporting text, labels */
+  --ink-tertiary: #85858e;    /* metadata, placeholders, disabled labels */
+  --ink-quaternary: #b4b4bb;  /* icon rests, dividers-as-text */
+  --ink-inverse: #ffffff;     /* text on dark fills */
+
+  --hairline: #e2e2e6;        /* 1px separators and input borders */
+  --hairline-strong: #c6c6cd; /* hovered / focused input borders */
+
+  /* ── Colour: brand ────────────────────────────────────────────────────────
+     `--main` and its siblings are written at runtime by ThemeProvider from the
+     admin's /all-custom-color endpoint. They keep their original names so that
+     override keeps working; the design system reads them through the aliases
+     below.
+
+     The fallbacks are deliberately neutral greys, not a brand colour. They are
+     only on screen for the moment between first paint and the colour fetch
+     resolving, and a saturated fallback made that moment read as a flash of a
+     different theme — most visibly a teal band across the top of the page on
+     mobile. Grey reads as chrome, so the swap to the admin's colour looks like
+     the page finishing rather than changing its mind. */
+  --main: #3f3f46;
+  --main-hov: #27272a;
+  --second-color: #52525b;
+  --second-hov-color: #3f3f46;
+  --header-topbar-color: #27272a;
+  --header-bottom-color: #3f3f46;
+  --footer-color: #27272a;
+
+  /* ── Colour: footer foreground ramp ───────────────────────────────────────
+     The footer ground is admin-configurable, so its type cannot be hardcoded
+     white. `--footer-ink-rgb` holds the contrasting ink as bare RGB channels,
+     which puts every step of the ramp one `rgb(... / a)` away and leaves
+     ThemeProvider a single value to write once it knows the admin's footer
+     colour. Defaults pair with the dark neutral ground above. */
+  --footer-ink-rgb: 255 255 255;
+  --footer-ink: rgb(var(--footer-ink-rgb));
+  --footer-ink-strong: rgb(var(--footer-ink-rgb) / 0.8);
+  --footer-ink-muted: rgb(var(--footer-ink-rgb) / 0.7);
+  --footer-ink-secondary: rgb(var(--footer-ink-rgb) / 0.65);
+  --footer-ink-tertiary: rgb(var(--footer-ink-rgb) / 0.45);
+  --footer-ink-faint: rgb(var(--footer-ink-rgb) / 0.4);
+  --footer-hairline: rgb(var(--footer-ink-rgb) / 0.1);
+  --footer-hairline-strong: rgb(var(--footer-ink-rgb) / 0.15);
+  --footer-hairline-input: rgb(var(--footer-ink-rgb) / 0.2);
+  --footer-hairline-hover: rgb(var(--footer-ink-rgb) / 0.4);
+  --footer-hairline-focus: rgb(var(--footer-ink-rgb) / 0.5);
+  --footer-wash: rgb(var(--footer-ink-rgb) / 0.05);
+  --footer-wash-strong: rgb(var(--footer-ink-rgb) / 0.1);
+  /* The newsletter button inverts the ramp: ink fill, ground-coloured label. */
+  --footer-ink-contrast: var(--footer-color);
+  --footer-ink-hover: rgb(var(--footer-ink-rgb) / 0.9);
+
+  --brand: var(--main);
+  --brand-hover: var(--main-hov);
+  --brand-contrast: #ffffff;
+  --brand-tint: rgba(63, 63, 70, 0.08);     /* wash behind selected states */
+
+  /* ── Colour: status ───────────────────────────────────────────────────────
+     One hue per meaning, each with a solid, a tint and a text variant so
+     banners, badges and inline messages never invent their own values. */
+  --success: #12805c;
+  --success-tint: #e6f4ef;
+  --warning: #a8620a;
+  --warning-tint: #fdf1e3;
+  --danger: #c0392b;
+  --danger-tint: #fceceb;
+  --info: #1f6feb;
+  --info-tint: #e8f0fe;
+
+  /* Sale / discount is a product concern, not a system error — its own token
+     keeps discount pills from borrowing the danger colour. */
+  --sale: #c0392b;
+  --sale-tint: #fceceb;
+
+  /* ── Colour: warm accents ─────────────────────────────────────────────────
+     The cart drawer's palette, taken from the reference design. Kept apart
+     from `--brand` because that one is rewritten by ThemeProvider. */
+  --cream: #faf8f5;
+  --gold: #a27339;
+  --gold-hover: #8e632d;
+
+  /* ── Space ────────────────────────────────────────────────────────────────
+     A 4px base with the mid-range doubled. Every margin, padding and gap in
+     the app resolves to one of these. */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+
+  /* ── Radius ───────────────────────────────────────────────────────────────
+     Five steps. Controls use md, cards use lg/xl, sheets use 2xl. The old
+     codebase used all six Tailwind defaults interchangeably. The scale is
+     deliberately tight — corners read as crisp rather than soft. */
+  --radius-sm: 2px;
+  --radius-md: 3px;
+  --radius-lg: 4px;
+  --radius-xl: 5px;
+  --radius-2xl: 6px;
+
+  /* ── Elevation ────────────────────────────────────────────────────────────
+     Four levels, each a soft ambient shadow plus a tighter contact shadow —
+     no borders needed to separate a surface from the canvas. */
+  --shadow-e1: 0 1px 2px rgba(19, 19, 21, 0.04), 0 1px 3px rgba(19, 19, 21, 0.03);
+  --shadow-e2: 0 2px 4px rgba(19, 19, 21, 0.04), 0 6px 16px rgba(19, 19, 21, 0.06);
+  --shadow-e3: 0 4px 8px rgba(19, 19, 21, 0.05), 0 16px 32px rgba(19, 19, 21, 0.10);
+  --shadow-e4: 0 8px 16px rgba(19, 19, 21, 0.06), 0 32px 64px rgba(19, 19, 21, 0.16);
+
+  /* ── Motion ───────────────────────────────────────────────────────────────
+     One easing curve across the app — a decelerating spring-like ease that
+     reads as physical rather than mechanical. Durations stay short. */
+  --ease: cubic-bezier(0.32, 0.72, 0, 1);
+  --duration-fast: 150ms;
+  --duration-base: 220ms;
+  --duration-slow: 320ms;
+
+  /* ── Layout ───────────────────────────────────────────────────────────────
+     Header height is measured and written by Header.jsx; this is the value
+     used for the first paint and as the fallback. */
+  --header-height: 156px;
+  --content-max: 1440px;
+
+  /* Legacy aliases — kept so any not-yet-migrated markup still resolves. */
+  --background: var(--canvas);
+  --foreground: var(--ink);
+}
+
+/* First-paint header height per width, measured from the real header: the
+   two-row strip + main bar + search row below `lg`, and the
+   one-row strip + main bar + category nav from `lg`.
+   Header.jsx overwrites the variable with the live measurement once mounted. */
+@media (min-width: 640px) {
+  :root { --header-height: 164px; }
+}
+
+@media (min-width: 1024px) {
+  :root { --header-height: 146px; }
+}
+
+/* ── Tailwind theme bridge ──────────────────────────────────────────────────
+   Exposes the tokens above as Tailwind utilities. `bg-surface`, `text-ink`,
+   `border-hairline`, `rounded-lg`, `shadow-e2`, `p-6` all resolve here. */
+@theme inline {
+  /* Colour */
+  --color-canvas: var(--canvas);
+  --color-canvas-sunken: var(--canvas-sunken);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-surface-hover: var(--surface-hover);
+
+  --color-ink: var(--ink);
+  --color-ink-secondary: var(--ink-secondary);
+  --color-ink-tertiary: var(--ink-tertiary);
+  --color-ink-quaternary: var(--ink-quaternary);
+  --color-ink-inverse: var(--ink-inverse);
+
+  --color-hairline: var(--hairline);
+  --color-hairline-strong: var(--hairline-strong);
+
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+  --color-brand-contrast: var(--brand-contrast);
+  --color-brand-tint: var(--brand-tint);
+
+  --color-success: var(--success);
+  --color-success-tint: var(--success-tint);
+  --color-warning: var(--warning);
+  --color-warning-tint: var(--warning-tint);
+  --color-danger: var(--danger);
+  --color-danger-tint: var(--danger-tint);
+  --color-info: var(--info);
+  --color-info-tint: var(--info-tint);
+  --color-sale: var(--sale);
+  --color-sale-tint: var(--sale-tint);
+  --color-cream: var(--cream);
+  --color-gold: var(--gold);
+  --color-gold-hover: var(--gold-hover);
+
+  /* Legacy colour names still referenced by unmigrated markup. */
+  --color-background: var(--canvas);
+  --color-foreground: var(--ink);
+  --color-main: var(--main);
+  --color-main-hov: var(--main-hov);
+  --color-second: var(--second-color);
+  --color-second-hov: var(--second-hov-color);
+  --color-header-topbar: var(--header-topbar-color);
+  --color-header-bottom: var(--header-bottom-color);
+  --color-footer: var(--footer-color);
+  --color-footer-ink: var(--footer-ink);
+  --color-footer-ink-strong: var(--footer-ink-strong);
+  --color-footer-ink-muted: var(--footer-ink-muted);
+  --color-footer-ink-secondary: var(--footer-ink-secondary);
+  --color-footer-ink-tertiary: var(--footer-ink-tertiary);
+  --color-footer-ink-faint: var(--footer-ink-faint);
+  --color-footer-ink-contrast: var(--footer-ink-contrast);
+  --color-footer-ink-hover: var(--footer-ink-hover);
+  --color-footer-hairline: var(--footer-hairline);
+  --color-footer-hairline-strong: var(--footer-hairline-strong);
+  --color-footer-hairline-input: var(--footer-hairline-input);
+  --color-footer-hairline-hover: var(--footer-hairline-hover);
+  --color-footer-hairline-focus: var(--footer-hairline-focus);
+  --color-footer-wash: var(--footer-wash);
+  --color-footer-wash-strong: var(--footer-wash-strong);
+
+  /* Radius — declared here rather than aliased from :root, because inside
+     `@theme inline` a same-named `var()` resolves against itself. Keep these
+     in step with the `:root` scale above. */
+  --radius-sm: 2px;
+  --radius-md: 3px;
+  --radius-lg: 4px;
+  --radius-xl: 5px;
+  --radius-2xl: 6px;
+
+  /* Elevation — same reason as radius above. */
+  --shadow-e1: 0 1px 2px rgba(19, 19, 21, 0.04), 0 1px 3px rgba(19, 19, 21, 0.03);
+  --shadow-e2: 0 2px 4px rgba(19, 19, 21, 0.04), 0 6px 16px rgba(19, 19, 21, 0.06);
+  --shadow-e3: 0 4px 8px rgba(19, 19, 21, 0.05), 0 16px 32px rgba(19, 19, 21, 0.10);
+  --shadow-e4: 0 8px 16px rgba(19, 19, 21, 0.06), 0 32px 64px rgba(19, 19, 21, 0.16);
+
+  /* Type family — Hind Siliguri first, as in the reference design. It is
+     loaded in layout.jsx and carries Latin and Bengali, so one face serves
+     both scripts; the system stack only covers the swap window. */
+  --font-sans: var(--font-hind), "Hind Siliguri", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: var(--font-sans);
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+
+  /* Motion — exposed as utilities so components write `ease-standard` and
+     `duration-base` rather than repeating the raw cubic-bezier and timings
+     as arbitrary values on every element. */
+  --ease-standard: var(--ease);
+  --animate-duration-fast: var(--duration-fast);
+
+  --transition-duration-fast: 150ms;
+  --transition-duration-base: 220ms;
+  --transition-duration-slow: 320ms;
+  --transition-duration-slower: 700ms;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   BASE
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+html {
+  scrollbar-gutter: stable;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--canvas);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* Hind Siliguri is drawn with open spacing; the reference sets it untracked. */
+  letter-spacing: 0;
+  line-height: 1.47;
+}
+
+/* Headings tighten as they grow — large type needs negative tracking to stop
+   looking loose, small type needs none. */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: 1.12;
+  letter-spacing: -0.022em;
+}
+
+/* ── Typography scale ───────────────────────────────────────────────────────
+   Named after their role, not their size, so a heading can change size without
+   every page needing an edit. Sizes are fluid where the jump matters. */
+/* The lower clamp bound was 2.25rem — a 36px headline on a 360px phone, wide
+   enough to wrap most two-word titles onto three lines. The floor is now
+   1.625rem and the slope steeper, so the size tracks small viewports and still
+   reaches the same 3.75rem on desktop. */
+.type-display {
+  font-family: var(--font-display);
+  font-size: clamp(1.625rem, 0.95rem + 3vw, 3.75rem);
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  font-weight: 600;
+}
+
+.type-title-1 {
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 1.4rem + 1.4vw, 2.5rem);
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  font-weight: 600;
+}
+
+/* Product detail headline. Product names are long sentences, not two-word
+   titles, so they need a smaller floor than .type-title-1 to avoid eating the
+   phone viewport. Steps up in three stages: phone, tablet, desktop. */
+.type-product-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.125rem, 0.9rem + 1.1vw, 1.375rem);
+  line-height: 1.25;
+  letter-spacing: -0.018em;
+  font-weight: 600;
+}
+
+@media (min-width: 768px) {
+  .type-product-title {
+    font-size: clamp(1.375rem, 0.95rem + 1.1vw, 1.75rem);
+    line-height: 1.2;
+    letter-spacing: -0.021em;
+  }
+}
+
+@media (min-width: 1024px) {
+  .type-product-title {
+    font-size: clamp(1.625rem, 1.1rem + 0.9vw, 2rem);
+    line-height: 1.15;
+    letter-spacing: -0.024em;
+  }
+}
+
+.type-title-2 {
+  font-family: var(--font-display);
+  font-size: clamp(1.375rem, 1.2rem + 0.7vw, 1.75rem);
+  line-height: 1.18;
+  letter-spacing: -0.021em;
+  font-weight: 600;
+}
+
+/* Serif section headline, for the home page's category strip. A class of its
+   own because the unlayered `h2` rule above would beat a `font-serif` utility
+   on both family and weight. The face is loaded in layout.jsx. */
+.type-title-serif {
+  font-family: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(1.5rem, 1.3rem + 0.6vw, 1.875rem);
+  line-height: 1.2;
+  letter-spacing: 0;
+  font-weight: 400;
+}
+
+/* Serif masthead for slide-in panels. Semibold, unlike the regular-weight
+   headlines above, to match the cart drawer in the reference design. */
+.type-drawer-title {
+  font-family: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
+  font-size: 1.5rem;
+  line-height: 1.2;
+  letter-spacing: 0;
+  font-weight: 600;
+}
+
+/* Serif product name on the featured cards. Family and weight only, so the
+   size stays a utility; it has to be a class for the same reason as
+   `.type-title-serif` above — the unlayered `h3` rule would beat `font-serif`. */
+.type-card-serif {
+  font-family: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
+  line-height: 1.25;
+  letter-spacing: 0;
+  font-weight: 400;
+}
+
+/* Serif title of the checkout card. Same face and weight as
+   `.type-drawer-title`, but with no fixed size: the card title steps from 18px
+   to 20px with a utility. A class for the same reason as above — the unlayered
+   `h1` rule would beat a `font-semibold` utility. */
+.type-modal-serif {
+  font-family: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
+  line-height: 1.25;
+  letter-spacing: 0;
+  font-weight: 600;
+}
+
+/* Wordmark in the header and the menu drawer. Family, weight and tracking only;
+   the size steps with the breakpoint through utilities. A class for the same
+   reason as above — nothing unlayered may be allowed to beat the family. */
+.type-wordmark {
+  font-family: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+/* Header search field. 16px on a phone — iOS Safari zooms the page on focus into
+   any input set smaller — and 14px from `sm` up. A class, not utilities,
+   because the unlayered `input { font-size: inherit }` rule below beats them. */
+.type-search-pill {
+  font-size: 1rem;
+  line-height: 1.5;
+  letter-spacing: 0;
+}
+
+@media (min-width: 640px) {
+  .type-search-pill {
+    font-size: 0.875rem;
+  }
+}
+
+.type-title-3 {
+  font-size: 1.25rem;
+  line-height: 1.25;
+  letter-spacing: -0.018em;
+  font-weight: 600;
+}
+
+.type-headline {
+  font-size: 1rem;
+  line-height: 1.35;
+  letter-spacing: -0.014em;
+  font-weight: 600;
+}
+
+.type-body {
+  font-size: 1rem;
+  line-height: 1.55;
+  letter-spacing: -0.011em;
+  font-weight: 400;
+}
+
+.type-callout {
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  letter-spacing: -0.009em;
+}
+
+.type-subhead {
+  font-size: 0.875rem;
+  line-height: 1.45;
+  letter-spacing: -0.006em;
+}
+
+.type-footnote {
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  letter-spacing: 0;
+}
+
+.type-caption {
+  font-size: 0.75rem;
+  line-height: 1.35;
+  letter-spacing: 0.002em;
+}
+
+/* Eyebrow labels above section titles — the only place tracking goes positive. */
+.type-eyebrow {
+  font-size: 0.6875rem;
+  line-height: 1.2;
+  letter-spacing: 0.09em;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* Footer column titles. A class rather than utilities because the unlayered
+   `h1–h6` rule above would beat them on weight and tracking. */
+.type-footer-heading {
+  font-size: 0.75rem;
+  line-height: 1rem;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* Numerals in prices, quantities and tables align in columns and never reflow
+   as digits change. */
+.tabular {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+/* ── Focus ──────────────────────────────────────────────────────────────────
+   The old code applied `focus:outline-none` in ~40 places and replaced it with
+   nothing, leaving the app unusable by keyboard. One ring, defined once,
+   applied to everything focusable, and only for keyboard focus. */
+/* No `border-radius` here: this rule is unlayered, so it beats every utility
+   and would square off a pill or circle the moment it takes keyboard focus. */
+:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+/* Mouse clicks should not paint the ring. */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+::selection {
+  background: var(--brand);
+  color: var(--brand-contrast);
+}
+
+/* Native controls follow the theme rather than the browser default blue. */
+input,
+textarea,
+select,
+button {
+  font-family: inherit;
+  font-size: inherit;
+  letter-spacing: inherit;
+}
+
+::placeholder {
+  color: var(--ink-tertiary);
+  opacity: 1;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   COMPONENT PRIMITIVES
+   Applied via className so JSX stays short and every instance stays identical.
+   ═══════════════════════════════════════════════════════════════════════════ */
+@layer components {
+  /* ── Buttons ──────────────────────────────────────────────────────────────
+     One base, five variants, three sizes. The base owns layout, motion and
+     the disabled/focus contract; variants only set colour. */
+  .btn {
+    @apply relative inline-flex items-center justify-center gap-2
+    font-semibold whitespace-nowrap select-none
+    cursor-pointer border border-transparent
+    transition-all;
+    border-radius: var(--radius-md);
+    transition-duration: var(--duration-fast);
+    transition-timing-function: var(--ease);
+    letter-spacing: -0.01em;
+  }
+
+  /* Press feedback is a 2% scale — enough to feel, too small to notice. */
+  .btn:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+
+  .btn:disabled,
+  .btn[aria-disabled="true"] {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .btn-sm {
+    height: 34px;
+    padding-inline: var(--space-3);
+    font-size: 0.8125rem;
+  }
+
+  /* The product card's buy action. It is pinned open on touch, where the card
+     is narrow, so it is sized down there to keep the photograph dominant and
+     grows to the standard small button on desktop, where it only appears on
+     hover. Declared here rather than as breakpoint utilities on the element:
+     `.btn-sm` sets height and padding-inline as plain declarations in this
+     layer, and mixing those with `h-*`/`px-*` utilities made the two
+     breakpoints resolve to the same box. */
+  .btn-card {
+    height: 28px;
+    padding-inline: var(--space-2);
+    font-size: 0.6875rem;
+    letter-spacing: 0;
+    border-radius: var(--radius-sm);
+  }
+
+  @media (min-width: 768px) {
+    .btn-card {
+      height: 32px;
+      padding-inline: var(--space-3);
+      font-size: 0.75rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .btn-card {
+      height: 46px;
+      padding-inline: var(--space-4);
+      font-size: 0.8125rem;
+      border-radius: var(--radius-md);
+    }
+  }
+
+  .btn-md {
+    height: 42px;
+    padding-inline: var(--space-5);
+    font-size: 0.875rem;
+  }
+
+  .btn-lg {
+    height: 52px;
+    padding-inline: var(--space-6);
+    font-size: 0.9375rem;
+  }
+
+  .btn-primary {
+    background: var(--brand);
+    color: var(--brand-contrast);
+    box-shadow: var(--shadow-e1);
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    background: var(--brand-hover);
+    box-shadow: var(--shadow-e2);
+  }
+
+  .btn-secondary {
+    background: var(--surface);
+    color: var(--ink);
+    border-color: var(--hairline);
+    box-shadow: var(--shadow-e1);
+  }
+
+  .btn-secondary:hover:not(:disabled) {
+    border-color: var(--hairline-strong);
+    background: var(--surface-hover);
+  }
+
+  /* Frosted variant, matching the carousel arrows and the sticky bars. It is a
+     button variant rather than `.surface-blur` stacked onto `.btn-secondary`:
+     that combination wins the background declaration but loses the hover,
+     because the secondary hover rule is defined earlier in the file. */
+  .btn-glass {
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    color: var(--ink);
+    border-color: var(--hairline);
+    box-shadow: var(--shadow-e1);
+  }
+
+  .btn-glass:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.88);
+    border-color: var(--hairline-strong);
+    box-shadow: var(--shadow-e2);
+  }
+
+  @supports not (backdrop-filter: blur(1px)) {
+    .btn-glass {
+      background: var(--surface);
+    }
+
+    .btn-glass:hover:not(:disabled) {
+      background: var(--surface-hover);
+    }
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--ink);
+  }
+
+  .btn-ghost:hover:not(:disabled) {
+    background: var(--brand-tint);
+  }
+
+  .btn-danger {
+    background: var(--danger);
+    color: #fff;
+  }
+
+  .btn-danger:hover:not(:disabled) {
+    filter: brightness(0.93);
+  }
+
+  /* Square icon-only buttons. Size classes set the box; the icon centres. */
+  .btn-icon {
+    @apply inline-flex items-center justify-center shrink-0 cursor-pointer
+    border border-transparent transition-all;
+    border-radius: var(--radius-md);
+    transition-duration: var(--duration-fast);
+    transition-timing-function: var(--ease);
+    color: var(--ink-secondary);
+  }
+
+  .btn-icon:hover:not(:disabled) {
+    background: var(--brand-tint);
+    color: var(--ink);
+  }
+
+  .btn-icon:active:not(:disabled) {
+    transform: scale(0.94);
+  }
+
+  .btn-icon:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+
+  .btn-icon-sm { width: 32px; height: 32px; }
+  .btn-icon-md { width: 40px; height: 40px; }
+  .btn-icon-lg { width: 48px; height: 48px; }
+  .btn-icon-round { border-radius: 9999px; }
+
+  /* ── Inputs ───────────────────────────────────────────────────────────────
+     Hairline border at rest, brand ring on focus, no inner shadow. The ring is
+     drawn with box-shadow rather than outline so it follows the border radius
+     exactly. */
+  .field {
+    @apply w-full transition-all;
+    height: 44px;
+    padding-inline: var(--space-4);
+    background: var(--surface);
+    color: var(--ink);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-md);
+    font-size: 0.9375rem;
+    transition-duration: var(--duration-fast);
+    transition-timing-function: var(--ease);
+  }
+
+  .field:hover:not(:disabled):not(:focus) {
+    border-color: var(--hairline-strong);
+  }
+
+  .field:focus {
+    outline: none;
+    border-color: var(--brand);
+    box-shadow: 0 0 0 3px var(--brand-tint);
+  }
+
+  .field:disabled {
+    background: var(--canvas-sunken);
+    color: var(--ink-tertiary);
+    cursor: not-allowed;
+  }
+
+  .field-error {
+    border-color: var(--danger);
+  }
+
+  .field-error:focus {
+    border-color: var(--danger);
+    box-shadow: 0 0 0 3px var(--danger-tint);
+  }
+
+  .field-textarea {
+    height: auto;
+    min-height: 104px;
+    padding-block: var(--space-3);
+    resize: vertical;
+    line-height: 1.5;
+  }
+
+  .field-label {
+    @apply block mb-2;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--ink-secondary);
+    letter-spacing: -0.005em;
+  }
+
+  .field-hint {
+    @apply mt-1.5;
+    font-size: 0.75rem;
+    color: var(--ink-tertiary);
+  }
+
+  .field-error-text {
+    @apply mt-1.5;
+    font-size: 0.75rem;
+    color: var(--danger);
+  }
+
+  /* ── Surfaces ─────────────────────────────────────────────────────────────
+     Depth comes from shadow, not from borders. `.card-interactive` adds the
+     lift-on-hover used by product and content cards. */
+  .card {
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-e1);
+  }
+
+  .card-raised {
+    background: var(--surface);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-e2);
+  }
+
+  .card-interactive {
+    @apply transition-all;
+    transition-duration: var(--duration-base);
+    transition-timing-function: var(--ease);
+  }
+
+  .card-interactive:hover {
+    box-shadow: var(--shadow-e3);
+    transform: translateY(-2px);
+  }
+
+  /* Frosted overlay used by sticky bars and floating controls. Falls back to a
+     near-opaque fill where backdrop-filter is unsupported. */
+  .surface-blur {
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+  }
+
+  @supports not (backdrop-filter: blur(1px)) {
+    .surface-blur {
+      background: rgba(255, 255, 255, 0.96);
+    }
+  }
+
+  .surface-blur-dark {
+    background: rgba(19, 19, 21, 0.72);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+  }
+
+  @supports not (backdrop-filter: blur(1px)) {
+    .surface-blur-dark {
+      background: rgba(19, 19, 21, 0.94);
+    }
+  }
+
+  /* ── Badges ───────────────────────────────────────────────────────────────
+     Tint background, solid text. One shape for every meaning. */
+  .badge {
+    @apply inline-flex items-center gap-1 whitespace-nowrap;
+    height: 22px;
+    padding-inline: var(--space-2);
+    border-radius: 9999px;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+  }
+
+  .badge-neutral { background: var(--canvas-sunken); color: var(--ink-secondary); }
+  .badge-sale    { background: var(--sale);          color: #fff; }
+  .badge-success { background: var(--success-tint);  color: var(--success); }
+  .badge-warning { background: var(--warning-tint);  color: var(--warning); }
+  .badge-danger  { background: var(--danger-tint);   color: var(--danger); }
+  .badge-info    { background: var(--info-tint);     color: var(--info); }
+  .badge-solid   { background: var(--brand);         color: var(--brand-contrast); }
+
+  /* Count bubbles on cart / wishlist icons. */
+  .badge-count {
+    @apply inline-flex items-center justify-center;
+    font-variant-numeric: tabular-nums;
+    min-width: 18px;
+    height: 18px;
+    padding-inline: 5px;
+    border-radius: 9999px;
+    background: var(--sale);
+    color: #fff;
+    font-size: 0.625rem;
+    font-weight: 700;
+    line-height: 1;
+    box-shadow: 0 0 0 2px var(--surface);
+  }
+
+  /* ── Choice chips ─────────────────────────────────────────────────────────
+     Size / variant selectors on product cards and detail pages. */
+  .chip {
+    @apply inline-flex items-center justify-center cursor-pointer transition-all;
+    min-width: 38px;
+    height: 32px;
+    padding-inline: var(--space-2);
+    border: 1px solid var(--hairline-strong);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    color: var(--ink);
+    font-size: 0.75rem;
+    font-weight: 600;
+    transition-duration: var(--duration-fast);
+    transition-timing-function: var(--ease);
+  }
+
+  .chip:hover:not(:disabled) {
+    border-color: var(--ink);
+  }
+
+  .chip-selected {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--ink-inverse);
+  }
+
+  /* Out-of-stock options stay visible but struck through, so shoppers can see
+     the size exists rather than wondering why it vanished. */
+  .chip:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    text-decoration: line-through;
+  }
+
+  /* ── Skeletons ────────────────────────────────────────────────────────────
+     A sheen sweeping across a sunken block. Calmer than a pulsing opacity and
+     it reads as "loading" rather than "broken". */
+  .skeleton {
+    position: relative;
+    overflow: hidden;
+    background: var(--canvas-sunken);
+    border-radius: var(--radius-md);
+  }
+
+  .skeleton::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.6),
+      transparent
+    );
+    animation: skeleton-sheen 1.6s var(--ease) infinite;
+  }
+
+  @keyframes skeleton-sheen {
+    100% { transform: translateX(100%); }
+  }
+
+  /* ── Layout helpers ───────────────────────────────────────────────────────*/
+  .container-page {
+    width: 100%;
+    max-width: var(--content-max);
+    margin-inline: auto;
+    padding-inline: var(--space-4);
+  }
+
+  @media (min-width: 768px) {
+    .container-page { padding-inline: var(--space-8); }
+  }
+
+  @media (min-width: 1280px) {
+    .container-page { padding-inline: var(--space-12); }
+  }
+
+  /* Standard vertical rhythm between home-page and content sections.
+
+     The padding is on both sides of every section, so neighbouring sections
+     sit twice this value apart: 48px on a phone, 64px on a desktop. It was
+     --space-12 / --space-20, which made those gaps 96px and 160px — enough
+     that a rail read as adrift from the one above it. */
+  .section {
+    padding-block: var(--space-6);
+  }
+
+  @media (min-width: 768px) {
+    .section { padding-block: var(--space-8); }
+  }
+
+  /* Hairline divider that stops short of the container edges. */
+  .divider {
+    height: 1px;
+    background: var(--hairline);
+    border: 0;
+  }
+
+  /* Text link with an underline that grows from the left on hover. */
+  .link {
+    position: relative;
+    color: var(--ink);
+    text-decoration: none;
+    transition: color var(--duration-fast) var(--ease);
+  }
+
+  .link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -2px;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform var(--duration-base) var(--ease);
+  }
+
+  .link:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+
+  /* Nav links reveal their underline the same way, from the centre out. */
+  .nav-link {
+    position: relative;
+    padding-block: var(--space-1);
+    /* Inherit, so the nav row sets the resting colour (stone-600) and the
+       active and hover utilities override it. */
+    color: inherit;
+    transition: color var(--duration-fast) var(--ease);
+  }
+
+  .nav-link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 2px;
+    background: var(--color-amber-700, #b45309);
+    border-radius: 2px;
+    transform: scaleX(0);
+    transition: transform var(--duration-base) var(--ease);
+  }
+
+  .nav-link:hover::after,
+  .nav-link[data-active="true"]::after {
+    transform: scaleX(1);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MOTION PRIMITIVES
+   Short, single-purpose entrances. Nothing loops except skeletons and marquees.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.96) translateY(8px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-down {
+  from { opacity: 0; transform: translateY(-12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-in-right {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+
+@keyframes slide-in-bottom {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+.animate-fade-in      { animation: fade-in var(--duration-base) var(--ease) both; }
+.animate-scale-in     { animation: scale-in var(--duration-base) var(--ease) both; }
+.animate-slide-up     { animation: slide-up var(--duration-slow) var(--ease) both; }
+.animate-slide-down   { animation: slide-down var(--duration-base) var(--ease) both; }
+.animate-slide-in-right  { animation: slide-in-right var(--duration-slow) var(--ease) both; }
+.animate-slide-in-bottom { animation: slide-in-bottom var(--duration-slow) var(--ease) both; }
+
+/* Legacy animation names kept as aliases so unmigrated markup keeps working. */
+.animate-slideIn    { animation: slide-in-right var(--duration-slow) var(--ease) both; }
+.animate-slide-down { animation: slide-down var(--duration-base) var(--ease) both; }
+
+/* Anything that animates is switched off wholesale for users who ask for it.
+   Durations go to 1ms rather than 0 so animation-end handlers still fire. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   THIRD-PARTY OVERRIDES
+   Styling we cannot reach from JSX: Swiper's internals, embedded iframes and
+   admin-authored rich text.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Swiper ─────────────────────────────────────────────────────────────────
+   Swiper injects its own arrows and bullets. These rules restyle them to the
+   system rather than hiding them and rebuilding a parallel set. */
+.swiper-button-next,
+.swiper-button-prev {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: saturate(180%) blur(16px);
+  -webkit-backdrop-filter: saturate(180%) blur(16px);
+  box-shadow: var(--shadow-e2);
+  color: var(--ink) !important;
+  transition: transform var(--duration-fast) var(--ease),
+              box-shadow var(--duration-fast) var(--ease),
+              opacity var(--duration-fast) var(--ease);
+}
+
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+  transform: scale(1.06);
+  box-shadow: var(--shadow-e3);
+}
+
+.swiper-button-next:active,
+.swiper-button-prev:active {
+  transform: scale(0.96);
+}
+
+/* Swiper draws its arrow glyph with a font, not an SVG. */
+.swiper-button-next::after,
+.swiper-button-prev::after {
+  font-size: 14px !important;
+  font-weight: 700;
+}
+
+.swiper-button-disabled {
+  opacity: 0.3 !important;
+  pointer-events: none;
+}
+
+/* Pagination: a row of small dots that grow into a pill when active. */
+.swiper-pagination-bullet {
+  width: 6px !important;
+  height: 6px !important;
+  background: currentColor !important;
+  opacity: 0.35 !important;
+  border-radius: 9999px !important;
+  transition: width var(--duration-base) var(--ease),
+              opacity var(--duration-base) var(--ease);
+}
+
+.swiper-pagination-bullet-active {
+  width: 20px !important;
+  opacity: 1 !important;
+}
+
+/* The hero slider sits on imagery, so its bullets are white dots centred along
+   the foot of the frame, the active one a longer orange pill. */
+.hero-swiper .swiper-pagination {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: center;
+  bottom: 12px !important;
+}
+
+.hero-swiper .swiper-pagination-bullet {
+  width: 8px !important;
+  height: 8px !important;
+  margin: 0 !important;
+  background: #fff !important;
+  opacity: 0.6 !important;
+}
+
+.hero-swiper .swiper-pagination-bullet:hover {
+  opacity: 1 !important;
+}
+
+.hero-swiper .swiper-pagination-bullet-active {
+  width: 28px !important;
+  background: #f05a22 !important;
+  opacity: 1 !important;
+}
+
+@media (min-width: 640px) {
+  .hero-swiper .swiper-pagination-bullet-active {
+    width: 32px !important;
+  }
+}
+
+/* Carousel arrows only appear once the pointer is over the carousel, so resting
+   sections stay quiet. Always visible on touch, where there is no hover. */
+.carousel-hover-nav .swiper-button-next,
+.carousel-hover-nav .swiper-button-prev {
+  opacity: 0;
+}
+
+.carousel-hover-nav:hover .swiper-button-next,
+.carousel-hover-nav:hover .swiper-button-prev,
+.carousel-hover-nav .swiper-button-next:focus-visible,
+.carousel-hover-nav .swiper-button-prev:focus-visible {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .carousel-hover-nav .swiper-button-next,
+  .carousel-hover-nav .swiper-button-prev {
+    opacity: 1;
+  }
+}
+
+/* ── Marquee ────────────────────────────────────────────────────────────────
+   The track holds four identical copies of the content and slides exactly one
+   copy's width — 25% of the track — so the loop has no visible seam.
+
+   The copy count and this percentage are a pair: -50% is correct for two
+   copies, -25% for four. Four is what the markup renders, because a two-copy
+   track could be narrower than the viewport, and then one copy's width of
+   travel was not enough to refill the screen and the band ran out mid-scroll.
+
+   The track itself carries no `gap`. A percentage translate is measured
+   against the whole track including its gaps, so a gapped four-copy track
+   would shift by a quarter of (content + 3 gaps) while one copy is only a
+   quarter of the content — the seam would creep on every pass. Spacing at the
+   join is a trailing gap inside each copy instead, which is part of the copy
+   and so part of what the quarter measures. */
+@keyframes marquee-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-25%); }
+}
+
+.marquee-track {
+  display: inline-flex;
+  white-space: nowrap;
+  will-change: transform;
+  animation: marquee-scroll 40s linear infinite;
+}
+
+.marquee-track:hover {
+  animation-play-state: paused;
+}
+
+/* An infinite horizontal scroll is exactly the motion this setting is for. */
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+  }
+}
+
+/* Legacy marquee classes, retained for markup not yet migrated. */
+.marquee-banner-track {
+  animation: marquee-scroll 30s linear infinite;
+  will-change: transform;
+}
+
+.marquee-banner-track:hover {
+  animation-play-state: paused;
+}
+
+.marquee {
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  height: 32px;
+}
+
+.marquee-text {
+  position: absolute;
+  left: 100%;
+  white-space: nowrap;
+  will-change: transform;
+  animation: marquee-legacy 35s linear infinite;
+}
+
+@keyframes marquee-legacy {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-280%); }
+}
+
+.marquee-text:hover {
+  animation-play-state: paused;
+}
+
+/* ── Range slider ───────────────────────────────────────────────────────────
+   Used by the shop-page price filter. Scoped to `.range-input` rather than the
+   old `.relative input[type=range]`, which styled every range in the app. */
+.range-input {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+  height: 4px;
+  pointer-events: auto;
+}
+
+.range-input:focus {
+  outline: none;
+}
+
+.range-input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 20px;
+  width: 20px;
+  margin-top: -8px;
+  background: var(--surface);
+  border: 1px solid var(--hairline-strong);
+  border-radius: 9999px;
+  box-shadow: var(--shadow-e2);
+  cursor: grab;
+  transition: transform var(--duration-fast) var(--ease);
+}
+
+.range-input::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+}
+
+.range-input::-webkit-slider-thumb:active {
+  cursor: grabbing;
+  transform: scale(1.05);
+}
+
+.range-input::-moz-range-thumb {
+  height: 20px;
+  width: 20px;
+  background: var(--surface);
+  border: 1px solid var(--hairline-strong);
+  border-radius: 9999px;
+  box-shadow: var(--shadow-e2);
+  cursor: grab;
+  transition: transform var(--duration-fast) var(--ease);
+}
+
+.range-input::-moz-range-thumb:hover {
+  transform: scale(1.1);
+}
+
+.range-input::-webkit-slider-runnable-track,
+.range-input::-moz-range-track {
+  height: 4px;
+  background: transparent;
+  border-radius: 9999px;
+}
+
+/* Legacy selector, kept until every range input carries `.range-input`. */
+.relative input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+  height: 4px;
+}
+
+.relative input[type="range"]:focus {
+  outline: none;
+}
+
+/* ── Scrollbars ─────────────────────────────────────────────────────────────*/
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* A thin scrollbar for panels that should still show their overflow affordance. */
+.scrollbar-subtle {
+  scrollbar-width: thin;
+  scrollbar-color: var(--hairline-strong) transparent;
+}
+
+.scrollbar-subtle::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.scrollbar-subtle::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-subtle::-webkit-scrollbar-thumb {
+  background: var(--hairline-strong);
+  border-radius: 9999px;
+}
+
+.scrollbar-subtle::-webkit-scrollbar-thumb:hover {
+  background: var(--ink-quaternary);
+}
+
+/* ── Footer rich text ───────────────────────────────────────────────────────
+   The admin editor stores its own sizes, weights, leading and colours inline on
+   the footer blurb. Those values are authored against the editor's own canvas
+   and clash with the footer, so every descendant is pinned to the footer's
+   typography. The clean fix is to strip inline styles server-side — flagged as
+   a backend change, not made here. */
+.footer-richtext > :first-child { margin-top: 0; }
+.footer-richtext > :last-child  { margin-bottom: 0; }
+
+.footer-richtext p {
+  margin: 0 0 var(--space-4);
+}
+
+.footer-richtext p:last-child {
+  margin-bottom: 0;
+}
+
+.footer-richtext,
+.footer-richtext * {
+  font-size: inherit !important;
+  line-height: inherit !important;
+  font-weight: inherit !important;
+  color: inherit !important;
+  font-family: inherit !important;
+}
+
+.footer-richtext a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* ── Prose ──────────────────────────────────────────────────────────────────
+   Shared reset for admin-authored body content: blog posts and CMS pages. */
+.prose-page {
+  color: var(--ink-secondary);
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+.prose-page h1,
+.prose-page h2,
+.prose-page h3,
+.prose-page h4 {
+  color: var(--ink);
+  margin-top: var(--space-10);
+  margin-bottom: var(--space-4);
+}
+
+.prose-page h1 { font-size: 1.875rem; }
+.prose-page h2 { font-size: 1.5rem; }
+.prose-page h3 { font-size: 1.25rem; }
+.prose-page h4 { font-size: 1.0625rem; }
+
+.prose-page > :first-child { margin-top: 0; }
+
+.prose-page p,
+.prose-page ul,
+.prose-page ol,
+.prose-page blockquote,
+.prose-page table {
+  margin-bottom: var(--space-5);
+}
+
+.prose-page ul,
+.prose-page ol {
+  padding-left: var(--space-6);
+}
+
+.prose-page ul { list-style: disc; }
+.prose-page ol { list-style: decimal; }
+.prose-page li { margin-bottom: var(--space-2); }
+
+.prose-page a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--hairline-strong);
+  transition: text-decoration-color var(--duration-fast) var(--ease);
+}
+
+.prose-page a:hover {
+  text-decoration-color: var(--ink);
+}
+
+.prose-page img {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--radius-lg);
+  margin-block: var(--space-6);
+}
+
+.prose-page blockquote {
+  padding-left: var(--space-5);
+  border-left: 2px solid var(--hairline-strong);
+  color: var(--ink-tertiary);
+  font-style: italic;
+}
+
+.prose-page table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+}
+
+.prose-page th,
+.prose-page td {
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--hairline);
+  text-align: left;
+}
+
+.prose-page th {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* ── Embedded iframes ───────────────────────────────────────────────────────
+   The Facebook page plugin paints its own card inside an iframe we cannot
+   reach, so the wrapper only constrains its width. */
+.fb-page-embed,
+.fb-page-embed span,
+.fb-page-embed iframe {
+  max-width: 100% !important;
+}
+
+/* ── Utilities ──────────────────────────────────────────────────────────────*/
+
+/* Clamp text to a fixed number of lines without a plugin. */
+.line-clamp-1,
+.line-clamp-2,
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-1 { -webkit-line-clamp: 1; }
+.line-clamp-2 { -webkit-line-clamp: 2; }
+.line-clamp-3 { -webkit-line-clamp: 3; }
+
+/* Content hidden visually but still read by screen readers. */
+.sr-only-focusable:not(:focus):not(:focus-within) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.z-3000 { z-index: 3000; }

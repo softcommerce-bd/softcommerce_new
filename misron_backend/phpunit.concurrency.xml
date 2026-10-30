@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Tests that start several PHP processes against one database to check that stock
+  stays correct when orders overlap. They COMMIT their data and clean up after
+  themselves, so they run only against a *_test database.
+
+    # the schema after sqlupdates/inventory_v1_stock_safety.sql
+    DB_DATABASE=misron_inventory_test vendor/bin/phpunit -c phpunit.concurrency.xml
+
+    # the original schema (MyISAM purchase_products)
+    vendor/bin/phpunit -c phpunit.concurrency.xml
+
+  Not part of the default suite: they take longer and need real MySQL connections.
+-->
+<phpunit backupGlobals="false"
+         backupStaticAttributes="false"
+         bootstrap="vendor/autoload.php"
+         colors="true"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         processIsolation="false"
+         stopOnFailure="false">
+    <testsuites>
+        <testsuite name="Concurrency">
+            <directory suffix="Test.php">./tests/Concurrency</directory>
+        </testsuite>
+    </testsuites>
+    <php>
+        <env name="APP_ENV" value="testing"/>
+        <env name="BCRYPT_ROUNDS" value="4"/>
+        <env name="CACHE_DRIVER" value="array"/>
+        <env name="SESSION_DRIVER" value="array"/>
+        <env name="QUEUE_CONNECTION" value="sync"/>
+        <env name="DB_DATABASE" value="misron_test"/>
+        <!-- Pinned so a developer's .env cannot change them. -->
+        <env name="FUNNEL_REQUIRE_CHECKOUT" value="false"/>
+        <env name="FUNNEL_CHECKOUT_ENABLED" value="false"/>
+        <env name="FUNNEL_REVALIDATE_URL" value=""/>
+        <env name="FUNNEL_REVALIDATE_SECRET" value=""/>
+    </php>
+</phpunit>

@@ -1,0 +1,80 @@
+# dependencies
+/vendor
+/node_modules
+
+# env / credentials
+.env
+.env.*
+!.env.example
+.exampleee
+*.exampleee
+auth.json
+
+# Laravel runtime
+/bootstrap/compiled.php
+/bootstrap/cache/*
+!/bootstrap/cache/.gitignore
+/storage/*
+!/storage/.gitignore
+/temp
+
+# public: keep entrypoint + admin UI assets (public/assets, banners, demo xlsx)
+# ignore uploads, symlinks, logs, build output
+/public/uploads
+/public/public
+/public/storage
+/public/logs
+/public/hot
+/public/mix-manifest.json
+/public/app-translations
+/public/assets/myText.txt
+
+# translations / updates
+resources/lang/en.json
+updates/
+
+# generated files
+/sitemap.xml
+
+# IDE helper output (dev only)
+/_ide_helper.php
+/_ide_helper_models.php
+/.phpstorm.meta.php
+
+# server-managed dirs (cPanel / Let's Encrypt)
+/cgi-bin
+/.well-known
+
+# test caches
+.phpunit.result.cache
+/coverage
+
+# dev backup archives
+*.zip
+*.tar
+*.tar.gz
+*.rar
+*.sql.gz
+
+# logs
+error_log
+*.log
+npm-debug.log
+yarn-error.log
+
+# lock files not used (composer.lock is the source of truth)
+yarn.lock
+
+# IDE / OS
+/.idea
+.idea/
+/.vscode
+/.vagrant
+/nbproject
+Homestead.json
+Homestead.yaml
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.swp
+*.tmp
