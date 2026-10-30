@@ -747,6 +747,9 @@
                             @can('receive_goods')<li class="aiz-side-nav-item mx-2"><a href="{{ route('purchasing.receiving.index') }}" class="aiz-side-nav-link"><span class="aiz-side-nav-text">{{ translate('Goods Receiving') }}</span></a></li>@endcan
                             @can('view_purchases')<li class="aiz-side-nav-item mx-2"><a href="{{ route('purchase.index') }}" class="aiz-side-nav-link"><span class="aiz-side-nav-text">{{ translate('Purchase History') }}</span></a></li>@endcan
                             @can('view_supplier_payments')<li class="aiz-side-nav-item mx-2"><a href="{{ route('purchasing.supplier.outstanding') }}" class="aiz-side-nav-link"><span class="aiz-side-nav-text">{{ translate('Supplier Outstanding') }}</span></a></li>@endcan
+                            @can('view_supplier_payments')<li class="aiz-side-nav-item mx-2"><a href="{{ route('purchasing.supplier.payments') }}" class="aiz-side-nav-link"><span class="aiz-side-nav-text">{{ translate('Supplier Payments (new)') }}</span></a></li>
+                            <li class="aiz-side-nav-item mx-2"><a href="{{ route('purchasing.report', 'supplier-statement') }}" class="aiz-side-nav-link"><span class="aiz-side-nav-text">{{ translate('Supplier Statement') }}</span></a></li>@endcan
+                            @can('manage_purchase_returns')<li class="aiz-side-nav-item mx-2"><a href="{{ route('purchasing.supplier-returns') }}" class="aiz-side-nav-link"><span class="aiz-side-nav-text">{{ translate('Return to Supplier') }}</span></a></li>@endcan
                             @can('view_inventory_reports')
                                 <li class="aiz-side-nav-item mx-2"><a href="{{ route('purchasing.stock') }}" class="aiz-side-nav-link"><span class="aiz-side-nav-text">{{ translate('Stock Overview') }}</span></a></li>
                                 <li class="aiz-side-nav-item mx-2"><a href="{{ route('purchasing.movements') }}" class="aiz-side-nav-link"><span class="aiz-side-nav-text">{{ translate('Stock Movements') }}</span></a></li>
@@ -754,6 +757,8 @@
                                 <li class="aiz-side-nav-item mx-2"><a href="{{ route('purchasing.valuation') }}" class="aiz-side-nav-link"><span class="aiz-side-nav-text">{{ translate('Inventory Valuation') }}</span></a></li>
                                 <li class="aiz-side-nav-item mx-2"><a href="{{ route('purchasing.report', 'trial-balance') }}" class="aiz-side-nav-link"><span class="aiz-side-nav-text">{{ translate('Trial Balance (journal)') }}</span></a></li>
                                 <li class="aiz-side-nav-item mx-2"><a href="{{ route('purchasing.report', 'reconciliation') }}" class="aiz-side-nav-link"><span class="aiz-side-nav-text">{{ translate('Reconciliation') }}</span></a></li>
+                                <li class="aiz-side-nav-item mx-2"><a href="{{ route('purchasing.report', 'general-ledger') }}" class="aiz-side-nav-link"><span class="aiz-side-nav-text">{{ translate('General Ledger') }}</span></a></li>
+                                <li class="aiz-side-nav-item mx-2"><a href="{{ route('purchasing.report', 'actual-order-profit') }}" class="aiz-side-nav-link"><span class="aiz-side-nav-text">{{ translate('Order Profit') }}</span></a></li>
                             @endcan
                         </ul>
                     </li>

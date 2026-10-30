@@ -35,6 +35,10 @@ class PurchasingController extends Controller
         $this->middleware(['permission:view_inventory_reports'])->only(['stockOverview', 'movements', 'backorders', 'valuation', 'report']);
         $this->middleware(['permission:manage_stock_policy'])->only(['savePolicy']);
         $this->middleware(['permission:manage_returns_receiving'])->only(['returns', 'receiveReturn']);
+        $this->middleware(['permission:view_supplier_payments'])->only(['supplierPayments']);
+        $this->middleware(['permission:add_purchase'])->only(['recordInvoice']);
+        $this->middleware(['permission:make_supplier_payment'])->only(['payInvoice', 'supplierAdvance']);
+        $this->middleware(['permission:manage_purchase_returns'])->only(['supplierReturns', 'returnToSupplier']);
     }
 
     private function ready(): ?\Illuminate\Http\RedirectResponse
@@ -506,6 +510,98 @@ class PurchasingController extends Controller
         try {
             $demand->receiveReturn($line, (int) $v['qty'], $v['condition'], 'ret:' . $v['op_key'], $request->user()->id, $v['note'] ?? null);
             flash(translate('Return received as ') . $v['condition'])->success();
+        } catch (InvalidArgumentException $e) {
+            flash($e->getMessage())->error();
+        }
+
+        return back();
+    }
+
+    // ── Supplier invoices, payments, advances ─────────────────────────────
+
+    public function supplierPayments(Request $request)
+    {
+        if ($r = $this->ready()) {
+            return $r;
+        }
+        $suppliers = DB::table('suppliers')->orderBy('business_name')->get(['id', 'business_name', 'due_amount', 'opening_balance']);
+        $sid = (int) $request->query('supplier_id');
+        $supplier = $sid ? $suppliers->firstWhere('id', $sid) : null;
+        $uninvoiced = $supplier ? DB::table('goods_receipts')->where('supplier_id', $sid)->where('status', 'posted')->where('invoice_status', '<>', 'invoiced')->orderBy('id')->get(['id', 'receipt_no', 'received_at', 'goods_total']) : collect();
+        $invoices = $supplier ? DB::table('supplier_invoices')->where('supplier_id', $sid)->where('status', '<>', 'void')->orderByDesc('id')->limit(100)->get() : collect();
+        $accounts = DB::table('chart_of_accounts')->whereIn('sub_type', ['cash', 'bank', 'mobile_bank'])->where('status', 'active')->where('is_deleted', '0')->orderBy('name')->get(['id', 'name', 'current_balance']);
+
+        return view('backend.purchasing.payments', compact('suppliers', 'supplier', 'uninvoiced', 'invoices', 'accounts'));
+    }
+
+    public function recordInvoice(Request $request, SupplierLedgerService $ledger)
+    {
+        $v = $request->validate(['op_key' => 'required|string|max:100', 'supplier_id' => 'required|integer|exists:suppliers,id', 'goods_receipt_id' => 'required|integer', 'invoice_no' => 'required|string|max:80',
+            'subtotal' => 'required|numeric|gt:0', 'discount' => 'nullable|numeric|min:0', 'tax' => 'nullable|numeric|min:0', 'freight' => 'nullable|numeric|min:0', 'invoice_date' => 'nullable|date']);
+        try {
+            $r = $ledger->recordInvoice('inv:' . $v['op_key'], $v, $request->user()->id);
+            flash(($r['replayed'] ?? false) ? translate('This invoice was already recorded.') : translate('Supplier invoice recorded.'))->success();
+        } catch (InvalidArgumentException $e) {
+            flash($e->getMessage())->error();
+        }
+
+        return redirect()->route('purchasing.supplier.payments', ['supplier_id' => $v['supplier_id']]);
+    }
+
+    public function payInvoice(Request $request, $id, SupplierLedgerService $ledger)
+    {
+        $v = $request->validate(['op_key' => 'required|string|max:100', 'account_id' => 'required|integer|exists:chart_of_accounts,id', 'amount' => 'required|numeric|gt:0', 'paid_on' => 'nullable|date']);
+        $invoice = DB::table('supplier_invoices')->where('id', $id)->first() ?: abort(404);
+        try {
+            $r = $ledger->pay('pay:' . $v['op_key'], (int) $id, (int) $v['account_id'], $v['amount'], $v['paid_on'] ?? null, $request->user()->id);
+            flash(($r['replayed'] ?? false) ? translate('This payment was already recorded.') : translate('Payment recorded.'))->success();
+        } catch (InvalidArgumentException $e) {
+            flash($e->getMessage())->error();
+        }
+
+        return redirect()->route('purchasing.supplier.payments', ['supplier_id' => $invoice->supplier_id]);
+    }
+
+    public function supplierAdvance(Request $request, SupplierLedgerService $ledger)
+    {
+        $v = $request->validate(['op_key' => 'required|string|max:100', 'supplier_id' => 'required|integer|exists:suppliers,id', 'account_id' => 'required|integer|exists:chart_of_accounts,id', 'amount' => 'required|numeric|gt:0']);
+        try {
+            $ledger->advance('adv:' . $v['op_key'], (int) $v['supplier_id'], (int) $v['account_id'], $v['amount'], null, $request->user()->id);
+            flash(translate('Advance recorded.'))->success();
+        } catch (InvalidArgumentException $e) {
+            flash($e->getMessage())->error();
+        }
+
+        return redirect()->route('purchasing.supplier.payments', ['supplier_id' => $v['supplier_id']]);
+    }
+
+    // ── Returns to the supplier ───────────────────────────────────────────
+
+    public function supplierReturns(Request $request)
+    {
+        if ($r = $this->ready()) {
+            return $r;
+        }
+        $sid = (int) $request->query('supplier_id');
+        $rows = DB::table('goods_receipt_lines as l')->join('goods_receipts as g', 'g.id', '=', 'l.goods_receipt_id')->join('products as p', 'p.id', '=', 'l.product_id')->join('suppliers as s', 's.id', '=', 'g.supplier_id')
+            ->when($sid, fn ($q) => $q->where('g.supplier_id', $sid))->where('g.status', 'posted')->orderByDesc('l.id')->limit(200)
+            ->get(['l.id', 'g.receipt_no', 'g.invoice_status', 's.business_name', 'p.name', 'l.variant', 'l.qty', 'l.unit_cost'])
+            ->map(function ($r) {
+                $r->returned = (int) DB::table('stock_movements')->where('type', 'supplier_return')->where('source_type', 'goods_receipt_line')->where('source_id', $r->id)->sum(DB::raw('-on_hand_delta'));
+
+                return $r;
+            });
+        $suppliers = DB::table('suppliers')->orderBy('business_name')->get(['id', 'business_name']);
+
+        return view('backend.purchasing.supplier_returns', compact('rows', 'suppliers', 'sid'));
+    }
+
+    public function returnToSupplier(Request $request, \App\Services\Purchasing\SupplierReturnService $svc)
+    {
+        $v = $request->validate(['op_key' => 'required|string|max:100', 'receipt_line_id' => 'required|integer', 'qty' => 'required|integer|min:1', 'note' => 'nullable|string|max:255']);
+        try {
+            $r = $svc->returnGoods('sr:' . $v['op_key'], (int) $v['receipt_line_id'], (int) $v['qty'], $request->user()->id, $v['note'] ?? null);
+            flash(($r['replayed'] ?? false) ? translate('This return was already recorded.') : translate('Returned to supplier. Supplier credit: ') . $r['supplier_credit'])->success();
         } catch (InvalidArgumentException $e) {
             flash($e->getMessage())->error();
         }
