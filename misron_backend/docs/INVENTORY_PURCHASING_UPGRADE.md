@@ -52,12 +52,21 @@ Rollback: set `INVENTORY_CONFIRMED_ONLY=false` (v2 lines keep working until ship
 ## 8. Existing data: findings and repair plan (nothing is changed automatically)
 From the repository dump (`misron.sql`; production counts may differ): 606 stock rows ≠ their cost layers, 416 positive-stock rows have no cost layer, 68 products' `current_stock` ≠ their rows, 80 cost layers reference deleted products, 105 blank transaction types, Inventory account vs FIFO valuation differ by 11,255.00. Plan: (a) `current_stock` is derived: recompute from rows once approved; (b) stock vs layers needs a physical count by item; (c) stock without cost needs an **approved opening cost** (a one-off goods-receipt "opening balance" posting) — until then dispatching those units marks the line `uncosted`, excluded from profit and settlement COGS and flagged on the dashboard; (d) orphaned layers: investigate, never delete; (e) blank types: leave; (f) re-run reconcile after (a)–(c) and let the accountant explain the remainder.
 
-## 9. Not delivered / limits (be aware)
-* Legacy screens still post the old way and are not journalled: the old Purchase create/edit/delete/return, Supplier Payment, POS, courier settlement. Mixing old and new postings is reconciled by `inventory:reconcile`, not prevented.
-* Invoice matching is simplified: every difference between invoice and goods received (price, tax, freight, discount) goes to Purchase Price Variance; layers are not revalued.
-* Provisional cost is not implemented; units without a cost layer are `uncosted` and excluded from profit, not estimated. `estimated_purchase_cost` is for planning only.
-* Supplier returns of goods received through the new flow still use the legacy return screen (no journal entry).
-* Quick Purchase / requirements / receiving screens are server-tested and compile, but were **not exercised in a real browser**; the Next.js storefront edits (`Details.jsx`, `BuyNowButton.jsx`, `AddToCartButton.jsx`) were **not built or run**. Fractional quantities are not supported (whole units).
-* Web checkout, API and funnel orders get v2 behaviour through `StockLedger::take`/`OrderDetail` (tested through the chat channel, `take`, and the status/observer paths), not each end-to-end.
-* The legacy Balance Sheet still ignores its date filter; it was not rebuilt on the journal.
+## 9. Integration and stabilisation changes (second phase)
+* **Permissions are secure by default.** The 24 purchasing permissions are created but granted to no role. Review and grant with `php artisan inventory:grant-permissions` (profiles: purchasing_clerk, warehouse, inventory_viewer, finance, manager, preserve_previous_access; `--dry-run` first; additive only).
+* **State-changing GETs removed:** bulk order status (`POST admin/bulk-order-status`), customer order cancel (`POST purchase_history/destroy/{id}`; API gets `POST api/v2/order/cancel/{id}`, the old API GET is kept, deprecated, for the mobile app).
+* **Allocation guard:** legacy purchase edit/adjust/return can no longer take units earmarked for confirmed orders.
+* **Legacy purchase screen:** keeps working (single legacy posting; nothing is posted twice). It gets a duplicate-submit key, and purchases created by Goods Receiving (or opening-cost layers) cannot be edited, deleted or returned through it (use Purchasing screens / supplier returns).
+* **Supplier returns** for goods received through the new flow: `SupplierReturnService` (journalled; GRNI, payable credit note or supplier advance; refuses sold or allocated units).
+* **Invoice price differences:** the unsold share is revalued into the FIFO layer and Inventory; the sold share goes to Purchase Price Variance; tax/freight go to PPV. Historical `order_details.buying_price` is never rewritten.
+* **Opening cost for legacy stock without cost:** `inventory:opening-cost list|template|check|apply`. Never invents a cost; only rows with an explicit unit_cost are used; dry run unless `--commit --approved-by=NAME`; no stock change; Dr Inventory / Cr Inventory Opening Adjustment; idempotent by file hash. Dispatched lines already `uncosted` stay excluded from profit.
+* **Accounting reconciliation** is part of `inventory:reconcile` (journal vs statement mirror, payable vs open invoices, GRNI vs uninvoiced receipts, payments without journal, trial balance, profit exclusions).
+
+## 10. Not delivered / limits (be aware)
+* POS, courier settlement, legacy supplier payment and the legacy Balance Sheet/P&L still use the legacy accounting only (they are not journalled, which avoids double posting). The reconciliation shows legacy vs journal differences; mixing old and new documents for one supplier is not recommended.
+* Provisional cost is not implemented; units without a cost layer are `uncosted` and excluded from profit.
+* The legacy Balance Sheet still ignores its date filter.
+* Browser testing was run in a sandbox without the admin theme CSS/JS assets (404) or CDN access: screens render without server errors and the key flows work, but visual/mobile layout, jQuery-dependent widgets and charts could not be verified. Do this on staging.
+* The repository has no CORS middleware (the storefront relies on web-server CORS in production); the storefront browser test supplied the headers itself.
+* Full storefront checkout in a browser (address form to confirmation page) was not completed; the order endpoint is tested at HTTP level.
 * The v2 model has no multi-warehouse support.
