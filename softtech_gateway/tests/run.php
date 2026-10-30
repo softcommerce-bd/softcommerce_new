@@ -134,5 +134,68 @@ t('oauth: only returns to the installation domain; grant is single-use and bound
 });
 t('webhook verify handshake', function () use ($mk) { [, , $app] = $mk(); eq($app->handle('GET', '/webhook/facebook', ['hub_mode' => 'subscribe', 'hub_verify_token' => 'vt', 'hub_challenge' => '42'], [], '')[2], '42'); eq($app->handle('GET', '/webhook/facebook', ['hub_mode' => 'subscribe', 'hub_verify_token' => 'x', 'hub_challenge' => '42'], [], '')[0], 403); });
 
+
+// ── WhatsApp Embedded Signup ──
+$waCalls = [];
+$fakeWa = new class($waCalls) {
+    public array $calls = []; public bool $fail = false; public string $phoneId = '105500123';
+    public function __construct(public &$ref) {}
+    public function exchange(string $code): string { $this->calls[] = 'exchange'; if ($this->fail) throw new RuntimeException('x'); return 'BIZTOKEN'; }
+    public function phone(string $id, string $t): array { $this->calls[] = "phone:$id"; return ['id' => $this->phoneId, 'display_phone_number' => '+880 1700-000000', 'verified_name' => 'Shop BD']; }
+    public function subscribe(string $waba, string $t): void { $this->calls[] = "subscribe:$waba"; }
+    public function register(string $id, string $t, string $pin): void { $this->calls[] = "register:$id:" . strlen($pin); }
+};
+$mkWa = function () use ($mk, $fakeWa) { [$s, $d, $app0] = $mk(); $wa = clone $fakeWa; $wa->calls = []; $cfg = ['meta_app_secret' => 'appsecret', 'verify_token' => 'vt', 'graph_version' => 'v25.0', 'public_url' => 'https://gw.test', 'meta_app_id' => '1', 'wa_config_id' => 'CFG123', 'wa_client' => $wa, 'meta_client' => fn () => [], 'verify_account' => fn () => true]; return [$s, new App($s, $d, $cfg), $wa]; };
+$startWa = function (App $app, array $inst, string $ret = 'https://a.test/cb') { $q = ['installation_id' => $inst['id'], 'platform' => 'whatsapp', 'state' => 'S9', 'return' => $ret, 'ts' => time()]; $q['sig'] = Signature::sign($inst['secret'], $inst['id'], $q['ts'], http_build_query($q)); return $app->handle('GET', '/oauth/start', $q, [], ''); };
+$stateFrom = function (array $startResp) { preg_match('/const S="([0-9a-f]+)"/', $startResp[2], $m); return $m[1] ?? ''; };
+$complete = fn (App $app, array $body) => $app->handle('POST', '/signup/whatsapp/complete', [], [], json_encode($body));
+
+echo "whatsapp embedded signup\n";
+t('signup page carries the config id and the official parameters, and is not frameable', function () use ($mkWa, $startWa) {
+    [$s, $app] = $mkWa(); $a = $s->createInstallation('A', 'a.test', 'https://a.test/i'); $r = $startWa($app, $a);
+    eq($r[0], 200); eq($r[1]['X-Frame-Options'], 'DENY');
+    foreach (['config_id:CFG', 'response_type:"code"', 'override_default_response_type:true', 'sessionInfoVersion:"3"', 'whatsapp_business_app_onboarding', 'WA_EMBEDDED_SIGNUP', 'FINISH'] as $needle) eq(str_contains($r[2], $needle), true, "page lacks $needle");
+});
+t('page refuses a return URL outside the installation domain', function () use ($mkWa, $startWa) { [$s, $app] = $mkWa(); $a = $s->createInstallation('A', 'a.test', 'https://a.test/i'); eq($startWa($app, $a, 'https://evil.test/cb')[0], 400); });
+t('complete: exchanges, verifies the number, claims, subscribes, registers, returns a one-time grant', function () use ($mkWa, $startWa, $stateFrom, $complete) {
+    [$s, $app, $wa] = $mkWa(); $a = $s->createInstallation('A', 'a.test', 'https://a.test/i'); $st = $stateFrom($startWa($app, $a));
+    $r = $complete($app, ['state' => $st, 'code' => 'C', 'phone_number_id' => '105500123', 'waba_id' => '900100123', 'business_id' => '77', 'coexistence' => false]);
+    eq($r[0], 200); eq($wa->calls, ['exchange', 'phone:105500123', 'subscribe:900100123', 'register:105500123:6']);
+    eq($s->owner('whatsapp', '105500123'), $a['id']);
+    $loc = json_decode($r[2], true)['redirect']; parse_str(parse_url($loc, PHP_URL_QUERY), $q); eq($q['state'], 'S9');
+    $raw = json_encode(['grant' => $q['grant']]); $ts = time();
+    $g = $app->handle('POST', '/v1/grants/redeem', [], ['X-Softtech-Installation' => $a['id'], 'X-Softtech-Timestamp' => (string) $ts, 'X-Softtech-Signature' => Signature::sign($a['secret'], $a['id'], $ts, $raw)], $raw);
+    $acc = json_decode($g[2], true)['accounts'][0];
+    eq([$acc['platform'], $acc['external_id'], $acc['meta']['waba_id'], $acc['meta']['coexistence'], $acc['access_token']], ['whatsapp', '105500123', '900100123', false, 'BIZTOKEN']);
+});
+t('coexistence: number stays on the Business app, so it is NOT re-registered', function () use ($mkWa, $startWa, $stateFrom, $complete) {
+    [$s, $app, $wa] = $mkWa(); $a = $s->createInstallation('A', 'a.test', 'https://a.test/i'); $st = $stateFrom($startWa($app, $a));
+    $r = $complete($app, ['state' => $st, 'code' => 'C', 'phone_number_id' => '105500123', 'waba_id' => '900100123', 'coexistence' => true]);
+    eq($r[0], 200); eq($wa->calls, ['exchange', 'phone:105500123', 'subscribe:900100123']);
+});
+t('state is single use', function () use ($mkWa, $startWa, $stateFrom, $complete) {
+    [$s, $app] = $mkWa(); $a = $s->createInstallation('A', 'a.test', 'https://a.test/i'); $st = $stateFrom($startWa($app, $a)); $b = ['state' => $st, 'code' => 'C', 'phone_number_id' => '105500123', 'waba_id' => '900100123'];
+    eq($complete($app, $b)[0], 200); eq($complete($app, $b)[0], 400);
+});
+t('unknown or malformed state/ids are refused before any provider call', function () use ($mkWa, $complete) { [, $app, $wa] = $mkWa(); eq($complete($app, ['state' => 'nope', 'code' => 'C', 'phone_number_id' => '1', 'waba_id' => '2'])[0], 400); eq($wa->calls, []); });
+t('a token that does not control the claimed number is refused and nothing is routed', function () use ($mkWa, $startWa, $stateFrom, $complete) {
+    [$s, $app, $wa] = $mkWa(); $wa->phoneId = 'SOMEONE_ELSES'; $a = $s->createInstallation('A', 'a.test', 'https://a.test/i'); $st = $stateFrom($startWa($app, $a));
+    eq($complete($app, ['state' => $st, 'code' => 'C', 'phone_number_id' => '105500123', 'waba_id' => '900100123'])[0], 403); eq($s->owner('whatsapp', '105500123'), null);
+});
+t('a number owned by another installation cannot be claimed (multi-tenant hijack)', function () use ($mkWa, $startWa, $stateFrom, $complete) {
+    [$s, $app, $wa] = $mkWa(); $a = $s->createInstallation('A', 'a.test', 'https://a.test/i'); $b = $s->createInstallation('B', 'b.test', 'https://b.test/i'); $s->claim('whatsapp', '105500123', $a['id']);
+    $st = $stateFrom($startWa($app, $b, 'https://b.test/cb')); $r = $complete($app, ['state' => $st, 'code' => 'C', 'phone_number_id' => '105500123', 'waba_id' => '900100123']);
+    eq($r[0], 409); eq($s->owner('whatsapp', '105500123'), $a['id']); eq(in_array('subscribe:900100123', $wa->calls), false, 'must not subscribe a WABA it could not claim');
+});
+t('provider failure mid-flow leaves no route and no grant', function () use ($mkWa, $startWa, $stateFrom, $complete) {
+    [$s, $app, $wa] = $mkWa(); $wa->fail = true; $a = $s->createInstallation('A', 'a.test', 'https://a.test/i'); $st = $stateFrom($startWa($app, $a));
+    eq($complete($app, ['state' => $st, 'code' => 'C', 'phone_number_id' => '105500123', 'waba_id' => '900100123'])[0], 502); eq($s->owner('whatsapp', '105500123'), null); eq((int) $s->one('SELECT COUNT(*) c FROM grants')['c'], 0);
+});
+t('multiple numbers for one installation: each signup adds one', function () use ($mkWa, $startWa, $stateFrom, $complete) {
+    [$s, $app, $wa] = $mkWa(); $a = $s->createInstallation('A', 'a.test', 'https://a.test/i');
+    foreach (['105500123', '105500124', '105500125'] as $n) { $wa->phoneId = $n; $st = $stateFrom($startWa($app, $a)); eq($complete($app, ['state' => $st, 'code' => 'C', 'phone_number_id' => $n, 'waba_id' => '900100123'])[0], 200); }
+    foreach (['105500123', '105500124', '105500125'] as $n) eq($s->owner('whatsapp', $n), $a['id']);
+});
+
 echo "\n$pass passed, $fail failed\n";
 exit($fail ? 1 : 0);

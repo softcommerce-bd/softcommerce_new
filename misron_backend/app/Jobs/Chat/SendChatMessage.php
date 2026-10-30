@@ -50,20 +50,28 @@ class SendChatMessage implements ShouldQueue
 
         $provider = $providers->get($account->platform);
         $window = $provider->windowHours();
-        if ($window !== null && (!$conversation->last_inbound_at || $conversation->last_inbound_at->lt(now()->subHours($window)))) {
+        $template = ($message->attachments[0]['type'] ?? null) === 'template' ? $message->attachments[0]['payload'] : null;
+        // An approved template is the provider's own way to message outside the free-form window; free text is not.
+        if ($template === null && $window !== null && (!$conversation->last_inbound_at || $conversation->last_inbound_at->lt(now()->subHours($window)))) {
             return $this->fail($message, "More than {$window} hours since the customer last wrote: the provider only allows an approved template message now.", $notify);
         }
 
-        $payload = ['text' => $message->body];
-        if (!empty($message->attachments[0]['path'])) {
+        $payload = $template !== null ? ['template' => $template, 'text' => null] : ['text' => $message->body];
+        if ($template === null && !empty($message->attachments[0]['path'])) {
             // The provider fetches the file itself, so it needs a URL: short-lived, signed, single message.
             $payload['attachment'] = $message->attachments[0] + ['url' => URL::temporarySignedRoute('chat.media', now()->addHour(), ['message' => $message->id, 'index' => 0])];
         }
 
         try {
-            $mid = $provider->send($account, $conversation, $payload);
+            try {
+                $mid = $provider->send($account, $conversation, $payload);
+            } catch (\Illuminate\Http\Client\ConnectionException $e) {
+                // DNS, timeout, provider outage: the same as a rate limit, try again later.
+                throw new ProviderException('Could not reach the provider (network error).', ProviderException::RETRY);
+            }
         } catch (ProviderException $e) {
             if ($e->kind === ProviderException::RETRY && $this->attempts() < $this->tries) {
+                $message->forceFill(['error' => mb_substr($e->getMessage() . ' Retrying automatically.', 0, 500)])->save();
                 $message->increment('retry_count');
                 $account->forceFill(['last_error' => mb_substr($e->getMessage(), 0, 500)])->save();
 
@@ -76,7 +84,7 @@ class SendChatMessage implements ShouldQueue
                 $account->forceFill(['last_error' => mb_substr($e->getMessage(), 0, 500)])->save();
             }
 
-            return $this->fail($message, $e->getMessage(), $notify);
+            return $this->fail($message, $e->getMessage() . ($e->kind === ProviderException::RETRY ? ' Gave up after several attempts; use Retry to send it again.' : ''), $notify);
         }
 
         // The provider may already have echoed this message back before we recorded its id.
@@ -97,7 +105,7 @@ class SendChatMessage implements ShouldQueue
     public function failed(\Throwable $e)
     {
         if ($m = ChatMessage::find($this->messageId)) {
-            $m->forceFill(['status' => 'failed', 'error' => 'Delivery failed after several attempts.'])->save();
+            $m->forceFill(['status' => 'failed', 'error' => 'Delivery failed after several attempts. You can retry it.'])->save();
         }
     }
 

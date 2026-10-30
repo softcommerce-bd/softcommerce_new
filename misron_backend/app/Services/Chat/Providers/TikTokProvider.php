@@ -45,4 +45,9 @@ class TikTokProvider implements ChatProvider
     {
         return [];
     }
+
+    public function health(ChatAccount $account): array
+    {
+        return [['name' => 'TikTok Business Messaging access', 'ok' => false, 'detail' => 'Approval required: no live check is possible until TikTok grants API access.']];
+    }
 }

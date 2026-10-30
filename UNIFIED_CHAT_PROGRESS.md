@@ -1,5 +1,5 @@
 # Unified Chat – progress (resume from here)
-Branch: claude/peaceful-planck-elqcki. Stack found: Laravel 9 (Blade admin, Spatie permissions), Next.js 16 storefront (untouched). Sales Funnel files untouched.
-
-Done: migrations (database/migrations/unified_chat), permissions (section unified_chat_management), ChatAccess, providers (Messenger/Instagram/WhatsApp/TikTok-stub), webhook ingest (direct+gateway), InboundProcessor, SendChatMessage job, Automation, ChatOrderService, accounts/OAuth controller, analytics/export, Blade+JS UI, softtech_gateway/, tests, docs/UNIFIED_CHAT*.md.
-Open: see final report blockers.
+Branch claude/peaceful-planck-elqcki. See misron_backend/docs/UNIFIED_CHAT.md (deploy) and UNIFIED_CHAT_PROVIDER_STATUS.md (what is verified).
+Done: core inbox, gateway, MySQL-verified chat orders, WhatsApp Embedded Signup (+coexistence flag), templates, health verify, queue/scheduler smoke, two-installation isolation test, polling race fix.
+Open: live provider tests, Meta approvals, Embedded Signup v4, coexistence history sync, WebSockets, Instagram Login onboarding, TikTok.
+Local verification DB: MariaDB 10.11 throwaway (misron_test) built from empty_misron.sql with data tables truncated; env in /tmp (not committed).

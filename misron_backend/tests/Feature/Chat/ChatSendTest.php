@@ -51,9 +51,9 @@ class ChatSendTest extends ChatTestCase
     public function test_whatsapp_send_payload()
     {
         Http::fake(['*' => Http::response(['messages' => [['id' => 'wamid.9']]])]);
-        [, , $m] = $this->queued('whatsapp');
+        [, , $m] = $this->queued('whatsapp', ['external_id' => '8801700000000']);
         $this->send($m);
-        Http::assertSent(fn ($r) => str_contains($r->url(), '/1055/messages') && $r['messaging_product'] === 'whatsapp' && $r['to'] === 'RCPT' && $r['text']['body'] === 'hello');
+        Http::assertSent(fn ($r) => str_contains($r->url(), '/1055/messages') && $r['messaging_product'] === 'whatsapp' && $r['to'] === '8801700000000' && $r['text']['body'] === 'hello');
         $this->assertSame('wamid.9', $m->fresh()->external_id);
     }
 

@@ -35,7 +35,7 @@ CHAT_ATTACHMENT_DISK=local        # private disk; files are served only through 
 CHAT_RETENTION_DAYS=0             # 0 = keep; N = delete messages older than N days (chat:maintain)
 CHAT_MAX_DISCOUNT_PERCENT=10      # chat-order discount cap for non-Super-Admin
 # direct mode only (your own Meta app):
-META_APP_ID= META_APP_SECRET= META_WEBHOOK_VERIFY_TOKEN= META_GRAPH_VERSION=v21.0
+META_APP_ID= META_APP_SECRET= META_WEBHOOK_VERIFY_TOKEN= META_GRAPH_VERSION=v25.0
 TIKTOK_MESSAGING_ENABLED=false    # keep false until TikTok approves Business Messaging for your app
 ```
 APP_URL must be the public https URL. Webhook endpoint (direct mode): `https://<domain>/api/chat/webhook/{facebook|instagram|whatsapp}`. Gateway delivery endpoint: `https://<domain>/api/chat/gateway/ingest`. OAuth return: `https://<domain>/admin/unified-chat/connect/callback`.
@@ -45,6 +45,16 @@ The app already runs `queue:work --once` every minute from the scheduler, so a s
 
 ### Real-time
 Default: authorized polling every 5 s (ids only, paused while the tab is hidden) — works on any hosting. For WebSockets set `BROADCAST_DRIVER` (pusher-compatible/Reverb/Redis) and load Laravel Echo on the page; the UI auto-subscribes to `private-chat.account.{id}` (authorized by `ChatAccess` at subscription; events carry ids only, the browser then re-reads through the authorized API).
+
+## Production deployment (checklist)
+1. `composer install --no-dev`; set `.env` (above). `php artisan migrate --path=database/migrations/unified_chat --force` **or** import `sqlupdates/unified_chat_v1.sql` once (safe to re-import). Clear cache; give roles the new permissions in Staff → Roles; grant each connected account to its staff.
+2. Queue: `QUEUE_CONNECTION=database` (or redis) + `php artisan queue:table` is already in the app; **create `failed_jobs`** (`php artisan queue:failed-table && php artisan migrate`) — without it a job that exhausts its retries logs a secondary error. Run `php artisan queue:work --sleep=1 --tries=5` under Supervisor/systemd, **or** rely on the scheduler's existing `queue:work --once` (cron `* * * * * php artisan schedule:run`), which is slower.
+3. Gateway (separate host, HTTPS only): `softtech_gateway/README.md`. Register each installation, put its id/secret in that installation's `.env`, cron `php bin/gateway deliver` every minute.
+4. Meta: webhook callback `https://<gateway>/webhook/{facebook,instagram,whatsapp}`, OAuth redirect `https://<gateway>/oauth/callback`, Embedded Signup config id + allowed domain; submit App Review. Then in Connected accounts connect each account and press **Verify**.
+5. Smoke: send a test message to a connected Page/number you own; check Verify shows all green and the message appears; kill the worker and confirm `chat:maintain` + retry recover.
+
+## Real-time
+Authorized polling (5 s, paused when the tab is hidden, overlap-safe) is the supported path and needs no extra infrastructure. WebSockets are **not completed**: the Echo subscription hook and `private-chat.account.{id}` channel authorization exist, but need Reverb/Pusher/Redis, a persistent process and a TLS websocket proxy; polling already meets the latency target on any host. Not tested.
 
 ## Gateway
 `/softtech_gateway` is a separate deployable (see its README). Use it when many installations share one set of provider apps.

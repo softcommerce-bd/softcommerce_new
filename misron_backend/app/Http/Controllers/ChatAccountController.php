@@ -148,7 +148,10 @@ class ChatAccountController extends Controller
         $isNew = !$account->exists;
         $account->fill(['name' => $a['name'] ?? $a['external_id'], 'handle' => $a['handle'] ?? null, 'status' => 'connected', 'last_error' => null,
             'token_expires_at' => $a['expires_at'] ?? null, 'connected_by' => $account->connected_by ?: $by->id]);
-        $account->credentials = array_filter(['access_token' => $a['access_token'] ?? null, 'flow' => $a['flow'] ?? null]);
+        $account->credentials = array_filter(['access_token' => $a['access_token'] ?? null, 'flow' => $a['flow'] ?? null, 'pin' => $a['pin'] ?? null]);
+        if (!empty($a['meta']) && is_array($a['meta'])) {
+            $account->meta = array_merge($account->meta ?? [], array_intersect_key($a['meta'], array_flip(['waba_id', 'business_id', 'coexistence'])));
+        }
         $account->save();
         if ($isNew) {
             $account->staff()->syncWithoutDetaching([$by->id]);
@@ -161,7 +164,7 @@ class ChatAccountController extends Controller
     /** WhatsApp without the gateway: a phone number id plus a system-user token from the customer's own Meta business. */
     public function manualWhatsApp(Request $request)
     {
-        $d = $request->validate(['phone_number_id' => 'required|digits_between:5,30', 'access_token' => 'required|string|max:1000']);
+        $d = $request->validate(['phone_number_id' => 'required|digits_between:5,30', 'access_token' => 'required|string|max:1000', 'waba_id' => 'nullable|digits_between:5,30']);
         $r = Http::timeout(15)->withToken($d['access_token'])->get('https://graph.facebook.com/' . config('unified_chat.graph_version') . '/' . $d['phone_number_id'], ['fields' => 'display_phone_number,verified_name']);
         if (!$r->successful()) {
             return response()->json(['message' => 'Meta did not accept that phone number id and token.'], 422);
@@ -173,9 +176,25 @@ class ChatAccountController extends Controller
                 return response()->json(['message' => 'The gateway refused this number (already connected elsewhere, or not controlled by this token).'], 422);
             }
         }
-        $a = $this->upsert($request->user(), ['platform' => 'whatsapp', 'external_id' => $d['phone_number_id'], 'name' => $r->json('verified_name') ?: $r->json('display_phone_number'), 'handle' => $r->json('display_phone_number'), 'access_token' => $d['access_token']]);
+        $a = $this->upsert($request->user(), ['platform' => 'whatsapp', 'external_id' => $d['phone_number_id'], 'name' => $r->json('verified_name') ?: $r->json('display_phone_number'), 'handle' => $r->json('display_phone_number'), 'access_token' => $d['access_token'], 'meta' => array_filter(['waba_id' => $d['waba_id'] ?? null])]);
 
         return response()->json($a->toPublic(), 201);
+    }
+
+    /** Live, read-only check of token, permissions and webhook subscription. Updates the stored health. */
+    public function verify(Request $request, $id)
+    {
+        $a = ChatAccount::findOrFail($id);
+        if ($a->status === 'disabled' || !$a->secrets()) {
+            return response()->json(['checks' => [['name' => 'Account', 'ok' => false, 'detail' => 'This account is disconnected.']]]);
+        }
+        $checks = app(ProviderRegistry::class)->get($a->platform)->health($a);
+        $failed = collect($checks)->firstWhere('ok', false);
+        $tokenBad = collect($checks)->contains(fn ($c) => !$c['ok'] && str_contains($c['name'], 'Access token') && stripos($c['detail'], 'expired') !== false);
+        $a->forceFill($tokenBad ? ['status' => 'expired', 'last_error' => mb_substr($failed['detail'], 0, 500)] : ($failed ? ['last_error' => mb_substr($failed['detail'], 0, 500)] : ['last_api_ok_at' => now(), 'last_error' => null, 'status' => 'connected']))->save();
+        ChatAudit::log($request->user()->id, 'account.verified', 'account', $a->id, ['ok' => !$failed]);
+
+        return response()->json(['checks' => $checks, 'account' => $a->fresh()->toPublic()]);
     }
 
     public function update(Request $request, $id)

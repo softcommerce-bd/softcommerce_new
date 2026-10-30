@@ -104,7 +104,8 @@
     if (cur.account_status !== 'connected') msgs_.push('This account is ' + cur.account_status + '. ' + (cur.account_error || 'Reconnect it in Connected accounts.'));
     else if (!cur.window_open) msgs_.push('Messaging window closed (' + cur.window_hours + 'h since the customer last wrote). Only an approved template message is allowed by ' + cur.platform + '.');
     else if (cur.window_expires_at) { const left = (new Date(cur.window_expires_at) - Date.now()) / 36e5; if (left < 4) msgs_.push('Reply window closes in about ' + Math.max(1, Math.round(left)) + 'h.'); }
-    if (msgs_.length) { b.textContent = msgs_[0]; b.className = 'uc-banner' + (cur.account_status !== 'connected' ? ' err' : ''); b.hidden = false; }
+    if (msgs_.length) { b.textContent = msgs_[0]; b.className = 'uc-banner' + (cur.account_status !== 'connected' ? ' err' : ''); b.hidden = false;
+      if (cur.platform === 'whatsapp' && !cur.window_open && cur.account_status === 'connected' && boot.permissions.reply_unified_chat) b.append(' ', h('button', { class: 'uc-btn', type: 'button', onclick: templatePicker }, 'Send approved template')); }
     const can = boot.permissions.reply_unified_chat && cur.account_status === 'connected' && cur.window_open;
     $('#uc-text').disabled = mode === 'reply' && !can; $('#uc-send').disabled = mode === 'reply' && !can;
     $('#uc-text').placeholder = !boot.permissions.reply_unified_chat ? 'You can view but not reply' : (!cur.window_open ? 'Messaging window closed' : 'Type a message');
@@ -149,7 +150,7 @@
     e.preventDefault(); if (sending || !cur) return;
     const text = $('#uc-text').value.trim(), file = $('#uc-file').files[0];
     if (!text && !file) return;
-    sending = true; $('#uc-send').disabled = true;
+    sending = true; $('#uc-send').disabled = true; let failure = null;
     try {
       if (mode === 'note') { await api('conversations/' + cur.id + '/notes', { method: 'POST', body: { body: text } }); cur = await api('conversations/' + cur.id); renderNotes(); }
       else {
@@ -158,8 +159,8 @@
         store.set('uc-draft-' + cur.id, ''); $('#uc-file').value = ''; $('#uc-file-name').textContent = '';
       }
       $('#uc-text').value = ''; autosize();
-    } catch (x) { toast(x.message, true); }
-    finally { sending = false; banner(); if (mode === 'note') $('#uc-send').disabled = false; }
+    } catch (x) { failure = x.message; }
+    finally { sending = false; banner(); if (mode === 'note') $('#uc-send').disabled = false; if (failure) toast(failure, true); } // banner() resets the strip, so the error is shown after it
   });
   function renderNotes() {
     const ul = clear($('#uc-notes')); ul.hidden = !(cur.notes && cur.notes.length);
@@ -245,6 +246,25 @@
     draw(); ps.focus();
   });
 
+  // ── WhatsApp approved templates (answering an existing customer; may be billed by Meta) ──
+  async function templatePicker() {
+    const body = h('div', { class: 'uc-form' }, h('p', {}, 'Loading templates…'));
+    openModal('Send an approved WhatsApp template', body);
+    try {
+      const r = await api('conversations/' + cur.id + '/templates');
+      const sel = h('select', { 'aria-label': 'Template' }, ...r.data.map((t, i) => h('option', { value: i, disabled: !t.supported }, t.name + ' (' + t.language + ', ' + t.category + ')' + (t.supported ? '' : ' — not supported here'))));
+      const prev = h('div', { class: 'uc-card' }), fields = h('div', { class: 'uc-form' }), err = h('div', { class: 'err', role: 'alert' });
+      let inputs = [];
+      const draw = () => { const t = r.data[sel.value]; if (!t) return; inputs = []; clear(fields); for (let i = 1; i <= t.params; i++) { const inp = h('input', { 'aria-label': 'Value ' + i, placeholder: 'Value for {{' + i + '}}' }); inputs.push(inp); fields.append(inp); inp.addEventListener('input', paint); } paint(); };
+      const paint = () => { const t = r.data[sel.value]; prev.textContent = t ? t.body.replace(/\{\{(\d+)\}\}/g, (m, n) => (inputs[n - 1] && inputs[n - 1].value) || m) : ''; };
+      sel.addEventListener('change', draw);
+      const send = h('button', { class: 'uc-btn uc-primary', type: 'button' }, 'Send template'); const ref = 't' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+      send.addEventListener('click', async () => { if (send.disabled) return; const t = r.data[sel.value]; if (!t || !t.supported) return; send.disabled = true; err.textContent = '';
+        try { const m = await api('conversations/' + cur.id + '/template-messages', { method: 'POST', body: { name: t.name, language: t.language, params: inputs.map((i) => i.value), client_ref: ref } }); msgs.push(m); renderMsgs(true); closeModal(); } catch (x) { err.textContent = x.message; send.disabled = false; } });
+      clear(body).append(h('p', { class: 'uc-meta' }, r.billing_note), r.data.length ? sel : h('p', {}, 'No approved customer-service templates were found for this number.'), fields, prev, err, send); if (r.data.length) draw();
+    } catch (x) { clear(body).append(h('p', { class: 'err' }, x.message)); }
+  }
+
   // ── pages ───────────────────────────────────────────────────────────────
   async function pageAccounts() {
     const p = page('Connected accounts', h('p', {}, 'Loading…'));
@@ -257,12 +277,20 @@
           h('td', {}, h('small', {}, 'Webhook: ' + (a.last_webhook_at ? ago(a.last_webhook_at) : 'never'), h('br'), 'Message: ' + (a.last_message_at ? ago(a.last_message_at) : 'never'), h('br'), 'API OK: ' + (a.last_api_ok_at ? ago(a.last_api_ok_at) : 'never'))),
           h('td', {}, a.health.issues.length ? h('ul', { style: 'padding-left:16px;margin:0' }, ...a.health.issues.map((i) => h('li', {}, i))) : 'Healthy'),
           h('td', {}, h('label', {}, h('input', { type: 'checkbox', checked: a.inbox_enabled, onchange: (e) => api('accounts/' + a.id, { method: 'POST', body: { inbox_enabled: e.target.checked } }).catch((x) => toast(x.message, true)) }), ' Inbox'), h('br'), staff, ' ',
+            a.status !== 'disabled' ? h('button', { class: 'uc-btn', onclick: () => verifyAccount(a) }, 'Verify') : null, ' ',
             a.status === 'expired' || a.status === 'error' ? h('button', { class: 'uc-btn', onclick: () => api('accounts/connect/' + a.platform, { method: 'POST' }).then((r) => { location.href = r.redirect; }).catch((x) => toast(x.message, true)) }, 'Reconnect') : null, ' ',
             a.status !== 'disabled' ? h('button', { class: 'uc-btn', onclick: async () => { if (confirm('Disconnect ' + a.name + '? History is kept; sending and receiving stop.')) { await api('accounts/' + a.id, { method: 'DELETE' }); pageAccounts(); } } }, 'Disconnect') : null));
       });
       clear(p).append(h('h4', {}, 'Connected accounts'), h('p', { class: 'uc-meta' }, 'Mode: ' + d.mode + (d.mode === 'gateway' && !d.gateway_ready ? ' — gateway not configured (see deployment guide)' : '')), conn,
         h('div', { style: 'overflow:auto' }, h('table', { class: 'uc-table' }, h('thead', {}, h('tr', {}, ...['Account', 'Status', 'Activity', 'Health', 'Actions'].map((x) => h('th', {}, x)))), h('tbody', {}, ...rows))));
     } catch (x) { toast(x.message, true); }
+  }
+  async function verifyAccount(a) {
+    openModal('Checking ' + a.name + '…', h('p', {}, 'Contacting the provider (read-only)…'));
+    try {
+      const r = await api('accounts/' + a.id + '/verify', { method: 'POST' });
+      openModal('Connection check: ' + a.name, h('ul', { style: 'list-style:none;padding:0' }, ...r.checks.map((c) => h('li', { style: 'margin:6px 0' }, (c.ok ? '✅ ' : '❌ '), h('strong', {}, c.name), ': ', c.detail))), h('button', { class: 'uc-btn', onclick: () => { closeModal(); pageAccounts(); } }, 'Done'));
+    } catch (x) { openModal('Check failed', h('p', { class: 'err' }, x.message)); }
   }
   function staffModal(a, staff) {
     const sel = new Set(a.staff_ids), list = staff.map((s) => h('label', { style: 'display:flex;gap:8px;margin:4px 0' }, h('input', { type: 'checkbox', checked: sel.has(s.id), onchange: (e) => e.target.checked ? sel.add(s.id) : sel.delete(s.id) }), s.name));

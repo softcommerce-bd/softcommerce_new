@@ -208,4 +208,34 @@ class ChatHttpTest extends ChatTestCase
         $this->getJson(self::API . 'accounts')->assertOk();
         $this->getJson(self::API . 'analytics')->assertOk();
     }
+
+    public function test_polling_never_loses_a_change_even_when_it_lands_between_polls_in_the_same_second()
+    {
+        $me = $this->staff(['view_unified_chat', 'view_all_chats']);
+        $a = $this->account('facebook', null, [$me]);
+        $c1 = $this->conversation($a);
+        $c2 = $this->conversation($a);
+        $this->actingAs($me);
+        $seen = [];
+        $since = null;
+        foreach ([$c1, $c2] as $c) {
+            $c->forceFill(['last_message_preview' => 'new', 'updated_at' => now()])->save(); // lands right at the poll boundary
+            $r = $this->getJson(self::API . 'updates' . ($since ? '?since=' . urlencode($since) : ''))->assertOk();
+            $since = $r->json('now');
+            $seen = array_merge($seen, $r->json('conversation_ids'));
+        }
+        $this->assertEqualsCanonicalizing([$c1->id, $c2->id], array_values(array_unique($seen)));
+        $this->assertSame(2, $this->getJson(self::API . 'bootstrap')->json('counts.all'));
+    }
+
+    public function test_polling_after_access_is_revoked_returns_nothing_for_that_account()
+    {
+        $me = $this->staff(['view_unified_chat', 'view_all_chats']);
+        $a = $this->account('facebook', null, [$me]);
+        $this->conversation($a);
+        $this->actingAs($me);
+        $this->assertCount(1, $this->getJson(self::API . 'updates?since=' . urlencode(now()->subHour()->toIso8601String()))->json('conversation_ids'));
+        $a->staff()->detach($me->id);
+        $this->assertSame([], $this->getJson(self::API . 'updates?since=' . urlencode(now()->subHour()->toIso8601String()))->json('conversation_ids'));
+    }
 }

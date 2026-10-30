@@ -38,4 +38,11 @@ interface ChatProvider
 
     /** Best-effort display data for a new contact: ['name' => , 'avatar' => ]. */
     public function profile(ChatAccount $account, string $contactId): array;
+
+    /**
+     * Live verification with the stored credentials. Read-only provider calls.
+     *
+     * @return array<int, array{name:string, ok:bool, detail:string}>
+     */
+    public function health(ChatAccount $account): array;
 }

@@ -201,7 +201,7 @@ class UnifiedChatController extends Controller
             'id' => $m->id, 'direction' => $m->direction, 'type' => $m->type, 'body' => $m->body, 'status' => $m->status, 'error' => $m->error,
             'at' => ($m->provider_at ?: $m->created_at)->toIso8601String(), 'sent_by' => $m->sent_by, 'auto' => str_starts_with((string) $m->client_ref, 'auto:'),
             // Attachments are only ever referenced by index: the browser never gets a provider URL or a token.
-            'attachments' => collect($m->attachments ?: [])->map(fn ($a, $i) => ['type' => $a['type'] ?? 'file', 'name' => $a['name'] ?? null, 'index' => $i])->values(),
+            'attachments' => collect($m->attachments ?: [])->reject(fn ($a) => ($a['type'] ?? '') === 'template')->map(fn ($a, $i) => ['type' => $a['type'] ?? 'file', 'name' => $a['name'] ?? null, 'index' => $i])->values(),
         ];
     }
 
@@ -245,6 +245,56 @@ class UnifiedChatController extends Controller
             'body' => $data['body'] ?? null, 'attachments' => $attachments, 'status' => 'queued', 'sent_by' => $request->user()->id, 'client_ref' => $data['client_ref'],
         ]);
         $c->forceFill(['last_message_preview' => mb_substr($data['body'] ?? "[{$type}]", 0, 200), 'last_message_at' => now()])->save();
+        SendChatMessage::dispatch($m->id);
+        event(new ChatUpdated($c->chat_account_id, 'message.out', $c->id, $m->id));
+
+        return response()->json($this->presentMessage($m), 201);
+    }
+
+    // ── WhatsApp templates ────────────────────────────────────────────────
+
+    private function whatsApp(ChatConversation $c): \App\Services\Chat\Providers\WhatsAppProvider
+    {
+        abort_unless($c->platform === 'whatsapp', 404);
+
+        return $this->providers->get('whatsapp');
+    }
+
+    public function templates(Request $request, $id)
+    {
+        $c = $this->conversation($request, $id, 'reply_unified_chat');
+        try {
+            return response()->json(['data' => $this->whatsApp($c)->templates($c->account), 'billing_note' => 'Template messages sent outside the 24-hour window may be charged by Meta to your WhatsApp Business account.']);
+        } catch (\App\Services\Chat\Providers\ProviderException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+    }
+
+    /** Sends an approved template to a customer who has already written to this number. Never opens a new conversation. */
+    public function sendTemplate(Request $request, $id)
+    {
+        $c = $this->conversation($request, $id, 'reply_unified_chat');
+        $d = $request->validate(['name' => 'required|string|max:512', 'language' => 'required|string|max:20', 'params' => 'array|max:20', 'params.*' => 'nullable|string|max:1000', 'client_ref' => 'required|string|max:64|regex:/^[A-Za-z0-9_-]+$/']);
+        if (!$c->last_inbound_at) {
+            return response()->json(['message' => 'This customer has not messaged you: templates cannot be used to start conversations here.'], 422);
+        }
+        if ($c->account->status !== 'connected') {
+            return response()->json(['message' => 'This account is not connected. Reconnect it first.'], 422);
+        }
+        if ($existing = ChatMessage::where('chat_conversation_id', $c->id)->where('client_ref', $d['client_ref'])->first()) {
+            return response()->json($this->presentMessage($existing));
+        }
+        try {
+            $built = $this->whatsApp($c)->buildTemplate($c->account, $d['name'], $d['language'], $d['params'] ?? []);
+        } catch (\App\Services\Chat\Providers\ProviderException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+        $m = ChatMessage::create([
+            'chat_conversation_id' => $c->id, 'chat_account_id' => $c->chat_account_id, 'direction' => 'out', 'type' => 'template', 'body' => $built['text'],
+            'attachments' => [['type' => 'template', 'payload' => $built['payload'], 'category' => $built['category']]], 'status' => 'queued', 'sent_by' => $request->user()->id, 'client_ref' => $d['client_ref'],
+        ]);
+        $c->forceFill(['last_message_preview' => mb_substr($built['text'], 0, 200), 'last_message_at' => now()])->save();
+        ChatAudit::log($request->user()->id, 'template.sent', 'conversation', $c->id, ['template' => $d['name'], 'category' => $built['category']]);
         SendChatMessage::dispatch($m->id);
         event(new ChatUpdated($c->chat_account_id, 'message.out', $c->id, $m->id));
 
@@ -477,11 +527,14 @@ class UnifiedChatController extends Controller
     /** For hosts with no WebSocket server: cheap, authorized, ids-only. */
     public function updates(Request $request)
     {
-        $since = $request->query('since') ? \Carbon\Carbon::parse($request->query('since')) : now()->subMinute();
+        // The clock is read BEFORE the query and the window overlaps by 2 s, so a change that lands while this request
+        // runs is seen by this poll or the next one. Duplicates are harmless: the client just re-reads those chats.
+        $now = now();
+        $since = ($request->query('since') ? \Carbon\Carbon::parse($request->query('since')) : $now->copy()->subMinute())->subSeconds(2);
         $q = $this->access->conversations($request->user())->where('updated_at', '>', $since);
 
         return response()->json([
-            'now' => now()->toIso8601String(),
+            'now' => $now->toIso8601String(),
             'conversation_ids' => $q->orderByDesc('updated_at')->limit(100)->pluck('id'),
             'unread_total' => $this->access->conversations($request->user())->where('unread_count', '>', 0)->count(),
         ]);

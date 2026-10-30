@@ -17,6 +17,8 @@ Route::prefix('api')->controller(UnifiedChatController::class)->group(function (
     Route::get('conversations/{id}/messages', 'messages')->whereNumber('id');
     Route::post('conversations/{id}/messages', 'send')->whereNumber('id')->middleware('throttle:60,1');
     Route::post('conversations/{id}/messages/{messageId}/retry', 'retry');
+    Route::get('conversations/{id}/templates', 'templates')->whereNumber('id');
+    Route::post('conversations/{id}/template-messages', 'sendTemplate')->whereNumber('id')->middleware('throttle:30,1');
     Route::post('conversations/{id}/read', 'markRead');
     Route::post('conversations/{id}', 'update');
     Route::post('conversations/{id}/assign', 'assign');
@@ -44,6 +46,7 @@ Route::prefix('api/accounts')->controller(ChatAccountController::class)->group(f
     Route::get('/', 'index');
     Route::post('connect/whatsapp-manual', 'manualWhatsApp');
     Route::post('connect/{platform}', 'connect');
+    Route::post('{id}/verify', 'verify')->whereNumber('id');
     Route::post('{id}', 'update');
     Route::delete('{id}', 'destroy');
 });

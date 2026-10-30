@@ -12,12 +12,17 @@ return [
         'tolerance' => 300,                               // seconds of clock skew accepted on signed requests
     ],
 
-    'graph_version' => env('META_GRAPH_VERSION', 'v21.0'),
+    'graph_version' => env('META_GRAPH_VERSION', 'v25.0'),
 
     'meta' => [
         'app_id' => env('META_APP_ID'),
         'app_secret' => env('META_APP_SECRET'),
         'verify_token' => env('META_WEBHOOK_VERIFY_TOKEN'),
+    ],
+    'whatsapp' => [
+        // Template messages are for answering existing customers. Marketing-category templates stay hidden (they are
+        // billed differently and this product has no bulk/marketing sending) unless you opt in.
+        'allow_marketing_templates' => (bool) env('CHAT_WA_ALLOW_MARKETING_TEMPLATES', false),
     ],
     'tiktok' => [
         'client_key' => env('TIKTOK_CLIENT_KEY'),

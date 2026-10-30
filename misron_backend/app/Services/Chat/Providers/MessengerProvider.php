@@ -91,4 +91,27 @@ class MessengerProvider extends MetaProvider
             return [];
         }
     }
+
+    public function health(ChatAccount $account): array
+    {
+        $checks = [];
+        try {
+            $r = $this->http($this->token($account))->get($this->base() . '/' . $account->external_id, ['fields' => 'id,name']);
+            $this->check($r);
+            $checks[] = ['name' => 'Access token', 'ok' => true, 'detail' => 'Accepted by the provider.'];
+        } catch (ProviderException $e) {
+            return [['name' => 'Access token', 'ok' => false, 'detail' => $e->getMessage()]];
+        }
+        // Is this app subscribed to the Page's message events? Without it no webhook ever arrives.
+        try {
+            $subs = $this->check($this->http($this->token($account))->get($this->base() . '/' . $account->external_id . '/subscribed_apps'))['data'] ?? [];
+            $fields = collect($subs)->flatMap(fn ($a) => $a['subscribed_fields'] ?? [])->unique()->all();
+            $ok = in_array('messages', $fields, true);
+            $checks[] = ['name' => 'Webhook subscription', 'ok' => $ok, 'detail' => $ok ? 'Subscribed: ' . implode(', ', $fields) : 'This app is not subscribed to the Page\'s "messages" events. Reconnect the account.'];
+        } catch (ProviderException $e) {
+            $checks[] = ['name' => 'Webhook subscription', 'ok' => false, 'detail' => $e->getMessage()];
+        }
+
+        return $checks;
+    }
 }
