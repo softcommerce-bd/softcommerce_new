@@ -139,7 +139,8 @@ const num = (s) => parseFloat(String(s).replace(/[^0-9.\-]/g, ''));
     await open(p, '/admin/purchasing/backorders', 'Inventory Overview'); await open(p, '/admin/purchasing/valuation', 'Inventory Overview'); await open(p, '/admin/purchasing/movements', 'Inventory Overview'); await open(p, '/admin/purchasing/supplier-outstanding', 'Supplier Ledger');
     // order details
     const orderId = sql("select id from orders order by id desc limit 1");
-    const ot = await open(p, `/admin/orders/${orderId}/show`, 'Order Details');
+    const enc = execSync(`php artisan tinker --execute="echo urlencode(encrypt(${orderId}));"`).toString().trim().split('\n').pop();
+    const ot = await open(p, `/admin/orders/${enc}/show`, 'Order Details');
     rec('Order Details', `${label}: order page shows the order code and its product line`, new RegExp(sql(`select code from orders where id=${orderId}`)).test(ot) && /SAMPLE Gift Mug Set/.test(ot), ot.slice(0, 60).replace(/\n/g, ' '));
     // financial reports
     const today = new Date().toISOString().slice(0, 10);

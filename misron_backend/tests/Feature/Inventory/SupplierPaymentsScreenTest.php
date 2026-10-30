@@ -45,7 +45,7 @@ class SupplierPaymentsScreenTest extends InventoryV2TestCase
         $r = $this->receive($p, '', 6, '10');
         $line = (int) DB::table('goods_receipt_lines')->where('goods_receipt_id', $r['goods_receipt_id'])->value('id');
         $this->actingAs($this->makeAdmin());
-        $this->get(route('purchasing.supplier-returns'))->assertOk()->assertSee('Return to supplier');
+        $this->get(route('purchasing.supplier-returns'))->assertOk()->assertSee('receipt-lines', false);
         $this->post(route('purchasing.supplier-returns.store'), ['op_key' => 'r1', 'receipt_line_id' => $line, 'qty' => 2])->assertRedirect();
         $this->post(route('purchasing.supplier-returns.store'), ['op_key' => 'r1', 'receipt_line_id' => $line, 'qty' => 2]);
         $this->assertSame(4, $this->stockQty($p, ''), 'a repeated submit returns the 2 units once');

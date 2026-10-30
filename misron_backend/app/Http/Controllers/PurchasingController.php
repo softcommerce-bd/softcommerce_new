@@ -108,7 +108,7 @@ class PurchasingController extends Controller
 
             return back()->withInput();
         }
-        flash(translate('Purchase order created: ') . $po['reference_no'])->success();
+        flash(translate('Purchase order created:') . ' ' . $po['reference_no'])->success();
 
         return redirect()->route('purchasing.receiving.index');
     }
@@ -160,7 +160,7 @@ class PurchasingController extends Controller
                 $data['landed_costs'] = ['amount' => $v['freight'], 'account_id' => $v['freight_account_id'] ?? 0];
             }
             $r = $grn->receive($v['op_key'] . '-grn', $data, $by);
-            $msg = translate('Goods received: ') . $r['receipt_no'];
+            $msg = translate('Goods received:') . ' ' . $r['receipt_no'];
             if (!empty($v['invoice_no'])) {
                 $goods = DB::table('goods_receipts')->where('id', $r['goods_receipt_id'])->value('goods_total');
                 $inv = $ledger->recordInvoice($v['op_key'] . '-inv', ['supplier_id' => $po->supplier_id, 'goods_receipt_id' => $r['goods_receipt_id'], 'invoice_no' => $v['invoice_no'], 'subtotal' => $goods], $by);
@@ -393,7 +393,7 @@ class PurchasingController extends Controller
                 $rows = collect($tb['rows'])->map(fn ($r) => (object) ['name' => $r->name, 'type' => $r->type, 'debit' => number_format($r->debit, 2, '.', ''), 'credit' => number_format($r->credit, 2, '.', '')])
                     ->push((object) ['name' => 'TOTAL', 'type' => $tb['balanced'] ? 'balanced' : 'NOT BALANCED', 'debit' => $tb['debit'], 'credit' => $tb['credit']]);
 
-                return view('backend.purchasing.table', ['title' => translate('Trial balance (journal) as of ') . $d, 'columns' => ['name' => 'Account', 'type' => 'Type', 'debit' => 'Debit', 'credit' => 'Credit'], 'rows' => $rows]);
+                return view('backend.purchasing.table', ['title' => translate('Trial balance (journal) as of') . ' ' . $d, 'columns' => ['name' => 'Account', 'type' => 'Type', 'debit' => 'Debit', 'credit' => 'Credit'], 'rows' => $rows]);
             case 'general-ledger':
                 $acc = (int) $request->query('account_id');
                 $from = $request->query('from');
@@ -478,8 +478,8 @@ class PurchasingController extends Controller
                 });
 
                 return view('backend.purchasing.table', ['title' => translate('Order profit'), 'filters' => ['from' => ['From (YYYY-MM-DD)', $from], 'to' => ['To (YYYY-MM-DD)', $to]],
-                    'note' => translate('FINAL profit (actual FIFO cost recorded at dispatch): ') . number_format($sum->profit, 2) . ' ' . translate('on sales of') . ' ' . number_format($sum->sales, 2) . ' (' . $sum->n . ' ' . translate('lines') . '). '
-                        . translate('NOT final, excluded from the profit above: ') . (int) $pending->n . ' ' . translate('lines with sales of') . ' ' . number_format($pending->sales, 2) . ' (' . (int) $pending->uncosted . ' ' . translate('with unknown cost') . '). ' . translate('ESTIMATED profit of lines that have only a planning cost (kept separate, never booked): ') . number_format($est->p, 2) . ' (' . (int) $est->n . ' ' . translate('lines') . ').',
+                    'note' => translate('FINAL profit (actual FIFO cost recorded at dispatch):') . ' ' . number_format($sum->profit, 2) . ' ' . translate('on sales of') . ' ' . number_format($sum->sales, 2) . ' (' . $sum->n . ' ' . translate('lines') . '). '
+                        . translate('NOT final, excluded from the profit above:') . ' ' . (int) $pending->n . ' ' . translate('lines with sales of') . ' ' . number_format($pending->sales, 2) . ' (' . (int) $pending->uncosted . ' ' . translate('with unknown cost') . '). ' . translate('ESTIMATED profit of lines that have only a planning cost (kept separate, never booked):') . ' ' . number_format($est->p, 2) . ' (' . (int) $est->n . ' ' . translate('lines') . ').',
                     'columns' => ['code' => 'Order', 'product_id' => 'Product', 'quantity' => 'Qty', 'price' => 'Sold for', 'buying_price' => 'Unit cost', 'profit' => 'Profit', 'cost_status' => 'Cost'], 'rows' => $rows]);
             case 'reconciliation':
                 $rep = collect((new InventoryReconciliation)->report())->map(fn ($r) => (object) ['severity' => $r['severity'], 'label' => $r['label'], 'count' => $r['count'], 'samples' => implode('; ', $r['samples'])]);
@@ -509,7 +509,7 @@ class PurchasingController extends Controller
         $line = \App\Models\OrderDetail::findOrFail($v['order_detail_id']);
         try {
             $demand->receiveReturn($line, (int) $v['qty'], $v['condition'], 'ret:' . $v['op_key'], $request->user()->id, $v['note'] ?? null);
-            flash(translate('Return received as ') . $v['condition'])->success();
+            flash(translate('Return received as') . ' ' . $v['condition'])->success();
         } catch (InvalidArgumentException $e) {
             flash($e->getMessage())->error();
         }
@@ -601,7 +601,7 @@ class PurchasingController extends Controller
         $v = $request->validate(['op_key' => 'required|string|max:100', 'receipt_line_id' => 'required|integer', 'qty' => 'required|integer|min:1', 'note' => 'nullable|string|max:255']);
         try {
             $r = $svc->returnGoods('sr:' . $v['op_key'], (int) $v['receipt_line_id'], (int) $v['qty'], $request->user()->id, $v['note'] ?? null);
-            flash(($r['replayed'] ?? false) ? translate('This return was already recorded.') : translate('Returned to supplier. Supplier credit: ') . $r['supplier_credit'])->success();
+            flash(($r['replayed'] ?? false) ? translate('This return was already recorded.') : translate('Returned to supplier. Supplier credit:') . ' ' . $r['supplier_credit'])->success();
         } catch (InvalidArgumentException $e) {
             flash($e->getMessage())->error();
         }
