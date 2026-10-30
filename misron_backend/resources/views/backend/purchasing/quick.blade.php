@@ -60,7 +60,7 @@
 @section('script')
 <script>
 (function () {
-  var H = {'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json'}, lines = [], opKey = uuid(), hits = [], active = -1;
+  var H = {'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json'}, lines = [], opKey = uuid(), hits = [], active = -1, done = false, busy = false;
   var $ = function (s) { return document.querySelector(s); };
   function uuid() { return (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2)); }
   function cents(v) { v = parseFloat(v); return isNaN(v) ? 0 : Math.round(v * 100); }
@@ -98,7 +98,7 @@
   function add(p) {
     var dup = lines.filter(function (l) { return l.product_id === p.product_id && l.variant === p.variant; })[0];
     if (dup) { dup.qty += 1; say('{{ translate('Already in the list: quantity increased') }}'); }
-    else lines.push({product_id: p.product_id, variant: p.variant || '', name: p.name, qty: Math.max(1, p.shortage || 1), cost: parseFloat(p.last_cost || p.estimated_cost || 0), discount: 0, on_hand: p.on_hand, available: p.available, demand: p.demand, last_cost: p.last_cost});
+    else { done = false; lines.push({product_id: p.product_id, variant: p.variant || '', name: p.name, qty: Math.max(1, p.shortage || 1), cost: parseFloat(p.last_cost || p.estimated_cost || 0), discount: 0, on_hand: p.on_hand, available: p.available, demand: p.demand, last_cost: p.last_cost}); }
     $('#qp-results').hidden = true; $('#qp-search').value = ''; $('#qp-search').focus(); render();
   }
   var timer; $('#qp-search').addEventListener('input', function () { clearTimeout(timer); var q = this.value.trim(); if (!q) { $('#qp-results').hidden = true; return; } timer = setTimeout(function () { api('{{ route('purchasing.products.search') }}?q=' + encodeURIComponent(q), {headers: H}).then(showHits).catch(function () {}); }, 180); });
@@ -120,15 +120,17 @@
   });
 
   document.querySelectorAll('[data-act]').forEach(function (b) { b.addEventListener('click', function () {
-    if (!lines.length) { say('{{ translate('Add at least one product.') }}', true); return; }
+    if (busy) return;
+    if (!lines.length) { if (!done) say('{{ translate('Add at least one product.') }}', true); return; } // after a successful save a repeat click keeps the success message
+    busy = true;
     var act = b.dataset.act, all = document.querySelectorAll('[data-act]'); all.forEach(function (x) { x.disabled = true; });
     var body = {op_key: opKey, action: act, supplier_id: +$('#qp-supplier').value, note: $('#qp-note').value, invoice_no: $('#qp-invoice').value, freight: $('#qp-freight').value || 0, other_cost: $('#qp-other').value || 0, cost_account_id: $('#qp-cost-acc').value || null,
       paid_amount: $('#qp-paid') ? $('#qp-paid').value : 0, pay_account_id: $('#qp-pay-acc') ? ($('#qp-pay-acc').value || null) : null,
       lines: lines.map(function (l) { return {product_id: l.product_id, variant: l.variant, qty: l.qty, unit_cost: l.cost, discount: l.discount}; })};
     api('{{ route('purchasing.quick.submit') }}', {method: 'POST', headers: Object.assign({'Content-Type': 'application/json'}, H), body: JSON.stringify(body)})
-      .then(function (r) { say(r.message); lines = []; opKey = uuid(); render(); })
+      .then(function (r) { say(r.message); lines = []; opKey = uuid(); done = true; render(); })
       .catch(function (e) { say(e.message, true); })   // the same op_key stays, so pressing again after a timeout cannot double-post
-      .then(function () { all.forEach(function (x) { x.disabled = false; }); });
+      .then(function () { busy = false; all.forEach(function (x) { x.disabled = false; }); });
   }); });
 
   var bulkOK = false;

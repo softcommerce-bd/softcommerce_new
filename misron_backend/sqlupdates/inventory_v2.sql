@@ -165,9 +165,25 @@ INSERT INTO `chart_of_accounts` (`code`,`name`,`type`,`sub_type`,`opening_balanc
 SELECT 'SYS-ADV','Supplier Advances','asset','receivable',0,0,'active',0,'Created by the inventory/purchasing upgrade.',NOW(),NOW() FROM DUAL
 WHERE NOT EXISTS (SELECT 1 FROM `chart_of_accounts` WHERE (`name`='Supplier Advances' AND `type`='asset') OR `code`='SYS-ADV');
 
+INSERT INTO `chart_of_accounts` (`code`,`name`,`type`,`sub_type`,`opening_balance`,`current_balance`,`status`,`is_deleted`,`description`,`created_at`,`updated_at`)
+SELECT 'SYS-SUSP','Legacy Posting Suspense','equity','equity',0,0,'active',0,'Created by the inventory/purchasing upgrade.',NOW(),NOW() FROM DUAL
+WHERE NOT EXISTS (SELECT 1 FROM `chart_of_accounts` WHERE (`name`='Legacy Posting Suspense' AND `type`='equity') OR `code`='SYS-SUSP');
+INSERT INTO `chart_of_accounts` (`code`,`name`,`type`,`sub_type`,`opening_balance`,`current_balance`,`status`,`is_deleted`,`description`,`created_at`,`updated_at`)
+SELECT 'SYS-OPEN','Inventory Opening Adjustment','equity','equity',0,0,'active',0,'Created by the inventory/purchasing upgrade.',NOW(),NOW() FROM DUAL
+WHERE NOT EXISTS (SELECT 1 FROM `chart_of_accounts` WHERE (`name`='Inventory Opening Adjustment' AND `type`='equity') OR `code`='SYS-OPEN');
+
+-- Legacy-ledger bridge (2026_11_02_100000): mirrored journal lines, per-account baseline.
+ALTER TABLE `journal_lines` ADD COLUMN `mirrored` tinyint(1) NOT NULL DEFAULT 0 AFTER `memo`;
+CREATE TABLE IF NOT EXISTS `ledger_baselines` (`account_id` bigint unsigned not null primary key, `balance` decimal(20,2) not null, `taken_at` timestamp null, `taken_by` varchar(80) null) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Estimated (planning-only) unit cost on uncosted dispatched lines (2026_11_02_100100).
+ALTER TABLE `order_details` ADD COLUMN `estimated_unit_cost` decimal(20,4) NULL;
+
 INSERT INTO `migrations` (`migration`, `batch`)
 SELECT m.migration, (SELECT COALESCE(MAX(`batch`), 0) + 1 FROM `migrations`) FROM (
   SELECT '2026_11_01_100000_add_purchasing_permissions' AS migration UNION ALL
   SELECT '2026_11_01_100100_create_inventory_v2_tables' UNION ALL
-  SELECT '2026_11_01_100200_add_inventory_v2_columns'
+  SELECT '2026_11_01_100200_add_inventory_v2_columns' UNION ALL
+  SELECT '2026_11_02_100000_add_legacy_ledger_bridge' UNION ALL
+  SELECT '2026_11_02_100100_add_estimated_unit_cost'
 ) m WHERE NOT EXISTS (SELECT 1 FROM `migrations` x WHERE x.`migration` = m.migration);

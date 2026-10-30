@@ -25,7 +25,7 @@ class AccountingReconciliationTest extends InventoryV2TestCase
         $acct = \App\Models\ChartOfAccount::create(['code' => 'T-C-' . uniqid(), 'name' => 'c' . uniqid(), 'type' => 'asset', 'sub_type' => 'cash', 'opening_balance' => 0, 'current_balance' => 5000, 'status' => 'active', 'is_deleted' => 0])->id;
         $svc->pay('p', $inv, $acct, '400');
         foreach ($this->sev() as $k => $v) {
-            if (in_array($k, ['uncosted_units_on_hand', 'profit_excluded_lines', 'dues_vs_open_invoices'], true)) {
+            if (in_array($k, ['uncosted_units_on_hand', 'profit_excluded_lines', 'dues_vs_documents'], true)) {
                 continue;
             }
             $this->assertContains($v, ['ok', 'info'], "check {$k} should be clean after a normal cycle");

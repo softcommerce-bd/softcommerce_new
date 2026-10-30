@@ -48,9 +48,12 @@ class AccountingReconciliation
         // 2. Accounts Payable vs open invoices vs supplier dues
         $payable = (float) DB::table('chart_of_accounts')->where('id', SystemAccounts::id('payable'))->value('current_balance');
         $open = (float) DB::table('supplier_invoices')->where('status', '<>', 'void')->selectRaw('COALESCE(SUM(total - paid),0) v')->value('v');
+        // legacy purchases (not created by goods receiving) carry their own payable in purchases.total_payment_due
+        $legacy = (float) DB::table('purchases')->whereNotExists(fn ($q) => $q->selectRaw('1')->from('goods_receipts as g')->whereColumn('g.purchase_id', 'purchases.id'))
+            ->selectRaw('COALESCE(SUM(CAST(total_payment_due AS DECIMAL(20,2))),0) v')->value('v');
         $dues = (float) DB::table('suppliers')->sum('due_amount');
-        $add('payable_vs_open_invoices', "Accounts Payable ({$f($payable)}) vs open supplier invoices ({$f($open)})", $f($payable - $open), [], abs($payable - $open) > 0.009 ? 'high' : 'ok');
-        $add('dues_vs_open_invoices', "Supplier due_amount total ({$f($dues)}) vs open supplier invoices ({$f($open)}); legacy purchases may legitimately differ", $f($dues - $open), [], 'info');
+        $add('payable_vs_open_invoices', "Accounts Payable ({$f($payable)}) vs open supplier invoices ({$f($open)}) + legacy purchase dues ({$f($legacy)})", $f($payable - $open - $legacy), [], abs($payable - $open - $legacy) > 0.009 ? 'high' : 'ok');
+        $add('dues_vs_documents', "Supplier due_amount total ({$f($dues)}) vs open invoices + legacy purchase dues ({$f($open + $legacy)})", $f($dues - $open - $legacy), [], abs($dues - $open - $legacy) > 0.009 ? 'medium' : 'ok');
 
         // 3. GRNI vs received-but-not-invoiced goods
         $grni = (float) DB::table('chart_of_accounts')->where('id', SystemAccounts::id('grni'))->value('current_balance');
