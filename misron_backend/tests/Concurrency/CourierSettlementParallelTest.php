@@ -49,7 +49,7 @@ class CourierSettlementParallelTest extends HttpWorkflowCase
         $this->assertEquals(500.0, $this->bal($cogs) - $cogsBefore, 'COGS booked once (5 x 100)');
         $this->assertEquals(-500.0, $this->bal($inv) - $invBefore, 'inventory relieved once');
         $this->assertSame(1, DB::table('account_statement_logs')->where('order_id', $order)->where('transaction_type', 'courier_settlement')->where('account_id', $cash)->count());
-        $this->assertSame(0, DB::table('ledger_outbox')->whereNull('processed_at')->count(), 'no posting left waiting');
+        $this->assertJournalSettles();
     }
 
     public function test_different_orders_settled_at_once_into_one_account_add_up_exactly()
@@ -67,7 +67,6 @@ class CourierSettlementParallelTest extends HttpWorkflowCase
         $this->assertSame(4, DB::table('courier_settlements')->whereIn('order_id', $orders)->count());
         $this->assertEquals(4 * (5000 - 60), $this->bal($cash), 'no lost update on the shared account');
         $this->assertEquals(4 * 500.0, $this->bal($cogs) - $cogsBefore, 'no lost update on COGS');
-        $this->assertSame(0, DB::table('ledger_outbox')->whereNull('processed_at')->count());
-        $this->assertTrue(\App\Services\Accounting\JournalService::trialBalance(now()->toDateString())['balanced']);
+        $this->assertJournalSettles();
     }
 }

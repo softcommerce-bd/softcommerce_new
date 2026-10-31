@@ -82,4 +82,21 @@ abstract class HttpWorkflowCase extends VerificationCase
     {
         return (float) DB::table('chart_of_accounts')->where('id', $accountId)->value('current_balance');
     }
+
+    /**
+     * After the requests: whatever the post-commit journalling could not finish at the time (lock contention on a shared account) is completed by
+     * the scheduled `ledger:process-outbox`; run it as the scheduler would, then nothing may be left and the journal must balance.
+     * @return int rows that were still waiting when the requests finished (informational: the recovery path was needed)
+     */
+    protected function assertJournalSettles(): int
+    {
+        $waiting = DB::table('ledger_outbox')->whereNull('processed_at')->count();
+        app(\App\Services\Accounting\LedgerOutboxProcessor::class)->processPending(500);
+        $this->assertSame(0, DB::table('ledger_outbox')->whereNull('processed_at')->count(), 'nothing left waiting after the scheduled processor ran');
+        $this->assertTrue(\App\Services\Accounting\JournalService::trialBalance(now()->toDateString())['balanced'], 'the journal balances');
+        $dupes = DB::table('journal_entries')->groupBy('idempotency_key')->havingRaw('COUNT(*) > 1')->count();
+        $this->assertSame(0, $dupes, 'no entry was journalled twice');
+
+        return $waiting;
+    }
 }

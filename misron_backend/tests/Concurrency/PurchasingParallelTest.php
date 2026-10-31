@@ -50,8 +50,7 @@ class PurchasingParallelTest extends HttpWorkflowCase
         $this->assertEquals(60.0, $this->due(), 'supplier due once (100 - 40)');
         $this->assertEquals(960.0, $this->bal($cash), 'cash paid once');
         $this->assertSame(1, DB::table('journal_entries')->where('source_type', 'legacy:purchase.store')->count(), 'one journal entry');
-        $this->assertSame(0, DB::table('ledger_outbox')->whereNull('processed_at')->count());
-        $this->assertTrue(\App\Services\Accounting\JournalService::trialBalance(now()->toDateString())['balanced']);
+        $this->assertJournalSettles();
     }
 
     public function test_different_purchases_at_once_add_up_exactly_and_keep_one_layer_each()
@@ -72,8 +71,7 @@ class PurchasingParallelTest extends HttpWorkflowCase
         $this->assertSame(18, (int) DB::table('purchase_products')->where('product_id', $p)->sum('remaining_qty'), 'shelf equals layers');
         $this->assertEquals(3 * 10 + 4 * 20 + 5 * 30 + 6 * 40 - 40, $this->due(), 'supplier due is the sum, nothing lost');
         $this->assertEquals(1000 - 40, $this->bal($cash), 'four payments of 10, none lost');
-        $this->assertSame(0, DB::table('ledger_outbox')->whereNull('processed_at')->count());
-        $this->assertTrue(\App\Services\Accounting\JournalService::trialBalance(now()->toDateString())['balanced']);
+        $this->assertJournalSettles();
     }
 
     public function test_purchases_and_orders_racing_keep_fifo_cost_and_the_shelf_in_step()
