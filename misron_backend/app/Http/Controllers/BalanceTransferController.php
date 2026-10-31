@@ -95,6 +95,14 @@ class BalanceTransferController extends Controller
 
         DB::beginTransaction();
         try {
+            // the same rule again, now under the source account's row lock: a concurrent withdrawal/transfer that committed first is seen
+            if (in_array($request->transaction_type, ['withdraw', 'transfer', 'cashout'])) {
+                $fromAccount = ChartOfAccount::lockForUpdate()->findOrFail($request->from_account_id);
+                if ($fromAccount->current_balance < $totalAmount) {
+                    DB::rollBack();
+                    return redirect()->back()->withErrors(['amount' => 'Insufficient balance in source account. Available: ' . number_format($fromAccount->current_balance, 2)])->withInput();
+                }
+            }
             $voucherNo = BalanceTransfer::generateVoucherNo($request->transaction_type);
 
             $transaction = BalanceTransfer::create([

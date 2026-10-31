@@ -347,7 +347,7 @@ public function store(Request $request)
         $payable->current_balance -= $amount;
         $payable->save();
 
-        $paymentAccount = ChartOfAccount::find($request->account_head_id);
+        $paymentAccount = ChartOfAccount::lockForUpdate()->find($request->account_head_id); // locked: the balance check below must see a concurrent payment
         if (!$paymentAccount) {
             throw new \Exception('Payment account not found');
         }
@@ -669,7 +669,7 @@ public function store(Request $request)
             $payable->current_balance -= $newAmount;
             $payable->save();
 
-            $newAccount = ChartOfAccount::find($request->account_head_id);
+            $newAccount = ChartOfAccount::lockForUpdate()->find($request->account_head_id); // locked: the balance check below must see a concurrent payment
             if (!$newAccount) throw new \Exception('Payment account not found');
             if ($newAccount->current_balance < $newAmount) {
                 throw new \Exception('Insufficient balance in selected account');

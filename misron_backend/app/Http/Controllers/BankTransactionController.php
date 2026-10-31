@@ -116,6 +116,12 @@ class BankTransactionController extends Controller
         DB::beginTransaction();
         
         try {
+            // the same rule again, now under the account's row lock: a concurrent withdrawal that committed first is seen
+            $fromAccount = ChartOfAccount::lockForUpdate()->find($request->account_id);
+            if ($fromAccount->current_balance < $request->amount) {
+                DB::rollBack();
+                return response()->json(['success' => false, 'message' => 'Insufficient balance'], 422);
+            }
             $transaction = BankTransaction::create([
                 'transaction_no' => BankTransaction::generateTransactionNo('withdraw'),
                 'type' => 'withdraw',
@@ -176,6 +182,12 @@ class BankTransactionController extends Controller
         DB::beginTransaction();
         
         try {
+            // the same rule again, now under the account's row lock: a concurrent transfer that committed first is seen
+            $fromAccount = ChartOfAccount::lockForUpdate()->find($request->from_account_id);
+            if ($fromAccount->current_balance < $request->amount) {
+                DB::rollBack();
+                return response()->json(['success' => false, 'message' => 'Insufficient balance in source account'], 422);
+            }
             $transaction = BankTransaction::create([
                 'transaction_no' => BankTransaction::generateTransactionNo('transfer'),
                 'type' => 'transfer',
