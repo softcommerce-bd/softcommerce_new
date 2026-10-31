@@ -462,25 +462,39 @@ class PurchasingController extends Controller
             case 'actual-order-profit':
                 $from = $request->query('from');
                 $to = $request->query('to');
-                $base = fn () => DB::table('order_details as d')->join('orders as o', 'o.id', '=', 'd.order_id')->where('d.stock_mode', 'v2')
+                // Every order line is classified, never converted: nothing here writes to an order. Cancelled orders never count towards any total.
+                $base = fn () => DB::table('order_details as d')->join('orders as o', 'o.id', '=', 'd.order_id')->where('o.delivery_status', '<>', 'cancelled')
                     ->when($from, fn ($q) => $q->whereDate('o.created_at', '>=', $from))->when($to, fn ($q) => $q->whereDate('o.created_at', '<=', $to));
-                $sum = $base()->where('d.cost_status', 'final')->selectRaw('COALESCE(SUM(d.price),0) sales, COALESCE(SUM(d.quantity * d.buying_price),0) cost, COALESCE(SUM(d.profit),0) profit, COUNT(*) n')->first();
-                $pending = $base()->where('d.cost_status', '<>', 'final')->selectRaw("COUNT(*) n, COALESCE(SUM(d.price),0) sales, SUM(d.cost_status = 'uncosted') uncosted")->first();
-                $est = $base()->where('d.cost_status', 'uncosted')->whereNotNull('d.estimated_unit_cost')->selectRaw('COALESCE(SUM(d.price - d.quantity * d.estimated_unit_cost),0) p, COUNT(*) n')->first();
-                $rows = $base()->orderByDesc('d.id')->paginate(50, ['o.code', 'd.product_id', 'd.quantity', 'd.price', 'd.buying_price', 'd.profit', 'd.cost_status', 'd.estimated_unit_cost']);
+                $final = $base()->where('d.stock_mode', 'v2')->where('d.cost_status', 'final')->selectRaw('COALESCE(SUM(d.profit),0) profit, COALESCE(SUM(d.price),0) sales, COUNT(*) n')->first();
+                $hist = $base()->where('d.stock_mode', '<>', 'v2')->whereRaw('CAST(d.buying_price AS DECIMAL(20,4)) > 0')->selectRaw('COALESCE(SUM(d.price - d.quantity * CAST(d.buying_price AS DECIMAL(20,4))),0) profit, COALESCE(SUM(d.price),0) sales, COUNT(*) n')->first();
+                $histUnknown = $base()->where('d.stock_mode', '<>', 'v2')->whereRaw('COALESCE(CAST(d.buying_price AS DECIMAL(20,4)),0) <= 0')->selectRaw('COALESCE(SUM(d.price),0) sales, COUNT(*) n')->first();
+                $pending = $base()->where('d.stock_mode', 'v2')->where(fn ($q) => $q->whereNull('d.cost_status')->orWhere('d.cost_status', '<>', 'final'))->selectRaw("COUNT(*) n, COALESCE(SUM(d.price),0) sales, SUM(d.cost_status = 'uncosted') uncosted")->first();
+                $est = $base()->where('d.stock_mode', 'v2')->where('d.cost_status', 'uncosted')->whereNotNull('d.estimated_unit_cost')->selectRaw('COALESCE(SUM(d.price - d.quantity * d.estimated_unit_cost),0) p, COUNT(*) n')->first();
+                $rows = $base()->orderByDesc('d.id')->paginate(50, ['o.code', 'o.delivery_status', 'd.stock_mode', 'd.product_id', 'd.quantity', 'd.price', 'd.buying_price', 'd.profit', 'd.cost_status', 'd.estimated_unit_cost']);
                 $rows->getCollection()->transform(function ($r) {
-                    $final = $r->cost_status === 'final';
-                    $r->profit = $final ? $r->profit : ($r->estimated_unit_cost !== null ? 'ESTIMATE ' . number_format($r->price - $r->quantity * $r->estimated_unit_cost, 2, '.', '') . ' (not final)' : 'not final');
-                    $r->buying_price = $final ? $r->buying_price : 'unknown';
-                    $r->cost_status = $final ? 'FINAL (FIFO cost)' : strtoupper((string) $r->cost_status) . ' - excluded from profit';
+                    $r->delivery_status = $r->delivery_status;
+                    if ($r->stock_mode === 'v2') {
+                        $isFinal = $r->cost_status === 'final';
+                        $r->class = $isFinal ? 'FINAL (actual FIFO cost)' : strtoupper((string) ($r->cost_status ?: 'awaiting dispatch')) . ' - excluded from profit';
+                        $r->profit = $isFinal ? $r->profit : ($r->estimated_unit_cost !== null ? 'ESTIMATE ' . number_format($r->price - $r->quantity * $r->estimated_unit_cost, 2, '.', '') . ' (not final)' : 'not final');
+                        $r->buying_price = $isFinal ? $r->buying_price : 'unknown';
+                    } elseif ((float) $r->buying_price > 0) {
+                        $r->class = 'HISTORICAL - cost as recorded by the old system, not verified';
+                        $r->profit = number_format($r->price - $r->quantity * (float) $r->buying_price, 2, '.', '') . ' (recorded, unverified)';
+                    } else {
+                        $r->class = 'HISTORICAL - cost unknown';
+                        $r->profit = 'unknown';
+                        $r->buying_price = 'unknown';
+                    }
 
                     return $r;
                 });
 
                 return view('backend.purchasing.table', ['title' => translate('Order profit'), 'filters' => ['from' => ['From (YYYY-MM-DD)', $from], 'to' => ['To (YYYY-MM-DD)', $to]],
-                    'note' => translate('FINAL profit (actual FIFO cost recorded at dispatch):') . ' ' . number_format($sum->profit, 2) . ' ' . translate('on sales of') . ' ' . number_format($sum->sales, 2) . ' (' . $sum->n . ' ' . translate('lines') . '). '
-                        . translate('NOT final, excluded from the profit above:') . ' ' . (int) $pending->n . ' ' . translate('lines with sales of') . ' ' . number_format($pending->sales, 2) . ' (' . (int) $pending->uncosted . ' ' . translate('with unknown cost') . '). ' . translate('ESTIMATED profit of lines that have only a planning cost (kept separate, never booked):') . ' ' . number_format($est->p, 2) . ' (' . (int) $est->n . ' ' . translate('lines') . ').',
-                    'columns' => ['code' => 'Order', 'product_id' => 'Product', 'quantity' => 'Qty', 'price' => 'Sold for', 'buying_price' => 'Unit cost', 'profit' => 'Profit', 'cost_status' => 'Cost'], 'rows' => $rows]);
+                    'note' => translate('FINAL profit (actual FIFO cost recorded at dispatch):') . ' ' . number_format($final->profit, 2) . ' ' . translate('on sales of') . ' ' . number_format($final->sales, 2) . ' (' . $final->n . ' ' . translate('lines') . '). '
+                        . translate('NOT final and excluded from it:') . ' ' . (int) $pending->n . ' ' . translate('confirmed-order lines awaiting a cost or without one') . ' (' . (int) $pending->uncosted . ' ' . translate('with unknown cost') . ', ' . translate('sales') . ' ' . number_format($pending->sales, 2) . '; ' . translate('planning ESTIMATE, never booked:') . ' ' . number_format($est->p, 2) . ' ' . translate('on') . ' ' . (int) $est->n . '). '
+                        . translate('HISTORICAL lines (orders before the upgrade, kept exactly as recorded):') . ' ' . (int) $hist->n . ' ' . translate('lines with the old system\'s recorded cost, profit') . ' ' . number_format($hist->profit, 2) . ' ' . translate('on sales of') . ' ' . number_format($hist->sales, 2) . ' (' . translate('unverified, reported separately and never added to FINAL') . '); ' . (int) $histUnknown->n . ' ' . translate('lines with no cost at all, sales') . ' ' . number_format($histUnknown->sales, 2) . '. ' . translate('Cancelled orders are not counted.'),
+                    'columns' => ['code' => 'Order', 'delivery_status' => 'Order status', 'product_id' => 'Product', 'quantity' => 'Qty', 'price' => 'Sold for', 'buying_price' => 'Unit cost', 'profit' => 'Profit', 'class' => 'Cost class'], 'rows' => $rows]);
             case 'reconciliation':
                 $rep = collect((new InventoryReconciliation)->report())->map(fn ($r) => (object) ['severity' => $r['severity'], 'label' => $r['label'], 'count' => $r['count'], 'samples' => implode('; ', $r['samples'])]);
 

@@ -120,4 +120,27 @@ class FinancialReportsLedgerTest extends InventoryV2TestCase
         $this->get(route('accounts.reports.profit-loss', ['date_range' => 'this_year']))->assertOk()->assertSee('pl-basis-gap', false)->assertSee('Orphan income', false);
         $this->assertEquals(52.20, (float) DB::table('chart_of_accounts')->where('id', $inc->id)->value('current_balance'), 'reading the reports changes nothing');
     }
+
+    public function test_historical_lines_are_reported_separately_exactly_as_recorded_and_never_rewritten()
+    {
+        // two pre-upgrade lines (stock_mode legacy): one with the old system's recorded cost, one with none; one cancelled order that must not count
+        $p = $this->productAtZero(['unit_price' => 1000]);
+        $a = $this->makeOrder([[$p, '', 2]], 'pending'); $la = $this->detail($a);
+        DB::table('order_details')->where('id', $la->id)->update(['stock_mode' => 'legacy', 'price' => 2000, 'buying_price' => '300', 'profit' => 1400]);
+        $b = $this->makeOrder([[$p, '', 1]], 'pending'); $lb = $this->detail($b);
+        DB::table('order_details')->where('id', $lb->id)->update(['stock_mode' => 'legacy', 'price' => 1000, 'buying_price' => '0', 'profit' => 0]);
+        $c = $this->makeOrder([[$p, '', 1]], 'pending'); $lc = $this->detail($c);
+        DB::table('order_details')->where('id', $lc->id)->update(['stock_mode' => 'legacy', 'price' => 900, 'buying_price' => '100', 'profit' => 800]);
+        DB::table('orders')->where('id', $c->id)->update(['delivery_status' => 'cancelled']);
+        $before = DB::table('order_details')->whereIn('id', [$la->id, $lb->id, $lc->id])->orderBy('id')->get()->toJson();
+
+        $html = $this->actingAs($this->makeAdmin())->get(route('purchasing.report', ['name' => 'actual-order-profit']))->assertOk()->getContent();
+        $this->assertStringContainsString('HISTORICAL - cost as recorded by the old system, not verified', $html);
+        $this->assertStringContainsString('HISTORICAL - cost unknown', $html);
+        $this->assertStringContainsString('(recorded, unverified)', $html);
+        $this->assertStringContainsString('1 lines with the old system', $html, 'only the live recorded line is counted; the cancelled order is not');
+        $this->assertStringContainsString('never added to FINAL', $html);
+        $this->assertStringContainsString('FINAL profit (actual FIFO cost recorded at dispatch): 0.00', $html, 'historical profit never leaks into FINAL');
+        $this->assertSame($before, DB::table('order_details')->whereIn('id', [$la->id, $lb->id, $lc->id])->orderBy('id')->get()->toJson(), 'reading the report changed no order line');
+    }
 }
