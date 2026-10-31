@@ -42,6 +42,12 @@ class AccountingReconciliation
             $add('ledger_drift', 'Accounts whose balance moved without a matching journal entry since the baseline (posted outside the bridge, e.g. console fix-up commands or SQL)', count($drift),
                 array_map(fn ($r) => "{$r->name}: balance {$f($r->current_balance)} vs baseline {$f($r->base)} + journal {$f($r->moved)}", $drift), $drift ? 'high' : 'ok');
         }
+        if (\Illuminate\Support\Facades\Schema::hasTable('ledger_outbox')) {
+            $waiting = DB::table('ledger_outbox')->whereNull('processed_at');
+            $n = (clone $waiting)->distinct()->count('token');
+            $old = (clone $waiting)->where('created_at', '<', now()->subMinutes(5))->distinct()->count('token');
+            $add('outbox_pending', 'Committed legacy postings still waiting for their journal entry (run ledger:process-outbox; older than 5 minutes = the scheduler is not running or a posting keeps failing)', $n, (clone $waiting)->whereNotNull('last_error')->limit(3)->pluck('last_error')->all(), $old ? 'high' : ($n ? 'medium' : 'ok'));
+        }
         $susp = (float) DB::table('chart_of_accounts')->where('id', SystemAccounts::id('suspense'))->value('current_balance');
         $add('legacy_suspense', "Legacy Posting Suspense balance ({$f($susp)}): one-sided amounts the old screens posted without a counter-account (informational; review, do not net away)", $f($susp), [], abs($susp) > 0.009 ? 'info' : 'ok');
 
