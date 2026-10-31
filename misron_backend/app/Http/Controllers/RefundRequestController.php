@@ -192,53 +192,69 @@ class RefundRequestController extends Controller
      */
     public function refund_pay(Request $request)
     {
-        $refund = RefundRequest::findOrFail($request->refund_id);
-        if ($refund->seller_approval == 1) {
-            $seller = Shop::where('user_id', $refund->seller_id)->first();
-            if ($seller != null) {
-                $seller->admin_to_pay -= $refund->refund_amount;
-            }
-            $seller->save();
-        }
-
-        $refund_amount = $refund->refund_amount;
-
-        // Club Point conversion check
-        if (addon_is_activated('club_point')) {
-            $club_point = ClubPoint::where('order_id', $refund->order_id)->first();
-            if($club_point != null){
-                $club_point_details = $club_point->club_point_details->where('product_id',$refund->orderDetail->product->id)->first();
-                
-                if($club_point->convert_status == 1 ){
-                    $refund_amount -= $club_point_details->converted_amount;  
+        // One transaction, the request row locked: a second click (or a second admin) finds it already paid and credits nothing.
+        try {
+            \Illuminate\Support\Facades\DB::transaction(function () use ($request) {
+                $refund = RefundRequest::lockForUpdate()->findOrFail($request->refund_id);
+                if ((int) $refund->refund_status === 1) {
+                    throw new \RuntimeException(translate('This refund has already been paid.'));
                 }
-                else{
-                    $club_point_details->refunded = 1;
-                    $club_point_details->save();
+                if ((int) $refund->refund_status === 2) {
+                    throw new \RuntimeException(translate('This refund request was rejected.'));
                 }
-            }
-        }
+                if ($refund->seller_approval == 1) {
+                    $seller = Shop::where('user_id', $refund->seller_id)->first();
+                    if ($seller != null) {
+                        $seller->admin_to_pay -= $refund->refund_amount;
+                        $seller->save();
+                    }
+                }
 
-        $wallet = new Wallet;
-        $wallet->user_id = $refund->user_id;
-        $wallet->amount = $refund_amount;
-        $wallet->payment_method = 'Refund';
-        $wallet->payment_details = 'Product Money Refund';
-        $wallet->save();
-        $user = User::findOrFail($refund->user_id);
-        $user->balance += $refund_amount;
-        $user->save();
-        if (Auth::user()->user_type == 'admin' || Auth::user()->user_type == 'staff') {
-            $refund->admin_approval = 1;
-            $refund->refund_status = 1;
-        }
+                $refund_amount = $refund->refund_amount;
 
-        if ($refund->save()) {
+                // Club Point conversion check
+                if (addon_is_activated('club_point')) {
+                    $club_point = ClubPoint::where('order_id', $refund->order_id)->first();
+                    if ($club_point != null) {
+                        $club_point_details = $club_point->club_point_details->where('product_id', $refund->orderDetail->product->id)->first();
+
+                        if ($club_point->convert_status == 1) {
+                            $refund_amount -= $club_point_details->converted_amount;
+                        } else {
+                            $club_point_details->refunded = 1;
+                            $club_point_details->save();
+                        }
+                    }
+                }
+
+                $wallet = new Wallet;
+                $wallet->user_id = $refund->user_id;
+                $wallet->amount = $refund_amount;
+                $wallet->payment_method = 'Refund';
+                $wallet->payment_details = 'Product Money Refund';
+                $wallet->save();
+                $user = User::findOrFail($refund->user_id);
+                $user->balance += $refund_amount;
+                $user->save();
+                if (Auth::user()->user_type == 'admin' || Auth::user()->user_type == 'staff') {
+                    $refund->admin_approval = 1;
+                    $refund->refund_status = 1;
+                }
+                $refund->save();
+
+                // Confirmed-order accounting: the wallet credit is a liability to the customer, posted once, in the same transaction.
+                if (\App\Services\Inventory\InventoryMode::confirmedOnly() && \Illuminate\Support\Facades\Schema::hasTable('refund_postings') && $refund_amount > 0) {
+                    app(\App\Services\Accounting\RefundService::class)->record('refund-request-' . $refund->id, 'wallet', $refund_amount, (int) $refund->order_id, (int) $refund->order_detail_id, (int) $refund->id, null, null, Auth::id());
+                }
+            });
             flash(translate('Refund has been sent successfully.'))->success();
-        }
-        else {
+        } catch (\RuntimeException | \InvalidArgumentException $e) {
+            flash($e->getMessage())->error();
+        } catch (\Throwable $e) {
+            \Log::error('Refund payment failed: ' . $e->getMessage());
             flash(translate('Something went wrong.'))->error();
         }
+
         return back();
     }
 

@@ -14,6 +14,9 @@ class SystemAccounts
         'variance' => ['Purchase Price Variance', 'expense', 'expense', 'SYS-PPV'],
         'advance' => ['Supplier Advances', 'asset', 'receivable', 'SYS-ADV'],
         'suspense' => ['Legacy Posting Suspense', 'equity', 'equity', 'SYS-SUSP'],
+        'sales_returns' => ['Sales Returns and Refunds', 'expense', 'expense', 'SYS-SRET'],
+        'customer_wallet' => ['Customer Wallet Balances', 'liability', 'wallet', 'SYS-WAL'],
+        'gateway_clearing' => ['Payment Gateway Clearing', 'asset', 'receivable', 'SYS-GWC'],
         'opening' => ['Inventory Opening Adjustment', 'equity', 'equity', 'SYS-OPEN'],
     ];
 

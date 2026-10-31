@@ -48,6 +48,15 @@ class AccountingReconciliation
             $old = (clone $waiting)->where('created_at', '<', now()->subMinutes(5))->distinct()->count('token');
             $add('outbox_pending', 'Committed legacy postings still waiting for their journal entry (run ledger:process-outbox; older than 5 minutes = the scheduler is not running or a posting keeps failing)', $n, (clone $waiting)->whereNotNull('last_error')->limit(3)->pluck('last_error')->all(), $old ? 'high' : ($n ? 'medium' : 'ok'));
         }
+        if (\Illuminate\Support\Facades\Schema::hasTable('refund_postings')) {
+            $nj = DB::table('refund_postings')->whereNull('journal_entry_id')->pluck('id')->all();
+            $add('refunds_without_journal', 'Refund postings with no journal entry', count($nj), $nj, $nj ? 'critical' : 'ok');
+            $walletAcc = (float) DB::table('chart_of_accounts')->where('id', SystemAccounts::id('customer_wallet'))->value('current_balance');
+            $users = (float) DB::table('users')->sum('balance');
+            $add('wallet_liability_vs_user_balances', "Customer Wallet Balances account ({$f($walletAcc)}) vs sum of customers' wallet balances ({$f($users)}). Only refunds are journalled to the account; wallet top-ups and wallet spending are not, so a difference is expected and is informational", $f($users - $walletAcc), [], 'info');
+            $paid = DB::table('refund_requests')->where('refund_status', 1)->whereNotExists(fn ($q) => $q->selectRaw('1')->from('refund_postings as p')->whereColumn('p.refund_request_id', 'refund_requests.id'))->count();
+            $add('paid_refunds_without_posting', 'Refund requests marked paid that have no refund posting (all refunds paid before the flag was on are in this group; history is not rewritten)', $paid, [], $paid ? 'info' : 'ok');
+        }
         $susp = (float) DB::table('chart_of_accounts')->where('id', SystemAccounts::id('suspense'))->value('current_balance');
         $add('legacy_suspense', "Legacy Posting Suspense balance ({$f($susp)}): one-sided amounts the old screens posted without a counter-account (informational; review, do not net away)", $f($susp), [], abs($susp) > 0.009 ? 'info' : 'ok');
 
