@@ -195,6 +195,26 @@ try {
             $result['ok'] = true;
             break;
 
+        case 'lock_pair': // two transactions that take the same two rows in opposite order: a deterministic deadlock
+            $attempts = 0;
+            $body = function () use ($job, &$attempts) {
+                $attempts++;
+                DB::table('chart_of_accounts')->where('id', $job['first'])->lockForUpdate()->first();
+                usleep(($job['hold_ms'] ?? 300) * 1000);
+                DB::table('chart_of_accounts')->where('id', $job['second'])->lockForUpdate()->first();
+                DB::table('chart_of_accounts')->where('id', $job['first'])->increment('opening_balance', 0.01);
+
+                return ['done' => true];
+            };
+            if (!empty($job['retry'])) {
+                App\Services\Inventory\Idempotency::once('test_pair', $job['key'], $body); // the service wrapper, which retries a deadlock
+            } else {
+                DB::transaction($body); // a plain transaction: no retry
+            }
+            $result['attempts'] = $attempts;
+            $result['ok'] = true;
+            break;
+
         default:
             throw new InvalidArgumentException('Unknown action ' . $job['action']);
     }

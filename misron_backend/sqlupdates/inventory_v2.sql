@@ -184,6 +184,26 @@ CREATE TABLE IF NOT EXISTS `ledger_baselines` (`account_id` bigint unsigned not 
 -- Estimated (planning-only) unit cost on uncosted dispatched lines (2026_11_02_100100).
 ALTER TABLE `order_details` ADD COLUMN `estimated_unit_cost` decimal(20,4) NULL;
 
+-- Stock-lookup indexes (2026_11_03_100200): added only if no index starting (product_id, variant) exists.
+SET @has := (SELECT COUNT(*) FROM information_schema.STATISTICS a JOIN information_schema.STATISTICS b ON a.TABLE_SCHEMA=b.TABLE_SCHEMA AND a.TABLE_NAME=b.TABLE_NAME AND a.INDEX_NAME=b.INDEX_NAME WHERE a.TABLE_SCHEMA=DATABASE() AND a.TABLE_NAME='product_stocks' AND a.SEQ_IN_INDEX=1 AND a.COLUMN_NAME='product_id' AND b.SEQ_IN_INDEX=2 AND b.COLUMN_NAME='variant');
+SET @sql := IF(@has = 0, 'ALTER TABLE `product_stocks` ADD KEY `idx_stock_lookup_product_variant` (`product_id`, `variant`(100))', 'SELECT 1');
+PREPARE st FROM @sql; EXECUTE st; DEALLOCATE PREPARE st;
+SET @has := (SELECT COUNT(*) FROM information_schema.STATISTICS a JOIN information_schema.STATISTICS b ON a.TABLE_SCHEMA=b.TABLE_SCHEMA AND a.TABLE_NAME=b.TABLE_NAME AND a.INDEX_NAME=b.INDEX_NAME WHERE a.TABLE_SCHEMA=DATABASE() AND a.TABLE_NAME='purchase_products' AND a.SEQ_IN_INDEX=1 AND a.COLUMN_NAME='product_id' AND b.SEQ_IN_INDEX=2 AND b.COLUMN_NAME='variant');
+SET @sql := IF(@has = 0, 'ALTER TABLE `purchase_products` ADD KEY `idx_stock_lookup_product_variant` (`product_id`, `variant`(100))', 'SELECT 1');
+PREPARE st FROM @sql; EXECUTE st; DEALLOCATE PREPARE st;
+
+-- Transactional outbox for legacy ledger postings (2026_11_03_100000).
+CREATE TABLE IF NOT EXISTS `ledger_outbox` (`id` bigint unsigned not null auto_increment primary key, `token` varchar(40) not null, `account_id` bigint unsigned not null, `delta` decimal(20,2) not null, `source_type` varchar(40) null, `source_id` bigint unsigned null, `description` varchar(255) null, `created_by` int unsigned null, `created_at` timestamp not null default current_timestamp(), `processed_at` timestamp null, `journal_entry_id` bigint unsigned null, `last_error` varchar(255) null, `attempts` int unsigned not null default 0, KEY `idx_outbox_pending` (`processed_at`, `id`), KEY `idx_outbox_token` (`token`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Refund postings (2026_11_03_100100) and the three accounts refunds post to.
+CREATE TABLE IF NOT EXISTS `refund_postings` (`id` bigint unsigned not null auto_increment primary key, `refund_request_id` bigint unsigned null, `order_id` bigint unsigned null, `order_detail_id` bigint unsigned null, `method` varchar(10) not null, `amount` decimal(20,2) not null, `account_id` bigint unsigned null, `external_ref` varchar(120) null, `idempotency_key` varchar(120) not null, `journal_entry_id` bigint unsigned null, `created_by` int unsigned null, `note` varchar(255) null, `created_at` timestamp not null default current_timestamp(), UNIQUE KEY `uq_refund_postings_request` (`refund_request_id`), UNIQUE KEY `uq_refund_postings_external` (`external_ref`), UNIQUE KEY `uq_refund_postings_key` (`idempotency_key`), KEY `refund_postings_order_detail_id_index` (`order_detail_id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+INSERT INTO `chart_of_accounts` (`code`,`name`,`type`,`sub_type`,`opening_balance`,`current_balance`,`status`,`is_deleted`,`description`,`created_at`,`updated_at`)
+SELECT 'SYS-SRET','Sales Returns and Refunds','expense','expense',0,0,'active',0,'Created by the inventory/purchasing upgrade.',NOW(),NOW() FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM `chart_of_accounts` WHERE (`name`='Sales Returns and Refunds' AND `type`='expense') OR `code`='SYS-SRET');
+INSERT INTO `chart_of_accounts` (`code`,`name`,`type`,`sub_type`,`opening_balance`,`current_balance`,`status`,`is_deleted`,`description`,`created_at`,`updated_at`)
+SELECT 'SYS-WAL','Customer Wallet Balances','liability','payable',0,0,'active',0,'Created by the inventory/purchasing upgrade.',NOW(),NOW() FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM `chart_of_accounts` WHERE (`name`='Customer Wallet Balances' AND `type`='liability') OR `code`='SYS-WAL');
+INSERT INTO `chart_of_accounts` (`code`,`name`,`type`,`sub_type`,`opening_balance`,`current_balance`,`status`,`is_deleted`,`description`,`created_at`,`updated_at`)
+SELECT 'SYS-GWC','Payment Gateway Clearing','asset','receivable',0,0,'active',0,'Created by the inventory/purchasing upgrade.',NOW(),NOW() FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM `chart_of_accounts` WHERE (`name`='Payment Gateway Clearing' AND `type`='asset') OR `code`='SYS-GWC');
+
 INSERT INTO `migrations` (`migration`, `batch`)
 SELECT m.migration, (SELECT COALESCE(MAX(`batch`), 0) + 1 FROM `migrations`) FROM (
   SELECT '2026_11_01_100000_add_purchasing_permissions' AS migration UNION ALL
@@ -191,5 +211,8 @@ SELECT m.migration, (SELECT COALESCE(MAX(`batch`), 0) + 1 FROM `migrations`) FRO
   SELECT '2026_11_01_100200_add_inventory_v2_columns' UNION ALL
   SELECT '2026_11_02_100000_add_legacy_ledger_bridge' UNION ALL
   SELECT '2026_11_02_100100_add_estimated_unit_cost' UNION ALL
-  SELECT '2026_11_02_100200_add_accounting_permissions'
+  SELECT '2026_11_02_100200_add_accounting_permissions' UNION ALL
+  SELECT '2026_11_03_100000_create_ledger_outbox' UNION ALL
+  SELECT '2026_11_03_100100_create_refund_postings' UNION ALL
+  SELECT '2026_11_03_100200_add_stock_lookup_indexes'
 ) m WHERE NOT EXISTS (SELECT 1 FROM `migrations` x WHERE x.`migration` = m.migration);

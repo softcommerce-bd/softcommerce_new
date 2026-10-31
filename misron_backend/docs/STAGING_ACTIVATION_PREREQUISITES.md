@@ -26,10 +26,10 @@
 | D-07 | Supplier payment PAY-000001 for non-existent supplier 3, allocated to purchase 11 | 5,150.00 | Was cash paid? |
 | D-08 | One supplier carries 99.99% of payables; looks like opening stock typed in as purchases | 147,081,280.00 | Is the debt real? |
 | D-09 | Statement rows with no transaction type | 105 rows | Accept? |
-| T-1 | Deadlocks when optimizer statistics are stale/empty | operational | `ANALYZE TABLE` after conversion; monitor after cut-over |
-| T-2 | Customer refunds are wallet-only (no ledger/stock effect) | design | Owner decision |
-| T-3 | Retroactive finalization of historical uncosted order lines not implemented | design | Accounting decision |
-| T-4 | Bridge journals after the legacy commit; a crash between leaves drift (reported by reconciliation) | design | Accept or harden |
+| T-1 | Deadlocks / stale statistics | operational | **UNRESOLVED.** Dev work done (lookup-index migration, preflight refusal, `inventory:db-health`, retry in service transactions; see `docs/TECHNICAL_RISKS_BEFORE_ACTIVATION.md`). The original failure was not reproduced; real-engine proof missing. |
+| T-2 | Wallet-only refunds | design | **UNRESOLVED.** Treatment defined and implemented (`RefundService`, duplicate-proof `refund_pay`); needs accountant acceptance; wallet top-ups/spending still not journalled; no cash/gateway refund screens. |
+| T-3 | Historical uncosted order lines | design | **UNRESOLVED.** Reporting policy implemented (`docs/HISTORICAL_ORDER_COSTS.md`); accountant must accept; no historical line is finalized or rewritten. |
+| T-4 | Journal posting after the legacy commit | design | **UNRESOLVED.** Transactional outbox + `ledger:process-outbox` (scheduled) implemented with crash-recovery tests; needs real-engine rehearsal, scheduler running, load test. |
 
 ## Rules in force
 No automatic inventory or accounting correction. No staging flag. No deploy, merge or production change. Existing branch `claude/peaceful-planck-elqcki` only.

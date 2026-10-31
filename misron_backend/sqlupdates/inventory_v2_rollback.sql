@@ -4,6 +4,8 @@
 -- The ENUM on account_statement_logs.transaction_type is deliberately not restored (narrowing it would blank values written since).
 
 SELECT COUNT(*) AS v2_lines_still_open FROM `order_details` WHERE `stock_mode` = 'v2';  -- must be 0 before continuing
+DROP TABLE IF EXISTS `ledger_outbox`;
+DROP TABLE IF EXISTS `refund_postings`;
 DROP TABLE IF EXISTS `ledger_baselines`;
 DROP TABLE IF EXISTS `journal_lines`;
 DROP TABLE IF EXISTS `journal_entries`;
@@ -26,5 +28,8 @@ ALTER TABLE `products` DROP COLUMN `stock_policy`, DROP COLUMN `max_backorder_qt
 DELETE rp FROM `role_has_permissions` rp JOIN `permissions` p ON p.id = rp.permission_id WHERE p.`section` = 'purchasing_inventory';
 DELETE mp FROM `model_has_permissions` mp JOIN `permissions` p ON p.id = mp.permission_id WHERE p.`section` = 'purchasing_inventory';
 DELETE FROM `permissions` WHERE `section` = 'purchasing_inventory';
-DELETE FROM `migrations` WHERE `migration` IN ('2026_11_01_100000_add_purchasing_permissions', '2026_11_01_100100_create_inventory_v2_tables', '2026_11_01_100200_add_inventory_v2_columns', '2026_11_02_100000_add_legacy_ledger_bridge', '2026_11_02_100100_add_estimated_unit_cost', '2026_11_02_100200_add_accounting_permissions');
+DELETE FROM `migrations` WHERE `migration` IN ('2026_11_01_100000_add_purchasing_permissions', '2026_11_01_100100_create_inventory_v2_tables', '2026_11_01_100200_add_inventory_v2_columns', '2026_11_02_100000_add_legacy_ledger_bridge', '2026_11_02_100100_add_estimated_unit_cost', '2026_11_02_100200_add_accounting_permissions', '2026_11_03_100000_create_ledger_outbox', '2026_11_03_100100_create_refund_postings', '2026_11_03_100200_add_stock_lookup_indexes');
 -- System accounts (GRNI, Legacy Posting Suspense, Inventory Opening Adjustment, Purchase Price Variance, Supplier Advances) are left in place: remove them by hand only if they carry no balance.
+
+-- The idx_stock_lookup_product_variant indexes (product_stocks, purchase_products) are harmless and are LEFT in place on purpose (they only narrow row locks). Drop them by hand only if needed:
+--   ALTER TABLE `product_stocks` DROP INDEX `idx_stock_lookup_product_variant`; ALTER TABLE `purchase_products` DROP INDEX `idx_stock_lookup_product_variant`;

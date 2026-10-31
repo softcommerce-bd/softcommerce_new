@@ -22,6 +22,7 @@ class Idempotency
             throw new RuntimeException('An idempotency key (1-120 characters) is required.');
         }
 
+        // 3 attempts: if the database picks this transaction as the deadlock victim it has rolled back completely (including the key row), so it is safe to run again
         return DB::transaction(function () use ($scope, $key, $operation) {
             try {
                 DB::table('idempotency_keys')->insert(['scope' => $scope, 'key' => $key, 'created_at' => now(), 'updated_at' => now()]);
@@ -41,6 +42,6 @@ class Idempotency
             $result['replayed'] = false;
 
             return $result;
-        });
+        }, 3);
     }
 }
