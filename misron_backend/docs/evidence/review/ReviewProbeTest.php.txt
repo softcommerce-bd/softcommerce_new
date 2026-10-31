@@ -1,0 +1,43 @@
+<?php
+
+namespace Tests\Concurrency;
+
+use Illuminate\Support\Facades\DB;
+
+/** REVIEW PROBE (not part of the repository): does a double-submitted reversal apply twice now that balance/supplier writes are deltas under locks? */
+class ReviewProbeTest extends HttpWorkflowCase
+{
+    private function deliveredOrder(int $product): int
+    {
+        $this->systemAccounts();
+        $purchaseId = (int) DB::table('purchase_products')->where('product_id', $product)->value('purchase_id');
+        $u = DB::table('users')->insertGetId(['name' => 'c', 'email' => uniqid() . '@c.test', 'password' => 'x', 'user_type' => 'customer', 'created_at' => now(), 'updated_at' => now()]);
+        $o = new \App\Models\Order();
+        $o->forceFill(['user_id' => $u, 'seller_id' => 1, 'code' => \App\Models\Order::generateUniqueCode(), 'delivery_status' => 'picked_up', 'payment_status' => 'unpaid', 'payment_type' => 'cash_on_delivery', 'shipping_address' => '{}', 'grand_total' => 5000, 'due_amount' => 5000,
+            'courier_status' => 'delivered', 'courier_name' => 'steadfast', 'date' => time(), 'order_from' => 'app'])->save();
+        (new \App\Models\OrderDetail())->forceFill(['order_id' => $o->id, 'seller_id' => 1, 'product_id' => $product, 'variation' => 'M', 'quantity' => 5, 'price' => 5000, 'selling_price' => 1000, 'tax' => 0, 'shipping_cost' => 0, 'buying_price' => 100, 'profit' => 0,
+            'delivery_status' => 'picked_up', 'purchase_id' => $purchaseId, 'stock_mode' => 'legacy'])->save();
+
+        return $o->id;
+    }
+
+    public function test_probe_double_unsettle()
+    {
+        $this->flag(true);
+        $p = $this->seedProduct(['M' => 5], 1000, 100);
+        $order = $this->deliveredOrder($p);
+        $cash = $this->cashAccount(0);
+        $admin = $this->admin();
+        $r = $this->runOne($this->req($admin, '/courier-settlement/settle', ['order_id' => $order, 'courier_fee' => 60, 'account_id' => $cash, 'courier_name' => 'steadfast', 'settlement_fee' => 0, 'due_amount' => 5000, 'settlement_charge' => 0]));
+        $this->assertTrue($r['body']['success'] ?? false, json_encode($r));
+        $settlement = (int) DB::table('courier_settlements')->where('order_id', $order)->value('id');
+        $this->assertEquals(4940.0, $this->bal($cash));
+        $cogs = (int) (\App\Models\ChartOfAccount::where('type', 'expense')->where('name', 'Cost of Goods Sold')->first())->id;
+        $cogsBefore = $this->bal($cogs);
+
+        $res = $this->race(array_map(fn () => $this->req($this->admin(), '/courier-settlement/unsettle', ['settlement_id' => $settlement]), range(1, 3)), 120);
+
+        fwrite(STDERR, "\nPROBE unsettle x3: cash after = " . $this->bal($cash) . " (a single reversal gives 0.00); COGS delta = " . ($this->bal($cogs) - $cogsBefore) . " (single reversal -500); responses: " . json_encode(array_map(fn ($x) => $x['body']['success'] ?? $x['body'] ?? $x['error'] ?? null, $res)) . "\n");
+        $this->assertTrue(true);
+    }
+}

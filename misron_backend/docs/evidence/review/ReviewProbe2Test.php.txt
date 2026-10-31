@@ -1,0 +1,54 @@
+<?php
+
+namespace Tests\Concurrency;
+
+use Illuminate\Support\Facades\DB;
+
+/** REVIEW PROBE (not part of the repository): double-submitted deletes of a purchase and of a supplier payment. */
+class ReviewProbe2Test extends HttpWorkflowCase
+{
+    private function setup2(): array
+    {
+        $this->flag(true);
+        $s = (int) DB::table('suppliers')->insertGetId(['slug' => 'pr-' . uniqid(), 'business_name' => 'PR', 'contact_person_name' => 'C', 'mobile' => '017' . random_int(10000000, 99999999), 'opening_balance' => '0', 'due_amount' => 0, 'paid_amount' => 0, 'created_at' => now(), 'updated_at' => now()]);
+        $p = $this->seedProduct(['M' => 0], 1000, 100);
+        DB::table('purchase_products')->where('product_id', $p)->delete();
+        $cash = $this->cashAccount(1000);
+        $admin = $this->admin();
+        $r = $this->runOne($this->req($admin, '/purchase/store', ['op_key' => 'pr-' . uniqid(), 'supplier_id' => $s, 'purchase_date' => now()->toDateString(), 'product_id' => [$p], 'name' => ['x'], 'variant' => ['M'],
+            'purchase_quantity' => [5], 'buying_unit_cost' => [20], 'total_cost' => [100], 'pay_by' => 'cash', 'payment_account_id' => $cash, 'paid_amount' => 40]));
+        $this->assertTrue($r['body']['success'] ?? false, json_encode($r));
+
+        return [$s, (int) DB::table('purchases')->where('supplier_id', $s)->value('id'), $cash, $p];
+    }
+
+    public function test_probe_single_purchase_delete_baseline()
+    {
+        [$s, $purchase, $cash, $p] = $this->setup2();
+        $res = $this->runOne($this->req($this->admin(), '/purchase/delete/' . $purchase, [], 'DELETE'));
+        fwrite(STDERR, "\nPROBE2 SINGLE purchase delete: supplier due " . DB::table('suppliers')->where('id', $s)->value('due_amount') . ", cash " . $this->bal($cash) . ", purchases left " . DB::table('purchases')->where('id', $purchase)->count() . ", status " . ($res['status'] ?? '?') . "\n");
+        $this->assertTrue(true);
+    }
+
+    public function test_probe_double_purchase_delete()
+    {
+        [$s, $purchase, $cash, $p] = $this->setup2();
+        $due0 = (float) DB::table('suppliers')->where('id', $s)->value('due_amount');
+        $res = $this->race(array_map(fn () => $this->req($this->admin(), '/purchase/delete/' . $purchase, [], 'DELETE'), range(1, 3)), 120);
+        fwrite(STDERR, "\nPROBE2 purchase delete x3: supplier due " . $due0 . " -> " . DB::table('suppliers')->where('id', $s)->value('due_amount') . " (single: see SINGLE line); cash " . $this->bal($cash) . " (single delete 1000); stock " . DB::table('product_stocks')->where('product_id', $p)->sum('qty') . "; purchases left " . DB::table('purchases')->where('id', $purchase)->count() . "; statuses " . json_encode(array_column($res, 'status')) . "\n");
+        $this->assertTrue(true);
+    }
+
+    public function test_probe_double_supplier_payment_delete()
+    {
+        [$s, $purchase, $cash] = $this->setup2();
+        $admin = $this->admin();
+        $r = $this->runOne($this->req($admin, '/admin/accounts/supplier-payments/store', ['supplier_id' => $s, 'payment_date' => now()->toDateString(), 'amount' => 30, 'payment_method' => 'CASH', 'account_head_id' => $cash, 'allocations' => json_encode([['purchase_id' => $purchase, 'paid_amount' => 30]])]));
+        $this->assertTrue($r['body']['success'] ?? false, json_encode($r));
+        $pay = (int) DB::table('supplier_payments')->where('supplier_id', $s)->value('id');
+        $before = ['due' => (float) DB::table('suppliers')->where('id', $s)->value('due_amount'), 'cash' => $this->bal($cash), 'purchase_due' => (float) DB::table('purchases')->where('id', $purchase)->value('total_payment_due')];
+        $res = $this->race(array_map(fn () => $this->req($this->admin(), '/admin/accounts/supplier-payments/delete/' . $pay, [], 'DELETE'), range(1, 3)), 120);
+        fwrite(STDERR, "\nPROBE2 payment delete x3: before " . json_encode($before) . " after due " . DB::table('suppliers')->where('id', $s)->value('due_amount') . ", cash " . $this->bal($cash) . ", purchase due " . DB::table('purchases')->where('id', $purchase)->value('total_payment_due') . " (a single delete: due +30, cash +30, purchase due +30); statuses " . json_encode(array_column($res, 'status')) . "\n");
+        $this->assertTrue(true);
+    }
+}
