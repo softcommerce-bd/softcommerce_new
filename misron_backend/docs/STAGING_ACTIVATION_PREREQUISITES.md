@@ -33,4 +33,4 @@
 
 ## Rules in force
 No automatic inventory or accounting correction. No staging flag. No deploy, merge or production change. Existing branch `claude/peaceful-planck-elqcki` only.
-| T-5 | Deadlock retry covers storefront API, POS and funnel only; admin create-order, chat orders, courier settlement and purchase screens are unprotected | operational | **OPEN activation condition.** Owner to accept or have those paths wrapped. See `docs/TECHNICAL_RISK_VERIFICATION_REPORT.md`. |
+| T-5 | Deadlock retry gaps (admin create-order, chat orders, courier settlement, purchase screens) | operational | **Implemented in the isolated test environment, NOT accepted.** Bounded 3-attempt retry added to admin create-order, chat orders, courier settlement and purchase/payment/adjustment screens; limitations (MariaDB only, injected deadlocks for admin/courier/purchase, excluded multi-commit and notifying paths) in `docs/T5_DEADLOCK_RETRY_VERIFICATION_REPORT.md`. Awaiting owner acceptance. |
