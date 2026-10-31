@@ -95,6 +95,7 @@ class BalanceTransferController extends Controller
 
         DB::beginTransaction();
         try {
+            $this->lockAccountsAscending($request->from_account_id, $request->to_account_id); // both accounts, ascending id, before anything else
             // the same rule again, now under the source account's row lock: a concurrent withdrawal/transfer that committed first is seen
             if (in_array($request->transaction_type, ['withdraw', 'transfer', 'cashout'])) {
                 $fromAccount = ChartOfAccount::lockForUpdate()->findOrFail($request->from_account_id);
@@ -270,8 +271,19 @@ class BalanceTransferController extends Controller
     //     $toAccount->save();
     // }
 
+    /** Locks the accounts of a transfer in ascending id order whatever the direction, so A->B and B->A can never wait for each other (T-5 lock order). */
+    private function lockAccountsAscending(...$ids): void
+    {
+        $ids = array_values(array_unique(array_filter(array_map('intval', $ids))));
+        sort($ids);
+        if ($ids !== []) {
+            ChartOfAccount::whereIn('id', $ids)->orderBy('id')->lockForUpdate()->get(['id']);
+        }
+    }
+
     private function updateAccountBalances(BalanceTransfer $transaction)
 {
+    $this->lockAccountsAscending($transaction->from_account_id, $transaction->to_account_id);
     $fromAccount = ChartOfAccount::where('id', $transaction->from_account_id)
         ->lockForUpdate()
         ->first();
@@ -323,6 +335,7 @@ class BalanceTransferController extends Controller
 
     private function revertAccountBalances(BalanceTransfer $transaction)
     {
+    $this->lockAccountsAscending($transaction->from_account_id, $transaction->to_account_id);
         $fromAccount = ChartOfAccount::find($transaction->from_account_id);
         $toAccount = ChartOfAccount::find($transaction->to_account_id);
         

@@ -63,7 +63,7 @@ class CustomerPayment extends Model
     
     public static function generatePaymentNo()
     {
-        $lastPayment = self::orderBy('id', 'desc')->first();
+        $lastPayment = self::withTrashed()->orderBy('id', 'desc')->lockForUpdate()->first(); // trashed rows keep their unique number
         if ($lastPayment) {
             $lastNumber = intval(substr($lastPayment->payment_no, 3));
             $newNumber = $lastNumber + 1;

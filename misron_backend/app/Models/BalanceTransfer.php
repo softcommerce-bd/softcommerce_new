@@ -62,6 +62,7 @@ class BalanceTransfer extends Model
         $last = self::withTrashed()
                     ->where('voucher_no', 'like', $prefix . '-' . $date . '%')
                     ->orderBy('id', 'desc')
+                    ->lockForUpdate() // inside the creating transaction: a concurrent creation waits for this one and then reads the next free number
                     ->first();
 
         if ($last) {

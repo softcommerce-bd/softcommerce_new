@@ -123,5 +123,10 @@ class RetryDeadlockedCheckout
         $session = $request->session();
         $session->forget($keys);
         $session->put('_flash.new', array_values(array_diff((array) $session->get('_flash.new', []), $keys)));
+        // laracasts/flash keeps the messages of the whole request in memory and re-flashes ALL of them with every new message; without this the
+        // retried attempt's success message would carry the failed attempt's "Deadlock found" error and be taken for another deadlock.
+        if (in_array('flash_notification', $keys, true) && app()->bound('flash')) {
+            app('flash')->clear();
+        }
     }
 }

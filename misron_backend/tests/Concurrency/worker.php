@@ -237,6 +237,9 @@ try {
             $result['headers'] = array_filter(['X-Deadlock-Retries' => $response->headers->get('X-Deadlock-Retries')]);
             $result['status'] = $response->getStatusCode();
             $result['body'] = json_decode($response->getContent(), true) ?? substr((string) $response->getContent(), 0, 300);
+            if ($request->hasSession()) { // flash+redirect screens report their failure through the session
+                $result['flash_error'] = substr((string) json_encode($request->session()->get('error')), 0, 300);
+            }
             $result['ok'] = true;
             break;
 

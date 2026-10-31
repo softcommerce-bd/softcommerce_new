@@ -432,6 +432,7 @@ class VoucherController extends Controller
         $lastVoucher = Voucher::withTrashed()
             ->where('voucher_no', 'like', $prefix . '-' . $year . $month . '%')
             ->orderBy('id', 'desc')
+            ->lockForUpdate() // inside the creating transaction: a concurrent creation waits for this one and then reads the next free number
             ->first();
 
         if ($lastVoucher) {
