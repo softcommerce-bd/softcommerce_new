@@ -186,9 +186,9 @@ Route::group(['prefix' => 'v2', 'middleware' => ['app_language']], function () {
         Route::post('payments/pay/wallet', [WalletController::class, 'processPayment'])->middleware('auth:sanctum');
         Route::post('payments/pay/cod', [PaymentController::class, 'cashOnDelivery'])->middleware('auth:sanctum');
         Route::post('payments/pay/manual', [PaymentController::class, 'manualPayment'])->middleware('auth:sanctum');
-        Route::post('order/store', [OrderController::class, 'store'])->middleware('auth:sanctum');
+        Route::post('order/store', [OrderController::class, 'store'])->middleware(['auth:sanctum', 'retry.deadlock']);
         // Guest order route (no authentication required)
-        Route::post('guest/order/store', [OrderController::class, 'store']);
+        Route::post('guest/order/store', [OrderController::class, 'store'])->middleware('retry.deadlock');
         Route::get('order/guest-details/{id}', [OrderController::class, 'getOrderDetails']);
         Route::get('order/details/{id}', [OrderController::class, 'getOrderDetails'])->middleware('auth:sanctum');
 
@@ -682,7 +682,7 @@ Route::prefix('v2/funnels')->group(function () {
 
     // Ordering from a published funnel. Refused with a clear reason until FUNNEL_CHECKOUT_ENABLED is on.
     Route::get('{slug}/checkout/config', [FunnelCheckoutController::class, 'config'])->middleware('throttle:funnel-config');
-    Route::post('{slug}/checkout', [FunnelCheckoutController::class, 'place'])->middleware('throttle:funnel-checkout');
+    Route::post('{slug}/checkout', [FunnelCheckoutController::class, 'place'])->middleware(['throttle:funnel-checkout', 'retry.deadlock']);
     Route::get('{slug}/orders/{receipt}', [FunnelCheckoutController::class, 'order'])->middleware('throttle:funnel-order');
     Route::post('{slug}/orders/{receipt}/pay', [FunnelCheckoutController::class, 'pay'])->middleware('throttle:funnel-pay');
 });
