@@ -25,7 +25,7 @@ class WorkflowParallelCoverageTest extends HttpWorkflowCase
         $inc = $this->account('income', 'income', 0);
         $res = $this->race(array_map(fn ($i) => $this->req($this->admin(), route('accounts.incomes.store', [], false), ['date' => now()->toDateString(), 'received_account_id' => $cash, 'income_account_ids' => [$inc], 'amounts' => [10 * $i]]), [1, 2, 3, 4]), 120);
 
-        $this->assertSame(4, DB::table('incomes')->where('received_account_id', $cash)->count(), json_encode(array_column($res, 'status')));
+        $this->assertSame(4, DB::table('incomes')->where('received_account_id', $cash)->count(), json_encode(array_map(fn ($r) => [$r['status'] ?? null, $r['headers'] ?? null, $r['flash_error'] ?? null], $res)));
         $this->assertEquals(100.0, $this->bal($cash), 'no lost update: 10+20+30+40');
         $this->assertEquals(100.0, $this->bal($inc));
         $this->assertCount(4, DB::table('incomes')->where('received_account_id', $cash)->pluck('voucher_no')->unique(), 'distinct INC- numbers');

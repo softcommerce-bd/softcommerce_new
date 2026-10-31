@@ -66,7 +66,7 @@ class RetryDeadlockedCheckout
                 return $response;
             }
             $this->forgetFlash($request, $flashed); // the failed attempt's "error: Deadlock found" message must not survive into the retried answer
-            DeadlockRetry::pause();
+            DeadlockRetry::pause($attempt);
         }
     }
 

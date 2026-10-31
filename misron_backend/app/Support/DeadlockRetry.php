@@ -44,9 +44,10 @@ final class DeadlockRetry
         return $attempt < self::MAX && $entryLevel === self::$baseLevel && DB::transactionLevel() <= $entryLevel && self::isDeadlock($e);
     }
 
-    public static function pause(): void
+    /** @param int $attempt the attempt that just failed (1, 2): the wait grows so that several victims of the same collision stop colliding again */
+    public static function pause(int $attempt = 1): void
     {
-        usleep(random_int(40, 160) * 1000); // desynchronise the two victims
+        usleep(random_int(40, 160) * max(1, $attempt) * 1000); // desynchronise the victims
     }
 
     /**
@@ -66,7 +67,7 @@ final class DeadlockRetry
                 if (!self::canRetry($attempt, $entry, $e)) {
                     throw $e;
                 }
-                self::pause();
+                self::pause($attempt);
             }
         }
     }

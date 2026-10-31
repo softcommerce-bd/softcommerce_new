@@ -27,3 +27,7 @@ Y = a passing test exists in that category; N = none; PART = only part of the wo
 | 21 | File effects | Y | Y | N | N | n/a | `DeadlockFileEffectsTest`; parallel uploads N |
 
 **Reading:** workflows with Y in all five categories for every operation: none. Closest: 1, 3, 13, 19.
+
+## UPDATE 3
+- POS: added `PosCartIsolationTest` (own cart rows only; website cart untouched) — P-1 approved.
+- Bank actions: `BankActionsStayDisabledTest` enforces disabled state pending B-1.

@@ -109,3 +109,15 @@ Branch `claude/peaceful-planck-elqcki`; this phase's commits: `fdce744`, `dbf106
 1. Provide the production database `SELECT VERSION()…` output and the section-0 listing of `docs/T5_PHASE0_AUDIT_QUERIES.sql` (or an authorised restore of a backup).
 2. Answer decisions 1–5, 8–10 and the bank-transaction number format (these unlock the remaining implementation).
 3. Say whether a MySQL 8.4 server can be provided for `tests/staging/mysql84-rehearsal.sh`.
+
+---
+
+## UPDATE 3 — owner rulings applied (T-5 and staging acceptance remain OPEN)
+
+**Rulings recorded:** P-1 (POS deletes only its own cart rows) APPROVED; supplier-payment edit treatment (reverse old effects, apply new once) APPROVED; AD-1 NOT approved (comparison in `T5_AD1_AUTO_DEPOSIT_OPTIONS.md`, recommendation inside); B-1 PENDING (four bank actions stay disabled); N-1 PENDING ACCOUNTANT REVIEW (no historical balance touched).
+
+**Added since UPDATE 2:** `PosCartIsolationTest` (2 tests, fails against the old PosUtility), `BankActionsStayDisabledTest` (1 test: four bank actions + cash-out refuse, nothing posted, `generateTransactionNo` still undefined), decision-status table in the register, AD-1 options document, attempt-scaled retry backoff (`DeadlockRetry::pause`) mitigating the flaky first-of-period income-number deadlock (residual risk remains until the number-sequence decisions 6/7).
+
+**Regression:** PHPUnit 626 tests / 3956 assertions, only the 3 known unrelated failures (UploadSafetyTest svg, ExampleTest, FunnelEditorMedia…); concurrency suite 91 tests OK. Evidence: `docs/evidence/final4/`.
+
+**Not done / still open:** MySQL 8.4 never run; production/staging facts BLOCKED; no deploy, merge, flag activation, or staging/production write; B-1, AD-1, N-1 and register decisions 1–15 awaiting approval.

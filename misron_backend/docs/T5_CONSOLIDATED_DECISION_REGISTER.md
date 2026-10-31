@@ -1,5 +1,17 @@
 # T-5 consolidated decision register
 
+## Decision status (latest ruling)
+| Item | Ruling |
+|---|---|
+| P-1 POS cart isolation | **APPROVED**: a POS sale deletes only its own cart rows; a registered customer's separate website cart stays untouched (test: `PosCartIsolationTest`) |
+| Supplier payment edit treatment | **APPROVED** as intended application behaviour: reverse the old payment's effects, apply the new payment exactly once; journal and allocation integrity preserved; **no historical correction authorized** |
+| AD-1 auto-deposit schema | **NOT YET APPROVED**: option comparison and recommendation in `T5_AD1_AUTO_DEPOSIT_OPTIONS.md` (recommendation: keep disabled now = option c; if nightly deposits are wanted, option a with a non-login system user; b not recommended) |
+| B-1 bank numbering | **PENDING**: all four bank actions stay disabled; `BankActionsStayDisabledTest` enforces that nothing posts |
+| N-1 historical supplier drift | **PENDING ACCOUNTANT REVIEW**: no historical supplier balance is modified |
+T-5 and staging acceptance remain open.
+
+---
+
 **No decision here has been taken or implemented.** Until each is approved in writing, today's behaviour stays exactly as it is. "Existing" = verified in code/tests (evidence in `T5_PHASE0_AUDIT_REPORT.md`, `T5_FINAL_VERIFICATION_REPORT.md`). Approvers: **Accounting**, **Order desk**, **Purchasing**, **Tech lead**, **Management**. Every item is **REQUIRES BUSINESS APPROVAL**.
 
 | ID | Subject | Blocks | Approver |
