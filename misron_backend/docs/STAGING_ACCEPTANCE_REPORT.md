@@ -52,3 +52,18 @@ Real theme missing; dump may not be production; MariaDB not MySQL 8.4; interacti
 
 ## 8. Recommendation
 **Production: NO-GO.** Required before any GO: (1) real production backup rehearsed on MySQL 8.4; (2) real admin theme deployed and the 7 sweep failures re-checked; (3) an actual accountant completes the sign-off table in the review pack and rules on D-01..D-09; (4) only then enable `INVENTORY_CONFIRMED_ONLY=true` on staging and run the lifecycle/cross-channel matrix, security checks and the storefront backorder browser tests on staging data; (5) re-run the full suite; (6) explicit approval to deploy.
+
+## Addendum after review (production remains NO-GO)
+Status of the review priorities:
+| # | Priority | Status |
+|---|---|---|
+| 1 | No historical correction | Kept. Nothing corrected; staging fingerprint unchanged apart from the 5 empty system accounts. |
+| 2 | Prepare for a fresh production backup; confirm engine/version | **Prepared, NOT complete.** `docs/PRODUCTION_BACKUP_REHEARSAL_RUNBOOK.md`, `sqlupdates/inventory_v2_environment_check.sql`, `tests/staging/prepare-staging.sh` (refuses existing/production-looking/remote targets). The production engine/version is **still unconfirmed**: needs the environment-check output from you. |
+| 3 | Real admin theme | **BLOCKED.** Stand-in results are not UI acceptance. |
+| 4 | Improve accountant pack | Done: `docs/accountant-review-pack/08_source_and_impact_D01_D09.md` + evidence files 08-12 (each claim labelled PROVEN / INFERRED / UNKNOWN). **Still NOT reviewed by an accountant.** |
+| 5 | P&L / Balance Sheet problems without concealment | Done in the reports (display only): the Balance Sheet no longer calls the balancing figure Retained Earnings (named UNRECONCILED DIFFERENCE with a banner), the Trial Balance shows an out-of-balance banner, the P&L lists income/expense balances its statement rows do not explain. No entry, no correction. |
+| 6 | Flag false everywhere | Kept. Default `false`; set `true` only inside isolated test processes. Never on staging. |
+| 7 | Enable on staging + cross-channel matrix on real data | **BLOCKED** (needs 2, 3 and accountant sign-off). |
+| 8 | Final acceptance report | **BLOCKED**; this document is the interim report. |
+
+Test-environment note: the full suite showed 9 extra errors once because the shared test DB's `payment_methods.id` ran out of values (tiny id column, each funnel test deletes and re-inserts a row). Resetting the auto-increment fixed it (7 + 1 tests pass again). Not an application defect; the reset is now in `tests/ui/reset-test-db.sql`. Pre-existing failures unchanged: ExampleTest, funnel attribution test, UploadSafetyTest.

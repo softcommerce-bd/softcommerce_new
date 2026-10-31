@@ -8,3 +8,4 @@ DELETE FROM chart_of_accounts WHERE code LIKE 'E2E-%' OR code LIKE 'T-%' OR code
 UPDATE chart_of_accounts SET current_balance=0 WHERE code LIKE 'SYS-%' OR code IN ('1-15001') OR name IN ('Sales','Cost of Goods Sold','Accounts Receivable');
 UPDATE product_stocks SET qty = 0; UPDATE products SET current_stock = 0;
 SET FOREIGN_KEY_CHECKS=1;
+ALTER TABLE payment_methods AUTO_INCREMENT=1; -- the funnel tests delete+insert a row per test; the id column is tiny and runs out
