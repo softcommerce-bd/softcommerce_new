@@ -170,6 +170,7 @@ class VoucherController extends Controller
                 ]);
 
                 if ($validator->fails()) {
+                    DB::rollBack(); // refusal: leave the transaction (and release its locks) before answering
                     return redirect()->back()->withErrors($validator)->withInput();
                 }
 
@@ -177,10 +178,12 @@ class VoucherController extends Controller
                 $totalCredit = array_sum($request->credits);
 
                 if ($totalDebit != $totalCredit) {
+                    DB::rollBack(); // refusal: leave the transaction (and release its locks) before answering
                     return redirect()->back()->with('error', 'Total debit must equal total credit')->withInput();
                 }
 
                 if ($totalDebit == 0) {
+                    DB::rollBack(); // refusal: leave the transaction (and release its locks) before answering
                     return redirect()->back()->with('error', 'Amount cannot be zero')->withInput();
                 }
 
@@ -204,12 +207,14 @@ class VoucherController extends Controller
                 ]);
 
                 if ($validator->fails()) {
+                    DB::rollBack(); // refusal: leave the transaction (and release its locks) before answering
                     return redirect()->back()->withErrors($validator)->withInput();
                 }
 
                 $totalAmount = array_sum($request->amounts);
 
                 if ($totalAmount == 0) {
+                    DB::rollBack(); // refusal: leave the transaction (and release its locks) before answering
                     return redirect()->back()->with('error', 'Amount cannot be zero')->withInput();
                 }
 
@@ -498,6 +503,7 @@ class VoucherController extends Controller
                 ]);
 
                 if ($validator->fails()) {
+                    DB::rollBack(); // refusal: leave the transaction (and release its locks) before answering
                     return redirect()->back()->withErrors($validator)->withInput();
                 }
 
@@ -505,10 +511,12 @@ class VoucherController extends Controller
                 $totalCredit = array_sum($request->credits);
 
                 if ($totalDebit != $totalCredit) {
+                    DB::rollBack(); // refusal: leave the transaction (and release its locks) before answering
                     return redirect()->back()->with('error', 'Total debit must equal total credit')->withInput();
                 }
 
                 if ($totalDebit == 0) {
+                    DB::rollBack(); // refusal: leave the transaction (and release its locks) before answering
                     return redirect()->back()->with('error', 'Amount cannot be zero')->withInput();
                 }
 
@@ -532,12 +540,14 @@ class VoucherController extends Controller
                 ]);
 
                 if ($validator->fails()) {
+                    DB::rollBack(); // refusal: leave the transaction (and release its locks) before answering
                     return redirect()->back()->withErrors($validator)->withInput();
                 }
 
                 $totalAmount = array_sum($request->amounts);
 
                 if ($totalAmount == 0) {
+                    DB::rollBack(); // refusal: leave the transaction (and release its locks) before answering
                     return redirect()->back()->with('error', 'Amount cannot be zero')->withInput();
                 }
 

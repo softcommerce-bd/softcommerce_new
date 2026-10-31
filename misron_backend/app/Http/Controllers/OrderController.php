@@ -167,6 +167,7 @@ class OrderController extends Controller
                 ->get();
 
             if ($orders->isEmpty()) {
+                DB::rollBack(); // refusal: leave the transaction (and release its locks) before answering
                 return response()->json([
                     'success' => false,
                     'message' => 'No orders found that need payment update'

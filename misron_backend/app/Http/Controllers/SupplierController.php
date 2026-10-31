@@ -49,6 +49,7 @@ class SupplierController extends Controller
 
             // Validate payment amount doesn't exceed total due
             if ($paymentAmount > $totalDue) {
+                DB::rollBack(); // refusal: leave the transaction (and release its locks) before answering
                 return response()->json([
                     'success' => false,
                     'message' => 'Payment amount exceeds total due amount.'

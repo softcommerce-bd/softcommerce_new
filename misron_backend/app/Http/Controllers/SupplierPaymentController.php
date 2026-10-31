@@ -258,6 +258,7 @@ public function store(Request $request)
 
         // Validate total allocation matches payment amount
         if (abs($totalAllocated - $amount) > 0.01) {
+            DB::rollBack(); // refusal: leave the transaction (and release its locks) before answering
             return response()->json([
                 'success' => false,
                 'message' => 'Allocated amounts do not match total payment amount.'

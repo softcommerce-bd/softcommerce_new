@@ -33,12 +33,16 @@ class RetryDeadlockedCheckout
                 $response = $next($request);
             } catch (\Throwable $e) {
                 if (!DeadlockRetry::isDeadlock($e)) {
+                    $this->finish($request, $e); // an ordinary failure also must not leave an uploaded file behind
                     throw $e;
                 }
                 $exception = $e;
             }
             $flashed = [];
             if ($exception === null && !$this->answerSaysDeadlock($response, $request, $flashed)) {
+                if (method_exists($response, 'getStatusCode') && $response->getStatusCode() >= 400) {
+                    $this->finish($request, null); // the screens answer a rolled-back failure with 4xx/5xx: remove what this request uploaded
+                }
                 return $attempt > 1 && method_exists($response, 'header') ? $response->header('X-Deadlock-Retries', (string) ($attempt - 1)) : $response;
             }
             // a deadlock happened. Is it safe to run again?
