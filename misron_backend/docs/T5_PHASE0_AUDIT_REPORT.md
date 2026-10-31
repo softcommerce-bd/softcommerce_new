@@ -187,3 +187,9 @@ Classification applies to the design as written in `T5_REMEDIATION_PLAN.md`, giv
 
 ## 9. Blocked items
 Production engine/version/engines/indexes (exact query in the schema report §2); fresh production backup and an authorised isolated restore for the data audit; production scheduler/cron and storage driver; production log evidence for the missing `accounts:import-customer-payments` command; the checkout payment-view template (not located – needs confirmation from the front-end owner); real admin theme; accountant review. Staging activation: NOT authorised, not performed.
+
+---
+## Appendix – corrections made during the implementation phase (verified)
+* **P0-8:** the API order path is NOT unprotected. `Api\V2\OrderController::store` takes a per-user named lock (`checkoutLockName`/`acquireCheckoutLock`) and `tests/Concurrency/StockConcurrencyTest` (executed) shows five simultaneous guest orders produce one order. Only the web checkout controller path was unprotected; it now has the submission identity in `OrderController::store`.
+* **P0-1, P0-2, P0-3:** IMPLEMENTED and TESTED, see `T5_MASTER_EXECUTION_REPORT.md` §4.
+* **New finding:** `BankTransaction::generateTransactionNo()` (called in `BankTransactionController` lines 61, 126, 192, 250) is defined nowhere in the repository or its history; the four bank actions cannot succeed. BLOCKED on a number-format decision.
