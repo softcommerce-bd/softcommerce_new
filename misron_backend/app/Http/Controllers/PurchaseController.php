@@ -144,7 +144,7 @@ class PurchaseController extends Controller
     {
         $purchase = Purchase::find($id);
         if ($purchase) {
-            $supplier = Supplier::where('id', $purchase->supplier_id)->first();
+            $supplier = Supplier::lockForUpdate()->where('id', $purchase->supplier_id)->first();
         }
         $suppliers = Supplier::all();
 
@@ -203,7 +203,7 @@ class PurchaseController extends Controller
             $this->refuseLedgerPurchase((int) $purchase->id);
 
             // Fetch the supplier record
-            $supplier = Supplier::findOrFail($request->supplier_id);
+            $supplier = Supplier::lockForUpdate()->findOrFail($request->supplier_id);
 
             // Initialize variables
             $totalPaid = 0;
@@ -331,7 +331,7 @@ class PurchaseController extends Controller
             }
 
             // Supplier & opening balance offset
-            $supplier = Supplier::find($request->supplier_id);
+            $supplier = Supplier::lockForUpdate()->find($request->supplier_id);
             $openingBalance = $supplier->opening_balance ?? 0;
             $openingUsed = min($openingBalance, $dueBeforeOpening);
             $finalDue = $dueBeforeOpening - $openingUsed;
@@ -425,7 +425,7 @@ class PurchaseController extends Controller
 
             // 3. Payment account (credit)
             if ($paidAmount > 0) {
-                $paymentAccount = ChartOfAccount::find($request->payment_account_id);
+                $paymentAccount = ChartOfAccount::lockForUpdate()->find($request->payment_account_id);
                 if (!$paymentAccount) throw new \Exception('Payment account not found');
                 if ($paymentAccount->current_balance < $paidAmount) {
                     throw new \Exception('Insufficient balance in selected account');
@@ -544,14 +544,14 @@ class PurchaseController extends Controller
             }
 
             // Supplier and opening balance offset
-            $supplier = Supplier::find($request->supplier_id);
+            $supplier = Supplier::lockForUpdate()->find($request->supplier_id);
             $openingBalance = $supplier->opening_balance ?? 0;
             $openingUsed = min($openingBalance, $dueBeforeOpening);
             $finalDue = $dueBeforeOpening - $openingUsed;
 
             // --- Revert old supplier balances ---
             if ($oldSupplierId != $request->supplier_id) {
-                $oldSupplier = Supplier::find($oldSupplierId);
+                $oldSupplier = Supplier::lockForUpdate()->find($oldSupplierId);
                 if ($oldSupplier) {
                     $oldSupplier->due_amount -= $oldDue;
                     $oldSupplier->opening_balance += $oldOpeningUsed;
@@ -703,7 +703,7 @@ class PurchaseController extends Controller
                 }
             }
             if ($paidAmount > 0 && $request->payment_account_id) {
-                $paymentAccount = ChartOfAccount::find($request->payment_account_id);
+                $paymentAccount = ChartOfAccount::lockForUpdate()->find($request->payment_account_id);
                 if (!$paymentAccount) {
                     throw new \Exception('Selected payment account not found');
                 }
@@ -1357,7 +1357,7 @@ public function searchProducts(Request $request)
             $purchaseId = $request->purchase_id[0];
             $purchase = Purchase::findOrFail($purchaseId);
             $this->refuseLedgerPurchase((int) $purchaseId);
-            $supplier = Supplier::findOrFail($request->supplier_id);
+            $supplier = Supplier::lockForUpdate()->findOrFail($request->supplier_id);
 
             $purchaseReturn = PurchaseReturn::create([
                 'purchase_id' => $purchaseId,
@@ -1855,7 +1855,7 @@ public function searchProducts(Request $request)
             }
 
             // Supplier balance revert
-            $supplier = Supplier::find($purchaseReturn->supplier_id);
+            $supplier = Supplier::lockForUpdate()->find($purchaseReturn->supplier_id);
             if ($supplier) {
                 $supplier->due_amount += $previousTotal;
                 $supplier->save();
@@ -2006,7 +2006,7 @@ public function searchProducts(Request $request)
         try {
             $purchase = Purchase::findOrFail($id);
             $this->refuseLedgerPurchase((int) $purchase->id);
-            $supplier = Supplier::find($purchase->supplier_id);
+            $supplier = Supplier::lockForUpdate()->find($purchase->supplier_id);
 
             // Revert advance amount
             if ($purchase->total_advance_amount > 0 && $supplier) {

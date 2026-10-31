@@ -41,7 +41,7 @@ class SupplierController extends Controller
         try {
             DB::beginTransaction();
 
-            $supplier = Supplier::findOrFail($request->supplier_id);
+            $supplier = Supplier::lockForUpdate()->findOrFail($request->supplier_id);
             $paymentAmount = $request->payment_amount;
 
             // Get total due from all purchases
