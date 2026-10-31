@@ -107,4 +107,17 @@ class FinancialReportsLedgerTest extends InventoryV2TestCase
         $this->assertStringContainsString('not final', $html);
         $this->assertSame(0.0, (float) DB::table('chart_of_accounts')->where('id', \App\Services\Accounting\SystemAccounts::id('inventory'))->value('current_balance') + 0.0 - 0.0, 'no accounting entry came from an estimate');
     }
+
+    public function test_an_out_of_balance_ledger_is_shown_as_unreconciled_not_as_retained_earnings()
+    {
+        // the dump's pattern: an income balance with no statement rows and no counter-account (written directly, nothing journals it)
+        $inc = $this->acct('income', 'income', 'Orphan income');
+        DB::table('chart_of_accounts')->where('id', $inc->id)->update(['current_balance' => 52.20]);
+        $this->actingAs($this->makeAdmin());
+        $bs = $this->get(route('accounts.reports.balance-sheet', ['date_range' => 'today']))->assertOk();
+        $bs->assertSee('unreconciled-note', false)->assertSee('UNRECONCILED DIFFERENCE', false)->assertDontSee('Retained Earnings');
+        $this->get(route('accounts.reports.trial-balance', ['date_range' => 'today']))->assertOk()->assertSee('tb-out-of-balance', false);
+        $this->get(route('accounts.reports.profit-loss', ['date_range' => 'this_year']))->assertOk()->assertSee('pl-basis-gap', false)->assertSee('Orphan income', false);
+        $this->assertEquals(52.20, (float) DB::table('chart_of_accounts')->where('id', $inc->id)->value('current_balance'), 'reading the reports changes nothing');
+    }
 }

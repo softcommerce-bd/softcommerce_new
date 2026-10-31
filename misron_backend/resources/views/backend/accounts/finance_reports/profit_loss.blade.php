@@ -7,6 +7,13 @@
         </div>
         <div class="card-body">
     @include('backend.accounts.finance_reports._notice')
+    @if (!empty($plBasisGap))
+        <div class="alert alert-warning small py-2" role="alert" id="pl-basis-gap">
+            <strong>{{ translate('Some income / expense balances are not in this report.') }}</strong>
+            {{ translate('This report is built from statement rows. These accounts hold balances that no statement row explains, so their amounts are missing here:') }}
+            <ul class="mb-0">@foreach ($plBasisGap as $g)<li>{{ $g['name'] }} ({{ $g['type'] }}): {{ translate('balance') }} {{ number_format($g['balance'], 2) }}, {{ translate('explained by rows') }} {{ number_format($g['explained'], 2) }}, <strong>{{ translate('not in report') }} {{ number_format($g['gap'], 2) }}</strong></li>@endforeach</ul>
+        </div>
+    @endif
             <!-- Filter Form -->
             <form method="GET" action="{{ route('accounts.reports.profit-loss') }}" class="mb-4" id="reportForm">
                 <div class="form-row align-items-end">

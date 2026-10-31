@@ -7,6 +7,12 @@
     </div>
     <div class="card-body">
     @include('backend.accounts.finance_reports._notice')
+    @if (!empty($unreconciled))
+        <div class="alert alert-danger small py-2" role="alert" id="unreconciled-note">
+            <strong>{{ translate('The ledger is out of balance by') }} {{ number_format(abs($unreconciled), 2) }}.</strong>
+            {{ translate('Assets do not equal liabilities plus equity plus current-year earnings. The difference is shown on its own line below, not as retained earnings. It must be explained by an accountant; this report does not correct it.') }}
+        </div>
+    @endif
         <!-- Filter Form -->
         <form method="GET" action="{{ route('accounts.reports.balance-sheet') }}" class="mb-4" id="reportForm">
             <div class="form-row align-items-end">

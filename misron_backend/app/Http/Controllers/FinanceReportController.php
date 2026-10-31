@@ -140,7 +140,21 @@ class FinanceReportController extends Controller
 
         $netProfit = $grossProfit - $totalExpenses;
 
+        // Income / expense balances that no statement row explains are NOT in this report (it reads statement rows). Say so, per account.
+        $plBasisGap = [];
+        $plAccounts = ChartOfAccount::whereIn('type', ['income', 'expense'])->get(['id', 'name', 'type', 'current_balance']);
+        $plBalances = \App\Services\Accounting\LedgerBalances::balancesAsOf($plAccounts, $endDate->format('Y-m-d'));
+        $plExplained = \App\Services\Accounting\LedgerBalances::netDebitByAccount(null, $endDate->format('Y-m-d'), $plAccounts->pluck('id')->all());
+        foreach ($plAccounts as $a) {
+            $explained = $a->type === 'income' ? -($plExplained[$a->id] ?? 0.0) : ($plExplained[$a->id] ?? 0.0);
+            $gap = round(($plBalances[$a->id] ?? 0.0) - $explained, 2);
+            if (abs($gap) >= 0.01) {
+                $plBasisGap[] = ['name' => $a->name, 'type' => $a->type, 'balance' => round($plBalances[$a->id], 2), 'explained' => round($explained, 2), 'gap' => $gap];
+            }
+        }
+
         return compact(
+            'plBasisGap',
             'incomeData',
             'totalIncome',
             'cogsData',
@@ -719,13 +733,16 @@ class FinanceReportController extends Controller
             ];
             $totalEquity += $currentYearEarnings;
         }
-        if ($retainedEarnings != 0) {
+        // The plug is NOT a real retained-earnings balance: it is whatever is needed for assets to equal liabilities + equity.
+        // It is shown under its true name so an out-of-balance ledger is visible instead of being absorbed into equity.
+        $unreconciled = round($retainedEarnings, 2);
+        if ($unreconciled != 0) {
             $equityItems[] = [
-                'name' => 'Retained Earnings',
+                'name' => 'UNRECONCILED DIFFERENCE (ledger out of balance, not retained earnings)',
                 'code' => '',
-                'balance' => $retainedEarnings
+                'balance' => $unreconciled
             ];
-            $totalEquity += $retainedEarnings;
+            $totalEquity += $unreconciled;
         }
 
         if (count($equityItems) > 0) {
@@ -736,7 +753,7 @@ class FinanceReportController extends Controller
             ];
         }
 
-        return compact('assetGroups', 'totalAssets', 'liabilityGroups', 'totalLiabilities', 'totalEquity');
+        return compact('assetGroups', 'totalAssets', 'liabilityGroups', 'totalLiabilities', 'totalEquity', 'unreconciled');
     }
 
     /**
