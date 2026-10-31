@@ -173,6 +173,25 @@ class CourierSettlementController extends Controller
     }
 
 
+/** Ids of every account a settlement can touch, ascending (the selected one, receivable, inventory, COGS, sales, courier income and the expense accounts). */
+private function ledgerAccountIds(int $selected): array
+{
+    $ids = [$selected];
+    foreach (['getAccountsReceivable', 'getInventoryAccount', 'getSalesAccount', 'getCourierIncomeAccount', 'getBadDebtExpenseAccount', 'getCourierSettlementExpenseAccount', 'getCourierFeeExpenseAccount'] as $getter) {
+        if (method_exists(ChartOfAccount::class, $getter) && ($a = ChartOfAccount::$getter())) {
+            $ids[] = $a->id;
+        }
+    }
+    $cogs = ChartOfAccount::where('type', 'expense')->where('name', 'Cost of Goods Sold')->first() ?? ChartOfAccount::where('sub_type', 'cost_of_sales')->first();
+    if ($cogs) {
+        $ids[] = $cogs->id;
+    }
+    $ids = array_values(array_unique(array_map('intval', $ids)));
+    sort($ids);
+
+    return $ids;
+}
+
 public function settle(Request $request)
 {
     $request->validate([
@@ -188,10 +207,17 @@ public function settle(Request $request)
         'actual_courier_fee' => 'nullable|numeric|min:0'
     ]);
 
+    // Accounts this settlement may change, found BEFORE the transaction so they can be locked by primary key (in id order) as its first statements.
+    $ledgerIds = $this->ledgerAccountIds((int) $request->account_id);
+
     try {
         DB::beginTransaction();
 
-        $order = Order::findOrFail($request->order_id);
+        // Lock the order and the accounts first: two admins settling the same order, or two orders into one account, then queue instead of
+        // both reading the old state (a double settlement, or a balance written from a stale read). No plain read precedes these locks, so the
+        // reads that follow see what the previous holder committed.
+        $order = Order::whereKey($request->order_id)->lockForUpdate()->firstOrFail();
+        ChartOfAccount::whereIn('id', $ledgerIds)->orderBy('id')->lockForUpdate()->get(['id']);
         $account = ChartOfAccount::findOrFail($request->account_id);
 
         Log::info('=== SETTLEMENT ATTEMPT START ===', [
@@ -430,8 +456,7 @@ public function settle(Request $request)
         $collectedValue = $isCustomerPaidZeroShipping ? $totalAmount : $totalShippingCost;
 
         // Create settlement record
-        $settlement = CourierSettlement::create([
-            'settlement_no' => CourierSettlement::generateSettlementNo(),
+        $settlement = CourierSettlement::createNumbered([
             'order_id' => $order->id,
             'user_id' => Auth::id(),
             'courier_name' => $order->courier_name,
