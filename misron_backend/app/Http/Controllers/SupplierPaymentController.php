@@ -278,9 +278,19 @@ public function store(Request $request)
         // Handle file attachments
         $attachments = [];
         if ($request->hasFile('attachments')) {
-            foreach ($request->file('attachments') as $file) {
-                $attachments[] = $file->store('supplier-payments', 'public');
-            }
+            // once per request (a deadlock retry must not store them again); removed if the request finally fails
+            $attachments = \App\Support\RequestSideEffects::once($request, 'payment_attachments', function () use ($request) {
+                $stored = [];
+                foreach ($request->file('attachments') as $file) {
+                    $stored[] = $file->store('supplier-payments', 'public');
+                }
+
+                return $stored;
+            }, function ($paths) {
+                foreach ($paths as $path) {
+                    Storage::disk('public')->delete($path);
+                }
+            });
         }
 
         // Generate payment number
@@ -611,12 +621,25 @@ public function store(Request $request)
 
             if ($request->hasFile('attachments')) {
                 $oldAtts = json_decode($payment->attachments ?? '[]', true);
-                foreach ($oldAtts as $file) Storage::disk('public')->delete($file);
-                $newAtts = [];
-                foreach ($request->file('attachments') as $file) {
-                    $newAtts[] = $file->store('supplier-payments', 'public');
-                }
+                $newAtts = \App\Support\RequestSideEffects::once($request, 'payment_attachments', function () use ($request) {
+                    $stored = [];
+                    foreach ($request->file('attachments') as $file) {
+                        $stored[] = $file->store('supplier-payments', 'public');
+                    }
+
+                    return $stored;
+                }, function ($paths) {
+                    foreach ($paths as $path) {
+                        Storage::disk('public')->delete($path);
+                    }
+                });
                 $payment->attachments = json_encode($newAtts);
+                // old files are removed only after the update is committed
+                DB::afterCommit(function () use ($oldAtts) {
+                    foreach ((array) $oldAtts as $file) {
+                        Storage::disk('public')->delete($file);
+                    }
+                });
             }
 
             $newSupplierDue = $newSupplier->due_amount - $newAmount;
@@ -744,9 +767,12 @@ public function store(Request $request)
 
             // Delete attachments
             if ($payment->attachments) {
-                foreach (json_decode($payment->attachments, true) as $file) {
-                    Storage::disk('public')->delete($file);
-                }
+                $files = json_decode($payment->attachments, true) ?: [];
+                DB::afterCommit(function () use ($files) { // files go only once the deletion is committed
+                    foreach ($files as $file) {
+                        Storage::disk('public')->delete($file);
+                    }
+                });
             }
             $payment->delete();
             DB::commit();

@@ -42,6 +42,6 @@ class Idempotency
             $result['replayed'] = false;
 
             return $result;
-        }, 3);
+        }, \App\Support\DeadlockRetry::MAX);
     }
 }

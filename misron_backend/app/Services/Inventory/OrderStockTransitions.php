@@ -58,7 +58,7 @@ class OrderStockTransitions
                     $this->demand->confirm($line, $by);
                 }
             }
-        });
+        }, \App\Support\DeadlockRetry::MAX);
     }
 
     private function v2Lines(Order $order)

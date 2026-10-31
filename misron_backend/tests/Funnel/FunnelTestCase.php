@@ -30,6 +30,14 @@ abstract class FunnelTestCase extends TestCase
         }
 
         app(PermissionRegistrar::class)->forgetCachedPermissions();
+        // the suite's wrapping transaction is this test's outermost level: an operation starting here counts as outermost for the deadlock retry
+        \App\Support\DeadlockRetry::$baseLevel = DB::transactionLevel();
+    }
+
+    protected function tearDown(): void
+    {
+        \App\Support\DeadlockRetry::$baseLevel = 0;
+        parent::tearDown();
     }
 
     protected function makeUser(string $type = 'staff', array $permissions = []): User

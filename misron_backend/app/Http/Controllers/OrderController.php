@@ -1278,7 +1278,7 @@ class OrderController extends Controller
         $outOfStockProduct = null;
         $stockTake = null;
         try {
-        DB::transaction(function () use ($request, $user_id, $shippingAddress, $carts, &$outOfStockProduct, &$stockTake) {
+        DB::transaction(function () use ($request, $user_id, $shippingAddress, $carts, &$outOfStockProduct, &$stockTake, &$placedCombinedOrderId) {
 
         // Take the stock and the purchase batches for the whole cart first, in one place shared with
         // the storefront API, POS and funnel checkout: the database checks and subtracts in one step,
@@ -1456,10 +1456,14 @@ class OrderController extends Controller
         }
 
         $combined_order->save();
-        Session::forget('guest_created');
-        $request->session()->put('combined_order_id', $combined_order->id);
+        $placedCombinedOrderId = $combined_order->id;
 
         }); // end DB::transaction
+        // session changes only after the commit: a deadlock retry must find the session exactly as the first attempt did
+        if (isset($placedCombinedOrderId)) {
+            Session::forget('guest_created');
+            $request->session()->put('combined_order_id', $placedCombinedOrderId);
+        }
         } catch (\Throwable $e) {
             // The transaction has been rolled back. Batch units that do not roll back (MyISAM) go back by hand.
             if ($stockTake !== null) {

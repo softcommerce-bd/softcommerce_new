@@ -81,7 +81,7 @@ class DemandService
             $this->allocate($productId, $variant);
 
             return DB::table('order_demands')->where('id', $id)->first();
-        });
+        }, \App\Support\DeadlockRetry::MAX);
     }
 
     /**
@@ -123,7 +123,7 @@ class DemandService
             }
 
             return $total;
-        });
+        }, \App\Support\DeadlockRetry::MAX);
     }
 
     /**
@@ -191,7 +191,7 @@ class DemandService
                 'fifo_batch_info' => $consumed['batches'] ? json_encode(array_map(fn ($b) => ['id' => $b['purchase_product_id'], 'qty' => $b['qty'], 'cost' => $b['unit_price']], $consumed['batches'])) : null, 'created_at' => now()]);
 
             return ['dispatched' => $qty, 'cost' => (float) $consumed['total_cost'], 'uncosted' => $uncosted];
-        });
+        }, \App\Support\DeadlockRetry::MAX);
     }
 
     private function recordLineCost(OrderDetail $detail, array $consumed, int $uncosted): void
@@ -264,7 +264,7 @@ class DemandService
             $this->allocate($productId, $variant); // freed physical units go to the next waiting order
 
             return $qty;
-        });
+        }, \App\Support\DeadlockRetry::MAX);
     }
 
     /** The order line's quantity changed after confirmation: move demand by the difference, never below what already shipped. */
@@ -298,7 +298,7 @@ class DemandService
             StockBalance::change($productId, $variant, demand: $diff);
             StockBalance::movement(['product_id' => $productId, 'variant' => $variant, 'type' => 'demand_adjusted', 'demand_delta' => $diff, 'source_type' => 'order', 'source_id' => $detail->order_id, 'order_detail_id' => $detail->id, 'created_by' => $by]);
             $this->allocate($productId, $variant);
-        });
+        }, \App\Support\DeadlockRetry::MAX);
     }
 
     /**

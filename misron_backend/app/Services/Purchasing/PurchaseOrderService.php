@@ -82,7 +82,7 @@ class PurchaseOrderService
             DB::table('purchase_requirement_links')->whereIn('purchase_order_detail_id', $details)->where('status', 'open')->update(['status' => 'cancelled', 'updated_at' => now()]);
             DB::table('purchase_order_details')->where('purchase_order_id', $poId)->update(['pending_quantity' => 0, 'remaining_quantity' => 0, 'updated_at' => now()]);
             DB::table('purchase_orders')->where('id', $poId)->update(['status' => $po->status === 'partially_received' ? 'received' : 'cancelled', 'updated_at' => now()]);
-        });
+        }, \App\Support\DeadlockRetry::MAX);
     }
 
     /** Links PO quantity to confirmed demand without exceeding what is still uncovered (no double purchase). */

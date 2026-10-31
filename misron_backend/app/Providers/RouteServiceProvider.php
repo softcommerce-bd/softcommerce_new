@@ -31,6 +31,9 @@ class RouteServiceProvider extends ServiceProvider
     parent::boot();
 
     $this->configureRateLimiting();
+
+    // bounded deadlock retry on the state-changing inventory / accounting routes (config/deadlock_retry.php); after the routes exist
+    $this->app->booted(fn () => \App\Support\DeadlockRetryRoutes::attach($this->app['router']));
   }
 
   /**
