@@ -21,7 +21,7 @@ use Tests\TestCase;
 abstract class ConcurrencyTestCase extends TestCase
 {
     /** Tables the checkout writes to, and the highest id each had before the test. */
-    private const TRACKED = ['products', 'product_stocks', 'purchase_products', 'purchases', 'orders', 'combined_orders', 'order_details', 'carts', 'users', 'blocked_ips', 'coupon_usages', 'drafts', 'cities', 'funnels', 'funnel_versions', 'funnel_audit_logs', 'funnel_checkout_attempts'];
+    private const TRACKED = ['products', 'product_stocks', 'purchase_products', 'purchases', 'orders', 'combined_orders', 'order_details', 'carts', 'users', 'blocked_ips', 'coupon_usages', 'drafts', 'cities', 'funnels', 'funnel_versions', 'funnel_audit_logs', 'funnel_checkout_attempts', 'funnel_order_attributions', 'chat_audit_logs'];
 
     /** @var array<string, int> */
     private array $highWater = [];

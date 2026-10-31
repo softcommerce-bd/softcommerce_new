@@ -143,3 +143,24 @@ Also: (1) are these four screens in use, or should bank operations go through th
 * **B-1:** now has an implementation-ready specification, `T5_B1_BANK_TRANSACTION_SPECIFICATION.md`. New finding: the `BankTransaction` model is an empty shell (no `$fillable`, `complete()`, relations), so approving the number format alone does NOT enable the actions; the posting (debit/credit) per type is an additional accountant decision. Still PENDING; actions still disabled and guarded by tests.
 * **AD-1:** options document extended (section 5): compatibility, maintenance, exactly what (c) does not disable (the schedule still runs and fails harmlessly). Recommendation unchanged: (c) now, (a) if enabling. Still NOT approved.
 * **N-1:** read-only queries Q7-Q10 added (opening positions, allocation integrity, purchase totals, cash/bank ledger effect). Still PENDING ACCOUNTANT REVIEW; nothing executed on real data.
+
+
+---
+## UPDATE 5 - exact approval questions and recommended options (decision-support package)
+Answer each line; "no answer" = stays as is (disabled / unchanged). Evidence and detail: `T5_OWNER_DECISION_REPORT.md`.
+
+| ID | Exact question | Recommended | Alternatives |
+|---|---|---|---|
+| **B-1.1** | Bank screens: retire the four duplicate bank actions and use the balance-transfer screen for deposit / withdrawal / transfer (numbers `DP/WD/TR/CO-YYMMNNNN`, monthly, per type), building only cheque clearing new? | **Yes** | keep the bank screens with new numbers (you choose prefix, width, reset) or one shared sequence |
+| **B-1.2** | Which account receives a bank charge (expense account)? | accountant names it | leave charges one-sided as today |
+| **B-1.3** | Counter-account of a bank deposit / withdrawal / cash-out on the bank screens (only if B-1.1 = No) | n/a if B-1.1 = Yes (the transfer screen asks both accounts) | name the account(s) |
+| **B-1.4** | Cheque clearing: account credited, whether anything is posted when the cheque is received, treatment of a bounced cheque | accountant to specify | - |
+| **B-1.5** | Withdrawal and cash-out: one type or two? | one (cash-out = withdrawal, as the code does today) | two |
+| **B-1.6** | Cancelling a bank transaction: delete with mirror lines (as transfers) or a numbered reversing document with reason and actor; audit table yes/no | delete with mirror lines now; audit table later (needs schema approval) | reversing document |
+| **AD-1.1** | Option for the nightly auto-deposit | **(c) no change now**; (a) system user if you want it running | (b) nullable column (not recommended) |
+| **AD-1.2** | Authorize guard **G1** (command prints one "paused pending AD-1" line and stops, no schedule or schema change)? | **Yes** | G2 schedule switch / G3 remove line / nothing |
+| **N-1.1** | Authorize running Q1-Q10 on an authorised isolated restore of production data by the accountant/DBA? | **Yes, read-only, restore only** | not yet |
+| **N-1.2** | Procedure and approver for any correction after the audit (supplier by supplier, adjustment document, never a script) | accountant-led | - |
+| **N-1.3** | Add an edit audit table for supplier payments? | yes later (schema approval) | no |
+| **INC.1** | Confirm production runs one connection per request with no multiplexing proxy / multi-primary (see `T5_INCOME_NUMBER_DEADLOCK_REPORT.md` section 7) | DBA confirms | - |
+| **SEQ.1** | Approve decision 7 (a `document_sequences` table) for the other numbered series and any new bank numbers? | yes, after a rehearsal | keep "latest row + 1" with retry |

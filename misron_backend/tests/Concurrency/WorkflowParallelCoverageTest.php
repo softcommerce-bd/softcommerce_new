@@ -340,6 +340,82 @@ class WorkflowParallelCoverageTest extends HttpWorkflowCase
         $this->assertSame(1, DB::table('incomes')->where('received_account_id', $cash)->count());
     }
 
+    /** Four creators into FOUR DIFFERENT accounts (so the account row locks do not serialise them), from an empty year, 10 rounds. */
+    public function test_first_income_number_with_creators_on_different_accounts_never_deadlocks()
+    {
+        $this->flag(true);
+        $inc = $this->account('income', 'income', 0);
+        $cashes = [$this->cashAccount(0), $this->cashAccount(0), $this->cashAccount(0), $this->cashAccount(0)];
+        $admin = $this->admin();
+        $retried = 0;
+        for ($round = 1; $round <= 10; $round++) {
+            $this->assertSame(0, DB::table('incomes')->where('voucher_no', 'like', 'INC-' . date('y') . '%')->count());
+            $res = $this->race(array_map(fn ($i) => $this->req($admin, route('accounts.incomes.store', [], false), ['date' => now()->toDateString(), 'received_account_id' => $cashes[$i], 'income_account_ids' => [$inc], 'amounts' => [10 + $i]]), [0, 1, 2, 3]), 120);
+            foreach ($res as $r) {
+                $retried += (isset($r['headers']['x-deadlock-retries']) || isset($r['headers']['X-Deadlock-Retries'])) ? 1 : 0;
+            }
+            $nos = DB::table('incomes')->whereIn('received_account_id', $cashes)->pluck('voucher_no')->all();
+            $this->assertSame(['000001', '000002', '000003', '000004'], array_map(fn ($n) => substr($n, -6), $this->sortNos($nos)), 'round ' . $round);
+            DB::table('income_details')->whereIn('income_id', DB::table('incomes')->whereIn('received_account_id', $cashes)->pluck('id'))->delete();
+            DB::table('incomes')->whereIn('received_account_id', $cashes)->delete();
+        }
+        $this->assertSame(0, $retried);
+        $this->assertEquals(10 + 11 + 12 + 13, array_sum(array_map(fn ($c) => $this->bal($c), $cashes)) / 10, 'every round credited every account once (10 rounds)');
+    }
+
+    /** Another year's rows are a different series: the new year starts at 000001 and the old numbers are untouched. */
+    public function test_a_previous_years_numbers_do_not_affect_or_block_the_current_year()
+    {
+        $this->flag(true);
+        $cash = $this->cashAccount(0);
+        $inc = $this->account('income', 'income', 0);
+        $admin = $this->admin();
+        $old = 'INC-' . str_pad((string) (((int) date('y')) - 1), 2, '0', STR_PAD_LEFT) . '000009';
+        DB::table('incomes')->insert(['voucher_no' => $old, 'date' => now()->subYear()->toDateString(), 'received_account_id' => $cash, 'created_by' => $admin, 'created_at' => now(), 'updated_at' => now()]);
+        $res = $this->race(array_map(fn ($i) => $this->req($admin, route('accounts.incomes.store', [], false), ['date' => now()->toDateString(), 'received_account_id' => $cash, 'income_account_ids' => [$inc], 'amounts' => [$i]]), [1, 2, 3, 4]), 120);
+        $nos = DB::table('incomes')->where('received_account_id', $cash)->where('voucher_no', 'like', 'INC-' . date('y') . '%')->pluck('voucher_no')->all();
+        $this->assertSame(['000001', '000002', '000003', '000004'], array_map(fn ($n) => substr($n, -6), $this->sortNos($nos)));
+        $this->assertSame(1, DB::table('incomes')->where('voucher_no', $old)->count(), 'last year\'s row is untouched');
+        foreach ($res as $r) {
+            $this->assertArrayNotHasKey('x-deadlock-retries', array_change_key_case($r['headers'] ?? [], CASE_LOWER));
+        }
+    }
+
+    /** The named lock itself: held until commit or rollback, per series, and visible to a second connection. */
+    public function test_the_number_lock_is_per_series_and_released_by_commit_and_by_rollback()
+    {
+        $cfg = config('database.connections.' . config('database.default'));
+        $other = new \PDO(sprintf('mysql:host=%s;port=%s;dbname=%s', $cfg['host'], $cfg['port'], $cfg['database']), $cfg['username'], $cfg['password']);
+        $try = function (string $series) use ($other) {
+            $st = $other->query("SELECT GET_LOCK('misron:number:" . $series . "', 0)");
+            $got = (int) $st->fetchColumn();
+            if ($got === 1) {
+                $other->query("SELECT RELEASE_LOCK('misron:number:" . $series . "')")->fetchColumn();
+            }
+
+            return $got === 1;
+        };
+
+        foreach (['commit', 'rollback'] as $how) {
+            DB::beginTransaction();
+            $this->assertTrue(\App\Support\NumberSerializer::hold('income:INC-25'));
+            $this->assertTrue(\App\Support\NumberSerializer::hold('income:INC-25'), 'reentrant for the same connection (a retry does not block itself)');
+            $this->assertFalse($try('income:INC-25'), "held while the transaction is open ($how)");
+            $this->assertTrue($try('income:INC-24'), 'a different year is a different series');
+            $how === 'commit' ? DB::commit() : DB::rollBack();
+            $this->assertSame(0, \App\Support\NumberSerializer::heldCount(), "released at $how");
+            $this->assertTrue($try('income:INC-25'), "free again after $how");
+        }
+
+        DB::beginTransaction();
+        DB::beginTransaction(); // nested: the inner end must not release
+        \App\Support\NumberSerializer::hold('income:INC-25');
+        DB::commit();
+        $this->assertFalse($try('income:INC-25'), 'still held until the OUTERMOST transaction ends');
+        DB::rollBack();
+        $this->assertTrue($try('income:INC-25'));
+    }
+
     private function sortNos(array $n): array
     {
         sort($n);

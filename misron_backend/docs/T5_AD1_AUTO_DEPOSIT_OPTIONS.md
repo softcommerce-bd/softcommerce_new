@@ -42,3 +42,24 @@ Tests that exist: `PosAndConsoleParallelTest::test_the_auto_deposit_job_fails_on
 * **What option (c) does and does not disable.** (c) is "no change": the schedule line in `app/Console/Kernel.php` stays, the job keeps running at 00:01 and keeps failing harmlessly per method on a NOT NULL schema (nothing moves, exit code 0, one log line per method). It does **not** switch the job off. If a quiet system is wanted, removing the schedule line is a separate, tiny, reversible change that needs its own approval. Manual transfers (balance-transfer screen) are unaffected in every option.
 * **Required to enable safely later (under (a)):** approved system-user attributes and configuration key; production answer on `created_by` nullability and on configured `deposit_type = 'auto'` methods; the account/charge rules reviewed by the accountant (the amount and charge computation is unchanged by this work); supervised first runs with the `AD-` vouchers reconciled; the existing race tests (below) re-run against the real schema.
 * **Tests re-run for this addendum** (disposable database only): see `docs/evidence/final5/`. They prove the existing locking (balance read under the account lock, two simultaneous runs move the balance exactly once, a concurrent manual transfer keeps the books exact) and that the unmodified schema still refuses the insert.
+
+## 6. Decision-support addendum: side-by-side summary and an interim guard (proposal only - nothing changed)
+
+| | (a) system user | (b) nullable column | (c) no change |
+|---|---|---|---|
+| Operational impact | nightly deposits start moving money (and charges) every night | same as (a) | deposits stay manual; the job keeps failing quietly |
+| Auditability | named actor on every row | creator may be NULL = "system" or "forgotten" | no new rows |
+| Security | a standing identity that must not be able to log in | no identity; weaker integrity | none |
+| Migration risk | one reviewed insert; roll back by banning the row | DDL on `balance_transfers`, size/engine unknown, hard to undo once NULLs exist | none |
+| Reversible | yes | hard | yes |
+| Needs from you | user attributes + config key + supervised first runs | approval of DDL window | nothing |
+
+**Why a guard is worth having while approval is pending.** With option (c) the 00:01 job still runs. Per active auto method it opens a transaction, fails on the NOT NULL column, rolls back, writes one error log line and tells the console "Failed to transfer ...", exit code 0 (so the scheduler never reports a failure and nobody is alerted). Nothing moves, but the log fills with one identical error per method per night, and the day the schema is changed or a method is configured the behaviour would change silently.
+
+**Three ways to stop the repeated failure (none implemented; each needs your authorization):**
+| Guard | Change | Touches schedule / schema? | Effect | Risk |
+|---|---|---|---|---|
+| **G1 (recommended first)** command preflight | at the start of `accounts:auto-deposit`, if no creator can be recorded (the column is NOT NULL and no approved system-user setting exists), write ONE clear line "auto-deposit paused: decision AD-1 pending" and stop before opening any transaction | no / no | one log line per night instead of one per method; nothing moves; when (a) is approved and the setting exists, the guard steps aside by itself | code change in one command; trivial to revert; tested on the disposable database |
+| G2 configuration switch | `AUTO_DEPOSIT_ENABLED=false` read by the schedule (`->when(...)`) | **yes (schedule)** | the job is not run at all | needs the schedule edit authorization; the switch must be turned on again explicitly |
+| G3 remove the schedule line | delete the line in `Kernel.php` | **yes** | job never runs | easy to forget it was removed |
+Recommendation: G1, because it needs neither a schedule edit nor a schema change, stays correct under (a), and keeps the evidence that the job was waiting on a decision. Authorize G1 (and I implement and test it) or choose G2/G3 or nothing.
