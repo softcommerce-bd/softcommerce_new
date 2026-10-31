@@ -163,8 +163,44 @@ class WorkflowParallelCoverageTest extends HttpWorkflowCase
         $this->assertEquals(950.0, $this->bal($cash), 'the payment is now 50: cash 1000-50, not 1000-30-... repeated');
         $this->assertEquals(50.0, (float) DB::table('supplier_payments')->where('id', $id)->value('amount'));
         $this->assertEquals(50.0, (float) DB::table('purchases')->where('id', $purchase)->value('total_payment_due'));
-        // NOT asserted: suppliers.due_amount / paid_amount. SupplierPaymentController::update drifts them on EVERY edit even when run one request at a
-        // time (reproduced sequentially: due 70 -> 20 -> -30 -> -80). That is a pre-existing accounting defect needing an accounting decision (F-17).
+        $this->assertEquals(50.0, (float) DB::table('suppliers')->where('id', $s)->value('due_amount'), 'supplier due = invoice 100 - payment 50 (the edit defect used to drift it on every edit)');
+        $this->assertEquals(50.0, (float) DB::table('suppliers')->where('id', $s)->value('paid_amount'));
+        $this->assertJournalSettles();
+    }
+
+    public function test_edits_with_different_amounts_and_an_edit_racing_a_delete_always_end_consistent()
+    {
+        $this->flag(true);
+        $admin = $this->admin();
+        $mk = function () use ($admin) {
+            $s = $this->supplier();
+            $cash = $this->cashAccount(1000);
+            [$purchase] = $this->purchaseOn($s, $admin);
+            $pay = fn ($amt) => ['supplier_id' => $s, 'payment_date' => now()->toDateString(), 'amount' => $amt, 'payment_method' => 'CASH', 'account_head_id' => $cash, 'allocations' => json_encode([['purchase_id' => $purchase, 'paid_amount' => $amt]])];
+            $this->runOne($this->req($admin, '/admin/accounts/supplier-payments/store', $pay(30)));
+            return [$s, $cash, $purchase, (int) DB::table('supplier_payments')->where('supplier_id', $s)->value('id'), $pay];
+        };
+        // two different edits at once: the final state is exactly one of them applied, never a mixture
+        [$s, $cash, $purchase, $id, $pay] = $mk();
+        $this->race([$this->req($this->admin(), '/admin/accounts/supplier-payments/update/' . $id, $pay(50), 'PUT'), $this->req($this->admin(), '/admin/accounts/supplier-payments/update/' . $id, $pay(80), 'PUT')], 120);
+        $final = (float) DB::table('supplier_payments')->where('id', $id)->value('amount');
+        $this->assertContains($final, [50.0, 80.0]);
+        $this->assertEquals(100 - $final, (float) DB::table('suppliers')->where('id', $s)->value('due_amount'));
+        $this->assertEquals($final, (float) DB::table('suppliers')->where('id', $s)->value('paid_amount'));
+        $this->assertEquals(100 - $final, (float) DB::table('purchases')->where('id', $purchase)->value('total_payment_due'));
+        $this->assertEquals(1000 - $final, $this->bal($cash));
+
+        // an edit and a delete at once: the payment ends deleted and everything is back to the start, whichever came first
+        [$s2, $cash2, $purchase2, $id2, $pay2] = $mk();
+        $this->race([$this->req($this->admin(), '/admin/accounts/supplier-payments/update/' . $id2, $pay2(50), 'PUT'), $this->req($this->admin(), '/admin/accounts/supplier-payments/delete/' . $id2, [], 'DELETE')], 120);
+        if (DB::table('supplier_payments')->where('id', $id2)->exists()) { // the delete ran first and the edit... cannot exist; the edit then the delete leaves none
+            $this->fail('the payment must be gone');
+        }
+        $this->assertEquals(100.0, (float) DB::table('suppliers')->where('id', $s2)->value('due_amount'));
+        $this->assertEquals(0.0, (float) DB::table('suppliers')->where('id', $s2)->value('paid_amount'));
+        $this->assertEquals(100.0, (float) DB::table('purchases')->where('id', $purchase2)->value('total_payment_due'));
+        $this->assertEquals(1000.0, $this->bal($cash2));
+        $this->assertSame(0, DB::table('supplier_payment_purchases')->where('supplier_payment_id', $id2)->count(), 'no orphan allocation');
         $this->assertJournalSettles();
     }
 
