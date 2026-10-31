@@ -1,0 +1,35 @@
+<?php
+namespace Tests\Feature\Inventory;
+use Illuminate\Support\Facades\DB;
+/** Reproduction of the supplier-payment edit defect + the impact queries run on the resulting (synthetic) rows. Output: file named by env SP_OUT. */
+class SpReproTest extends InventoryV2TestCase {
+  public function test_repro() {
+    $out = getenv('SP_OUT') ?: '/tmp/sp_out.txt'; $log = [];
+    $this->actingAs($this->makeAdmin());
+    $s = (int) DB::table('suppliers')->insertGetId(['slug' => 'rp'.uniqid(), 'business_name' => 'REPRO', 'contact_person_name' => 'C', 'mobile' => '017' . random_int(10000000, 99999999), 'opening_balance' => '0', 'due_amount' => 0, 'paid_amount' => 0, 'created_at' => now(), 'updated_at' => now()]);
+    $p = $this->productAtZero();
+    $this->post(route('purchase.store'), ['op_key' => 'r-' . uniqid(), 'supplier_id' => $s, 'purchase_date' => now()->toDateString(), 'product_id' => [$p->id], 'name' => ['x'], 'variant' => [''], 'purchase_quantity' => [5], 'buying_unit_cost' => [20], 'total_cost' => [100]], ['Accept'=>'application/json'])->assertOk();
+    $purchase = (int) DB::table('purchases')->where('supplier_id',$s)->value('id');
+    $cash = \App\Models\ChartOfAccount::create(['code' => 'RP-' . uniqid(), 'name' => 'RP ' . uniqid(), 'type' => 'asset', 'sub_type' => 'cash', 'opening_balance' => 0, 'current_balance' => 1000, 'status' => 'active', 'is_deleted' => 0]);
+    $ap = \App\Models\ChartOfAccount::getAccountsPayable();
+    $pay = fn ($amt) => ['supplier_id' => $s, 'payment_date' => now()->toDateString(), 'amount' => $amt, 'payment_method' => 'CASH', 'account_head_id' => $cash->id, 'allocations' => json_encode([['purchase_id' => $purchase, 'paid_amount' => $amt]])];
+    $snap=function($label) use (&$log,$s,$cash,$purchase,$ap){ $log[]=sprintf("%-34s supplier due=%8.2f paid=%8.2f | purchase due=%8.2f | cash=%8.2f | AP=%8.2f", $label,(float)DB::table('suppliers')->where('id',$s)->value('due_amount'),(float)DB::table('suppliers')->where('id',$s)->value('paid_amount'),(float)DB::table('purchases')->where('id',$purchase)->value('total_payment_due'),(float)DB::table('chart_of_accounts')->where('id',$cash->id)->value('current_balance'),(float)DB::table('chart_of_accounts')->where('id',$ap->id)->value('current_balance')); };
+    $snap('start (purchase 100 on credit)');
+    $this->post(route('accounts.supplier-payments.store'), $pay(30), ['Accept'=>'application/json'])->assertOk();
+    $id=(int)DB::table('supplier_payments')->where('supplier_id',$s)->value('id');
+    $snap('after store payment 30');
+    foreach ([50,50,50,20] as $i=>$amt) { $this->put(route('accounts.supplier-payments.update',$id),$pay($amt),['Accept'=>'application/json'])->assertOk(); $snap('after edit #'.($i+1).' -> '.$amt); }
+    $this->delete(route('accounts.supplier-payments.delete',$id),[],['Accept'=>'application/json'])->assertOk(); $snap('after delete');
+    $log[]='';
+    // impact queries on these rows (edited payment is deleted at the end, so re-create one edited payment to show Q1-Q6)
+    $this->post(route('accounts.supplier-payments.store'), $pay(40), ['Accept'=>'application/json'])->assertOk();
+    $id2=(int)DB::table('supplier_payments')->where('supplier_id',$s)->orderByDesc('id')->value('id');
+    foreach ([60,60] as $amt) { $this->put(route('accounts.supplier-payments.update',$id2),$pay($amt),['Accept'=>'application/json']); }
+    $snap('re-created 40, edited 60, 60');
+    $sql=file_get_contents(base_path('docs/T5_SUPPLIER_PAYMENT_IMPACT_QUERIES.sql'));
+    $sql=preg_replace('/^\s*--.*$/m','',$sql);
+    foreach (array_filter(array_map('trim',explode(';',$sql))) as $q) { if (!preg_match('/^SELECT/i',$q)) continue; try { $rows=DB::select($q); $rows=array_values(array_filter($rows,fn($r)=>in_array($s,[$r->supplier_id??null,$r->payment_id??null])||in_array($id2,[$r->payment_id??null,$r->source_id??null])||isset($r->journal_entry_id))); $log[]='--- '.substr(preg_replace('/\s+/',' ',$q),0,90).' ... rows='.count($rows); foreach($rows as $r) $log[]='    '.json_encode($r); } catch(\Throwable $e) { $log[]='QUERY ERROR: '.$e->getMessage(); } }
+    file_put_contents($out, implode("\n",$log)."\n");
+    $this->assertTrue(true);
+  }
+}

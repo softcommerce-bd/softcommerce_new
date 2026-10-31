@@ -2,6 +2,25 @@
 
 Branch `claude/peaceful-planck-elqcki`. Disposable database: local MariaDB 10.11.14 only. **No deployment, merge, PR, flag change, or write to staging/production.** `INVENTORY_CONFIRMED_ONLY` stays `false` everywhere (it is switched on only inside isolated test processes). Classification words: VERIFIED, IMPLEMENTED, TESTED, BLOCKED, REQUIRES BUSINESS APPROVAL, NOT APPLICABLE.
 
+## UPDATE 2 - accounting safety and remaining verification (latest; supersedes counts above where they differ)
+Documents: `T5_SUPPLIER_PAYMENT_ROOT_CAUSE_REPORT.md`, `T5_SUPPLIER_PAYMENT_DATA_IMPACT_REPORT.md` (+ `T5_SUPPLIER_PAYMENT_IMPACT_QUERIES.sql`, evidence `docs/evidence/supplier_payment/`), `T5_REMAINING_WORKFLOW_COVERAGE_MATRIX.md`, `T5_CONSOLIDATED_DECISION_REGISTER.md` (B-1 table, N-1, P-1, AD-1). Evidence of the final runs: `docs/evidence/final3/`.
+
+**Implemented and tested**
+* **Supplier payment edit defect (highest priority):** root cause = the new payment was applied on a second copy of the supplier row loaded before the revert, which overwrote the revert, so each edit left supplier due too low and paid too high by the replaced amount (70 -> 20 -> -30 -> -80). Intended treatment established from the store/delete screens and the edit's own revert step (edit = delete old + store new). Corrected; 8 in-process tests (4 fail on the old code) + 2 real-parallel tests: repeated edits, increase, decrease, equivalence with a direct store, delete after edits, supplier change, failed edit leaves all figures unchanged, journal balanced/unduplicated, injected deadlock, concurrent edits, edit racing delete. Allocation rows are now removed with a deleted payment (orphans before).
+* **POS:** a completed walk-in sale deleted every walk-in cart of every counter (`user_id` NULL matched all); it now locks and deletes only its own cart rows; the same cart submitted 3 times at once makes one sale; 4 simultaneous sales for 6 units book exactly like 4 sequential ones.
+* **Auto-deposit command:** two simultaneous runs each moved the whole balance (destination credited twice, source negative); the balance is now read under the account lock (proved with 2 runs: 2 deposits before, 1 after; tested with `created_by` made nullable on the disposable database only and restored).
+* **Data-impact tooling:** read-only queries Q1-Q6 + accountant reconciliation guide; run only on synthetic rows; production-data execution BLOCKED.
+
+**Findings, not fixed (decisions)**
+* **AD-1:** `accounts:auto-deposit` fails on every method in this schema (`balance_transfers.created_by` NOT NULL, command writes NULL); production unknown.
+* **B-1:** the four bank actions stay disabled/broken (`generateTransactionNo()` undefined); exact table of what Accounting must decide is in the register.
+* **N-1:** past supplier drift is not corrected; accountant-led.
+* **P-1:** confirm the POS cart behaviour change.
+
+**Regression (sequential, `pgrep` 0 before each):** `vendor/bin/phpunit` **623 tests, 3927 assertions, 1 error + 2 failures (the 3 known), 2 skipped**; `phpunit.concurrency.xml` **91 tests, 2087 assertions, OK**. The 3 known failures are unrelated to this work: `ExampleTest` (GET `/` redirects to `/login`), `FunnelEditorMediaAndCatalogueTest::test_orders_carry_nullable_funnel_attribution` (expects the database to null `orders.funnel_id` when a funnel is force-deleted; this schema has no such foreign key), `UploadSafetyTest::test_svg_and_xml_are_accepted_from_staff_only` (uploaded file not under `public/uploads/all`, a storage-path issue). No new failures; no committed leftovers (document tables back to 0); test-database and read-only `sc_staging` fingerprints identical before/after and equal to the baseline; the schema change made temporarily for the auto-deposit race test was restored (`created_by` NOT NULL). Database: MariaDB 10.11.14; MySQL 8.4 NOT EXECUTED; production BLOCKED.
+
+**Readiness:** code - partially ready (open: decisions above); automated tests - not accepted as complete (no workflow has all five categories for all operations; see the matrix); staging - NO-GO; production - NO-GO.
+
 ## UPDATE - final verification assignment (supersedes the counts below where they differ)
 Details: `docs/T5_FINAL_VERIFICATION_REPORT.md`; decisions: `docs/T5_CONSOLIDATED_DECISION_REGISTER.md`.
 * **Retry coverage:** 34 of 34 reachable, working transactional methods now have an executed deadlock test (once and always); 4 bank actions BLOCKED (`BankTransaction::generateTransactionNo()` is defined nowhere; format not established, nothing invented); 2 methods NOT APPLICABLE (no route). Earlier figure "12 of 40" is superseded.

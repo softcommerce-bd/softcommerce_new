@@ -12,8 +12,10 @@
 | 8 | Maintenance commands while trading | repair commands | Accounting, Tech lead |
 | 9 | Purchase-order conversion | PO redesign | Purchasing, Accounting |
 | 10 | Customer-payment auto-import (and the removed schedule) | import redesign, scheduled job | Accounting |
-| B-1 | Bank transaction number format | the four bank actions | Accounting |
-| N-1 | Supplier payment edit drifts supplier balances (new) | correction + existing data | Accounting |
+| B-1 | Bank transaction numbering (table to fill) | the four bank actions | Accounting |
+| N-1 | Supplier payment edit: historical balances | handling of past drift | Accounting |
+| P-1 | POS cart handling after a sale (fix, confirm) | confirmation | Order desk |
+| AD-1 | Nightly auto-deposit fails on NOT NULL created_by | the scheduled job | Accounting, Tech lead |
 | 6, 7, 11-15 | remaining Phase 0 decisions | sequences, retention, audits, columns, constraints, order screens | see below |
 
 ---
@@ -73,19 +75,42 @@
 * **Risk:** payments posted to a wrong account if the default is wrong.
 * **Exact approval needed:** whether an hourly import is wanted; the account and method rule; which orders qualify; the response format; the failure recipients.
 
-## Decision B-1 - Bank transaction numbering format (new)
-* **Existing:** `BankTransactionController::{deposit, withdraw, transfer, chequeClearing}` call `BankTransaction::generateTransactionNo(type)`, which is defined nowhere; the four actions cannot succeed. `bank_transactions.transaction_no` is unique; the table is empty everywhere; its CREATE statement is not in the repository.
-* **Proposed (options for approval, none authoritative):** (a) mirror the transfer convention `<type prefix>-YYMMNNNN` with prefixes to be chosen; (b) a different scheme; (c) retire these screens and route bank operations through the balance-transfer screen.
-* **Consequences:** the format becomes a permanent document identifier shown on reports; (c) removes screens.
-* **Risk:** an invented format cannot be changed later without renumbering.
-* **Exact approval needed:** the format string per type (`deposit`, `withdraw`, `transfer`, `cheque_clearing`), the period reset (none/monthly/yearly), and whether to keep the screens. Technical requirements once decided: generate inside the creating transaction, locked read of the latest row including soft-deleted ones, unique index as backstop, retry tests already templated.
+## Decision B-1 - Bank transaction numbering (the four bank actions stay DISABLED until approved and tested)
+* **Existing:** `BankTransactionController::{deposit, withdraw, transfer, chequeClearing}` (lines 61, 126, 192, 250) call `BankTransaction::generateTransactionNo($type)`, defined nowhere, so the four actions fail before any write. `bank_transactions.transaction_no` is UNIQUE; the table is empty in every local database; its CREATE statement is not in the repository. Nothing was implemented or invented; the actions were not touched.
+* **Exact decision requested (to be filled in by Accounting):**
 
-## Decision N-1 - Supplier payment edit drifts supplier balances (new)
-* **Existing:** `SupplierPaymentController::update` changes `suppliers.due_amount` and `paid_amount` wrongly on every edit even one request at a time (reproduced: due 70 -> 20 -> -30 -> -80 while the payment, cash and purchase due stay right) because the old supplier and the new supplier are separate loads of one row. Production data may already contain such drift (audit query E5 on a restored copy would show it).
-* **Proposed:** after approval, apply the intended reversal-and-reapply on one supplier instance; add a read-only reconciliation report; no automatic repair of existing balances.
-* **Consequences:** edits start producing correct supplier balances; historical drift remains until accounting decides.
-* **Risk:** correcting the formula changes figures accountants may have adjusted around.
-* **Exact approval needed:** that the intended result is "due/paid reflect the edited payment"; whether and how historical drift is corrected (accountant-led).
+| Action | Type string passed | Prefix | Digit width / sequence | Period reset (none / monthly / yearly) | Example to be approved |
+|---|---|---|---|---|---|
+| Deposit | `deposit` | ? | ? | ? | ? |
+| Withdrawal | `withdraw` | ? | ? | ? | ? |
+| Transfer | `transfer` | ? | ? | ? | ? |
+| Cheque clearing | `cheque_clearing` | ? | ? | ? | ? |
+Also: (1) are these four screens in use, or should bank operations go through the balance-transfer screen (which already numbers `WD/DP/TR/CO/AD-YYMMNNNN`)? (2) must numbers be gap-free? (3) is a deleted transaction's number reusable (the table has soft delete; the other generators now never reuse)?
+* **Technical requirements once decided (not decisions):** unique (index exists); generated inside the creating transaction; locked read of the latest row including soft-deleted ones (the pattern used by the sibling generators); simultaneous requests must receive consecutive distinct numbers; the retry test scenarios for the four actions are templated; a parallel test must be added; the actions stay disabled (not routed to a working implementation) until then.
+* **Consequences:** the format becomes a permanent identifier on reports; retiring the screens removes capability.
+* **Risk:** a guessed format cannot be changed later without renumbering.
+* **Exact approval needed:** the completed table above and answers (1)-(3).
+
+## Decision N-1 - Supplier payment edit: historical balances (updated)
+* **Existing (after this phase):** the defect is corrected going forward: an edit now equals "delete the old payment, store the new one" on the current supplier row (root cause and proof: `T5_SUPPLIER_PAYMENT_ROOT_CAUSE_REPORT.md`, 8 + parallel tests). Before the correction every edit left `suppliers.due_amount` too low and `paid_amount` too high by the amount replaced (due 70 -> 20 -> -30 -> -80). Past drift in real data is **untouched**. Read-only means to size it: `T5_SUPPLIER_PAYMENT_IMPACT_QUERIES.sql` (execution on a restored copy BLOCKED).
+* **Proposed:** (a) confirm that the corrected treatment is the intended one (edit = revert + apply); (b) decide how any distorted supplier balances found by the audit are handled: accountant-led, supplier by supplier, with an adjustment document, never an automatic script; (c) whether to add an edit audit trail so future edits are traceable without log forensics.
+* **Consequences:** (a) none further; (b) changes supplier statements and any report summing supplier due/paid; (c) a new table.
+* **Risk:** correcting historical figures changes numbers the accountants may have worked around; edits of since-deleted payments cannot be attributed to a supplier.
+* **Exact approval needed:** written confirmation of (a); the procedure and approver for (b); yes/no for (c).
+
+## Decision P-1 - POS cart handling after a sale (new, implemented as a defect fix; confirm)
+* **Existing before:** completing a POS sale ran `Cart::where('user_id', $order->user_id)->orWhere('temp_user_id', ...)->delete()`; for walk-in customers `user_id` is NULL, so it deleted every walk-in cart of every counter. The same cart submitted twice created two sales (no guard).
+* **Now:** the sale locks and deletes only its own cart rows; a repeat of the same cart is answered "Please select a product." (what a sequential repeat gets).
+* **Consequences:** other counters' carts survive; a registered customer's website cart is no longer deleted by a POS sale to that customer (the old condition also matched `user_id = customer`).
+* **Risk:** if the business relied on the website cart being cleared by a POS sale.
+* **Exact approval needed:** confirm that deleting only the sold cart rows is the intended behaviour.
+
+## Decision AD-1 - Nightly auto-deposit fails on a NOT NULL created_by (new)
+* **Existing:** `accounts:auto-deposit` writes `balance_transfers.created_by = NULL`; in this schema the column is NOT NULL, so every run fails per method ("Column 'created_by' cannot be null") and moves nothing. Whether production allows NULL is BLOCKED. Separately, two runs at the same moment each moved the whole balance (double deposit); the balance is now read under the account lock (tested with the column made nullable on the disposable database only).
+* **Proposed (options):** (a) record a named system user as creator; (b) make the column nullable by migration; (c) keep the job disabled.
+* **Consequences:** (a) needs a user id decision; (b) schema change; (c) nightly deposits stay manual.
+* **Risk:** enabling without a decision either fails every night or starts moving funds nightly.
+* **Exact approval needed:** a, b or c; the system user id for (a).
 
 ---
 ## Decisions 6, 7, 11-15 (unchanged from the Phase 0 register; summarised)
