@@ -114,4 +114,29 @@ class RefundAccountingTest extends InventoryV2TestCase
         $this->assertSame('ok', $sev['refunds_without_journal']);
         $this->assertSame('info', $sev['wallet_liability_vs_user_balances']);
     }
+
+    public function test_bank_refund_and_multiple_partial_refunds_add_up_to_exactly_the_line_and_not_a_cent_more()
+    {
+        [, $order, $line] = $this->refundRequest();
+        $bank = ChartOfAccount::create(['code' => 'RB-' . uniqid(), 'name' => 'Refund bank ' . uniqid(), 'type' => 'asset', 'sub_type' => 'bank', 'opening_balance' => 0, 'current_balance' => 5000, 'status' => 'active', 'is_deleted' => 0]);
+        $svc = app(RefundService::class);
+        $svc->record('m1', 'cash', 300, $order->id, $line->id, null, $bank->id);   // a bank account is accepted wherever a cash account is
+        $svc->record('m2', 'wallet', 400, $order->id, $line->id);
+        $svc->record('m3', 'gateway', 300, $order->id, $line->id, null, null, 'GW-LAST');
+        $this->assertEquals(4700.0, (float) $bank->fresh()->current_balance);
+        $this->assertEquals(1000.0, (float) DB::table('refund_postings')->where('order_detail_id', $line->id)->sum('amount'), 'the three partial refunds equal the line');
+        $this->expectException(InvalidArgumentException::class);
+        $svc->record('m4', 'wallet', 0.01, $order->id, $line->id);
+    }
+
+    public function test_a_refused_refund_leaves_wallet_balance_postings_and_every_account_exactly_as_before()
+    {
+        [$id, $order] = $this->refundRequest(5000); // above the 1000 line: refused at posting time
+        $this->actingAs($this->makeAdmin());
+        $snap = fn () => json_encode([DB::table('wallets')->count(), (float) DB::table('users')->where('id', $order->user_id)->value('balance'), DB::table('refund_postings')->count(), DB::table('journal_entries')->count(),
+            DB::table('journal_lines')->count(), DB::table('chart_of_accounts')->orderBy('id')->pluck('current_balance', 'id')->all(), DB::table('refund_requests')->where('id', $id)->value('refund_status')]);
+        $before = $snap();
+        $this->post(route('refund_request_money_by_admin'), ['refund_id' => $id]);
+        $this->assertSame($before, $snap(), 'nothing moved: no wallet row, no balance, no posting, no entry, no account change');
+    }
 }

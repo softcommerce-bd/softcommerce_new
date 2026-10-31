@@ -40,14 +40,19 @@ class RefundService
             if ($method === 'gateway' && trim((string) $externalRef) === '') {
                 throw new InvalidArgumentException("A gateway refund needs the gateway's refund reference.");
             }
-            if ($refundRequestId && DB::table('refund_postings')->where('refund_request_id', $refundRequestId)->lockForUpdate()->exists()) {
-                throw new InvalidArgumentException('This refund request has already been paid.');
-            }
-            if ($externalRef && DB::table('refund_postings')->where('external_ref', $externalRef)->lockForUpdate()->exists()) {
-                throw new InvalidArgumentException('That gateway refund reference was already recorded.');
-            }
+            // Lock order: the order line first, so every refund of one line is serialised (no gap-lock deadlocks between them);
+            // the unique keys are the final authority on duplicates, the checks below only give a friendly message.
+            $line = null;
             if ($orderDetailId) {
                 $line = DB::table('order_details')->where('id', $orderDetailId)->lockForUpdate()->first() ?: throw new InvalidArgumentException('Unknown order line.');
+            }
+            if ($refundRequestId && DB::table('refund_postings')->where('refund_request_id', $refundRequestId)->exists()) {
+                throw new InvalidArgumentException('This refund request has already been paid.');
+            }
+            if ($externalRef && DB::table('refund_postings')->where('external_ref', $externalRef)->exists()) {
+                throw new InvalidArgumentException('That gateway refund reference was already recorded.');
+            }
+            if ($line) {
                 $limit = Money::cents(Money::micro($line->price) + Money::micro($line->tax ?? 0));
                 $done = Money::cents(Money::micro(DB::table('refund_postings')->where('order_detail_id', $orderDetailId)->sum('amount')));
                 if ($done + $cents > $limit) {
@@ -64,8 +69,15 @@ class RefundService
                 ['account' => SystemAccounts::id('sales_returns'), 'debit' => $cents, 'memo' => $memo],
                 ['account' => $credit, 'credit' => $cents, 'memo' => $memo],
             ], 'refund', $refundRequestId ?? $orderDetailId, $memo, $by);
-            $id = DB::table('refund_postings')->insertGetId(['refund_request_id' => $refundRequestId, 'order_id' => $orderId, 'order_detail_id' => $orderDetailId, 'method' => $method, 'amount' => $cents / 100,
+            try {
+                $id = DB::table('refund_postings')->insertGetId(['refund_request_id' => $refundRequestId, 'order_id' => $orderId, 'order_detail_id' => $orderDetailId, 'method' => $method, 'amount' => $cents / 100,
                 'account_id' => $method === 'cash' ? $accountId : null, 'external_ref' => $externalRef, 'idempotency_key' => $key, 'journal_entry_id' => $j['journal_entry_id'], 'created_by' => $by, 'note' => $note]);
+            } catch (\Illuminate\Database\QueryException $e) {
+                if (str_contains($e->getMessage(), 'Duplicate entry')) { // two requests raced past the checks: the unique key decides, and the journal entry above rolls back with this transaction
+                    throw new InvalidArgumentException('This refund (request or gateway reference) was already recorded.');
+                }
+                throw $e;
+            }
 
             return ['refund_posting_id' => $id, 'journal_entry_id' => $j['journal_entry_id'], 'amount' => $cents / 100];
         });
