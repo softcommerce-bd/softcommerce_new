@@ -35,6 +35,10 @@ class PurchasingController extends Controller
         $this->middleware(['permission:view_inventory_reports'])->only(['stockOverview', 'movements', 'backorders', 'valuation', 'report']);
         $this->middleware(['permission:manage_stock_policy'])->only(['savePolicy']);
         $this->middleware(['permission:manage_returns_receiving'])->only(['returns', 'receiveReturn']);
+        $this->middleware(['permission:view_supplier_payments'])->only(['supplierPayments']);
+        $this->middleware(['permission:add_purchase'])->only(['recordInvoice']);
+        $this->middleware(['permission:make_supplier_payment'])->only(['payInvoice', 'supplierAdvance']);
+        $this->middleware(['permission:manage_purchase_returns'])->only(['supplierReturns', 'returnToSupplier']);
     }
 
     private function ready(): ?\Illuminate\Http\RedirectResponse
@@ -104,7 +108,7 @@ class PurchasingController extends Controller
 
             return back()->withInput();
         }
-        flash(translate('Purchase order created: ') . $po['reference_no'])->success();
+        flash(translate('Purchase order created:') . ' ' . $po['reference_no'])->success();
 
         return redirect()->route('purchasing.receiving.index');
     }
@@ -156,7 +160,7 @@ class PurchasingController extends Controller
                 $data['landed_costs'] = ['amount' => $v['freight'], 'account_id' => $v['freight_account_id'] ?? 0];
             }
             $r = $grn->receive($v['op_key'] . '-grn', $data, $by);
-            $msg = translate('Goods received: ') . $r['receipt_no'];
+            $msg = translate('Goods received:') . ' ' . $r['receipt_no'];
             if (!empty($v['invoice_no'])) {
                 $goods = DB::table('goods_receipts')->where('id', $r['goods_receipt_id'])->value('goods_total');
                 $inv = $ledger->recordInvoice($v['op_key'] . '-inv', ['supplier_id' => $po->supplier_id, 'goods_receipt_id' => $r['goods_receipt_id'], 'invoice_no' => $v['invoice_no'], 'subtotal' => $goods], $by);
@@ -389,13 +393,60 @@ class PurchasingController extends Controller
                 $rows = collect($tb['rows'])->map(fn ($r) => (object) ['name' => $r->name, 'type' => $r->type, 'debit' => number_format($r->debit, 2, '.', ''), 'credit' => number_format($r->credit, 2, '.', '')])
                     ->push((object) ['name' => 'TOTAL', 'type' => $tb['balanced'] ? 'balanced' : 'NOT BALANCED', 'debit' => $tb['debit'], 'credit' => $tb['credit']]);
 
-                return view('backend.purchasing.table', ['title' => translate('Trial balance (journal) as of ') . $d, 'columns' => ['name' => 'Account', 'type' => 'Type', 'debit' => 'Debit', 'credit' => 'Credit'], 'rows' => $rows]);
+                return view('backend.purchasing.table', ['title' => translate('Trial balance (journal) as of') . ' ' . $d, 'columns' => ['name' => 'Account', 'type' => 'Type', 'debit' => 'Debit', 'credit' => 'Credit'], 'rows' => $rows]);
             case 'general-ledger':
                 $acc = (int) $request->query('account_id');
-                $rows = DB::table('journal_lines as l')->join('journal_entries as e', 'e.id', '=', 'l.journal_entry_id')->join('chart_of_accounts as a', 'a.id', '=', 'l.account_id')->when($acc, fn ($q) => $q->where('l.account_id', $acc))
-                    ->orderBy('e.entry_date')->orderBy('e.id')->paginate(100, ['e.entry_date', 'e.entry_no', 'a.name as account', 'l.debit', 'l.credit', 'l.memo']);
+                $from = $request->query('from');
+                $to = $request->query('to', $d);
+                $account = $acc ? DB::table('chart_of_accounts')->where('id', $acc)->first() : null;
+                $debitNormal = $account ? in_array($account->type, ['asset', 'expense'], true) : true;
+                $running = 0.0;
+                if ($acc && $from) { // opening = journal movement before the start date
+                    $o = DB::table('journal_lines as l')->join('journal_entries as e', 'e.id', '=', 'l.journal_entry_id')->where('l.account_id', $acc)->where('e.entry_date', '<', $from)->selectRaw('COALESCE(SUM(l.debit),0) d, COALESCE(SUM(l.credit),0) c')->first();
+                    $running = $debitNormal ? $o->d - $o->c : $o->c - $o->d;
+                }
+                $lines = DB::table('journal_lines as l')->join('journal_entries as e', 'e.id', '=', 'l.journal_entry_id')->join('chart_of_accounts as a', 'a.id', '=', 'l.account_id')->when($acc, fn ($q) => $q->where('l.account_id', $acc))
+                    ->when($from, fn ($q) => $q->where('e.entry_date', '>=', $from))->where('e.entry_date', '<=', $to)->orderBy('e.entry_date')->orderBy('e.id')->orderBy('l.id')->limit(2000)
+                    ->get(['e.entry_date', 'e.entry_no', 'e.source_type', 'a.name as account', 'a.type', 'l.debit', 'l.credit', 'l.memo', 'l.mirrored']);
+                $rows = $lines->map(function ($l) use (&$running, $acc, $debitNormal) {
+                    $running += $debitNormal ? $l->debit - $l->credit : $l->credit - $l->debit;
 
-                return view('backend.purchasing.table', ['title' => translate('General ledger'), 'columns' => ['entry_date' => 'Date', 'entry_no' => 'Entry', 'account' => 'Account', 'debit' => 'Debit', 'credit' => 'Credit', 'memo' => 'Memo'], 'rows' => $rows]);
+                    return (object) ['entry_date' => $l->entry_date, 'entry_no' => $l->entry_no, 'source_type' => $l->source_type . ($l->mirrored ? ' (legacy, mirrored)' : ''), 'account' => $l->account, 'debit' => $l->debit, 'credit' => $l->credit, 'balance' => $acc ? number_format($running, 2, '.', '') : '', 'memo' => $l->memo];
+                });
+
+                return view('backend.purchasing.table', ['title' => translate('General ledger (journal)'), 'note' => translate('Journal entries only: history before journalling began is in the account statements. Balance column is running, in the account\'s own sign, and appears when one account is chosen.'),
+                    'filters' => ['account_id' => ['Account ID', $acc ?: ''], 'from' => ['From (YYYY-MM-DD)', $from], 'to' => ['To (YYYY-MM-DD)', $to]],
+                    'columns' => ['entry_date' => 'Date', 'entry_no' => 'Entry', 'source_type' => 'Source', 'account' => 'Account', 'debit' => 'Debit', 'credit' => 'Credit', 'balance' => 'Balance', 'memo' => 'Memo'], 'rows' => $rows]);
+            case 'supplier-statement':
+                $sid = (int) $request->query('supplier_id');
+                $supplier = $sid ? DB::table('suppliers')->where('id', $sid)->first() : null;
+                $ev = collect();
+                if ($supplier) {
+                    foreach (DB::table('supplier_invoices')->where('supplier_id', $sid)->get() as $i) {
+                        $ev->push(['date' => $i->invoice_date, 'ref' => 'Invoice ' . $i->invoice_no, 'debit' => 0, 'credit' => (float) $i->total]);
+                    }
+                    foreach (DB::table('supplier_invoice_payments')->where('supplier_id', $sid)->get() as $pay) {
+                        $ev->push(['date' => $pay->paid_on, 'ref' => ucfirst(str_replace('_', ' ', $pay->kind)), 'debit' => $pay->kind === 'advance' ? 0 : (float) $pay->amount, 'credit' => 0]);
+                    }
+                    foreach (DB::table('purchases')->where('supplier_id', $sid)->whereNotExists(fn ($q) => $q->selectRaw('1')->from('goods_receipts as g')->whereColumn('g.purchase_id', 'purchases.id'))->get() as $pu) {
+                        $ev->push(['date' => $pu->purchase_date, 'ref' => 'Legacy purchase ' . $pu->reference_no, 'debit' => 0, 'credit' => (float) $pu->total_payment_due + (float) $pu->total_paid - (float) $pu->opening_balance_used]);
+                        if ((float) $pu->total_paid > 0) {
+                            $ev->push(['date' => $pu->purchase_date, 'ref' => 'Paid with ' . $pu->reference_no, 'debit' => (float) $pu->total_paid, 'credit' => 0]);
+                        }
+                    }
+                }
+                $run = 0.0;
+                $rows = $ev->sortBy('date')->values()->map(function ($e) use (&$run) {
+                    $run += $e['credit'] - $e['debit'];
+
+                    return (object) ['date' => $e['date'], 'ref' => $e['ref'], 'debit' => number_format($e['debit'], 2, '.', ''), 'credit' => number_format($e['credit'], 2, '.', ''), 'balance' => number_format($run, 2, '.', '')];
+                });
+                if ($supplier) {
+                    $rows->push((object) ['date' => '', 'ref' => 'Statement balance / supplier record due_amount', 'debit' => '', 'credit' => '', 'balance' => number_format($run, 2, '.', '') . ' / ' . number_format((float) $supplier->due_amount, 2, '.', '')]);
+                }
+
+                return view('backend.purchasing.table', ['title' => translate('Supplier statement') . ($supplier ? ': ' . $supplier->business_name : ''), 'note' => translate('Credit = owed to the supplier (invoices, legacy purchases); debit = paid or credited. Goods received but not yet invoiced are not a payable yet.'),
+                    'filters' => ['supplier_id' => ['Supplier ID', $sid ?: '']], 'columns' => ['date' => 'Date', 'ref' => 'Document', 'debit' => 'Paid / credited', 'credit' => 'Owed', 'balance' => 'Balance'], 'rows' => $rows]);
             case 'goods-receiving':
                 $rows = DB::table('goods_receipts as g')->join('suppliers as s', 's.id', '=', 'g.supplier_id')->orderByDesc('g.id')->paginate(50, ['g.receipt_no', 'g.received_at', 's.business_name', 'g.goods_total', 'g.landed_cost', 'g.total', 'g.invoice_status']);
 
@@ -409,10 +460,44 @@ class PurchasingController extends Controller
 
                 return view('backend.purchasing.table', ['title' => translate('Pending purchase requirements'), 'columns' => ['product_name' => 'Product', 'variant' => 'Variation', 'demand' => 'Confirmed demand', 'on_hand' => 'Physical', 'incoming' => 'Incoming', 'shortage' => 'To buy'], 'rows' => collect($items)->map(fn ($i) => (object) $i)]);
             case 'actual-order-profit':
-                $rows = DB::table('order_details as d')->join('orders as o', 'o.id', '=', 'd.order_id')->where('d.stock_mode', 'v2')->where('d.cost_status', 'final')->orderByDesc('d.id')
-                    ->paginate(50, ['o.code', 'd.product_id', 'd.quantity', 'd.price', 'd.buying_price', 'd.profit', 'd.cost_status']);
+                $from = $request->query('from');
+                $to = $request->query('to');
+                // Every order line is classified, never converted: nothing here writes to an order. Cancelled orders never count towards any total.
+                $base = fn () => DB::table('order_details as d')->join('orders as o', 'o.id', '=', 'd.order_id')->where('o.delivery_status', '<>', 'cancelled')
+                    ->when($from, fn ($q) => $q->whereDate('o.created_at', '>=', $from))->when($to, fn ($q) => $q->whereDate('o.created_at', '<=', $to));
+                $final = $base()->where('d.stock_mode', 'v2')->where('d.cost_status', 'final')->selectRaw('COALESCE(SUM(d.profit),0) profit, COALESCE(SUM(d.price),0) sales, COUNT(*) n')->first();
+                $hist = $base()->where('d.stock_mode', '<>', 'v2')->whereRaw('CAST(d.buying_price AS DECIMAL(20,4)) > 0')->selectRaw('COALESCE(SUM(d.price - d.quantity * CAST(d.buying_price AS DECIMAL(20,4))),0) profit, COALESCE(SUM(d.price),0) sales, COUNT(*) n')->first();
+                $histUnknown = $base()->where('d.stock_mode', '<>', 'v2')->whereRaw('COALESCE(CAST(d.buying_price AS DECIMAL(20,4)),0) <= 0')->selectRaw('COALESCE(SUM(d.price),0) sales, COUNT(*) n')->first();
+                $pending = $base()->where('d.stock_mode', 'v2')->where(fn ($q) => $q->whereNull('d.cost_status')->orWhere('d.cost_status', '<>', 'final'))->selectRaw("COUNT(*) n, COALESCE(SUM(d.price),0) sales, SUM(d.cost_status = 'uncosted') uncosted")->first();
+                $est = $base()->where('d.stock_mode', 'v2')->where('d.cost_status', 'uncosted')->whereNotNull('d.estimated_unit_cost')->selectRaw('COALESCE(SUM(d.price - d.quantity * d.estimated_unit_cost),0) p, COUNT(*) n')->first();
+                $hasRefunds = \Illuminate\Support\Facades\Schema::hasTable('refund_postings');
+                $rows = $base()->orderByDesc('d.id')->select(['o.code', 'o.delivery_status', 'd.stock_mode', 'd.product_id', 'd.quantity', 'd.price', 'd.buying_price', 'd.profit', 'd.cost_status', 'd.estimated_unit_cost'])
+                    ->when($hasRefunds, fn ($q) => $q->selectRaw('(SELECT COALESCE(SUM(rp.amount),0) FROM refund_postings rp WHERE rp.order_detail_id = d.id) AS refunded'))->paginate(50);
+                $refundedTotal = $hasRefunds ? (float) $base()->selectRaw('COALESCE(SUM((SELECT COALESCE(SUM(rp.amount),0) FROM refund_postings rp WHERE rp.order_detail_id = d.id)),0) r')->value('r') : 0.0;
+                $rows->getCollection()->transform(function ($r) {
+                    $r->delivery_status = $r->delivery_status;
+                    if ($r->stock_mode === 'v2') {
+                        $isFinal = $r->cost_status === 'final';
+                        $r->class = $isFinal ? 'FINAL (actual FIFO cost)' : strtoupper((string) ($r->cost_status ?: 'awaiting dispatch')) . ' - excluded from profit';
+                        $r->profit = $isFinal ? $r->profit : ($r->estimated_unit_cost !== null ? 'ESTIMATE ' . number_format($r->price - $r->quantity * $r->estimated_unit_cost, 2, '.', '') . ' (not final)' : 'not final');
+                        $r->buying_price = $isFinal ? $r->buying_price : 'unknown';
+                    } elseif ((float) $r->buying_price > 0) {
+                        $r->class = 'HISTORICAL - cost as recorded by the old system, not verified';
+                        $r->profit = number_format($r->price - $r->quantity * (float) $r->buying_price, 2, '.', '') . ' (recorded, unverified)';
+                    } else {
+                        $r->class = 'HISTORICAL - cost unknown';
+                        $r->profit = 'unknown';
+                        $r->buying_price = 'unknown';
+                    }
 
-                return view('backend.purchasing.table', ['title' => translate('Actual order profit (finalised FIFO cost only; uncosted lines are excluded)'), 'columns' => ['code' => 'Order', 'product_id' => 'Product', 'quantity' => 'Qty', 'price' => 'Sold for', 'buying_price' => 'Unit cost', 'profit' => 'Profit', 'cost_status' => 'Cost'], 'rows' => $rows]);
+                    return $r;
+                });
+
+                return view('backend.purchasing.table', ['title' => translate('Order profit'), 'filters' => ['from' => ['From (YYYY-MM-DD)', $from], 'to' => ['To (YYYY-MM-DD)', $to]],
+                    'note' => translate('FINAL profit (actual FIFO cost recorded at dispatch):') . ' ' . number_format($final->profit, 2) . ' ' . translate('on sales of') . ' ' . number_format($final->sales, 2) . ' (' . $final->n . ' ' . translate('lines') . '). '
+                        . translate('NOT final and excluded from it:') . ' ' . (int) $pending->n . ' ' . translate('confirmed-order lines awaiting a cost or without one') . ' (' . (int) $pending->uncosted . ' ' . translate('with unknown cost') . ', ' . translate('sales') . ' ' . number_format($pending->sales, 2) . '; ' . translate('planning ESTIMATE, never booked:') . ' ' . number_format($est->p, 2) . ' ' . translate('on') . ' ' . (int) $est->n . '). '
+                        . translate('HISTORICAL lines (orders before the upgrade, kept exactly as recorded):') . ' ' . (int) $hist->n . ' ' . translate('lines with the old system\'s recorded cost, profit') . ' ' . number_format($hist->profit, 2) . ' ' . translate('on sales of') . ' ' . number_format($hist->sales, 2) . ' (' . translate('unverified, reported separately and never added to FINAL') . '); ' . (int) $histUnknown->n . ' ' . translate('lines with no cost at all, sales') . ' ' . number_format($histUnknown->sales, 2) . '. ' . translate('Refunds posted on these lines:') . ' ' . number_format($refundedTotal, 2) . ' ' . translate('(shown per line, NOT deducted from any profit figure above: a refund is accounted in Sales Returns and Refunds).') . ' ' . translate('Cancelled orders are not counted.'),
+                    'columns' => ['code' => 'Order', 'delivery_status' => 'Order status', 'product_id' => 'Product', 'quantity' => 'Qty', 'price' => 'Sold for', 'buying_price' => 'Unit cost', 'profit' => 'Profit', 'refunded' => 'Refunded', 'class' => 'Cost class'], 'rows' => $rows]);
             case 'reconciliation':
                 $rep = collect((new InventoryReconciliation)->report())->map(fn ($r) => (object) ['severity' => $r['severity'], 'label' => $r['label'], 'count' => $r['count'], 'samples' => implode('; ', $r['samples'])]);
 
@@ -441,7 +526,99 @@ class PurchasingController extends Controller
         $line = \App\Models\OrderDetail::findOrFail($v['order_detail_id']);
         try {
             $demand->receiveReturn($line, (int) $v['qty'], $v['condition'], 'ret:' . $v['op_key'], $request->user()->id, $v['note'] ?? null);
-            flash(translate('Return received as ') . $v['condition'])->success();
+            flash(translate('Return received as') . ' ' . $v['condition'])->success();
+        } catch (InvalidArgumentException $e) {
+            flash($e->getMessage())->error();
+        }
+
+        return back();
+    }
+
+    // ── Supplier invoices, payments, advances ─────────────────────────────
+
+    public function supplierPayments(Request $request)
+    {
+        if ($r = $this->ready()) {
+            return $r;
+        }
+        $suppliers = DB::table('suppliers')->orderBy('business_name')->get(['id', 'business_name', 'due_amount', 'opening_balance']);
+        $sid = (int) $request->query('supplier_id');
+        $supplier = $sid ? $suppliers->firstWhere('id', $sid) : null;
+        $uninvoiced = $supplier ? DB::table('goods_receipts')->where('supplier_id', $sid)->where('status', 'posted')->where('invoice_status', '<>', 'invoiced')->orderBy('id')->get(['id', 'receipt_no', 'received_at', 'goods_total']) : collect();
+        $invoices = $supplier ? DB::table('supplier_invoices')->where('supplier_id', $sid)->where('status', '<>', 'void')->orderByDesc('id')->limit(100)->get() : collect();
+        $accounts = DB::table('chart_of_accounts')->whereIn('sub_type', ['cash', 'bank', 'mobile_bank'])->where('status', 'active')->where('is_deleted', '0')->orderBy('name')->get(['id', 'name', 'current_balance']);
+
+        return view('backend.purchasing.payments', compact('suppliers', 'supplier', 'uninvoiced', 'invoices', 'accounts'));
+    }
+
+    public function recordInvoice(Request $request, SupplierLedgerService $ledger)
+    {
+        $v = $request->validate(['op_key' => 'required|string|max:100', 'supplier_id' => 'required|integer|exists:suppliers,id', 'goods_receipt_id' => 'required|integer', 'invoice_no' => 'required|string|max:80',
+            'subtotal' => 'required|numeric|gt:0', 'discount' => 'nullable|numeric|min:0', 'tax' => 'nullable|numeric|min:0', 'freight' => 'nullable|numeric|min:0', 'invoice_date' => 'nullable|date']);
+        try {
+            $r = $ledger->recordInvoice('inv:' . $v['op_key'], $v, $request->user()->id);
+            flash(($r['replayed'] ?? false) ? translate('This invoice was already recorded.') : translate('Supplier invoice recorded.'))->success();
+        } catch (InvalidArgumentException $e) {
+            flash($e->getMessage())->error();
+        }
+
+        return redirect()->route('purchasing.supplier.payments', ['supplier_id' => $v['supplier_id']]);
+    }
+
+    public function payInvoice(Request $request, $id, SupplierLedgerService $ledger)
+    {
+        $v = $request->validate(['op_key' => 'required|string|max:100', 'account_id' => 'required|integer|exists:chart_of_accounts,id', 'amount' => 'required|numeric|gt:0', 'paid_on' => 'nullable|date']);
+        $invoice = DB::table('supplier_invoices')->where('id', $id)->first() ?: abort(404);
+        try {
+            $r = $ledger->pay('pay:' . $v['op_key'], (int) $id, (int) $v['account_id'], $v['amount'], $v['paid_on'] ?? null, $request->user()->id);
+            flash(($r['replayed'] ?? false) ? translate('This payment was already recorded.') : translate('Payment recorded.'))->success();
+        } catch (InvalidArgumentException $e) {
+            flash($e->getMessage())->error();
+        }
+
+        return redirect()->route('purchasing.supplier.payments', ['supplier_id' => $invoice->supplier_id]);
+    }
+
+    public function supplierAdvance(Request $request, SupplierLedgerService $ledger)
+    {
+        $v = $request->validate(['op_key' => 'required|string|max:100', 'supplier_id' => 'required|integer|exists:suppliers,id', 'account_id' => 'required|integer|exists:chart_of_accounts,id', 'amount' => 'required|numeric|gt:0']);
+        try {
+            $ledger->advance('adv:' . $v['op_key'], (int) $v['supplier_id'], (int) $v['account_id'], $v['amount'], null, $request->user()->id);
+            flash(translate('Advance recorded.'))->success();
+        } catch (InvalidArgumentException $e) {
+            flash($e->getMessage())->error();
+        }
+
+        return redirect()->route('purchasing.supplier.payments', ['supplier_id' => $v['supplier_id']]);
+    }
+
+    // ── Returns to the supplier ───────────────────────────────────────────
+
+    public function supplierReturns(Request $request)
+    {
+        if ($r = $this->ready()) {
+            return $r;
+        }
+        $sid = (int) $request->query('supplier_id');
+        $rows = DB::table('goods_receipt_lines as l')->join('goods_receipts as g', 'g.id', '=', 'l.goods_receipt_id')->join('products as p', 'p.id', '=', 'l.product_id')->join('suppliers as s', 's.id', '=', 'g.supplier_id')
+            ->when($sid, fn ($q) => $q->where('g.supplier_id', $sid))->where('g.status', 'posted')->orderByDesc('l.id')->limit(200)
+            ->get(['l.id', 'g.receipt_no', 'g.invoice_status', 's.business_name', 'p.name', 'l.variant', 'l.qty', 'l.unit_cost'])
+            ->map(function ($r) {
+                $r->returned = (int) DB::table('stock_movements')->where('type', 'supplier_return')->where('source_type', 'goods_receipt_line')->where('source_id', $r->id)->sum(DB::raw('-on_hand_delta'));
+
+                return $r;
+            });
+        $suppliers = DB::table('suppliers')->orderBy('business_name')->get(['id', 'business_name']);
+
+        return view('backend.purchasing.supplier_returns', compact('rows', 'suppliers', 'sid'));
+    }
+
+    public function returnToSupplier(Request $request, \App\Services\Purchasing\SupplierReturnService $svc)
+    {
+        $v = $request->validate(['op_key' => 'required|string|max:100', 'receipt_line_id' => 'required|integer', 'qty' => 'required|integer|min:1', 'note' => 'nullable|string|max:255']);
+        try {
+            $r = $svc->returnGoods('sr:' . $v['op_key'], (int) $v['receipt_line_id'], (int) $v['qty'], $request->user()->id, $v['note'] ?? null);
+            flash(($r['replayed'] ?? false) ? translate('This return was already recorded.') : translate('Returned to supplier. Supplier credit:') . ' ' . $r['supplier_credit'])->success();
         } catch (InvalidArgumentException $e) {
             flash($e->getMessage())->error();
         }

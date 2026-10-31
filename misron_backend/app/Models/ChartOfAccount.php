@@ -28,6 +28,12 @@ class ChartOfAccount extends Model
         'is_deleted'
     ];
 
+    // Legacy code changes balances with ->save() / ->increment(); both reach ChartOfAccountBuilder, where the legacy-ledger bridge records the change.
+    public function newEloquentBuilder($query)
+    {
+        return new \App\Models\Builders\ChartOfAccountBuilder($query);
+    }
+
     protected $casts = [
         'cashout_charge' => 'decimal:2',
         'opening_balance' => 'decimal:2',

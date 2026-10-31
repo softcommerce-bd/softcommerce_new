@@ -1,0 +1,5 @@
+class,variant_rows,stock_units,layer_units,units_without_cost,layer_units_above_stock
+1 NO cost layer at all,416,83200,0,83200,0
+2 stock above layers,102,20979,9919,11060,0
+3 layers above stock,88,17591,35191,0,17600
+4 match,3128,625590,625590,0,0

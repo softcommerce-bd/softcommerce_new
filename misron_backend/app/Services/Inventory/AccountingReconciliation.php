@@ -23,18 +23,52 @@ class AccountingReconciliation
 
         // 1. every account the journal touched: journal net vs the statement-log mirror rows (the legacy balances' source)
         $bad = DB::select("SELECT a.id, a.name,
-                (SELECT COALESCE(SUM(l.debit - l.credit),0) FROM journal_lines l WHERE l.account_id = a.id) AS j,
+                (SELECT COALESCE(SUM(l.debit - l.credit),0) FROM journal_lines l WHERE l.account_id = a.id AND l.mirrored = 0) AS j,
                 (SELECT COALESCE(SUM(s.debit - s.credit),0) FROM account_statement_logs s WHERE s.account_id = a.id AND s.transaction_type = 'journal') AS m
-            FROM chart_of_accounts a WHERE EXISTS (SELECT 1 FROM journal_lines x WHERE x.account_id = a.id)");
+            FROM chart_of_accounts a WHERE EXISTS (SELECT 1 FROM journal_lines x WHERE x.account_id = a.id AND x.mirrored = 0)");
         $bad = array_values(array_filter($bad, fn ($r) => abs((float) $r->j - (float) $r->m) > 0.009));
         $add('journal_vs_statement_mirror', 'Accounts where the journal and the statement-log mirror disagree (the legacy balance would be wrong)', count($bad), array_map(fn ($r) => "{$r->name}: journal {$f($r->j)} vs mirror {$f($r->m)}", $bad), $bad ? 'critical' : 'ok');
+
+        // 1b. ledger drift: balance now - balance at baseline - journal movement since = what was posted without a journal entry
+        $base = DB::table('ledger_baselines')->count();
+        if (!$base) {
+            $add('ledger_drift', 'Ledger drift not measurable: no baseline yet (run accounting:baseline just before enabling the flag)', 0, [], 'medium');
+        } else {
+            $drift = DB::select("SELECT a.id, a.name, a.type, a.current_balance, b.balance AS base,
+                    COALESCE((SELECT SUM(CASE WHEN a.type IN ('asset','expense') THEN l.debit - l.credit ELSE l.credit - l.debit END)
+                              FROM journal_lines l JOIN journal_entries e ON e.id = l.journal_entry_id WHERE l.account_id = a.id AND e.posted_at >= b.taken_at), 0) AS moved
+                FROM chart_of_accounts a JOIN ledger_baselines b ON b.account_id = a.id");
+            $drift = array_values(array_filter($drift, fn ($r) => abs((float) $r->current_balance - (float) $r->base - (float) $r->moved) > 0.009));
+            $add('ledger_drift', 'Accounts whose balance moved without a matching journal entry since the baseline (posted outside the bridge, e.g. console fix-up commands or SQL)', count($drift),
+                array_map(fn ($r) => "{$r->name}: balance {$f($r->current_balance)} vs baseline {$f($r->base)} + journal {$f($r->moved)}", $drift), $drift ? 'high' : 'ok');
+        }
+        if (\Illuminate\Support\Facades\Schema::hasTable('ledger_outbox')) {
+            $waiting = DB::table('ledger_outbox')->whereNull('processed_at');
+            $n = (clone $waiting)->distinct()->count('token');
+            $old = (clone $waiting)->where('created_at', '<', now()->subMinutes(5))->distinct()->count('token');
+            $add('outbox_pending', 'Committed legacy postings still waiting for their journal entry (run ledger:process-outbox; older than 5 minutes = the scheduler is not running or a posting keeps failing)', $n, (clone $waiting)->whereNotNull('last_error')->limit(3)->pluck('last_error')->all(), $old ? 'high' : ($n ? 'medium' : 'ok'));
+        }
+        if (\Illuminate\Support\Facades\Schema::hasTable('refund_postings')) {
+            $nj = DB::table('refund_postings')->whereNull('journal_entry_id')->pluck('id')->all();
+            $add('refunds_without_journal', 'Refund postings with no journal entry', count($nj), $nj, $nj ? 'critical' : 'ok');
+            $walletAcc = (float) DB::table('chart_of_accounts')->where('id', SystemAccounts::id('customer_wallet'))->value('current_balance');
+            $users = (float) DB::table('users')->sum('balance');
+            $add('wallet_liability_vs_user_balances', "Customer Wallet Balances account ({$f($walletAcc)}) vs sum of customers' wallet balances ({$f($users)}). Only refunds are journalled to the account; wallet top-ups and wallet spending are not, so a difference is expected and is informational", $f($users - $walletAcc), [], 'info');
+            $paid = DB::table('refund_requests')->where('refund_status', 1)->whereNotExists(fn ($q) => $q->selectRaw('1')->from('refund_postings as p')->whereColumn('p.refund_request_id', 'refund_requests.id'))->count();
+            $add('paid_refunds_without_posting', 'Refund requests marked paid that have no refund posting (all refunds paid before the flag was on are in this group; history is not rewritten)', $paid, [], $paid ? 'info' : 'ok');
+        }
+        $susp = (float) DB::table('chart_of_accounts')->where('id', SystemAccounts::id('suspense'))->value('current_balance');
+        $add('legacy_suspense', "Legacy Posting Suspense balance ({$f($susp)}): one-sided amounts the old screens posted without a counter-account (informational; review, do not net away)", $f($susp), [], abs($susp) > 0.009 ? 'info' : 'ok');
 
         // 2. Accounts Payable vs open invoices vs supplier dues
         $payable = (float) DB::table('chart_of_accounts')->where('id', SystemAccounts::id('payable'))->value('current_balance');
         $open = (float) DB::table('supplier_invoices')->where('status', '<>', 'void')->selectRaw('COALESCE(SUM(total - paid),0) v')->value('v');
+        // legacy purchases (not created by goods receiving) carry their own payable in purchases.total_payment_due
+        $legacy = (float) DB::table('purchases')->whereNotExists(fn ($q) => $q->selectRaw('1')->from('goods_receipts as g')->whereColumn('g.purchase_id', 'purchases.id'))
+            ->selectRaw('COALESCE(SUM(CAST(total_payment_due AS DECIMAL(20,2))),0) v')->value('v');
         $dues = (float) DB::table('suppliers')->sum('due_amount');
-        $add('payable_vs_open_invoices', "Accounts Payable ({$f($payable)}) vs open supplier invoices ({$f($open)})", $f($payable - $open), [], abs($payable - $open) > 0.009 ? 'high' : 'ok');
-        $add('dues_vs_open_invoices', "Supplier due_amount total ({$f($dues)}) vs open supplier invoices ({$f($open)}); legacy purchases may legitimately differ", $f($dues - $open), [], 'info');
+        $add('payable_vs_open_invoices', "Accounts Payable ({$f($payable)}) vs open supplier invoices ({$f($open)}) + legacy purchase dues ({$f($legacy)})", $f($payable - $open - $legacy), [], abs($payable - $open - $legacy) > 0.009 ? 'high' : 'ok');
+        $add('dues_vs_documents', "Supplier due_amount total ({$f($dues)}) vs open invoices + legacy purchase dues ({$f($open + $legacy)})", $f($dues - $open - $legacy), [], abs($dues - $open - $legacy) > 0.009 ? 'medium' : 'ok');
 
         // 3. GRNI vs received-but-not-invoiced goods
         $grni = (float) DB::table('chart_of_accounts')->where('id', SystemAccounts::id('grni'))->value('current_balance');

@@ -62,11 +62,30 @@ From the repository dump (`misron.sql`; production counts may differ): 606 stock
 * **Opening cost for legacy stock without cost:** `inventory:opening-cost list|template|check|apply`. Never invents a cost; only rows with an explicit unit_cost are used; dry run unless `--commit --approved-by=NAME`; no stock change; Dr Inventory / Cr Inventory Opening Adjustment; idempotent by file hash. Dispatched lines already `uncosted` stay excluded from profit.
 * **Accounting reconciliation** is part of `inventory:reconcile` (journal vs statement mirror, payable vs open invoices, GRNI vs uninvoiced receipts, payments without journal, trial balance, profit exclusions).
 
-## 10. Not delivered / limits (be aware)
-* POS, courier settlement, legacy supplier payment and the legacy Balance Sheet/P&L still use the legacy accounting only (they are not journalled, which avoids double posting). The reconciliation shows legacy vs journal differences; mixing old and new documents for one supplier is not recommended.
-* Provisional cost is not implemented; units without a cost layer are `uncosted` and excluded from profit.
-* The legacy Balance Sheet still ignores its date filter.
-* Browser testing was run in a sandbox without the admin theme CSS/JS assets (404) or CDN access: screens render without server errors and the key flows work, but visual/mobile layout, jQuery-dependent widgets and charts could not be verified. Do this on staging.
-* The repository has no CORS middleware (the storefront relies on web-server CORS in production); the storefront browser test supplied the headers itself.
-* Full storefront checkout in a browser (address form to confirmation page) was not completed; the order endpoint is tested at HTTP level.
+## 10. Unified accounting and final integration (third phase)
+
+**One ledger.** With the flag ON, the journal is complete for everything that changes an account balance:
+* New flows (goods receipts, supplier invoices/payments/advances/returns, opening cost) post natively through `JournalService`.
+* Legacy screens (POS, courier settlement, legacy purchases and supplier payments, customer payments and refunds-to-balance, vouchers, expenses/income, transfers, purchase returns, order cancellations) keep posting exactly as before. `LegacyLedgerBridge` captures each `chart_of_accounts.current_balance` change (through `ChartOfAccount` save/increment/update) and, when the outermost DB transaction commits, writes ONE balanced journal entry marked `mirrored`: no balance or statement row is touched a second time, a rolled-back operation leaves nothing, and the entry names the screen (`source_type = legacy:<route>`, `source_id` = the document). An exact negation of an earlier entry for the same document is linked with `reversal_of_id`.
+* Old screens are not always double entry (e.g. the old purchase screen). The one-sided remainder is journalled against the visible **Legacy Posting Suspense** account (SYS-SUSP) instead of being hidden; `inventory:reconcile` reports its balance.
+* `accounting:baseline` (run once, just before enabling the flag) records each balance; `inventory:reconcile` then reports **ledger drift** = balance now − baseline − journal movement since. Anything posted outside the bridge (console fix-up commands, raw SQL) shows up as drift.
+* Flag OFF: the bridge does nothing; behaviour is unchanged.
+
+**Reports** read one source (`LedgerBalances`): statement history before the baseline, journal after it. The Balance Sheet and Trial Balance now honour their date (balance as at the date = current balance − later movements); P&L period movement uses the same source. New/upgraded views: General Ledger (date filter, running balance), Supplier Statement, Order Profit (FINAL vs ESTIMATED vs unknown cost, uncosted lines never presented as final), Supplier Payments (invoice, pay in parts, advance), Return to Supplier. Balance Sheet "Retained earnings" is still the legacy plug figure; it is labelled by the existing report, not recomputed.
+
+**Provisional cost.** Safe part implemented: `order_details.estimated_unit_cost` (a snapshot of the product's planning cost, only for dispatched lines with no FIFO cost). It is shown as ESTIMATE in Order Profit, never booked, never used by FIFO or finalized profit. Actual cost is only ever the FIFO layer cost, an approved `inventory:opening-cost` layer, or an invoice revaluation of unsold units (each leaves a stock movement + journal entry). Not implemented, deliberately: retroactively finalizing an already-dispatched uncosted line. It would change when COGS is recognised; it needs an accounting decision, so those lines stay excluded from final profit.
+
+**Permissions.** New `view_financial_reports` and `manage_accounting` guard the whole accounts area (it had no permission check); `update_order_delivery_status` / `update_order_payment_status` (existing, never enforced) now guard order status changes including bulk and line status. All are granted to NO role by the migration. **Before enabling in production** grant them: `php artisan inventory:grant-permissions "<accountant role>" finance`, and give the order-handling roles `update_order_delivery_status` in Staff > Roles, or those staff lose the screens (Super Admin is unaffected).
+
+**Storefront.** Product data revalidated every 30 s (was 3600 s): an hour-old page could offer a sold-out product. The cart/checkout answer comes from Laravel, so a stale page can never create an order that Laravel refuses.
+
+## 11. Rehearsal evidence (throwaway copies of the repository dump, never production)
+See the final report: schema parity artisan vs SQL, before/after totals, rollback. Scripts: `tests/ui/*.js` (browser), `sqlupdates/inventory_v2*.sql`.
+
+## 12. Not delivered / limits (be aware)
+* The proprietary AIZ admin theme bundle is not in the repository; browser tests used a Bootstrap 4 + jQuery stand-in, so theme-specific styling, theme toasts and sidebar are NOT verified.
+* Customer refunds credit the customer wallet only (no chart-of-accounts posting, no stock effect); there was no ledger posting to bridge. Stock returns only via the return-receipt workflow.
+* Journal bridging happens after the legacy transaction commits, in its own transaction. A crash between the two leaves drift, which the reconciliation reports; nothing is lost silently.
+* Retained earnings on the Balance Sheet is the pre-existing balancing figure.
+* Provisional cost finalization of historical lines (see above).
 * The v2 model has no multi-warehouse support.

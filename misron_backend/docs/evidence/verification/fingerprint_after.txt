@@ -1,0 +1,22 @@
+orders.grand_total	NULL	0
+order_details.price	NULL	0
+order_details.buying_price	NULL	0
+product_stocks.qty	NULL	0
+purchase_products.remaining	NULL	0
+purchase_products.cost	NULL	0
+purchases.net	NULL	0
+suppliers.due	165.0000	5
+chart.current_balance	0.0000	13
+statement.debit	NULL	0
+statement.credit	NULL	0
+users	5.0000	2
+products	0.0000	NULL
+ledger_outbox	0
+refund_postings	0
+journal_entries	0
+journal_lines	0
+idempotency_keys	0
+stock_balances	0
+wallets	0
+refund_requests	0
+goods_receipts	0

@@ -20,9 +20,9 @@ class InventoryGrantPermissions extends Command
         // read-only stock visibility
         'inventory_viewer' => ['view_inventory_reports', 'view_stock_adjustments', 'view_purchase_requirements', 'view_purchases'],
         // money: pays suppliers and settles couriers
-        'finance' => ['view_suppliers', 'view_supplier_payments', 'make_supplier_payment', 'view_purchases', 'view_inventory_reports', 'view_courier_settlements', 'settle_courier_orders'],
+        'finance' => ['view_financial_reports', 'manage_accounting', 'view_suppliers', 'view_supplier_payments', 'make_supplier_payment', 'view_purchases', 'view_inventory_reports', 'view_courier_settlements', 'settle_courier_orders'],
         // everything operational plus stock policy, but still reviewed deliberately
-        'manager' => ['view_suppliers', 'add_supplier', 'edit_supplier', 'view_supplier_payments', 'view_purchases', 'add_purchase', 'edit_purchase', 'manage_purchase_returns', 'view_purchase_orders', 'manage_purchase_orders',
+        'manager' => ['view_financial_reports', 'view_suppliers', 'add_supplier', 'edit_supplier', 'view_supplier_payments', 'view_purchases', 'add_purchase', 'edit_purchase', 'manage_purchase_returns', 'view_purchase_orders', 'manage_purchase_orders',
             'receive_goods', 'view_purchase_requirements', 'view_drafts', 'manage_drafts', 'view_stock_adjustments', 'manage_stock_adjustments', 'view_inventory_reports', 'manage_stock_policy', 'manage_returns_receiving', 'view_courier_settlements'],
         'preserve_previous_access' => null, // every permission of the section
     ];

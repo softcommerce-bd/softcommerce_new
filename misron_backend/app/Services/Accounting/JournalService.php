@@ -36,6 +36,18 @@ class JournalService
         return ['journal_entry_id' => $result['journal_entry_id'], 'entry_no' => $result['entry_no'], 'replayed' => $result['replayed']];
     }
 
+    /**
+     * Records an entry for balance changes that the legacy screens ALREADY applied: the lines of the accounts in $mirrored are journalled
+     * (flagged mirrored) but neither current_balance nor the statement log is touched again. Other lines (the suspense remainder) post normally.
+     */
+    public function postMirrored(string $key, string $date, array $lines, array $mirrored, ?string $sourceType, ?int $sourceId, ?string $description, ?int $by, ?int $reversalOf = null): array
+    {
+        $this->assertValid($lines);
+        $result = Idempotency::once('journal', $key, fn () => $this->write($key, $date, $lines, $sourceType, $sourceId, $description, $by, $reversalOf, $mirrored));
+
+        return ['journal_entry_id' => $result['journal_entry_id'], 'entry_no' => $result['entry_no'], 'replayed' => $result['replayed']];
+    }
+
     /** Posts the mirror image of an entry, once. */
     public function reverse(int $entryId, string $key, string $reason, ?int $by = null): array
     {
@@ -77,7 +89,7 @@ class JournalService
         }
     }
 
-    private function write(string $key, string $date, array $lines, ?string $sourceType, ?int $sourceId, ?string $description, ?int $by, ?int $reversalOf): array
+    private function write(string $key, string $date, array $lines, ?string $sourceType, ?int $sourceId, ?string $description, ?int $by, ?int $reversalOf, array $mirrored = []): array
     {
         $entryNo = 'JE-' . now()->format('ymd') . '-' . strtoupper(substr(sha1($key . microtime(true)), 0, 8));
         $entryId = DB::table('journal_entries')->insertGetId(['entry_no' => $entryNo, 'entry_date' => $date, 'source_type' => $sourceType, 'source_id' => $sourceId, 'description' => $description ? mb_substr($description, 0, 255) : null,
@@ -95,7 +107,11 @@ class JournalService
         foreach ($lines as $l) {
             $d = (int) ($l['debit'] ?? 0);
             $c = (int) ($l['credit'] ?? 0);
-            DB::table('journal_lines')->insert(['journal_entry_id' => $entryId, 'account_id' => $l['account'], 'debit' => $d / 100, 'credit' => $c / 100, 'supplier_id' => $l['supplier_id'] ?? null, 'memo' => isset($l['memo']) ? mb_substr($l['memo'], 0, 255) : null]);
+            $isMirror = in_array($l['account'], $mirrored, true);
+            DB::table('journal_lines')->insert(['journal_entry_id' => $entryId, 'account_id' => $l['account'], 'debit' => $d / 100, 'credit' => $c / 100, 'supplier_id' => $l['supplier_id'] ?? null, 'memo' => isset($l['memo']) ? mb_substr($l['memo'], 0, 255) : null, 'mirrored' => $isMirror ? 1 : 0]);
+            if ($isMirror) {
+                continue; // the legacy code already moved this balance and wrote its own statement row
+            }
 
             $acc = $accounts[$l['account']];
             $delta = in_array($acc->type, self::DEBIT_NORMAL, true) ? ($d - $c) : ($c - $d);

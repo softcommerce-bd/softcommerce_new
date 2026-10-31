@@ -86,6 +86,10 @@ class ChatOrderService
             throw new InvalidArgumentException("Your role may give at most {$maxPercent}% discount from chat.");
         }
 
+        // At most three attempts when the database kills the transaction as a deadlock victim; the idempotency key is re-checked before every attempt,
+        // nothing outside the database is touched inside the transaction, and batch units a rollback cannot restore are given back first.
+        $entryLevel = DB::transactionLevel();
+        for ($attempt = 1; ; $attempt++) {
         $take = null;
         try {
             return DB::transaction(function () use ($conversation, $staff, $input, $key, $rows, $shippingByRow, $discount, $name, $phone, $address, $city, $c, $ip, &$take) {
@@ -201,14 +205,24 @@ class ChatOrderService
             throw new InvalidArgumentException(($p ? $p->name . ' ' : 'An item ') . 'does not have enough stock for this order.');
         } catch (QueryException $e) {
             $this->release($take);
-            // A parallel double-submit with the same key won the unique index: return its order.
+            // A parallel double-submit with the same key won the unique index (or finished while we waited): return its order.
             if ($existing = ChatConversationOrder::where('idempotency_key', $key)->first()) {
                 return CombinedOrder::findOrFail($existing->combined_order_id);
+            }
+            if (\App\Support\DeadlockRetry::canRetry($attempt, $entryLevel, $e)) {
+                \App\Support\DeadlockRetry::pause();
+                continue;
             }
             throw $e;
         } catch (\Throwable $e) {
             $this->release($take);
+            // Laravel reports a deadlock inside an already-open outer transaction as DeadlockException (not a QueryException): same rule
+            if (\App\Support\DeadlockRetry::canRetry($attempt, $entryLevel, $e)) {
+                \App\Support\DeadlockRetry::pause();
+                continue;
+            }
             throw $e;
+        }
         }
     }
 

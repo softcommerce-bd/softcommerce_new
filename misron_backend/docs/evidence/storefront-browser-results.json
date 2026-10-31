@@ -1,0 +1,422 @@
+[
+ {
+  "area": "Availability parity",
+  "name": "desktop: in stock (stock-only) — storefront buttons match backend can_order=true (state in_stock)",
+  "pass": true,
+  "detail": "[{\"t\":\"Add to Cart\",\"d\":false},{\"t\":\"Express Order (Cash on Delivery)\",\"d\":false}]"
+ },
+ {
+  "area": "Layout",
+  "name": "desktop: in stock (stock-only) no horizontal overflow, no page errors",
+  "pass": true,
+  "detail": "overflow -15px "
+ },
+ {
+  "area": "Availability parity",
+  "name": "desktop: zero-stock backorder (limit 5) — storefront buttons match backend can_order=true (state available_on_order)",
+  "pass": true,
+  "detail": "[{\"t\":\"Add to Cart\",\"d\":false},{\"t\":\"Express Order (Cash on Delivery)\",\"d\":false}]"
+ },
+ {
+  "area": "Layout",
+  "name": "desktop: zero-stock backorder (limit 5) no horizontal overflow, no page errors",
+  "pass": true,
+  "detail": "overflow -15px "
+ },
+ {
+  "area": "Availability parity",
+  "name": "desktop: negative available (demand 6, stock 0) — storefront buttons match backend can_order=true (state available_on_order)",
+  "pass": true,
+  "detail": "[{\"t\":\"Add to Cart\",\"d\":false},{\"t\":\"Express Order (Cash on Delivery)\",\"d\":false}]"
+ },
+ {
+  "area": "Negative available",
+  "name": "desktop: negative-available backorder product is still orderable",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Layout",
+  "name": "desktop: negative available (demand 6, stock 0) no horizontal overflow, no page errors",
+  "pass": true,
+  "detail": "overflow -15px "
+ },
+ {
+  "area": "Availability parity",
+  "name": "desktop: preorder — storefront buttons match backend can_order=true (state preorder)",
+  "pass": true,
+  "detail": "[{\"t\":\"Add to Cart\",\"d\":false},{\"t\":\"Express Order (Cash on Delivery)\",\"d\":false}]"
+ },
+ {
+  "area": "Preorder",
+  "name": "desktop: preorder page shows the expected date from the backend (2026-11-29)",
+  "pass": true,
+  "detail": "Preorder — expected 2026-11-29"
+ },
+ {
+  "area": "Layout",
+  "name": "desktop: preorder no horizontal overflow, no page errors",
+  "pass": true,
+  "detail": "overflow -15px "
+ },
+ {
+  "area": "Availability parity",
+  "name": "desktop: stock-only, out of stock — storefront buttons match backend can_order=false (state out_of_stock)",
+  "pass": true,
+  "detail": "[{\"t\":\"Out of stock\",\"d\":true}]"
+ },
+ {
+  "area": "Layout",
+  "name": "desktop: stock-only, out of stock no horizontal overflow, no page errors",
+  "pass": true,
+  "detail": "overflow -15px "
+ },
+ {
+  "area": "Availability parity",
+  "name": "desktop: stock-only lamp, out of stock — storefront buttons match backend can_order=false (state out_of_stock)",
+  "pass": true,
+  "detail": "[{\"t\":\"Out of stock\",\"d\":true}]"
+ },
+ {
+  "area": "Layout",
+  "name": "desktop: stock-only lamp, out of stock no horizontal overflow, no page errors",
+  "pass": true,
+  "detail": "overflow -15px "
+ },
+ {
+  "area": "Availability parity",
+  "name": "desktop: variations (S,L in stock; M none) — variation product page renders; backend can_order=true",
+  "pass": true,
+  "detail": "[{\"t\":\"Add to Cart\",\"d\":false},{\"t\":\"Express Order (Cash on Delivery)\",\"d\":false}]"
+ },
+ {
+  "area": "Layout",
+  "name": "desktop: variations (S,L in stock; M none) no horizontal overflow, no page errors",
+  "pass": true,
+  "detail": "overflow -15px "
+ },
+ {
+  "area": "Availability parity",
+  "name": "desktop: variations all out of stock — variation product page renders; backend can_order=false",
+  "pass": true,
+  "detail": "[{\"t\":\"Out of stock\",\"d\":true}]"
+ },
+ {
+  "area": "Layout",
+  "name": "desktop: variations all out of stock no horizontal overflow, no page errors",
+  "pass": true,
+  "detail": "overflow -15px "
+ },
+ {
+  "area": "Availability parity",
+  "name": "mobile: in stock (stock-only) — storefront buttons match backend can_order=true (state in_stock)",
+  "pass": true,
+  "detail": "[{\"t\":\"Add to Cart\",\"d\":false},{\"t\":\"Express Order (Cash on Delivery)\",\"d\":false}]"
+ },
+ {
+  "area": "Layout",
+  "name": "mobile: in stock (stock-only) no horizontal overflow, no page errors",
+  "pass": true,
+  "detail": "overflow -15px "
+ },
+ {
+  "area": "Availability parity",
+  "name": "mobile: zero-stock backorder (limit 5) — storefront buttons match backend can_order=true (state available_on_order)",
+  "pass": true,
+  "detail": "[{\"t\":\"Add to Cart\",\"d\":false},{\"t\":\"Express Order (Cash on Delivery)\",\"d\":false}]"
+ },
+ {
+  "area": "Layout",
+  "name": "mobile: zero-stock backorder (limit 5) no horizontal overflow, no page errors",
+  "pass": true,
+  "detail": "overflow -15px "
+ },
+ {
+  "area": "Availability parity",
+  "name": "mobile: negative available (demand 6, stock 0) — storefront buttons match backend can_order=true (state available_on_order)",
+  "pass": true,
+  "detail": "[{\"t\":\"Add to Cart\",\"d\":false},{\"t\":\"Express Order (Cash on Delivery)\",\"d\":false}]"
+ },
+ {
+  "area": "Negative available",
+  "name": "mobile: negative-available backorder product is still orderable",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Layout",
+  "name": "mobile: negative available (demand 6, stock 0) no horizontal overflow, no page errors",
+  "pass": true,
+  "detail": "overflow -15px "
+ },
+ {
+  "area": "Availability parity",
+  "name": "mobile: preorder — storefront buttons match backend can_order=true (state preorder)",
+  "pass": true,
+  "detail": "[{\"t\":\"Add to Cart\",\"d\":false},{\"t\":\"Express Order (Cash on Delivery)\",\"d\":false}]"
+ },
+ {
+  "area": "Preorder",
+  "name": "mobile: preorder page shows the expected date from the backend (2026-11-29)",
+  "pass": true,
+  "detail": "Preorder — expected 2026-11-29"
+ },
+ {
+  "area": "Layout",
+  "name": "mobile: preorder no horizontal overflow, no page errors",
+  "pass": true,
+  "detail": "overflow -15px "
+ },
+ {
+  "area": "Availability parity",
+  "name": "mobile: stock-only, out of stock — storefront buttons match backend can_order=false (state out_of_stock)",
+  "pass": true,
+  "detail": "[{\"t\":\"Out of stock\",\"d\":true}]"
+ },
+ {
+  "area": "Layout",
+  "name": "mobile: stock-only, out of stock no horizontal overflow, no page errors",
+  "pass": true,
+  "detail": "overflow -15px "
+ },
+ {
+  "area": "Availability parity",
+  "name": "mobile: stock-only lamp, out of stock — storefront buttons match backend can_order=false (state out_of_stock)",
+  "pass": true,
+  "detail": "[{\"t\":\"Out of stock\",\"d\":true}]"
+ },
+ {
+  "area": "Layout",
+  "name": "mobile: stock-only lamp, out of stock no horizontal overflow, no page errors",
+  "pass": true,
+  "detail": "overflow -15px "
+ },
+ {
+  "area": "Availability parity",
+  "name": "mobile: variations (S,L in stock; M none) — variation product page renders; backend can_order=true",
+  "pass": true,
+  "detail": "[{\"t\":\"Add to Cart\",\"d\":false},{\"t\":\"Express Order (Cash on Delivery)\",\"d\":false}]"
+ },
+ {
+  "area": "Layout",
+  "name": "mobile: variations (S,L in stock; M none) no horizontal overflow, no page errors",
+  "pass": true,
+  "detail": "overflow -15px "
+ },
+ {
+  "area": "Availability parity",
+  "name": "mobile: variations all out of stock — variation product page renders; backend can_order=false",
+  "pass": true,
+  "detail": "[{\"t\":\"Out of stock\",\"d\":true}]"
+ },
+ {
+  "area": "Layout",
+  "name": "mobile: variations all out of stock no horizontal overflow, no page errors",
+  "pass": true,
+  "detail": "overflow -15px "
+ },
+ {
+  "area": "Variations",
+  "name": "sizes S,M,L,XL are listed; sold-out sizes (M, XL) are disabled, in-stock sizes (S, L) enabled",
+  "pass": true,
+  "detail": "[{\"t\":\"S\",\"d\":false,\"on\":true},{\"t\":\"M\",\"d\":true,\"on\":false},{\"t\":\"L\",\"d\":false,\"on\":false},{\"t\":\"XL\",\"d\":true,\"on\":false},{\"t\":\"Add to Wishlist\",\"d\":false,\"on\":false}]"
+ },
+ {
+  "area": "Variations",
+  "name": "the first buyable size (S) is preselected",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Variations",
+  "name": "choosing L shows its own stock (3)",
+  "pass": true,
+  "detail": "Only 3 left"
+ },
+ {
+  "area": "Variations",
+  "name": "Add to Cart stores the chosen size",
+  "pass": true,
+  "detail": "L"
+ },
+ {
+  "area": "Variations",
+  "name": "a product whose every size is sold out offers none (mobile)",
+  "pass": true,
+  "detail": "[true,true,true,true]"
+ },
+ {
+  "area": "Add to Cart",
+  "name": "in-stock: Add to Cart puts one item in the cart",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Checkout",
+  "name": "in-stock: Confirm Order is enabled with valid details",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Checkout",
+  "name": "in-stock: exactly one order was created",
+  "pass": true,
+  "detail": "created 1, url http://127.0.0.1:3000/confirm-order/eyJpdiI6ImJiMTZQK0paQ2tXcENlWVFnS0c1dkE9PSIsInZhbHVlIjoibFJ6SXZybCt3UVpmU1VmTU5EYzNFUT09IiwibWFjIjoiNzEwNjU3N2ZkNWY1OGYyNTZjYzM5ZTYxMWFhMTc3ZTk2Yzc4ZGE2YTJmYzJhNDVlZTJlNTIyOGIxMzEwY2FmZSIsInRhZyI6IiJ9?guest=true"
+ },
+ {
+  "area": "Order confirmation",
+  "name": "in-stock: confirmation page shows the order",
+  "pass": true,
+  "detail": "/confirm-order/eyJpdiI6ImJiMTZQK0paQ2tXcENlWVFnS0c1dkE9PSIsInZhbHVlIjoibFJ6SXZybCt3UVpmU1VmTU5EYzNFUT09IiwibWFjIjoiNzEwNjU3N2ZkNWY1OGYyNTZjYzM5ZTYxMWFhMTc3ZTk2Yzc4ZGE2YTJmYzJhNDVlZTJlNTIyOGIxMzEwY2FmZSIsInRhZyI6IiJ9?guest=true"
+ },
+ {
+  "area": "Stock model",
+  "name": "in-stock: a pending storefront order takes no stock and reserves no demand",
+  "pass": true,
+  "detail": "on hand 10->10, demand 0->0"
+ },
+ {
+  "area": "Cancellation",
+  "name": "in-stock: confirming reserves the ordered quantity (2) as demand, physical unchanged",
+  "pass": true,
+  "detail": "demand 0->2"
+ },
+ {
+  "area": "Cancellation",
+  "name": "in-stock: cancelling releases the demand exactly once",
+  "pass": true,
+  "detail": "demand 0, on hand 10"
+ },
+ {
+  "area": "Add to Cart",
+  "name": "zero-stock backorder: Add to Cart puts one item in the cart",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Checkout",
+  "name": "zero-stock backorder: Confirm Order is enabled with valid details",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Checkout",
+  "name": "zero-stock backorder: exactly one order was created",
+  "pass": true,
+  "detail": "created 1, url http://127.0.0.1:3000/confirm-order/eyJpdiI6InVEekVwUXR5ODdwMWE1SndkNzNXNFE9PSIsInZhbHVlIjoiUlJ5dSt3MzhlZ1BmTXZzVmRxeDBWQT09IiwibWFjIjoiYjZjZmIwM2M4YTM2OWYyYWU2MzMzMWExYjIxNWRmOGExOTQzYmJiZGJlNGUzODlhMWM1ZGI2MTE5YWIwMmM1ZiIsInRhZyI6IiJ9?guest=true"
+ },
+ {
+  "area": "Order confirmation",
+  "name": "zero-stock backorder: confirmation page shows the order",
+  "pass": true,
+  "detail": "/confirm-order/eyJpdiI6InVEekVwUXR5ODdwMWE1SndkNzNXNFE9PSIsInZhbHVlIjoiUlJ5dSt3MzhlZ1BmTXZzVmRxeDBWQT09IiwibWFjIjoiYjZjZmIwM2M4YTM2OWYyYWU2MzMzMWExYjIxNWRmOGExOTQzYmJiZGJlNGUzODlhMWM1ZGI2MTE5YWIwMmM1ZiIsInRhZyI6IiJ9?guest=true"
+ },
+ {
+  "area": "Stock model",
+  "name": "zero-stock backorder: a pending storefront order takes no stock and reserves no demand",
+  "pass": true,
+  "detail": "on hand 0->0, demand 0->0"
+ },
+ {
+  "area": "Cancellation",
+  "name": "zero-stock backorder: confirming reserves the ordered quantity (2) as demand, physical unchanged",
+  "pass": true,
+  "detail": "demand 0->2"
+ },
+ {
+  "area": "Cancellation",
+  "name": "zero-stock backorder: cancelling releases the demand exactly once",
+  "pass": true,
+  "detail": "demand 0, on hand 0"
+ },
+ {
+  "area": "Add to Cart",
+  "name": "negative-available backorder: Add to Cart puts one item in the cart",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Checkout",
+  "name": "negative-available backorder: Confirm Order is enabled with valid details",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Checkout",
+  "name": "negative-available backorder: exactly one order was created",
+  "pass": true,
+  "detail": "created 1, url http://127.0.0.1:3000/confirm-order/eyJpdiI6IkgvOEkzelVkd0VLSzVxeWZlRDhtTVE9PSIsInZhbHVlIjoiKys0YTdLVkVBNUpYeldwckt1ZXE1QT09IiwibWFjIjoiNDVmNWFjNjA2NDM3Y2IwZmU3NDc1ZGJhZjgzZTg1Nzg3YTA5ZjcyZTc4MWU0NDQ1MTc4MGI4M2U2ZmQ4MjE5OCIsInRhZyI6IiJ9?guest=true"
+ },
+ {
+  "area": "Order confirmation",
+  "name": "negative-available backorder: confirmation page shows the order",
+  "pass": true,
+  "detail": "/confirm-order/eyJpdiI6IkgvOEkzelVkd0VLSzVxeWZlRDhtTVE9PSIsInZhbHVlIjoiKys0YTdLVkVBNUpYeldwckt1ZXE1QT09IiwibWFjIjoiNDVmNWFjNjA2NDM3Y2IwZmU3NDc1ZGJhZjgzZTg1Nzg3YTA5ZjcyZTc4MWU0NDQ1MTc4MGI4M2U2ZmQ4MjE5OCIsInRhZyI6IiJ9?guest=true"
+ },
+ {
+  "area": "Stock model",
+  "name": "negative-available backorder: a pending storefront order takes no stock and reserves no demand",
+  "pass": true,
+  "detail": "on hand 0->0, demand 6->6"
+ },
+ {
+  "area": "Cancellation",
+  "name": "negative-available backorder: confirming reserves the ordered quantity (2) as demand, physical unchanged",
+  "pass": true,
+  "detail": "demand 6->8"
+ },
+ {
+  "area": "Cancellation",
+  "name": "negative-available backorder: cancelling releases the demand exactly once",
+  "pass": true,
+  "detail": "demand 6, on hand 0"
+ },
+ {
+  "area": "Add to Cart",
+  "name": "preorder: Add to Cart puts one item in the cart",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Checkout",
+  "name": "preorder: Confirm Order is enabled with valid details",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "area": "Checkout",
+  "name": "preorder: exactly one order was created",
+  "pass": true,
+  "detail": "created 1, url http://127.0.0.1:3000/confirm-order/eyJpdiI6IlZETlJ0Ny9jY09kajE3MUdqejNXK0E9PSIsInZhbHVlIjoiSGFlOEcrSVZUcG9PcnpsOFFZZU9PQT09IiwibWFjIjoiZTJlMzljOTI2ZGQ4Mzg3NDEyYTBjYTliYWFjMGM2YTc3Y2Q0MmY2NGEzYjhiYzkxZGY5NGJmNjQ5MGNlZTQzNCIsInRhZyI6IiJ9?guest=true"
+ },
+ {
+  "area": "Order confirmation",
+  "name": "preorder: confirmation page shows the order",
+  "pass": true,
+  "detail": "/confirm-order/eyJpdiI6IlZETlJ0Ny9jY09kajE3MUdqejNXK0E9PSIsInZhbHVlIjoiSGFlOEcrSVZUcG9PcnpsOFFZZU9PQT09IiwibWFjIjoiZTJlMzljOTI2ZGQ4Mzg3NDEyYTBjYTliYWFjMGM2YTc3Y2Q0MmY2NGEzYjhiYzkxZGY5NGJmNjQ5MGNlZTQzNCIsInRhZyI6IiJ9?guest=true"
+ },
+ {
+  "area": "Stock model",
+  "name": "preorder: a pending storefront order takes no stock and reserves no demand",
+  "pass": true,
+  "detail": "on hand 0->0, demand 0->0"
+ },
+ {
+  "area": "Cancellation",
+  "name": "preorder: confirming reserves the ordered quantity (2) as demand, physical unchanged",
+  "pass": true,
+  "detail": "demand 0->2"
+ },
+ {
+  "area": "Cancellation",
+  "name": "preorder: cancelling releases the demand exactly once",
+  "pass": true,
+  "detail": "demand 0, on hand 0"
+ },
+ {
+  "area": "Stock-only",
+  "name": "ordering with an empty cart is refused by the backend",
+  "pass": true,
+  "detail": ""
+ }
+]

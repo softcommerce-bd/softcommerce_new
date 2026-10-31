@@ -36,7 +36,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin']], function 
         Route::post('/partial-payment', 'partialPayment')->name('pos.partial-payment');
         Route::post('/set-shipping-address', 'set_shipping_address')->name('pos.set-shipping-address');
         Route::post('/pos-order-summary', 'get_order_summary')->name('pos.getOrderSummary');
-        Route::post('/pos-order', 'order_store')->name('pos.order_place');
+        Route::post('/pos-order', 'order_store')->name('pos.order_place')->middleware('retry.deadlock');
         Route::get('/pos-activation', 'configuration')->name('poin-of-sales.activation');
         Route::get('/pos/thermal-printer/{order_id}', 'invoice')->name('admin.invoice.thermal_printer');
     });
@@ -61,7 +61,7 @@ Route::group(['prefix' => 'seller', 'middleware' => ['seller', 'verified']], fun
         Route::post('/setShipping', 'setShipping')->name('seller.pos.setShipping');
         Route::post('/set-shipping-address', 'set_shipping_address')->name('seller.pos.set-shipping-address');
         Route::post('/pos-order-summary', 'get_order_summary')->name('seller.pos.getOrderSummary');
-        Route::post('/pos-order', 'order_store')->name('seller.pos.order_place');
+        Route::post('/pos-order', 'order_store')->name('seller.pos.order_place')->middleware('retry.deadlock');
         Route::get('/pos-configuration', 'configuration')->name('pos.configuration');
         Route::post('/pos-configuration/update', 'posConfigurationUpdate')->name('pos_configuration.update');
         Route::get('/pos/thermal-printer/{order_id}', 'invoice')->name('seller.invoice.thermal_printer');

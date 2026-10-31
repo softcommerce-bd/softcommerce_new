@@ -25,6 +25,7 @@ abstract class InventoryV2TestCase extends InventoryTestCase
         }
         config(['inventory.confirmed_only' => true]);
         InventoryMode::reset();
+        \App\Services\Accounting\LegacyLedgerBridge::reset();
         $this->supplierId = DB::table('suppliers')->insertGetId(['slug' => 's-' . Str::random(6), 'business_name' => 'Test Supplier', 'contact_person_name' => 'T', 'mobile' => '017' . random_int(10000000, 99999999), 'opening_balance' => '0', 'due_amount' => 0, 'paid_amount' => 0, 'created_at' => now(), 'updated_at' => now()]);
     }
 
@@ -32,6 +33,7 @@ abstract class InventoryV2TestCase extends InventoryTestCase
     {
         config(['inventory.confirmed_only' => false]);
         InventoryMode::reset();
+        \App\Services\Accounting\LegacyLedgerBridge::reset();
         parent::tearDown();
     }
 

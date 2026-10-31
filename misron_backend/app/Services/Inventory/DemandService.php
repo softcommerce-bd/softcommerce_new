@@ -81,7 +81,7 @@ class DemandService
             $this->allocate($productId, $variant);
 
             return DB::table('order_demands')->where('id', $id)->first();
-        });
+        }, \App\Support\DeadlockRetry::MAX);
     }
 
     /**
@@ -123,7 +123,7 @@ class DemandService
             }
 
             return $total;
-        });
+        }, \App\Support\DeadlockRetry::MAX);
     }
 
     /**
@@ -191,7 +191,7 @@ class DemandService
                 'fifo_batch_info' => $consumed['batches'] ? json_encode(array_map(fn ($b) => ['id' => $b['purchase_product_id'], 'qty' => $b['qty'], 'cost' => $b['unit_price']], $consumed['batches'])) : null, 'created_at' => now()]);
 
             return ['dispatched' => $qty, 'cost' => (float) $consumed['total_cost'], 'uncosted' => $uncosted];
-        });
+        }, \App\Support\DeadlockRetry::MAX);
     }
 
     private function recordLineCost(OrderDetail $detail, array $consumed, int $uncosted): void
@@ -209,6 +209,13 @@ class DemandService
             'cost_status' => $everUncosted ? 'uncosted' : 'final', 'updated_at' => now()];
         if (!$everUncosted && $dispatched >= (int) $row->quantity) {
             $update['profit'] = round((float) $row->price - $total, 2); // only when every unit has a real cost layer
+        }
+        if ($uncosted > 0 && \Illuminate\Support\Facades\Schema::hasColumn('order_details', 'estimated_unit_cost')) {
+            // A PLANNING figure kept apart from actual cost: never used by the ledger, FIFO layers or finalized profit.
+            $est = DB::table('products')->where('id', $detail->product_id)->value('estimated_purchase_cost');
+            if ($est !== null && (float) $est > 0) {
+                $update['estimated_unit_cost'] = round((float) $est, 4);
+            }
         }
         if (!$row->purchase_id && $consumed['batches']) {
             $update['purchase_id'] = $consumed['batches'][0]['purchase_id'];
@@ -257,7 +264,7 @@ class DemandService
             $this->allocate($productId, $variant); // freed physical units go to the next waiting order
 
             return $qty;
-        });
+        }, \App\Support\DeadlockRetry::MAX);
     }
 
     /** The order line's quantity changed after confirmation: move demand by the difference, never below what already shipped. */
@@ -291,7 +298,7 @@ class DemandService
             StockBalance::change($productId, $variant, demand: $diff);
             StockBalance::movement(['product_id' => $productId, 'variant' => $variant, 'type' => 'demand_adjusted', 'demand_delta' => $diff, 'source_type' => 'order', 'source_id' => $detail->order_id, 'order_detail_id' => $detail->id, 'created_by' => $by]);
             $this->allocate($productId, $variant);
-        });
+        }, \App\Support\DeadlockRetry::MAX);
     }
 
     /**

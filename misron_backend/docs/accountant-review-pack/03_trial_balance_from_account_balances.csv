@@ -1,0 +1,7 @@
+code,name,type,debit,credit
+1-15001,Inventory,asset,147089280.00,0.00
+2-2101,Accounts Payable,liability,0.00,147089280.00
+4-42001,Courier Income,income,0.00,52.20
+5-51006,Courier Settlement Expense,expense,353.95,0.00
+,TOTAL,,147089633.95,147089332.20
+,DIFFERENCE (debit - credit),,301.75,

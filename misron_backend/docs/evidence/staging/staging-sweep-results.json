@@ -1,0 +1,762 @@
+[
+ {
+  "label": "desktop",
+  "name": "Purchase Dashboard",
+  "path": "/admin/purchasing",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [],
+  "ms": 2427,
+  "pass": true
+ },
+ {
+  "label": "desktop",
+  "name": "Quick Purchase",
+  "path": "/admin/purchasing/quick-purchase",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [],
+  "ms": 2484,
+  "pass": true
+ },
+ {
+  "label": "desktop",
+  "name": "Purchase Requirements",
+  "path": "/admin/purchasing/requirements",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [],
+  "ms": 2116,
+  "pass": true
+ },
+ {
+  "label": "desktop",
+  "name": "Purchase Orders",
+  "path": "/admin/purchasing/reports/purchase-orders",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [],
+  "ms": 2206,
+  "pass": true
+ },
+ {
+  "label": "desktop",
+  "name": "Goods Receiving",
+  "path": "/admin/purchasing/receiving",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [],
+  "ms": 1555,
+  "pass": true
+ },
+ {
+  "label": "desktop",
+  "name": "Supplier Payments (new)",
+  "path": "/admin/purchasing/supplier-payments?supplier_id=1",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [],
+  "ms": 1644,
+  "pass": true
+ },
+ {
+  "label": "desktop",
+  "name": "Supplier Outstanding",
+  "path": "/admin/purchasing/supplier-outstanding",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [],
+  "ms": 1893,
+  "pass": true
+ },
+ {
+  "label": "desktop",
+  "name": "Supplier Ledger/Statement",
+  "path": "/admin/purchasing/reports/supplier-statement?supplier_id=1",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [],
+  "ms": 1659,
+  "pass": true
+ },
+ {
+  "label": "desktop",
+  "name": "Inventory Overview / Stock Policies",
+  "path": "/admin/purchasing/stock",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [],
+  "ms": 1678,
+  "pass": true
+ },
+ {
+  "label": "desktop",
+  "name": "Stock Movements",
+  "path": "/admin/purchasing/movements",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [],
+  "ms": 1571,
+  "pass": true
+ },
+ {
+  "label": "desktop",
+  "name": "Backorders",
+  "path": "/admin/purchasing/backorders",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [],
+  "ms": 1739,
+  "pass": true
+ },
+ {
+  "label": "desktop",
+  "name": "Inventory Valuation",
+  "path": "/admin/purchasing/valuation",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [],
+  "ms": 2142,
+  "pass": true
+ },
+ {
+  "label": "desktop",
+  "name": "Customer Returns (receive)",
+  "path": "/admin/purchasing/returns",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [],
+  "ms": 1361,
+  "pass": true
+ },
+ {
+  "label": "desktop",
+  "name": "Return to Supplier",
+  "path": "/admin/purchasing/supplier-returns",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [],
+  "ms": 2339,
+  "pass": true
+ },
+ {
+  "label": "desktop",
+  "name": "Reconciliation",
+  "path": "/admin/purchasing/reports/reconciliation",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [],
+  "ms": 6885,
+  "pass": true
+ },
+ {
+  "label": "desktop",
+  "name": "Order Profit",
+  "path": "/admin/purchasing/reports/actual-order-profit",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [],
+  "ms": 1908,
+  "pass": true
+ },
+ {
+  "label": "desktop",
+  "name": "General Ledger (journal)",
+  "path": "/admin/purchasing/reports/general-ledger",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [],
+  "ms": 1767,
+  "pass": true
+ },
+ {
+  "label": "desktop",
+  "name": "Journal Trial Balance",
+  "path": "/admin/purchasing/reports/trial-balance",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [],
+  "ms": 1346,
+  "pass": true
+ },
+ {
+  "label": "desktop",
+  "name": "Legacy Purchase list",
+  "path": "/purchase/index",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [
+   "$(...).DataTable is not a function"
+  ],
+  "ms": 1823,
+  "pass": false
+ },
+ {
+  "label": "desktop",
+  "name": "Legacy Purchase create",
+  "path": "/purchase/create",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [],
+  "ms": 1344,
+  "pass": true
+ },
+ {
+  "label": "desktop",
+  "name": "Legacy Supplier Payments",
+  "path": "/admin/accounts/supplier-payments",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [],
+  "ms": 1522,
+  "pass": true
+ },
+ {
+  "label": "desktop",
+  "name": "Legacy Supplier Payment create",
+  "path": "/admin/accounts/supplier-payments/create",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [
+   "$(...).select2 is not a function"
+  ],
+  "ms": 2047,
+  "pass": false
+ },
+ {
+  "label": "desktop",
+  "name": "Customer Payments",
+  "path": "/admin/accounts/customer-payments",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [
+   "$ is not defined"
+  ],
+  "ms": 377,
+  "pass": false
+ },
+ {
+  "label": "desktop",
+  "name": "Accounts dashboard",
+  "path": "/admin/accounts",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [],
+  "ms": 2346,
+  "pass": true
+ },
+ {
+  "label": "desktop",
+  "name": "Balance Sheet",
+  "path": "/admin/accounts/reports/balance-sheet",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [],
+  "ms": 2000,
+  "pass": true
+ },
+ {
+  "label": "desktop",
+  "name": "Balance Sheet (past date)",
+  "path": "/admin/accounts/reports/balance-sheet?date_range=custom&end_date=2026-09-14",
+  "status": 200,
+  "fatal": false,
+  "overflow": 4,
+  "errors": [],
+  "ms": 2099,
+  "pass": true
+ },
+ {
+  "label": "desktop",
+  "name": "Profit & Loss",
+  "path": "/admin/accounts/reports/profit-loss?date_range=this_year",
+  "status": 200,
+  "fatal": false,
+  "overflow": 4,
+  "errors": [],
+  "ms": 1744,
+  "pass": true
+ },
+ {
+  "label": "desktop",
+  "name": "Trial Balance",
+  "path": "/admin/accounts/reports/trial-balance",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [],
+  "ms": 1591,
+  "pass": true
+ },
+ {
+  "label": "desktop",
+  "name": "Cash Book",
+  "path": "/admin/accounts/reports/cash-book",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [],
+  "ms": 2426,
+  "pass": true
+ },
+ {
+  "label": "desktop",
+  "name": "Courier Settlement",
+  "path": "/courier-settlement/index",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [],
+  "ms": 1913,
+  "pass": true
+ },
+ {
+  "label": "desktop",
+  "name": "Stock Adjustments",
+  "path": "/admin/stock-adjustments",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [],
+  "ms": 1950,
+  "pass": true
+ },
+ {
+  "label": "desktop",
+  "name": "Drafts",
+  "path": "/draft/index",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [],
+  "ms": 1982,
+  "pass": true
+ },
+ {
+  "label": "desktop",
+  "name": "All Orders",
+  "path": "/admin/all_orders",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [],
+  "ms": 2027,
+  "pass": true
+ },
+ {
+  "label": "desktop",
+  "name": "Order Details",
+  "path": "/admin/orders/<encrypted>/show",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [],
+  "ms": 2806,
+  "pass": true
+ },
+ {
+  "label": "mobile",
+  "name": "Purchase Dashboard",
+  "path": "/admin/purchasing",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [],
+  "ms": 1591,
+  "pass": true
+ },
+ {
+  "label": "mobile",
+  "name": "Quick Purchase",
+  "path": "/admin/purchasing/quick-purchase",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [],
+  "ms": 1304,
+  "pass": true
+ },
+ {
+  "label": "mobile",
+  "name": "Purchase Requirements",
+  "path": "/admin/purchasing/requirements",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [],
+  "ms": 2061,
+  "pass": true
+ },
+ {
+  "label": "mobile",
+  "name": "Purchase Orders",
+  "path": "/admin/purchasing/reports/purchase-orders",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [],
+  "ms": 2114,
+  "pass": true
+ },
+ {
+  "label": "mobile",
+  "name": "Goods Receiving",
+  "path": "/admin/purchasing/receiving",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [],
+  "ms": 2268,
+  "pass": true
+ },
+ {
+  "label": "mobile",
+  "name": "Supplier Payments (new)",
+  "path": "/admin/purchasing/supplier-payments?supplier_id=1",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [],
+  "ms": 1818,
+  "pass": true
+ },
+ {
+  "label": "mobile",
+  "name": "Supplier Outstanding",
+  "path": "/admin/purchasing/supplier-outstanding",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [],
+  "ms": 1393,
+  "pass": true
+ },
+ {
+  "label": "mobile",
+  "name": "Supplier Ledger/Statement",
+  "path": "/admin/purchasing/reports/supplier-statement?supplier_id=1",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [],
+  "ms": 1930,
+  "pass": true
+ },
+ {
+  "label": "mobile",
+  "name": "Inventory Overview / Stock Policies",
+  "path": "/admin/purchasing/stock",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [],
+  "ms": 2073,
+  "pass": true
+ },
+ {
+  "label": "mobile",
+  "name": "Stock Movements",
+  "path": "/admin/purchasing/movements",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [],
+  "ms": 1280,
+  "pass": true
+ },
+ {
+  "label": "mobile",
+  "name": "Backorders",
+  "path": "/admin/purchasing/backorders",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [],
+  "ms": 1378,
+  "pass": true
+ },
+ {
+  "label": "mobile",
+  "name": "Inventory Valuation",
+  "path": "/admin/purchasing/valuation",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [],
+  "ms": 1454,
+  "pass": true
+ },
+ {
+  "label": "mobile",
+  "name": "Customer Returns (receive)",
+  "path": "/admin/purchasing/returns",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [],
+  "ms": 1383,
+  "pass": true
+ },
+ {
+  "label": "mobile",
+  "name": "Return to Supplier",
+  "path": "/admin/purchasing/supplier-returns",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [],
+  "ms": 1825,
+  "pass": true
+ },
+ {
+  "label": "mobile",
+  "name": "Reconciliation",
+  "path": "/admin/purchasing/reports/reconciliation",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [],
+  "ms": 6971,
+  "pass": true
+ },
+ {
+  "label": "mobile",
+  "name": "Order Profit",
+  "path": "/admin/purchasing/reports/actual-order-profit",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [],
+  "ms": 1977,
+  "pass": true
+ },
+ {
+  "label": "mobile",
+  "name": "General Ledger (journal)",
+  "path": "/admin/purchasing/reports/general-ledger",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [],
+  "ms": 1393,
+  "pass": true
+ },
+ {
+  "label": "mobile",
+  "name": "Journal Trial Balance",
+  "path": "/admin/purchasing/reports/trial-balance",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [],
+  "ms": 1351,
+  "pass": true
+ },
+ {
+  "label": "mobile",
+  "name": "Legacy Purchase list",
+  "path": "/purchase/index",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [
+   "$(...).DataTable is not a function"
+  ],
+  "ms": 1385,
+  "pass": false
+ },
+ {
+  "label": "mobile",
+  "name": "Legacy Purchase create",
+  "path": "/purchase/create",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [],
+  "ms": 1286,
+  "pass": true
+ },
+ {
+  "label": "mobile",
+  "name": "Legacy Supplier Payments",
+  "path": "/admin/accounts/supplier-payments",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [],
+  "ms": 1583,
+  "pass": true
+ },
+ {
+  "label": "mobile",
+  "name": "Legacy Supplier Payment create",
+  "path": "/admin/accounts/supplier-payments/create",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [
+   "$(...).select2 is not a function"
+  ],
+  "ms": 1542,
+  "pass": false
+ },
+ {
+  "label": "mobile",
+  "name": "Customer Payments",
+  "path": "/admin/accounts/customer-payments",
+  "status": 200,
+  "fatal": false,
+  "overflow": 84,
+  "errors": [
+   "$ is not defined"
+  ],
+  "ms": 358,
+  "pass": false
+ },
+ {
+  "label": "mobile",
+  "name": "Accounts dashboard",
+  "path": "/admin/accounts",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [],
+  "ms": 1759,
+  "pass": true
+ },
+ {
+  "label": "mobile",
+  "name": "Balance Sheet",
+  "path": "/admin/accounts/reports/balance-sheet",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [],
+  "ms": 2127,
+  "pass": true
+ },
+ {
+  "label": "mobile",
+  "name": "Balance Sheet (past date)",
+  "path": "/admin/accounts/reports/balance-sheet?date_range=custom&end_date=2026-09-14",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [],
+  "ms": 1506,
+  "pass": true
+ },
+ {
+  "label": "mobile",
+  "name": "Profit & Loss",
+  "path": "/admin/accounts/reports/profit-loss?date_range=this_year",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [],
+  "ms": 1909,
+  "pass": true
+ },
+ {
+  "label": "mobile",
+  "name": "Trial Balance",
+  "path": "/admin/accounts/reports/trial-balance",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [],
+  "ms": 2292,
+  "pass": true
+ },
+ {
+  "label": "mobile",
+  "name": "Cash Book",
+  "path": "/admin/accounts/reports/cash-book",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [],
+  "ms": 2282,
+  "pass": true
+ },
+ {
+  "label": "mobile",
+  "name": "Courier Settlement",
+  "path": "/courier-settlement/index",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [],
+  "ms": 1411,
+  "pass": true
+ },
+ {
+  "label": "mobile",
+  "name": "Stock Adjustments",
+  "path": "/admin/stock-adjustments",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [],
+  "ms": 1773,
+  "pass": true
+ },
+ {
+  "label": "mobile",
+  "name": "Drafts",
+  "path": "/draft/index",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [],
+  "ms": 1456,
+  "pass": true
+ },
+ {
+  "label": "mobile",
+  "name": "All Orders",
+  "path": "/admin/all_orders",
+  "status": 200,
+  "fatal": false,
+  "overflow": 419,
+  "errors": [],
+  "ms": 3219,
+  "pass": false
+ },
+ {
+  "label": "mobile",
+  "name": "Order Details",
+  "path": "/admin/orders/<encrypted>/show",
+  "status": 200,
+  "fatal": false,
+  "overflow": 0,
+  "errors": [],
+  "ms": 2365,
+  "pass": true
+ }
+]

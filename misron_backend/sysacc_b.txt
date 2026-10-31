@@ -1,0 +1,5 @@
+SYS-ADV	Supplier Advances	asset	receivable	0.00
+SYS-GRNI	Goods Received Not Invoiced	liability	payable	0.00
+SYS-OPEN	Inventory Opening Adjustment	equity	equity	0.00
+SYS-PPV	Purchase Price Variance	expense	expense	0.00
+SYS-SUSP	Legacy Posting Suspense	equity	equity	0.00

@@ -1,0 +1,3 @@
+purchase_id,layers,units,value,deleted_product_id,supplier_id,purchase_date,reference,purchase_due,purchase_paid
+41,40,8000,1520000.00,2391,2,2026-09-15,Ref-1040,1520000,0.00
+42,40,8000,1680000.00,2392,2,2026-09-15,Ref-1041,1680000,0.00

@@ -1,0 +1,13 @@
+orders.grand_total	28697.0000	32
+order_details.price	27737.0000	34
+order_details.buying_price	8460.0000	34
+product_stocks.qty	747360.0000	3734
+purchase_products.remaining	686700.0000	3462
+purchase_products.cost	147078025.0000	3462
+purchases.net	147089280.0000	103
+suppliers.due	147089280.0000	2
+chart.current_balance	294178966.1500	53
+statement.debit	0.0000	105
+statement.credit	147089280.0000	105
+users	60.0000	3
+products	121.0000	952457

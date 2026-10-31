@@ -340,7 +340,7 @@ class PurchaseOrderController extends Controller
             // Handle document upload
             $documentPath = null;
             if ($request->hasFile('document')) {
-                $documentPath = $request->file('document')->store('documents', 'public');
+                $documentPath = \App\Support\RequestSideEffects::once($request, 'po_document', fn () => $request->file('document')->store('documents', 'public'), fn ($path) => Storage::disk('public')->delete($path));
             }
 
             // Store data in Purchase table
@@ -421,10 +421,12 @@ class PurchaseOrderController extends Controller
 
             if ($purchase->document) {
                 $filePath = $purchase->document; // Already stored as 'documents/filename.pdf'
-
-                if (Storage::disk('public')->exists($filePath)) {
-                    Storage::disk('public')->delete($filePath);
-                }
+                // removed only after this update commits: a rolled-back (or retried) update must not lose the file
+                DB::afterCommit(function () use ($filePath) {
+                    if (Storage::disk('public')->exists($filePath)) {
+                        Storage::disk('public')->delete($filePath);
+                    }
+                });
             }
 
             if ($purchase->total_advance_amount > 0) {
@@ -479,7 +481,7 @@ class PurchaseOrderController extends Controller
             // Handle document upload
             $documentPath = $purchase->document;
             if ($request->hasFile('document')) {
-                $documentPath = $request->file('document')->store('documents', 'public');
+                $documentPath = \App\Support\RequestSideEffects::once($request, 'po_document', fn () => $request->file('document')->store('documents', 'public'), fn ($path) => Storage::disk('public')->delete($path));
             }
 
             // Update existing purchase record

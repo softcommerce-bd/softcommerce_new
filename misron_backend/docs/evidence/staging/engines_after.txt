@@ -1,0 +1,5 @@
+purchases	InnoDB
+purchase_products	InnoDB
+purchase_returns	InnoDB
+purchase_return_products	InnoDB
+suppliers	InnoDB

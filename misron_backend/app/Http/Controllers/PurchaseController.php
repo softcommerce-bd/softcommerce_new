@@ -343,7 +343,8 @@ class PurchaseController extends Controller
             // Document upload
             $documentPath = null;
             if ($request->hasFile('document')) {
-                $documentPath = $request->file('document')->store('purchases', 'public');
+                // once per request: a deadlock retry must not store the upload again; removed if the request finally fails
+                $documentPath = \App\Support\RequestSideEffects::once($request, 'purchase_document', fn () => $request->file('document')->store('purchases', 'public'), fn ($path) => Storage::disk('public')->delete($path));
             }
 
             // Reference number
@@ -568,11 +569,17 @@ class PurchaseController extends Controller
 
             // Document handling
             if ($request->hasFile('document')) {
-                if ($purchase->document && Storage::exists('public/' . $purchase->document)) {
-                    Storage::delete('public/' . $purchase->document);
-                }
-                $documentPath = $request->file('document')->store('purchases', 'public');
+                $oldDocument = $purchase->document;
+                $documentPath = \App\Support\RequestSideEffects::once($request, 'purchase_document', fn () => $request->file('document')->store('purchases', 'public'), fn ($path) => Storage::disk('public')->delete($path));
                 $purchase->document = $documentPath;
+                // the previous file goes only after the new state is committed (a rolled-back update keeps its document)
+                if ($oldDocument) {
+                    DB::afterCommit(function () use ($oldDocument) {
+                        if (Storage::exists('public/' . $oldDocument)) {
+                            Storage::delete('public/' . $oldDocument);
+                        }
+                    });
+                }
             }
 
             // Update purchase record

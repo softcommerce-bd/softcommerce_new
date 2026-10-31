@@ -6,6 +6,12 @@
         <h5 class="mb-0 h6">{{ translate('Trial Balance') }}</h5>
     </div>
     <div class="card-body">
+    @include('backend.accounts.finance_reports._notice')
+    @if (abs($totalDebit - $totalCredit) >= 0.01)
+        <div class="alert alert-danger small py-2" role="alert" id="tb-out-of-balance">
+            <strong>{{ translate('Trial balance does not balance:') }}</strong> {{ translate('debit') }} {{ number_format($totalDebit, 2) }} {{ translate('vs credit') }} {{ number_format($totalCredit, 2) }} ({{ translate('difference') }} {{ number_format($totalDebit - $totalCredit, 2) }}). {{ translate('Nothing has been adjusted.') }}
+        </div>
+    @endif
         <!-- Filter Form -->
         <form method="GET" action="{{ route('accounts.reports.trial-balance') }}" class="mb-4" id="reportForm">
             <div class="form-row align-items-end">

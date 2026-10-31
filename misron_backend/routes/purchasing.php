@@ -26,5 +26,11 @@ Route::controller(PurchasingController::class)->group(function () {
     Route::get('/supplier-outstanding', 'supplierOutstanding')->name('supplier.outstanding');
     Route::get('/returns', 'returns')->name('returns');
     Route::post('/returns/receive', 'receiveReturn')->name('returns.receive');
+    Route::get('/supplier-payments', 'supplierPayments')->name('supplier.payments');
+    Route::post('/supplier-invoices', 'recordInvoice')->name('invoices.store');
+    Route::post('/supplier-invoices/{id}/pay', 'payInvoice')->whereNumber('id')->name('invoices.pay');
+    Route::post('/supplier-advances', 'supplierAdvance')->name('advances.store');
+    Route::get('/supplier-returns', 'supplierReturns')->name('supplier-returns');
+    Route::post('/supplier-returns', 'returnToSupplier')->name('supplier-returns.store');
     Route::get('/reports/{name}', 'report')->name('report');
 });

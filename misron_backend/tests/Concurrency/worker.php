@@ -195,6 +195,80 @@ try {
             $result['ok'] = true;
             break;
 
+        case 'lock_pair': // two transactions that take the same two rows in opposite order: a deterministic deadlock
+            $attempts = 0;
+            $body = function () use ($job, &$attempts) {
+                $attempts++;
+                DB::table('chart_of_accounts')->where('id', $job['first'])->lockForUpdate()->first();
+                usleep(($job['hold_ms'] ?? 300) * 1000);
+                DB::table('chart_of_accounts')->where('id', $job['second'])->lockForUpdate()->first();
+                DB::table('chart_of_accounts')->where('id', $job['first'])->increment('opening_balance', 0.01);
+
+                return ['done' => true];
+            };
+            if (!empty($job['retry'])) {
+                App\Services\Inventory\Idempotency::once('test_pair', $job['key'], $body); // the service wrapper, which retries a deadlock
+            } else {
+                DB::transaction($body); // a plain transaction: no retry
+            }
+            $result['attempts'] = $attempts;
+            $result['ok'] = true;
+            break;
+
+        case 'http_as': // a real request through the HTTP kernel as a given staff user (form post), e.g. an admin screen
+            Illuminate\Support\Facades\Auth::loginUsingId($job['user_id']);
+            $request = Request::create($job['uri'], $job['method'] ?? 'POST', $job['body'] ?? [], [], [], ['HTTP_ACCEPT' => 'application/json']);
+            $response = $app->make(HttpKernel::class)->handle($request);
+            $result['status'] = $response->getStatusCode();
+            $result['body'] = json_decode($response->getContent(), true) ?? substr((string) $response->getContent(), 0, 300);
+            $result['ok'] = true;
+            break;
+
+        case 'chat_place':
+            $conv = App\Models\ChatConversation::findOrFail($job['conversation_id']);
+            $staff = App\Models\User::findOrFail($job['user_id']);
+            $combined = app(App\Services\Chat\ChatOrderService::class)->place($conv, $staff, $job['input'], '127.0.0.1');
+            $result['combined_order_id'] = $combined->id;
+            $result['ok'] = true;
+            break;
+
+        case 'outbox_process':
+            $result['outbox'] = app(App\Services\Accounting\LedgerOutboxProcessor::class)->processPending($job['limit'] ?? 200);
+            $result['ok'] = true;
+            break;
+
+        case 'outbox_kill_at': // dies (SIGKILL: no cleanup, no rollback code) at the named boundary of processing
+            App\Services\Accounting\LedgerOutboxProcessor::$boundaryHook = function ($name) use ($job) {
+                if ($name === $job['at']) {
+                    function_exists('posix_kill') ? posix_kill(getmypid(), 9) : exit(137);
+                }
+            };
+            $result['outbox'] = app(App\Services\Accounting\LedgerOutboxProcessor::class)->processPending($job['limit'] ?? 200);
+            $result['ok'] = true;
+            break;
+
+        case 'refund_service':
+            $result['refund'] = app(App\Services\Accounting\RefundService::class)->record($job['key'], $job['method'], $job['amount'], $job['order_id'] ?? null, $job['order_detail_id'] ?? null, $job['refund_request_id'] ?? null, $job['account_id'] ?? null, $job['external_ref'] ?? null);
+            $result['ok'] = true;
+            break;
+
+        case 'refund_pay_as': // the admin screen's controller method, as a given administrator
+            Illuminate\Support\Facades\Auth::loginUsingId($job['admin_id']);
+            $req = Illuminate\Http\Request::create('/admin/refund-request-pay', 'POST', ['refund_id' => $job['refund_id']]);
+            $req->setLaravelSession(app('session')->driver());
+            app()->instance('request', $req);
+            app(App\Http\Controllers\RefundRequestController::class)->refund_pay($req);
+            $result['ok'] = true;
+            break;
+
+        case 'legacy_post': // what an old screen does with the flag on: change two balances in one transaction
+            DB::transaction(function () use ($job) {
+                App\Models\ChartOfAccount::where('id', $job['from'])->decrement('current_balance', $job['amount']);
+                App\Models\ChartOfAccount::where('id', $job['to'])->increment('current_balance', $job['amount']);
+            });
+            $result['ok'] = true;
+            break;
+
         default:
             throw new InvalidArgumentException('Unknown action ' . $job['action']);
     }

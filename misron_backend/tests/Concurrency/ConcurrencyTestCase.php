@@ -203,6 +203,10 @@ abstract class ConcurrencyTestCase extends TestCase
             proc_close($r['process']);
 
             $out = $r['job']['out'];
+            if (!empty($r['job']['may_die']) && !file_exists($out)) {
+                $results[$i] = ['died' => true]; // a worker that is meant to be killed writes nothing
+                continue;
+            }
             $this->assertFileExists($out, "Worker {$i} wrote no result. " . $this->diagnostics());
             $results[$i] = json_decode(file_get_contents($out), true);
         }
