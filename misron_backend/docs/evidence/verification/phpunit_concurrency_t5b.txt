@@ -1,0 +1,15 @@
+PHPUnit 9.6.36 by Sebastian Bergmann and contributors.
+
+..............................
+REAL-DEADLOCK courier: request retried={"X-Deadlock-Retries":"1"}
+.
+REAL-DEADLOCK purchase: {"X-Deadlock-Retries":"1"}
+.
+REAL-DEADLOCK admin order: {"X-Deadlock-Retries":"1"}
+....
+STALE-STATISTICS EXPERIMENT {"no_indexes_stale_stats":[{"deadlocks":0,"ok":14,"refused":10,"other":0},{"deadlocks":0,"ok":13,"refused":11,"other":0},{"deadlocks":0,"ok":11,"refused":13,"other":0}],"indexes_stale_stats":[{"deadlocks":0,"ok":17,"refused":7,"other":0},{"deadlocks":0,"ok":14,"refused":10,"other":0},{"deadlocks":0,"ok":14,"refused":10,"other":0}],"after_recovery":[{"deadlocks":0,"ok":14,"refused":10,"other":0},{"deadlocks":0,"ok":16,"refused":8,"other":0},{"deadlocks":0,"ok":13,"refused":11,"other":0},{"deadlocks":0,"ok":12,"refused":12,"other":0},{"deadlocks":0,"ok":14,"refused":10,"other":0}]}
+.........................     61 / 61 (100%)
+
+Time: 01:15.239, Memory: 58.50 MB
+
+OK (61 tests, 1695 assertions)

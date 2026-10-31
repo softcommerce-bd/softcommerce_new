@@ -34,6 +34,44 @@ class ChartOfAccount extends Model
         return new \App\Models\Builders\ChartOfAccountBuilder($query);
     }
 
+    /**
+     * Legacy screens read a balance, add to it in PHP and save the absolute result, so two requests at the same moment overwrite each other
+     * (one posting vanishes). Saving a changed balance now writes the CHANGE (`current_balance = current_balance + delta`), which the database
+     * applies to whatever is stored when the row is reached. A single request ends with exactly the value it always did; concurrent ones all count.
+     * The change goes through ChartOfAccountBuilder::increment, so the ledger bridge records the exact delta.
+     */
+    protected function performUpdate(\Illuminate\Database\Eloquent\Builder $query)
+    {
+        if (!$this->isDirty('current_balance')) {
+            return parent::performUpdate($query);
+        }
+        if ($this->fireModelEvent('updating') === false) {
+            return false;
+        }
+        if ($this->usesTimestamps()) {
+            $this->updateTimestamps();
+        }
+        $dirty = $this->getDirty();
+        $delta = round((float) $dirty['current_balance'] - (float) $this->getRawOriginal('current_balance'), 2);
+        unset($dirty['current_balance']);
+        $query = $this->setKeysForSaveQuery($query);
+        if ($delta != 0.0) {
+            $query->increment('current_balance', $delta, $dirty);
+        } elseif ($dirty !== []) {
+            $query->update($dirty);
+        }
+        // show what is really stored now (our own write holds the row, so a locking read returns the latest value)
+        $stored = $this->newQueryWithoutScopes()->whereKey($this->getKey())->lockForUpdate()->value('current_balance');
+        if ($stored !== null) {
+            $this->attributes['current_balance'] = $stored;
+        }
+        $this->syncChanges();
+        $this->fireModelEvent('updated', false);
+
+        return true;
+    }
+
+
     protected $casts = [
         'cashout_charge' => 'decimal:2',
         'opening_balance' => 'decimal:2',

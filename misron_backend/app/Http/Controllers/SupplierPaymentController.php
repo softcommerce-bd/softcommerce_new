@@ -250,7 +250,7 @@ public function store(Request $request)
 
     DB::beginTransaction();
     try {
-        $supplier = Supplier::findOrFail($request->supplier_id);
+        $supplier = Supplier::lockForUpdate()->findOrFail($request->supplier_id);
         $amount = (float) $request->amount;
 
         // Calculate total allocated amount
@@ -294,18 +294,13 @@ public function store(Request $request)
         }
 
         // Generate payment number
-        $lastPayment = SupplierPayment::orderBy('id', 'desc')->first();
-        $nextNumber = $lastPayment ? intval(substr($lastPayment->payment_no, 4)) + 1 : 1;
-        $paymentNo = 'PAY-' . str_pad($nextNumber, 6, '0', STR_PAD_LEFT);
-
         // Calculate new supplier due
         $newDue = $supplier->due_amount - $amount;
         $status = $newDue <= 0 ? 'paid' : 'partial';
 
         // Create payment record
-        $payment = SupplierPayment::create([
+        $payment = SupplierPayment::createNumbered([
             'supplier_id'        => $request->supplier_id,
-            'payment_no'         => $paymentNo,
             'amount'             => $amount,
             'paid_amount'        => $amount,
             'due_amount'         => $newDue,
@@ -320,6 +315,7 @@ public function store(Request $request)
             'status'             => $status,
             'created_by'         => auth()->id(),
         ]);
+        $paymentNo = $payment->payment_no;
 
         // Process each allocation
         foreach ($allocations as $alloc) {
@@ -550,8 +546,8 @@ public function store(Request $request)
         DB::beginTransaction();
         try {
             $payment = SupplierPayment::findOrFail($id);
-            $oldSupplier = Supplier::findOrFail($payment->supplier_id);
-            $newSupplier = Supplier::findOrFail($request->supplier_id);
+            $oldSupplier = Supplier::lockForUpdate()->findOrFail($payment->supplier_id);
+            $newSupplier = Supplier::lockForUpdate()->findOrFail($request->supplier_id);
 
             $newAmount = $request->amount;
             $newAllocations = json_decode($request->allocations, true);
@@ -716,7 +712,7 @@ public function store(Request $request)
         DB::beginTransaction();
         try {
             $payment = SupplierPayment::findOrFail($id);
-            $supplier = Supplier::findOrFail($payment->supplier_id);
+            $supplier = Supplier::lockForUpdate()->findOrFail($payment->supplier_id);
 
             foreach ($payment->purchases as $purchase) {
                 $purchase->total_payment_due += $purchase->pivot->paid_amount;

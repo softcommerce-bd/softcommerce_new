@@ -5,7 +5,9 @@
 | these controllers (or of the listed methods only). A method belongs here only if it is a single database transaction with no external
 | call, notification or one-off file effect that is not made once per request (RequestSideEffects).
 |
-| Deliberately NOT listed: PurchasingController (every write already retries inside Idempotency::once: a second layer would exceed three
+| Deliberately NOT listed: PurchaseOrderController@convertToPurchase (calls PurchaseController::store, which commits on its own, then updates the order outside any transaction: a repeat after a failure creates a second purchase) and CustomerPaymentController@autoImport (one commit per customer in a loop, errors swallowed so a deadlock is never seen); both need a transaction redesign, see docs/T5_DEADLOCK_RETRY_VERIFICATION_REPORT.md section 0.4.
+|
+| Also NOT listed: PurchasingController (every write already retries inside Idempotency::once: a second layer would exceed three
 | attempts), OrderController status/payment updates (they send notifications and SMS after saving), anything that calls a courier or payment API.
 */
 return [

@@ -217,10 +217,33 @@ try {
 
         case 'http_as': // a real request through the HTTP kernel as a given staff user (form post), e.g. an admin screen
             Illuminate\Support\Facades\Auth::loginUsingId($job['user_id']);
+            if (!empty($job['pause_after'])) { // widen a race window on purpose: sleep once, right after the first statement matching the pattern
+                $paused = false;
+                DB::listen(function ($q) use ($job, &$paused) {
+                    if (!$paused && preg_match($job['pause_after']['regex'], $q->sql)) {
+                        $paused = true;
+                        usleep($job['pause_after']['ms'] * 1000);
+                    }
+                });
+            }
             $request = Request::create($job['uri'], $job['method'] ?? 'POST', $job['body'] ?? [], [], [], ['HTTP_ACCEPT' => 'application/json']);
             $response = $app->make(HttpKernel::class)->handle($request);
+            $result['headers'] = array_filter(['X-Deadlock-Retries' => $response->headers->get('X-Deadlock-Retries')]);
             $result['status'] = $response->getStatusCode();
             $result['body'] = json_decode($response->getContent(), true) ?? substr((string) $response->getContent(), 0, 300);
+            $result['ok'] = true;
+            break;
+
+        case 'lock_then_lock': // holds one row, waits, then wants another: the other half of a deadlock with a request that takes them in the opposite order
+            $attempt = function () use ($job) {
+                DB::table($job['first']['table'])->where('id', $job['first']['id'])->lockForUpdate()->first();
+                foreach ($job['touch'] ?? [] as $id) { // modified rows make this transaction the heavier one, so the database picks the OTHER side as the deadlock victim
+                    DB::table('chart_of_accounts')->where('id', $id)->update(['description' => 'touched ' . uniqid()]);
+                }
+                usleep($job['hold_ms'] * 1000);
+                DB::table($job['second']['table'])->where('id', $job['second']['id'])->lockForUpdate()->first();
+            };
+            DB::transaction($attempt);
             $result['ok'] = true;
             break;
 

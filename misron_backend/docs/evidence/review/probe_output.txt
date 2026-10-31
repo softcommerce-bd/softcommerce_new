@@ -1,0 +1,17 @@
+Review probes (throwaway tests run from the scratchpad against inv_v2_test; nothing in the repository was changed; all rows removed by the test base class).
+Source: ReviewProbeTest.php.txt, ReviewProbe2Test.php.txt (copy to tests/Concurrency/*.php to re-run with: vendor/bin/phpunit -c phpunit.concurrency.xml <file>)
+
+[P1] Courier settlement settled once, then UNSETTLE sent 3x at the same moment by 3 admins (all three answered success=true)
+  current code (D2/D3/D4 applied):  cash account 4940 -> -9880 (one reversal would give 0)   COGS delta -1500 (one reversal: -500)
+  same run with ChartOfAccount.php from before D3 (commit ec77b41): cash 0, COGS -500, i.e. the reversal was applied once only
+
+[P2] Supplier payment of 30 on a 100 purchase (40 paid in cash), then DELETE of that payment sent 3x at once (all answered 200)
+  before:                          supplier due 30, cash 930, purchase due 30
+  current code (D3/D4 applied):    supplier due 120 (+90), cash 1020 (+90), purchase due 60 (+30)   one delete would give 60 / 960 / 60
+  D3 reverted only:                supplier due 120 (+90), cash 960 (+30), purchase due 60
+
+[P3] Purchase (100, 40 paid) then DELETE sent 3x at once: single delete and triple delete end identical (cash back to 1000, purchase gone, stock 0).
+  The second and third are refused by the stock guard, not by a lock on the purchase. Observation: after a single delete the supplier's due_amount is still 60.00 (the delete code never touches it).
+
+[P4] Lock footprint of the settlement-number query (D1): with three old settlements present, a transaction holding
+  "select ... where settlement_no like 'STL-<today>%' order by id desc limit 1 for update" (no row matches) did NOT block an UPDATE of the oldest settlement row (no lock wait). First-of-day full-table lock is not confirmed.

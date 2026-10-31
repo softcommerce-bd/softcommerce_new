@@ -120,7 +120,7 @@ class PurchaseOrderController extends Controller
     {
         $purchase = PurchaseOrder::find($id);
         if ($purchase) {
-            $supplier = Supplier::where('id', $purchase->supplier_id)->first();
+            $supplier = Supplier::lockForUpdate()->where('id', $purchase->supplier_id)->first();
         }
         $suppliers = Supplier::all();
 
@@ -187,7 +187,7 @@ class PurchaseOrderController extends Controller
             $purchase = PurchaseOrder::findOrFail($request->purchase_id);
 
             // Fetch the supplier record
-            $supplier = Supplier::findOrFail($request->supplier_id);
+            $supplier = Supplier::lockForUpdate()->findOrFail($request->supplier_id);
 
             // Initialize variables
             $totalPaid = 0;
@@ -265,7 +265,7 @@ class PurchaseOrderController extends Controller
     {
         DB::beginTransaction();
         try {
-            $supplier = Supplier::find($request->supplier_id);
+            $supplier = Supplier::lockForUpdate()->find($request->supplier_id);
 
             $paymentDetails = [];
             $totalPayments = 0;
@@ -430,7 +430,7 @@ class PurchaseOrderController extends Controller
             }
 
             if ($purchase->total_advance_amount > 0) {
-                $supplierold = Supplier::find($purchase->supplier_id);
+                $supplierold = Supplier::lockForUpdate()->find($purchase->supplier_id);
                 if ($supplierold) { // Ensure supplier exists before updating
                     $supplierold->opening_balance += $purchase->total_advance_amount;
                     $supplierold->save(); // Save the updated supplier balance
@@ -441,7 +441,7 @@ class PurchaseOrderController extends Controller
             PurchaseOrderDetail::where('purchase_order_id', $purchaseId)->delete();
 
             // Handle supplier advance balance
-            $supplier = Supplier::find($request->supplier_id);
+            $supplier = Supplier::lockForUpdate()->find($request->supplier_id);
             $paymentDetails = [];
             $totalPayments = 0;
             $advancedAmounts = [];

@@ -52,12 +52,30 @@ class CourierSettlement extends Model
         return $this->belongsTo(ChartOfAccount::class, 'account_id');
     }
     
+    /**
+     * Creates the settlement with the next free number. The number is read, not reserved, so two settlements at the same moment can pick the same
+     * one; the second then waits for the first to commit, fails on the unique index and (inside its own savepoint) tries again with a fresh read.
+     */
+    public static function createNumbered(array $attributes): self
+    {
+        for ($try = 1; ; $try++) {
+            try {
+                return \Illuminate\Support\Facades\DB::transaction(fn () => self::create($attributes + ['settlement_no' => self::generateSettlementNo()]));
+            } catch (\Illuminate\Database\QueryException $e) {
+                if ($try >= 5 || ($e->errorInfo[1] ?? null) != 1062 || !str_contains($e->getMessage(), 'settlement_no')) {
+                    throw $e;
+                }
+            }
+        }
+    }
+
     // Generate unique settlement number
     public static function generateSettlementNo()
     {
         $prefix = 'STL-' . date('Ymd');
         $lastSettlement = self::where('settlement_no', 'LIKE', $prefix . '%')
             ->orderBy('id', 'desc')
+            ->lockForUpdate() // a locking read sees the latest committed row, which a retry after a number clash needs (a plain read keeps the old snapshot)
             ->first();
             
         if (!$lastSettlement) {
