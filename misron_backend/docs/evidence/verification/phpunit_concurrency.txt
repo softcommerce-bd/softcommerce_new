@@ -4,3 +4,9 @@ Warning:       Your XML configuration validates against a deprecated schema.
 Suggestion:    Migrate your XML configuration using "--migrate-configuration"!
 
 .....................
+STALE-STATISTICS EXPERIMENT {"no_indexes_stale_stats":[{"deadlocks":0,"ok":14,"refused":10,"other":0},{"deadlocks":0,"ok":15,"refused":9,"other":0},{"deadlocks":0,"ok":12,"refused":12,"other":0}],"indexes_stale_stats":[{"deadlocks":0,"ok":19,"refused":5,"other":0},{"deadlocks":0,"ok":13,"refused":11,"other":0},{"deadlocks":0,"ok":13,"refused":11,"other":0}],"after_recovery":[{"deadlocks":0,"ok":13,"refused":11,"other":0},{"deadlocks":0,"ok":15,"refused":9,"other":0},{"deadlocks":0,"ok":14,"refused":10,"other":0},{"deadlocks":0,"ok":13,"refused":11,"other":0},{"deadlocks":0,"ok":15,"refused":9,"other":0}]}
+.......................                      44 / 44 (100%)
+
+Time: 00:55.209, Memory: 54.50 MB
+
+OK (44 tests, 1430 assertions)

@@ -5,8 +5,8 @@ product_stocks.qty	NULL	0
 purchase_products.remaining	NULL	0
 purchase_products.cost	NULL	0
 purchases.net	NULL	0
-suppliers.due	165.0000	9
-chart.current_balance	0.0000	25
+suppliers.due	165.0000	5
+chart.current_balance	0.0000	13
 statement.debit	NULL	0
 statement.credit	NULL	0
 users	5.0000	2
