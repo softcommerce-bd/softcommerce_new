@@ -13,14 +13,33 @@ use Illuminate\Support\Facades\DB;
  */
 class LedgerOutboxProcessor
 {
+    /** Test hook: called with a boundary name at each step of processing (a test can kill the process there). */
+    public static ?\Closure $boundaryHook = null;
+
+    private static function at(string $name): void
+    {
+        if (self::$boundaryHook) {
+            (self::$boundaryHook)($name);
+        }
+    }
+
     /** @return int|null journal entry id, null when the token had nothing to do */
     public function processToken(string $token): ?int
+    {
+        $id = $this->processTokenInTransaction($token);
+        self::at('after_commit');
+
+        return $id;
+    }
+
+    private function processTokenInTransaction(string $token): ?int
     {
         return DB::transaction(function () use ($token) {
             $rows = DB::table('ledger_outbox')->where('token', $token)->whereNull('processed_at')->orderBy('id')->lockForUpdate()->get();
             if ($rows->isEmpty()) {
                 return null; // another worker already did it
             }
+            self::at('after_lock');
             $net = [];
             foreach ($rows as $r) {
                 $net[(int) $r->account_id] = ($net[(int) $r->account_id] ?? 0) + (int) round(((float) $r->delta) * 100);
@@ -39,6 +58,7 @@ class LedgerOutboxProcessor
                 $lines[] = ['account' => $id, $isDebit ? 'debit' : 'credit' => $amount, 'memo' => 'Legacy posting'];
                 $isDebit ? $debit += $amount : $credit += $amount;
             }
+            self::at('after_lines');
             $entryId = null;
             if ($lines) {
                 $mirrored = array_column($lines, 'account');
@@ -51,7 +71,9 @@ class LedgerOutboxProcessor
                 $reversalOf = $this->findReversed($lines, $sourceType, $sourceId);
                 $entryId = app(JournalService::class)->postMirrored('legacy:' . $token, now()->toDateString(), $lines, $mirrored, $sourceType, $sourceId, $first->description, $first->created_by ? (int) $first->created_by : null, $reversalOf)['journal_entry_id'];
             }
+            self::at('after_journal');
             DB::table('ledger_outbox')->whereIn('id', $rows->pluck('id'))->update(['processed_at' => now(), 'journal_entry_id' => $entryId, 'last_error' => null]);
+            self::at('after_marks');
 
             return $entryId;
         });

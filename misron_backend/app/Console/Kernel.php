@@ -30,7 +30,7 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('accounts:import-customer-payments')->hourly();
         // crash recovery for the legacy-ledger outbox: completes any committed posting whose journal entry is still missing (no-op while the table is empty)
-        $schedule->command('ledger:process-outbox')->everyMinute()->withoutOverlapping(5);
+        $schedule->command('ledger:process-outbox --alert')->everyMinute()->withoutOverlapping(5);
 
         $schedule->command('courier:sync-status')
             ->hourly()  // Changed to hourly as requested

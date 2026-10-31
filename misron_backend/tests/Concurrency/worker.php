@@ -215,6 +215,43 @@ try {
             $result['ok'] = true;
             break;
 
+        case 'outbox_process':
+            $result['outbox'] = app(App\Services\Accounting\LedgerOutboxProcessor::class)->processPending($job['limit'] ?? 200);
+            $result['ok'] = true;
+            break;
+
+        case 'outbox_kill_at': // dies (SIGKILL: no cleanup, no rollback code) at the named boundary of processing
+            App\Services\Accounting\LedgerOutboxProcessor::$boundaryHook = function ($name) use ($job) {
+                if ($name === $job['at']) {
+                    function_exists('posix_kill') ? posix_kill(getmypid(), 9) : exit(137);
+                }
+            };
+            $result['outbox'] = app(App\Services\Accounting\LedgerOutboxProcessor::class)->processPending($job['limit'] ?? 200);
+            $result['ok'] = true;
+            break;
+
+        case 'refund_service':
+            $result['refund'] = app(App\Services\Accounting\RefundService::class)->record($job['key'], $job['method'], $job['amount'], $job['order_id'] ?? null, $job['order_detail_id'] ?? null, $job['refund_request_id'] ?? null, $job['account_id'] ?? null, $job['external_ref'] ?? null);
+            $result['ok'] = true;
+            break;
+
+        case 'refund_pay_as': // the admin screen's controller method, as a given administrator
+            Illuminate\Support\Facades\Auth::loginUsingId($job['admin_id']);
+            $req = Illuminate\Http\Request::create('/admin/refund-request-pay', 'POST', ['refund_id' => $job['refund_id']]);
+            $req->setLaravelSession(app('session')->driver());
+            app()->instance('request', $req);
+            app(App\Http\Controllers\RefundRequestController::class)->refund_pay($req);
+            $result['ok'] = true;
+            break;
+
+        case 'legacy_post': // what an old screen does with the flag on: change two balances in one transaction
+            DB::transaction(function () use ($job) {
+                App\Models\ChartOfAccount::where('id', $job['from'])->decrement('current_balance', $job['amount']);
+                App\Models\ChartOfAccount::where('id', $job['to'])->increment('current_balance', $job['amount']);
+            });
+            $result['ok'] = true;
+            break;
+
         default:
             throw new InvalidArgumentException('Unknown action ' . $job['action']);
     }
