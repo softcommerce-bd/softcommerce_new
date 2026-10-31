@@ -167,6 +167,7 @@ class OrderController extends Controller
                 ->get();
 
             if ($orders->isEmpty()) {
+                DB::rollBack(); // refusal: leave the transaction (and release its locks) before answering
                 return response()->json([
                     'success' => false,
                     'message' => 'No orders found that need payment update'
@@ -1228,6 +1229,14 @@ class OrderController extends Controller
      */
 
 
+    /** The submission-identity table is created by the inventory_v2 migrations; where it does not exist the checkout behaves as before. */
+    private static function checkoutKeysAvailable(): bool
+    {
+        static $available = null;
+
+        return $available ??= \Illuminate\Support\Facades\Schema::hasTable('idempotency_keys');
+    }
+
     public function store(Request $request)
     {
         // dd($request->all());
@@ -1281,21 +1290,35 @@ class OrderController extends Controller
         try {
         DB::transaction(function () use ($request, $user_id, $shippingAddress, $carts, &$outOfStockProduct, &$stockTake, &$placedCombinedOrderId, &$cartGone) {
 
-        // Lock this user's cart rows before anything else, so two submits of one cart are handled one after the other.
-        $lockedCartIds = Cart::where('user_id', $user_id)->lockForUpdate()->pluck('id')->all();
-        if (array_diff($carts->pluck('id')->all(), $lockedCartIds) !== []) {
-            $cartGone = true;
+        // Lock exactly the cart rows being ordered: by primary key, ascending. Row-level, so another customer's checkout is never blocked
+        // (a lock by user_id would scan and lock the whole carts table, which has no index on that column), and two submits of one cart queue up.
+        $cartIds = $carts->pluck('id')->map(fn ($id) => (int) $id)->sort()->values()->all();
+        $lockedCartIds = Cart::whereIn('id', $cartIds)->orderBy('id')->lockForUpdate()->pluck('id')->map(fn ($id) => (int) $id)->all();
+        if (array_diff($cartIds, $lockedCartIds) !== []) {
+            $cartGone = true; // another request consumed or removed part of this cart
             throw new \RuntimeException('cart_gone');
         }
-        // This screen does not empty the cart, so a double click or a second tab would place the same order again. An identical cart placed by the
-        // same user in the last few seconds is answered with that earlier order instead (a deliberate repeat order must wait that long).
-        $signature = fn ($rows) => collect($rows)->map(fn ($r) => $r['product_id'] . '|' . ($r['variation'] ?? $r['variant'] ?? '') . '|' . (int) $r['quantity'])->sort()->values()->all();
-        $recent = CombinedOrder::where('user_id', $user_id)->where('created_at', '>=', now()->subSeconds(15))->orderByDesc('id')->first();
-        if ($recent) {
-            $recentLines = OrderDetail::whereIn('order_id', Order::where('combined_order_id', $recent->id)->pluck('id'))->get(['product_id', 'variation', 'quantity']);
-            if ($signature($recentLines->toArray()) === $signature($carts->toArray())) {
-                $placedCombinedOrderId = $recent->id; // the earlier submit's order; nothing is created or taken again
-                return;
+        // Identity of THIS submission: the exact cart rows (ids, quantities, prices) together with the details chosen at checkout. The same
+        // submission repeated (double click, second tab, retry) is answered with the order it already created; a new purchase of identical products
+        // has new cart rows, and a changed address, payment option, shipping or coupon has a different identity, so neither is ever blocked.
+        $checkoutKey = null;
+        if (self::checkoutKeysAvailable()) {
+            $checkoutKey = sha1(json_encode([
+                (int) $user_id,
+                $carts->sortBy('id')->map(fn ($c) => [(int) $c->id, (int) $c->product_id, (string) $c->variation, (int) $c->quantity, (string) $c->price, (string) $c->discount, (string) $c->coupon_code, (string) $c->shipping_type])->values()->all(),
+                $request->address_id, $request->payment_option, $request->shipping_cost_amount, $request->total_shipping_cost, $request->additional_info,
+            ]));
+            try {
+                DB::table('idempotency_keys')->insert(['scope' => 'checkout_cart', 'key' => $checkoutKey, 'created_at' => now(), 'updated_at' => now()]);
+            } catch (\Illuminate\Database\QueryException $e) {
+                $row = DB::table('idempotency_keys')->where('scope', 'checkout_cart')->where('key', $checkoutKey)->lockForUpdate()->first();
+                if ($row && $row->result !== null) {
+                    $placedCombinedOrderId = (json_decode($row->result, true) ?: [])['combined_order_id'] ?? null;
+                    if ($placedCombinedOrderId) {
+                        return; // already placed by the same submission: nothing is created or taken again
+                    }
+                }
+                throw $e;
             }
         }
 
@@ -1476,6 +1499,9 @@ class OrderController extends Controller
 
         $combined_order->save();
         $placedCombinedOrderId = $combined_order->id;
+        if ($checkoutKey !== null) {
+            DB::table('idempotency_keys')->where('scope', 'checkout_cart')->where('key', $checkoutKey)->update(['result' => json_encode(['combined_order_id' => $combined_order->id]), 'updated_at' => now()]);
+        }
 
         }); // end DB::transaction
         // session changes only after the commit: a deadlock retry must find the session exactly as the first attempt did

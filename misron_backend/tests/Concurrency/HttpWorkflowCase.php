@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Schema;
  */
 abstract class HttpWorkflowCase extends VerificationCase
 {
-    private const MORE = ['courier_settlements', 'courier_settlement_details', 'supplier_payments', 'supplier_payment_purchases', 'stock_adjustments', 'addresses', 'model_has_roles', 'purchases', 'purchase_products', 'order_details', 'orders', 'carts', 'users'];
+    private const MORE = ['balance_transfers', 'voucher_details', 'vouchers', 'purchase_return_products', 'purchase_returns', 'income_details', 'incomes', 'stock_adjustment_lines', 'expense_payment_details', 'expense_payments', 'purchase_order_details', 'purchase_orders', 'order_payment_mappings', 'customer_payments', 'transaction_methods', 'courier_settlements', 'courier_settlement_details', 'supplier_payments', 'supplier_payment_purchases', 'stock_adjustments', 'addresses', 'model_has_roles', 'purchases', 'purchase_products', 'order_details', 'orders', 'carts', 'users'];
     private array $moreHigh = [];
     private array $roleLinks = [];
 
@@ -29,7 +29,7 @@ abstract class HttpWorkflowCase extends VerificationCase
 
     protected function tearDown(): void
     {
-        foreach (['courier_settlement_details', 'courier_settlements', 'supplier_payment_purchases', 'supplier_payments', 'stock_adjustments', 'addresses', 'carts'] as $t) {
+        foreach (['order_payment_mappings', 'customer_payments', 'transaction_methods', 'balance_transfers', 'voucher_details', 'vouchers', 'purchase_return_products', 'purchase_returns', 'income_details', 'incomes', 'stock_adjustment_lines', 'expense_payment_details', 'expense_payments', 'purchase_order_details', 'purchase_orders', 'courier_settlement_details', 'courier_settlements', 'supplier_payment_purchases', 'supplier_payments', 'stock_adjustments', 'addresses', 'carts'] as $t) {
             if (Schema::hasTable($t) && isset($this->moreHigh[$t])) {
                 DB::table($t)->where('id', '>', $this->moreHigh[$t])->delete();
             }

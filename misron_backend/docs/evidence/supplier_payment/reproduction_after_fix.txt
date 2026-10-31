@@ -1,0 +1,34 @@
+start (purchase 100 on credit)     supplier due=  100.00 paid=    0.00 | purchase due=  100.00 | cash= 1000.00 | AP=  100.00
+after store payment 30             supplier due=   70.00 paid=   30.00 | purchase due=   70.00 | cash=  970.00 | AP=   70.00
+after edit #1 -> 50                supplier due=   50.00 paid=   50.00 | purchase due=   50.00 | cash=  950.00 | AP=   50.00
+after edit #2 -> 50                supplier due=   50.00 paid=   50.00 | purchase due=   50.00 | cash=  950.00 | AP=   50.00
+after edit #3 -> 50                supplier due=   50.00 paid=   50.00 | purchase due=   50.00 | cash=  950.00 | AP=   50.00
+after edit #4 -> 20                supplier due=   80.00 paid=   20.00 | purchase due=   80.00 | cash=  980.00 | AP=   80.00
+after delete                       supplier due=  100.00 paid=    0.00 | purchase due=  100.00 | cash= 1000.00 | AP=  100.00
+
+re-created 40, edited 60, 60       supplier due=   40.00 paid=   60.00 | purchase due=   40.00 | cash=  940.00 | AP=   40.00
+--- SELECT sp.id AS payment_id, sp.payment_no, sp.reference_no, sp.supplier_id, sp.payment_dat ... rows=1
+    {"payment_id":235,"payment_no":"PAY-000001","reference_no":null,"supplier_id":5918,"payment_date":"2026-10-31","current_amount":"60.00","due_snapshot_stored_on_payment":"40.00","edits_recorded":2,"original_amount_if_edited":"40.00","sum_of_reversed_amounts":"100.00","status":"partial","deleted_at":null}
+--- SELECT s.id AS supplier_id, s.due_amount AS supplier_due, s.paid_amount AS supplier_paid,  ... rows=1
+    {"supplier_id":5918,"supplier_due":"40.00","supplier_paid":60,"purchases_open_due":"40.00","live_payments":1,"live_payments_total":"60.00","edits_recorded":2,"sum_reversed_upper_bound_of_drift":"100.00","due_minus_purchases_open":"0.00","due_residual_if_drift_explains":"100.00","paid_minus_live_payments":0,"paid_residual_if_drift_explains":-100}
+--- SELECT sp.id AS payment_id, sp.payment_no, spp.purchase_id, spp.paid_amount AS allocated_n ... rows=1
+    {"payment_id":235,"payment_no":"PAY-000001","purchase_id":14227,"allocated_now":"60.00","purchase_reference":"Ref-1000","net_total_amount":100,"purchase_open_due":"40"}
+--- SELECT l.source_id AS payment_id, l.id AS log_id, l.transaction_date, l.reference_no, l.tr ... rows=10
+    {"payment_id":235,"log_id":15876,"transaction_date":"2026-10-31","reference_no":"PAY-000001","transaction_type":"supplier_payment","account_id":341,"debit":"40.00","credit":"0.00"}
+    {"payment_id":235,"log_id":15877,"transaction_date":"2026-10-31","reference_no":"PAY-000001","transaction_type":"supplier_payment","account_id":7787,"debit":"0.00","credit":"40.00"}
+    {"payment_id":235,"log_id":15878,"transaction_date":"2026-10-31","reference_no":"PAY-000001-REV","transaction_type":"supplier_payment_reversal","account_id":341,"debit":"0.00","credit":"40.00"}
+    {"payment_id":235,"log_id":15879,"transaction_date":"2026-10-31","reference_no":"PAY-000001-REV","transaction_type":"supplier_payment_reversal","account_id":7787,"debit":"40.00","credit":"0.00"}
+    {"payment_id":235,"log_id":15880,"transaction_date":"2026-10-31","reference_no":"PAY-000001","transaction_type":"supplier_payment","account_id":341,"debit":"60.00","credit":"0.00"}
+    {"payment_id":235,"log_id":15881,"transaction_date":"2026-10-31","reference_no":"PAY-000001","transaction_type":"supplier_payment","account_id":7787,"debit":"0.00","credit":"60.00"}
+    {"payment_id":235,"log_id":15882,"transaction_date":"2026-10-31","reference_no":"PAY-000001-REV","transaction_type":"supplier_payment_reversal","account_id":341,"debit":"0.00","credit":"60.00"}
+    {"payment_id":235,"log_id":15883,"transaction_date":"2026-10-31","reference_no":"PAY-000001-REV","transaction_type":"supplier_payment_reversal","account_id":7787,"debit":"60.00","credit":"0.00"}
+    {"payment_id":235,"log_id":15884,"transaction_date":"2026-10-31","reference_no":"PAY-000001","transaction_type":"supplier_payment","account_id":341,"debit":"60.00","credit":"0.00"}
+    {"payment_id":235,"log_id":15885,"transaction_date":"2026-10-31","reference_no":"PAY-000001","transaction_type":"supplier_payment","account_id":7787,"debit":"0.00","credit":"60.00"}
+--- SELECT je.id AS journal_entry_id, je.entry_no, je.entry_date, je.source_type, je.source_id ... rows=6
+    {"journal_entry_id":6069,"entry_no":"JE-261031-068DE1E3","entry_date":"2026-10-31","source_type":"legacy:accounts.supplier-payments.store","source_id":null,"debit":"30.00","credit":"30.00"}
+    {"journal_entry_id":6070,"entry_no":"JE-261031-82C916B6","entry_date":"2026-10-31","source_type":"legacy:accounts.supplier-payments.update","source_id":234,"debit":"20.00","credit":"20.00"}
+    {"journal_entry_id":6071,"entry_no":"JE-261031-A5DC70E0","entry_date":"2026-10-31","source_type":"legacy:accounts.supplier-payments.update","source_id":234,"debit":"30.00","credit":"30.00"}
+    {"journal_entry_id":6072,"entry_no":"JE-261031-18020E33","entry_date":"2026-10-31","source_type":"legacy:accounts.supplier-payments.delete","source_id":234,"debit":"20.00","credit":"20.00"}
+    {"journal_entry_id":6073,"entry_no":"JE-261031-27C3BA2B","entry_date":"2026-10-31","source_type":"legacy:accounts.supplier-payments.store","source_id":null,"debit":"40.00","credit":"40.00"}
+    {"journal_entry_id":6074,"entry_no":"JE-261031-6F38AFAE","entry_date":"2026-10-31","source_type":"legacy:accounts.supplier-payments.update","source_id":235,"debit":"20.00","credit":"20.00"}
+--- SELECT id AS supplier_id, due_amount, paid_amount FROM suppliers WHERE due_amount < 0 OR p ... rows=0

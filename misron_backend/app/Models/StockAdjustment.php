@@ -37,8 +37,9 @@ class StockAdjustment extends Model
     public static function generateReferenceNo()
     {
         $year = date('Y');
-        $lastRecord = self::whereYear('created_at', $year)
+        $lastRecord = self::withTrashed()->whereYear('created_at', $year) // trashed rows keep their unique number
             ->orderBy('id', 'desc')
+            ->lockForUpdate() // inside the creating transaction: a concurrent creation waits for this one and then reads the next free number
             ->first();
         
         $newNumber = $lastRecord ? intval(substr($lastRecord->reference_no, -4)) + 1 : 1;

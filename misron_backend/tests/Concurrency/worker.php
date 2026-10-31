@@ -59,6 +59,12 @@ while (!file_exists($job['go'])) {
 }
 
 $result = ['worker' => $job['id'], 'started' => microtime(true)];
+if (!empty($job['lock_wait'])) { // shorten this process's lock wait to prove what happens to a request that cannot get its locks
+    DB::statement('SET SESSION innodb_lock_wait_timeout = ' . (int) $job['lock_wait']);
+}
+if (!empty($job['delay_ms'])) { // let another process get going first
+    usleep($job['delay_ms'] * 1000);
+}
 
 try {
     $ledger = app(StockLedger::class);
@@ -231,6 +237,9 @@ try {
             $result['headers'] = array_filter(['X-Deadlock-Retries' => $response->headers->get('X-Deadlock-Retries')]);
             $result['status'] = $response->getStatusCode();
             $result['body'] = json_decode($response->getContent(), true) ?? substr((string) $response->getContent(), 0, 300);
+            if ($request->hasSession()) { // flash+redirect screens report their failure through the session
+                $result['flash_error'] = substr((string) json_encode($request->session()->get('error')), 0, 300);
+            }
             $result['ok'] = true;
             break;
 
@@ -244,6 +253,23 @@ try {
                 DB::table($job['second']['table'])->where('id', $job['second']['id'])->lockForUpdate()->first();
             };
             DB::transaction($attempt);
+            $result['ok'] = true;
+            break;
+
+        case 'delete_carts': // another tab emptying the cart while a checkout is in flight
+            $result['deleted'] = DB::table('carts')->where('user_id', $job['user_id'])->delete();
+            $result['ok'] = true;
+            break;
+
+        case 'pos_order': // the POS sale, as PosController::order_store calls it, in its own process
+            Illuminate\Support\Facades\Auth::loginUsingId($job['user_id']);
+            $result['pos'] = App\Utility\PosUtility::orderStore($job['data']);
+            $result['ok'] = true;
+            break;
+
+        case 'console': // an Artisan command in its own process (exit code and output captured)
+            $result['exit'] = Illuminate\Support\Facades\Artisan::call($job['command'], $job['args'] ?? []);
+            $result['output'] = substr(Illuminate\Support\Facades\Artisan::output(), 0, 400);
             $result['ok'] = true;
             break;
 

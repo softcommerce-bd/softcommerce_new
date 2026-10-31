@@ -207,6 +207,7 @@ class PurchaseOrderController extends Controller
                     case 'advance':
                         // Deduct from supplier's opening balance
                         if ($supplier->opening_balance < $amount) {
+                            DB::rollBack(); // refusal: leave the transaction (and release its locks) before answering
                             return back()->with('error', 'Insufficient advance balance.');
                         }
                         $supplier->opening_balance -= $amount;
@@ -297,6 +298,7 @@ class PurchaseOrderController extends Controller
                     if ($supplier) {
                         // Check if the advance amount exceeds the supplier's opening balance
                         if ($payment['amount'] > $supplier->opening_balance) {
+                            DB::rollBack(); // refusal: leave the transaction (and release its locks) before answering
                             return response()->json([
                                 'success' => false,
                                 'type' => 'warning',

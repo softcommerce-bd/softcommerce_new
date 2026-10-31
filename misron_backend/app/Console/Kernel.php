@@ -28,7 +28,11 @@ class Kernel extends ConsoleKernel
             \Log::info('Laravel scheduler working: ' . now());
         })->everyMinute();
 
-        $schedule->command('accounts:import-customer-payments')->hourly();
+        // DISABLED (T-5 Phase 0/C): `accounts:import-customer-payments` has never existed in this repository (it appears only in the first import commit's
+        // Kernel; `git log -S` finds no command class). Scheduling an undefined command makes `schedule:run` fail every hour. Its intended business
+        // behaviour cannot be established from code or history (the manual screen CustomerPaymentController::autoImport is a different, unscheduled path
+        // whose redesign is business decision 10). Re-enable only after that decision defines what the job must do. See docs/T5_PHASE0_BUSINESS_DECISIONS.md.
+        // $schedule->command('accounts:import-customer-payments')->hourly();
         // crash recovery for the legacy-ledger outbox: completes any committed posting whose journal entry is still missing (no-op while the table is empty)
         $schedule->command('ledger:process-outbox --alert')->everyMinute()->withoutOverlapping(5);
 

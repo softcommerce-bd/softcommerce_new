@@ -40,19 +40,24 @@ class AutoDepositFunds extends Command
                 continue;
             }
 
-            $balance = $source->current_balance;
-            if ($balance <= 0) {
-                $this->info("'{$method->name}' source balance is {$balance}, skipping.");
-                continue;
-            }
-
-            $chargePercent = $method->charge ?? 0;
-            $chargeAmount = round($balance * ($chargePercent / 100), 2);
-            $transferAmount = $balance - $chargeAmount;
-
             DB::beginTransaction();
-            
+
             try {
+                // The balance to move is read UNDER the source account's row lock, inside the transaction. It used to be read before it, so two runs at the
+                // same moment (a manual run during the scheduled one, or two hosts) each moved the whole balance: the destination got it twice and the
+                // source went negative. The second run now waits, finds the balance already moved and skips.
+                $source = ChartOfAccount::lockForUpdate()->find($source->id);
+                $balance = $source->current_balance;
+                if ($balance <= 0) {
+                    DB::rollBack();
+                    $this->info("'{$method->name}' source balance is {$balance}, skipping.");
+                    continue;
+                }
+
+                $chargePercent = $method->charge ?? 0;
+                $chargeAmount = round($balance * ($chargePercent / 100), 2);
+                $transferAmount = $balance - $chargeAmount;
+
                 // 1. Create the balance transfer record
                 $transfer = BalanceTransfer::create([
                     'voucher_no'       => BalanceTransfer::generateVoucherNo('auto_deposit'),

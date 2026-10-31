@@ -223,6 +223,7 @@ class PurchaseController extends Controller
                     case 'advance':
                         // Deduct from supplier's opening balance
                         if ($supplier->opening_balance < $amount) {
+                            DB::rollBack(); // refusal: leave the transaction (and release its locks) before answering
                             return back()->with('error', 'Insufficient advance balance.');
                         }
                         $supplier->opening_balance -= $amount;
@@ -494,7 +495,7 @@ class PurchaseController extends Controller
     {
         DB::beginTransaction();
         try {
-            $purchase = Purchase::findOrFail($purchaseId);
+            $purchase = Purchase::lockForUpdate()->findOrFail($purchaseId); // document first: re-read under its lock (a repeated/simultaneous edit waits and sees the committed state)
             $this->refuseLedgerPurchase((int) $purchase->id);
             $oldSupplierId = $purchase->supplier_id;
 
@@ -1351,11 +1352,12 @@ public function searchProducts(Request $request)
 
             $documentPath = null;
             if ($request->hasFile('document')) {
-                $documentPath = $request->file('document')->store('purchase_return_documents', 'public');
+                // once per request (a deadlock retry must not store it again); removed if the request finally fails
+                $documentPath = \App\Support\RequestSideEffects::once($request, 'purchase_return_document', fn () => $request->file('document')->store('purchase_return_documents', 'public'), fn ($path) => Storage::disk('public')->delete($path));
             }
 
             $purchaseId = $request->purchase_id[0];
-            $purchase = Purchase::findOrFail($purchaseId);
+            $purchase = Purchase::lockForUpdate()->findOrFail($purchaseId); // locked: simultaneous returns against one purchase must see each other's effect on its open amount
             $this->refuseLedgerPurchase((int) $purchaseId);
             $supplier = Supplier::lockForUpdate()->findOrFail($request->supplier_id);
 
@@ -1893,10 +1895,16 @@ public function searchProducts(Request $request)
             // Document
             $documentPath = $purchaseReturn->document;
             if ($request->hasFile('document')) {
-                if ($documentPath && Storage::disk('public')->exists($documentPath)) {
-                    Storage::disk('public')->delete($documentPath);
+                $oldDocument = $documentPath;
+                $documentPath = \App\Support\RequestSideEffects::once($request, 'purchase_return_document', fn () => $request->file('document')->store('documents', 'public'), fn ($path) => Storage::disk('public')->delete($path));
+                // the previous file goes only after the new state is committed (a rolled-back or retried update keeps its document)
+                if ($oldDocument) {
+                    DB::afterCommit(function () use ($oldDocument) {
+                        if (Storage::disk('public')->exists($oldDocument)) {
+                            Storage::disk('public')->delete($oldDocument);
+                        }
+                    });
                 }
-                $documentPath = $request->file('document')->store('documents', 'public');
             }
 
             $purchaseReturn->update([
@@ -2004,7 +2012,7 @@ public function searchProducts(Request $request)
     {
         DB::beginTransaction();
         try {
-            $purchase = Purchase::findOrFail($id);
+            $purchase = Purchase::lockForUpdate()->findOrFail($id); // document first: a repeated/simultaneous delete waits here and then finds it gone
             $this->refuseLedgerPurchase((int) $purchase->id);
             $supplier = Supplier::lockForUpdate()->find($purchase->supplier_id);
 
@@ -2066,9 +2074,14 @@ public function searchProducts(Request $request)
                 $this->insertStatementLog($purchase->payment_account_id, $delDate, $delRef, 'purchase_payment_deletion', $purchase->total_paid, 0, 'Deletion of ' . $purchase->reference_no, $purchase);
             }
 
-            // Delete document
-            if ($purchase->document && Storage::disk('public')->exists($purchase->document)) {
-                Storage::disk('public')->delete($purchase->document);
+            // Delete document: only after the deletion is committed (a rolled-back or retried delete must keep the file)
+            if ($purchase->document) {
+                $documentToDelete = $purchase->document;
+                DB::afterCommit(function () use ($documentToDelete) {
+                    if (Storage::disk('public')->exists($documentToDelete)) {
+                        Storage::disk('public')->delete($documentToDelete);
+                    }
+                });
             }
 
             PurchaseProduct::where('purchase_id', $purchase->id)->delete();

@@ -121,6 +121,16 @@ public function index(Request $request)
         try {
             DB::beginTransaction();
 
+            // the same rule again, now under the account's row lock: a concurrent payment that committed first is seen
+            $paymentAccount = ChartOfAccount::lockForUpdate()->find($request->payment_account_id);
+            if ($paymentAccount && $paymentAccount->current_balance < $totalAmount) {
+                DB::rollBack();
+                if ($request->ajax()) {
+                    return response()->json(['error' => 'Insufficient balance in account'], 422);
+                }
+                return redirect()->back()->with('error', 'Insufficient balance in account')->withInput();
+            }
+
             $voucherNo = ExpensePayment::generateVoucherNo();
 
             // Create the main expense payment record
@@ -269,6 +279,15 @@ public function index(Request $request)
 
         try {
             DB::beginTransaction();
+            $expensePayment = ExpensePayment::lockForUpdate()->findOrFail($id); // document first: re-read under its lock (a repeated/simultaneous update waits and sees the committed state)
+
+            // the same rule again, now under the account's row lock
+            $paymentAccount = ChartOfAccount::lockForUpdate()->find($request->payment_account_id);
+            $lockedBalance = $paymentAccount->current_balance + ($expensePayment->payment_account_id == $request->payment_account_id ? $expensePayment->total_amount : 0);
+            if ($lockedBalance < $totalAmount) {
+                DB::rollBack();
+                return redirect()->back()->with('error', 'Insufficient balance in account')->withInput();
+            }
 
             // ---- REVERSE OLD TRANSACTIONS ----
             // 1. Reverse chart_of_accounts balances
@@ -373,7 +392,7 @@ public function index(Request $request)
         try {
             DB::beginTransaction();
 
-            $expensePayment = ExpensePayment::findOrFail($id);
+            $expensePayment = ExpensePayment::lockForUpdate()->findOrFail($id); // document first (a repeated delete finds it gone)
 
             // Reverse chart_of_accounts balances
             $expensePayment->reverseAccountBalance();

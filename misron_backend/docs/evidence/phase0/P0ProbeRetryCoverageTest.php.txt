@@ -1,0 +1,22 @@
+<?php
+
+namespace Tests\Feature\Inventory;
+
+use App\Models\ChartOfAccount;
+use Illuminate\Support\Facades\DB;
+
+/** PHASE 0 PROBE (not in the repository): does the request-level deadlock retry cover controllers that catch the exception and flash+redirect? */
+class P0ProbeRetryCoverageTest extends InventoryV2TestCase
+{
+    public function test_probe_balance_transfer_store_with_one_injected_deadlock()
+    {
+        $this->actingAs($this->makeAdmin());
+        $mk = fn ($n, $bal) => ChartOfAccount::create(['code' => 'P0-' . $n . uniqid(), 'name' => 'P0 ' . $n . uniqid(), 'type' => 'asset', 'sub_type' => 'cash', 'opening_balance' => 0, 'current_balance' => $bal, 'status' => 'active', 'is_deleted' => 0])->id;
+        $from = $mk('a', 500);
+        $to = $mk('b', 0);
+        $inj = DeadlockInjector::once('/^insert into `account_statement_logs`/i');
+        $res = $this->post(route('accounts.balance-transfers.store'), ['transaction_type' => 'transfer', 'date' => now()->toDateString(), 'from_account_id' => $from, 'to_account_id' => $to, 'amount' => 100, 'charge' => 0]);
+        fwrite(STDERR, "\nP0PROBE balance-transfer: injected=" . $inj->thrown . " retried-header=" . json_encode($res->headers->get('X-Deadlock-Retries')) . " status=" . $res->getStatusCode() . " transfers=" . DB::table('balance_transfers')->where('from_account_id', $from)->count() . " from=" . DB::table('chart_of_accounts')->where('id', $from)->value('current_balance') . " flash-error=" . json_encode(session('error')) . "\n");
+        $this->assertTrue(true);
+    }
+}

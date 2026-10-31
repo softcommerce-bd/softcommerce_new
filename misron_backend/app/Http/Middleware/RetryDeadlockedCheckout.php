@@ -33,11 +33,16 @@ class RetryDeadlockedCheckout
                 $response = $next($request);
             } catch (\Throwable $e) {
                 if (!DeadlockRetry::isDeadlock($e)) {
+                    $this->finish($request, $e); // an ordinary failure also must not leave an uploaded file behind
                     throw $e;
                 }
                 $exception = $e;
             }
-            if ($exception === null && !$this->answerSaysDeadlock($response)) {
+            $flashed = [];
+            if ($exception === null && !$this->answerSaysDeadlock($response, $request, $flashed)) {
+                if (method_exists($response, 'getStatusCode') && $response->getStatusCode() >= 400) {
+                    $this->finish($request, null); // the screens answer a rolled-back failure with 4xx/5xx: remove what this request uploaded
+                }
                 return $attempt > 1 && method_exists($response, 'header') ? $response->header('X-Deadlock-Retries', (string) ($attempt - 1)) : $response;
             }
             // a deadlock happened. Is it safe to run again?
@@ -60,7 +65,8 @@ class RetryDeadlockedCheckout
 
                 return $response;
             }
-            DeadlockRetry::pause();
+            $this->forgetFlash($request, $flashed); // the failed attempt's "error: Deadlock found" message must not survive into the retried answer
+            DeadlockRetry::pause($attempt);
         }
     }
 
@@ -69,7 +75,8 @@ class RetryDeadlockedCheckout
         RequestSideEffects::undoAll($request); // remove uploads created for attempts that never committed
     }
 
-    private function answerSaysDeadlock($response): bool
+    /** @param string[] $flashed filled with the session flash keys that carried the deadlock message (redirect + flash answers) */
+    private function answerSaysDeadlock($response, $request = null, array &$flashed = []): bool
     {
         // the framework turns an exception thrown in the controller into a response before it reaches this middleware and keeps it on the response
         $thrown = $response->exception ?? null;
@@ -77,10 +84,49 @@ class RetryDeadlockedCheckout
             return true;
         }
         $body = method_exists($response, 'getContent') ? (string) $response->getContent() : '';
-        if ($body === '') {
-            return false;
+        if ($body !== '' && $this->mentionsDeadlock($body)) {
+            return true;
         }
 
-        return str_contains($body, 'Deadlock found') || str_contains($body, 'SQLSTATE[40001]') || str_contains($body, 'Serialization failure') || str_contains($body, 'inventory_busy');
+        // Many screens catch the exception and answer with a redirect plus a flashed message ("Error: ...Deadlock found..."). The redirect has no
+        // body text, so look at what was flashed to the session during this attempt.
+        if ($request && $request->hasSession() && $response instanceof \Symfony\Component\HttpFoundation\RedirectResponse) {
+            $session = $request->session();
+            foreach ((array) $session->get('_flash.new', []) as $key) {
+                try {
+                    $value = $session->get($key);
+                    $text = is_string($value) ? $value : json_encode($value instanceof \Illuminate\Contracts\Support\Arrayable ? $value->toArray() : (is_object($value) && method_exists($value, 'getBags') ? array_map(fn ($b) => $b->all(), $value->getBags()) : $value));
+                } catch (\Throwable $e) {
+                    continue;
+                }
+                if (is_string($text) && $this->mentionsDeadlock($text)) {
+                    $flashed[] = $key;
+                }
+            }
+
+            return $flashed !== [];
+        }
+
+        return false;
+    }
+
+    private function mentionsDeadlock(string $text): bool
+    {
+        return str_contains($text, 'Deadlock found') || str_contains($text, 'SQLSTATE[40001]') || str_contains($text, 'Serialization failure') || str_contains($text, 'inventory_busy');
+    }
+
+    private function forgetFlash($request, array $keys): void
+    {
+        if ($keys === [] || !$request->hasSession()) {
+            return;
+        }
+        $session = $request->session();
+        $session->forget($keys);
+        $session->put('_flash.new', array_values(array_diff((array) $session->get('_flash.new', []), $keys)));
+        // laracasts/flash keeps the messages of the whole request in memory and re-flashes ALL of them with every new message; without this the
+        // retried attempt's success message would carry the failed attempt's "Deadlock found" error and be taken for another deadlock.
+        if (in_array('flash_notification', $keys, true) && app()->bound('flash')) {
+            app('flash')->clear();
+        }
     }
 }

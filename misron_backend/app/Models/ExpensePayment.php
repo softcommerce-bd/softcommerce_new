@@ -184,6 +184,7 @@ class ExpensePayment extends Model
         $lastVoucher = self::withTrashed()
             ->where('voucher_no', 'like', $prefix . '-' . $year . '%')
             ->orderBy('id', 'desc')
+            ->lockForUpdate() // inside the creating transaction: a concurrent creation waits for this one and then reads the next free number
             ->first();
 
         if ($lastVoucher) {

@@ -170,6 +170,7 @@ class VoucherController extends Controller
                 ]);
 
                 if ($validator->fails()) {
+                    DB::rollBack(); // refusal: leave the transaction (and release its locks) before answering
                     return redirect()->back()->withErrors($validator)->withInput();
                 }
 
@@ -177,10 +178,12 @@ class VoucherController extends Controller
                 $totalCredit = array_sum($request->credits);
 
                 if ($totalDebit != $totalCredit) {
+                    DB::rollBack(); // refusal: leave the transaction (and release its locks) before answering
                     return redirect()->back()->with('error', 'Total debit must equal total credit')->withInput();
                 }
 
                 if ($totalDebit == 0) {
+                    DB::rollBack(); // refusal: leave the transaction (and release its locks) before answering
                     return redirect()->back()->with('error', 'Amount cannot be zero')->withInput();
                 }
 
@@ -204,12 +207,14 @@ class VoucherController extends Controller
                 ]);
 
                 if ($validator->fails()) {
+                    DB::rollBack(); // refusal: leave the transaction (and release its locks) before answering
                     return redirect()->back()->withErrors($validator)->withInput();
                 }
 
                 $totalAmount = array_sum($request->amounts);
 
                 if ($totalAmount == 0) {
+                    DB::rollBack(); // refusal: leave the transaction (and release its locks) before answering
                     return redirect()->back()->with('error', 'Amount cannot be zero')->withInput();
                 }
 
@@ -427,6 +432,7 @@ class VoucherController extends Controller
         $lastVoucher = Voucher::withTrashed()
             ->where('voucher_no', 'like', $prefix . '-' . $year . $month . '%')
             ->orderBy('id', 'desc')
+            ->lockForUpdate() // inside the creating transaction: a concurrent creation waits for this one and then reads the next free number
             ->first();
 
         if ($lastVoucher) {
@@ -478,6 +484,7 @@ class VoucherController extends Controller
 
         try {
             DB::beginTransaction();
+            $voucher = Voucher::lockForUpdate()->findOrFail($id); // document first: re-read under its lock (a repeated/simultaneous update waits and sees the committed state)
 
             // Reverse old balances (also loads & caches the OLD details relation)
             $this->reverseAccountBalances($voucher);
@@ -498,6 +505,7 @@ class VoucherController extends Controller
                 ]);
 
                 if ($validator->fails()) {
+                    DB::rollBack(); // refusal: leave the transaction (and release its locks) before answering
                     return redirect()->back()->withErrors($validator)->withInput();
                 }
 
@@ -505,10 +513,12 @@ class VoucherController extends Controller
                 $totalCredit = array_sum($request->credits);
 
                 if ($totalDebit != $totalCredit) {
+                    DB::rollBack(); // refusal: leave the transaction (and release its locks) before answering
                     return redirect()->back()->with('error', 'Total debit must equal total credit')->withInput();
                 }
 
                 if ($totalDebit == 0) {
+                    DB::rollBack(); // refusal: leave the transaction (and release its locks) before answering
                     return redirect()->back()->with('error', 'Amount cannot be zero')->withInput();
                 }
 
@@ -532,12 +542,14 @@ class VoucherController extends Controller
                 ]);
 
                 if ($validator->fails()) {
+                    DB::rollBack(); // refusal: leave the transaction (and release its locks) before answering
                     return redirect()->back()->withErrors($validator)->withInput();
                 }
 
                 $totalAmount = array_sum($request->amounts);
 
                 if ($totalAmount == 0) {
+                    DB::rollBack(); // refusal: leave the transaction (and release its locks) before answering
                     return redirect()->back()->with('error', 'Amount cannot be zero')->withInput();
                 }
 
@@ -675,7 +687,7 @@ class VoucherController extends Controller
         try {
             DB::beginTransaction();
 
-            $voucher = Voucher::findOrFail($id);
+            $voucher = Voucher::lockForUpdate()->findOrFail($id); // document first (a repeated delete finds it gone)
 
             // Reverse balances
             $this->reverseAccountBalances($voucher);

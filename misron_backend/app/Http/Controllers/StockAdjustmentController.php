@@ -355,7 +355,7 @@ class StockAdjustmentController extends Controller
         try {
             DB::beginTransaction();
 
-            $stock_adjustment = StockAdjustment::with('lines')->findOrFail($id);
+            $stock_adjustment = StockAdjustment::with('lines')->lockForUpdate()->findOrFail($id); // document first (a repeated delete finds it gone)
 
             // Reverse stock quantities
             foreach ($stock_adjustment->lines as $line) {

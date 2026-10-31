@@ -230,6 +230,7 @@ public function settle(Request $request)
 
         // Check if already settled
         if ($order->settlement_status == 'true' || $order->settlement_status == 1) {
+            DB::rollBack(); // refusal: leave the transaction (and release its locks) before answering
             return response()->json([
                 'success' => false,
                 'message' => 'This order has already been settled'
@@ -238,6 +239,7 @@ public function settle(Request $request)
 
         // Prevent settlement of cancelled or fully reversed orders
         if ($order->courier_status === 'cancelled' || $order->delivery_status === 'cancelled') {
+            DB::rollBack(); // refusal: leave the transaction (and release its locks) before answering
             return response()->json([
                 'success' => false,
                 'message' => 'Cancelled orders cannot be settled'
@@ -250,6 +252,7 @@ public function settle(Request $request)
         // For partial_delivered orders, due_amount may be 0
         // Allow settlement based on shipping cost collected by courier
         if (!$isPartialDelivered && $order->due_amount <= 0) {
+            DB::rollBack(); // refusal: leave the transaction (and release its locks) before answering
             return response()->json([
                 'success' => false,
                 'message' => 'Order has no due amount to settle'
@@ -261,6 +264,7 @@ public function settle(Request $request)
             ->where('delivery_status', '!=', 'cancelled')
             ->exists();
         if (!$hasDeliverableItem) {
+            DB::rollBack(); // refusal: leave the transaction (and release its locks) before answering
             return response()->json([
                 'success' => false,
                 'message' => 'All items in this order are cancelled — nothing to settle'
@@ -278,6 +282,7 @@ public function settle(Request $request)
                 ->whereIn('delivery_status', ['pending', 'confirmed'])
                 ->exists();
             if ($pendingItems) {
+                DB::rollBack(); // refusal: leave the transaction (and release its locks) before answering
                 return response()->json([
                     'success' => false,
                     'message' => 'This order has pending items. Please open Details and update item statuses (delivered/cancelled) before settling.'
@@ -388,6 +393,7 @@ public function settle(Request $request)
             $actualCourierFee = (float) $request->actual_courier_fee;
 
             if ($givenCustomer <= 0) {
+                DB::rollBack(); // refusal: leave the transaction (and release its locks) before answering
                 return response()->json([
                     'success' => false,
                     'message' => 'Please enter the amount given by customer'
@@ -1134,10 +1140,12 @@ public function settle(Request $request)
         try {
             DB::beginTransaction();
 
-            $settlement = CourierSettlement::with('order')->findOrFail($request->settlement_id);
+            // document first: a repeated/simultaneous unsettle waits here and then finds the settlement gone (it is deleted below), so the reversal is applied once
+            $settlement = CourierSettlement::with('order')->lockForUpdate()->findOrFail($request->settlement_id);
             $order = $settlement->order;
 
             if (!$order) {
+                DB::rollBack(); // refusal: leave the transaction (and release its locks) before answering
                 return response()->json([
                     'success' => false,
                     'message' => 'Associated order not found'

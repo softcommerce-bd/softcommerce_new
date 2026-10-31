@@ -258,6 +258,7 @@ public function store(Request $request)
 
         // Validate total allocation matches payment amount
         if (abs($totalAllocated - $amount) > 0.01) {
+            DB::rollBack(); // refusal: leave the transaction (and release its locks) before answering
             return response()->json([
                 'success' => false,
                 'message' => 'Allocated amounts do not match total payment amount.'
@@ -346,7 +347,7 @@ public function store(Request $request)
         $payable->current_balance -= $amount;
         $payable->save();
 
-        $paymentAccount = ChartOfAccount::find($request->account_head_id);
+        $paymentAccount = ChartOfAccount::lockForUpdate()->find($request->account_head_id); // locked: the balance check below must see a concurrent payment
         if (!$paymentAccount) {
             throw new \Exception('Payment account not found');
         }
@@ -545,7 +546,7 @@ public function store(Request $request)
 
         DB::beginTransaction();
         try {
-            $payment = SupplierPayment::findOrFail($id);
+            $payment = SupplierPayment::lockForUpdate()->findOrFail($id); // document first: re-read under its lock
             $oldSupplier = Supplier::lockForUpdate()->findOrFail($payment->supplier_id);
             $newSupplier = Supplier::lockForUpdate()->findOrFail($request->supplier_id);
 
@@ -565,6 +566,12 @@ public function store(Request $request)
             $oldSupplier->due_amount += $payment->amount;
             $oldSupplier->paid_amount -= $payment->amount;
             $oldSupplier->save();
+            // When the supplier is not changed, old and new are ONE row. $newSupplier was loaded before the revert above, so using it as it is would write
+            // its stale due/paid over the revert (every edit then left due lower and paid higher by the amount replaced: due 70 -> 20 -> -30 -> -80).
+            // The store and delete screens apply/revert once on the current row; the edit does the same by continuing on the instance that carries the revert.
+            if ($newSupplier->is($oldSupplier)) {
+                $newSupplier = $oldSupplier;
+            }
 
             $payable = ChartOfAccount::getAccountsPayable();
             if ($payable) {
@@ -668,7 +675,7 @@ public function store(Request $request)
             $payable->current_balance -= $newAmount;
             $payable->save();
 
-            $newAccount = ChartOfAccount::find($request->account_head_id);
+            $newAccount = ChartOfAccount::lockForUpdate()->find($request->account_head_id); // locked: the balance check below must see a concurrent payment
             if (!$newAccount) throw new \Exception('Payment account not found');
             if ($newAccount->current_balance < $newAmount) {
                 throw new \Exception('Insufficient balance in selected account');
@@ -711,7 +718,7 @@ public function store(Request $request)
     {
         DB::beginTransaction();
         try {
-            $payment = SupplierPayment::findOrFail($id);
+            $payment = SupplierPayment::lockForUpdate()->findOrFail($id); // document first: a repeated/simultaneous delete waits here and then finds it gone
             $supplier = Supplier::lockForUpdate()->findOrFail($payment->supplier_id);
 
             foreach ($payment->purchases as $purchase) {
@@ -770,6 +777,7 @@ public function store(Request $request)
                     }
                 });
             }
+            $payment->purchases()->detach(); // the allocation rows go with the payment (they were left behind pointing at a payment that no longer exists)
             $payment->delete();
             DB::commit();
             return response()->json(['success' => true, 'message' => 'Payment deleted']);
