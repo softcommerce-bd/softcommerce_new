@@ -44,4 +44,19 @@ class BankActionsStayDisabledTest extends InventoryV2TestCase
         $this->assertSame($logsBefore, DB::table('account_statement_logs')->count(), 'no statement line');
         $this->assertFalse(method_exists(\App\Models\BankTransaction::class, 'generateTransactionNo'), 'the numbering is not implemented: B-1 is pending and no format may be invented');
     }
+
+    /** The specification (docs/T5_B1_BANK_TRANSACTION_SPECIFICATION.md) lists what is missing besides the number. This pins those facts so the
+     *  list cannot silently drift: enabling needs ALL of them, not only the numbering. */
+    public function test_the_model_is_still_a_bare_shell_so_numbering_alone_would_not_enable_the_actions()
+    {
+        foreach (['complete', 'fromAccount', 'toAccount', 'creator', 'voucher', 'generateTransactionNo'] as $m) {
+            $this->assertFalse(method_exists(\App\Models\BankTransaction::class, $m), "BankTransaction::$m() does not exist");
+        }
+        $this->assertSame([], (new \App\Models\BankTransaction())->getFillable(), 'no $fillable: create([...]) cannot store the fields the controller passes');
+        $this->assertNotContains(\Illuminate\Database\Eloquent\SoftDeletes::class, class_uses(\App\Models\BankTransaction::class), 'the table has deleted_at, the model does not use it');
+        $this->actingAs($this->makeAdmin());
+        // the list screen only works today because the table is empty: eager loading of the undefined relations is never reached with zero rows
+        $this->assertSame(0, DB::table('bank_transactions')->count());
+        $this->assertSame(200, $this->get(route('accounts.bank-transactions.index'))->getStatusCode());
+    }
 }

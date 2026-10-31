@@ -300,6 +300,53 @@ class WorkflowParallelCoverageTest extends HttpWorkflowCase
         $this->assertSame(10, (int) DB::table('purchase_products')->where('product_id', $p)->sum('remaining_qty'));
     }
 
+    // ---- first income number of a period: the deadlock the retry only papered over ----------------------------------------
+
+    /** Ten rounds of four simultaneous incomes, each round starting from an EMPTY year (the first-number case). No request may
+     *  meet a deadlock at all (no X-Deadlock-Retries header): the creators are serialised, not retried. */
+    public function test_first_income_number_of_a_year_never_deadlocks_over_repeated_rounds()
+    {
+        $this->flag(true);
+        $cash = $this->cashAccount(0);
+        $inc = $this->account('income', 'income', 0);
+        $admin = $this->admin();
+        $retried = 0;
+        for ($round = 1; $round <= 10; $round++) {
+            $this->assertSame(0, DB::table('incomes')->where('voucher_no', 'like', 'INC-' . date('y') . '%')->count(), 'round starts with an empty year');
+            $res = $this->race(array_map(fn ($i) => $this->req($admin, route('accounts.incomes.store', [], false), ['date' => now()->toDateString(), 'received_account_id' => $cash, 'income_account_ids' => [$inc], 'amounts' => [$i]]), [1, 2, 3, 4]), 120);
+            foreach ($res as $r) {
+                $retried += isset($r['headers']['x-deadlock-retries']) || isset($r['headers']['X-Deadlock-Retries']) ? 1 : 0;
+            }
+            $nos = DB::table('incomes')->where('received_account_id', $cash)->orderBy('id')->pluck('voucher_no')->all();
+            $this->assertCount(4, array_unique($nos), 'round ' . $round . ': four distinct numbers ' . json_encode($nos));
+            $this->assertSame(['000001', '000002', '000003', '000004'], array_map(fn ($n) => substr($n, -6), $this->sortNos($nos)), 'consecutive from 1');
+            DB::table('income_details')->whereIn('income_id', DB::table('incomes')->where('received_account_id', $cash)->pluck('id'))->delete();
+            DB::table('incomes')->where('received_account_id', $cash)->delete();
+        }
+        $this->assertSame(0, $retried, 'no request needed a deadlock retry');
+    }
+
+    /** A creator that fails after taking the number must not leave the series locked for the next one. */
+    public function test_a_failed_income_releases_the_number_lock()
+    {
+        $this->flag(true);
+        $cash = $this->cashAccount(0);
+        $bad = $this->req($this->admin(), route('accounts.incomes.store', [], false), ['date' => now()->toDateString(), 'received_account_id' => $cash, 'income_account_ids' => [999999999], 'amounts' => [5]]);
+        $this->runOne($bad);
+        $started = microtime(true);
+        $inc = $this->account('income', 'income', 0);
+        $this->runOne($this->req($this->admin(), route('accounts.incomes.store', [], false), ['date' => now()->toDateString(), 'received_account_id' => $cash, 'income_account_ids' => [$inc], 'amounts' => [7]]));
+        $this->assertLessThan(5, microtime(true) - $started, 'the next income was not held up by the failed one');
+        $this->assertSame(1, DB::table('incomes')->where('received_account_id', $cash)->count());
+    }
+
+    private function sortNos(array $n): array
+    {
+        sort($n);
+
+        return $n;
+    }
+
     private function adjustmentsBefore(): int
     {
         return 0;

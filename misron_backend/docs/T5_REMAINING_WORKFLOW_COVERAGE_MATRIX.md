@@ -31,3 +31,8 @@ Y = a passing test exists in that category; N = none; PART = only part of the wo
 ## UPDATE 3
 - POS: added `PosCartIsolationTest` (own cart rows only; website cart untouched) — P-1 approved.
 - Bank actions: `BankActionsStayDisabledTest` enforces disabled state pending B-1.
+
+## UPDATE 4
+- Income store: added repeated real-parallel rounds from an empty year (first-number case) and lock-release-after-failure; zero deadlock retries.
+- Bank actions: still disabled; `BankActionsStayDisabledTest` now also pins the empty model shell (see B-1 specification).
+- Other numbered series: first-of-period race on different accounts analysed, not reproduced per series (decision 7).

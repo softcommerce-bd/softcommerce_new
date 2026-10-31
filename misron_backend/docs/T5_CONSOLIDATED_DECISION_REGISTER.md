@@ -135,3 +135,11 @@ Also: (1) are these four screens in use, or should bank operations go through th
 | 13 Money columns | varchar/double columns | helper now, decimal later | timing after the accountant baseline |
 | 14 Unique constraints | none on `orders.code`, per-order settlements, returns/PO references | add after audit shows no duplicates | what to do with any duplicates found |
 | 15 Order cancel/delete/notifications | `update_delivery_status`, `bulkAssignCourier`, `OrderController::destroy` have no transaction; status updates notify | transaction + after-commit notification outbox | pattern approval; whether `destroy` stays |
+
+
+---
+## UPDATE 4 (final remediation) - register changes
+* **Decisions 6 / 7:** decision 6 (formats) is NOT needed for the income deadlock; decision 7 (sequence table) is NOT needed for incomes (fixed with `NumberSerializer`, no schema) but remains the recommended permanent design for the other numbered series and for bank numbers. See `T5_INCOME_NUMBER_DEADLOCK_REPORT.md`.
+* **B-1:** now has an implementation-ready specification, `T5_B1_BANK_TRANSACTION_SPECIFICATION.md`. New finding: the `BankTransaction` model is an empty shell (no `$fillable`, `complete()`, relations), so approving the number format alone does NOT enable the actions; the posting (debit/credit) per type is an additional accountant decision. Still PENDING; actions still disabled and guarded by tests.
+* **AD-1:** options document extended (section 5): compatibility, maintenance, exactly what (c) does not disable (the schedule still runs and fails harmlessly). Recommendation unchanged: (c) now, (a) if enabling. Still NOT approved.
+* **N-1:** read-only queries Q7-Q10 added (opening positions, allocation integrity, purchase totals, cash/bank ledger effect). Still PENDING ACCOUNTANT REVIEW; nothing executed on real data.

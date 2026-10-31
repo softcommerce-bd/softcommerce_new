@@ -121,3 +121,19 @@ Branch `claude/peaceful-planck-elqcki`; this phase's commits: `fdce744`, `dbf106
 **Regression:** PHPUnit 626 tests / 3956 assertions, only the 3 known unrelated failures (UploadSafetyTest svg, ExampleTest, FunnelEditorMedia…); concurrency suite 91 tests OK. Evidence: `docs/evidence/final4/`.
 
 **Not done / still open:** MySQL 8.4 never run; production/staging facts BLOCKED; no deploy, merge, flag activation, or staging/production write; B-1, AD-1, N-1 and register decisions 1–15 awaiting approval.
+
+
+---
+
+## UPDATE 4 - final remediation (T-5 and staging acceptance remain OPEN)
+
+**Starting state verified:** branch `claude/peaceful-planck-elqcki`, HEAD `32da71e` = origin, working tree clean, no newer commits.
+
+**Implemented**
+* Income first-of-year number deadlock: root cause reproduced (index-gap locks on an empty period; plain SQL and real processes: 19/40 requests deadlocked without the fix, 0/40 with it). Fix `app/Support/NumberSerializer.php` (named lock held until the outermost transaction ends, used only by `Income::generateVoucherNo`, no schema/format change). Not applied to other series (lock-order inversion). Report: `T5_INCOME_NUMBER_DEADLOCK_REPORT.md`.
+* New tests: first-income repeated-rounds parallel test (10 rounds x 4 processes), lock-release-after-failure test, bank "bare shell" test. 
+* Documentation: `T5_B1_BANK_TRANSACTION_SPECIFICATION.md`, AD-1 addendum, N-1 queries Q7-Q10 (syntax validated on the empty disposable database only), register UPDATE 4.
+
+**Verified (disposable `inv_v2_test`, MariaDB 10.11.14)**: PHPUnit 627 tests / 3966 assertions, only the 3 known unrelated failures; concurrency suite 93 tests / 2200 assertions OK; auto-deposit locking tests 3/3; the income repeat test 5 consecutive passes; no leaked rows (incomes, bank_transactions, helper accounts = 0); `balance_transfers.created_by` still NOT NULL. Evidence: `docs/evidence/final5/`. No before/after fingerprint of the read-only staging copy was taken this time (it was not touched).
+
+**Not done / blocked**: B-1 numbering and posting decisions; AD-1 choice; N-1 accountant review (Q7-Q10 semantics untested on real-shaped data); decision 7 for other series; MySQL 8.4 never run; production/staging facts BLOCKED; production connection setup unknown (named lock needs one session = one connection); UI not verified. No deploy, merge, PR, flag change, schema change, or staging/production access. The task text ended mid-sentence ("Cash/bank ledger effect"); Q10 covers that item, anything further was not received.

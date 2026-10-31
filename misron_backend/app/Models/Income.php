@@ -102,6 +102,9 @@ public function reverseAccountBalance()
     {
         $prefix = 'INC';
         $year = date('y');
+        // first income of a year: there is no row to lock, only an empty index gap, and concurrent creators deadlock on it;
+        // run the creators of this series one after the other until the transaction ends (no format change)
+        \App\Support\NumberSerializer::hold('income:' . $prefix . '-' . $year);
         $lastVoucher = self::withTrashed()
             ->where('voucher_no', 'like', $prefix . '-' . $year . '%')
             ->orderBy('id', 'desc')
