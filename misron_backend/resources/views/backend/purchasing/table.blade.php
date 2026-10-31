@@ -8,5 +8,5 @@
     <tbody>@forelse ($rows as $row)<tr>@foreach ($columns as $key => $label)<td>{{ is_array($row) ? ($row[$key] ?? '') : ($row->{$key} ?? '') }}</td>@endforeach</tr>
     @empty<tr><td colspan="{{ count($columns) }}" class="text-center text-muted">{{ translate('No records') }}</td></tr>@endforelse</tbody>
 </table></div>
-@if (method_exists($rows, 'links'))<div class="card-footer">{{ $rows->links() }}</div>@endif</div>
+@if (method_exists($rows, 'links'))<div class="card-footer" style="overflow-x:auto">{{ $rows->links() }}</div>@endif</div>
 @endsection

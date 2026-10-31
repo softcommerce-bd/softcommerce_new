@@ -18,5 +18,5 @@
                     <input class="form-control form-control-sm mb-1" type="number" step="0.01" min="0" name="estimated_purchase_cost" value="{{ $r->estimated_purchase_cost }}" placeholder="{{ translate('Estimated cost (planning only)') }}">
                     <input class="form-control form-control-sm mb-1" type="number" min="0" name="supplier_lead_time_days" value="{{ $r->supplier_lead_time_days }}" placeholder="{{ translate('Lead time (days)') }}">
                     <button class="btn btn-sm btn-primary">{{ translate('Save') }}</button></form></details>@endcan</td></tr>
-    @endforeach</tbody></table></div><div class="card-footer">{{ $rows->links() }}</div></div>
+    @endforeach</tbody></table></div><div class="card-footer" style="overflow-x:auto">{{ $rows->links() }}</div></div>
 @endsection

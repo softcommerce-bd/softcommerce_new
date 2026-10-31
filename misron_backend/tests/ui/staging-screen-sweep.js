@@ -1,14 +1,14 @@
 // READ-ONLY sweep (GET only) of every purchasing / supplier / inventory / returns / order / accounting screen against a STAGING database,
 // desktop and mobile. It does not submit any form, so it cannot change the figures the accountant is reviewing.
 //   BASE=http://127.0.0.1:8000 STAGING_USER=... STAGING_PASS=... THEME=/tmp/claude-0/theme node tests/ui/staging-screen-sweep.js
-const { chromium } = require('playwright'); const fs = require('fs'); const { execSync } = require('child_process');
+const { chromium } = require('playwright'); const fs = require('fs'); const { execSync, execFileSync } = require('child_process');
 const BASE = process.env.BASE || 'http://127.0.0.1:8000', THEME = process.env.THEME || '/tmp/claude-0/theme', DB = process.env.STAGING_DB || 'sc_staging';
 const SHOTS = process.env.SHOTS || '/tmp/claude-0/shots-staging'; fs.mkdirSync(SHOTS, { recursive: true });
 const N = THEME + '/node_modules';
 const CDN = [[/code\.jquery\.com\/jquery-3\.6\.0\.min\.js/, N + '/jquery/dist/jquery.min.js', 'application/javascript'], [/toastr\.min\.js/, N + '/toastr/build/toastr.min.js', 'application/javascript'], [/toastr\.min\.css/, N + '/toastr/build/toastr.min.css', 'text/css'], [/chart(\.umd)?(\.min)?\.js/, N + '/chart.js/dist/chart.min.js', 'application/javascript']];
-const sql = (q) => execSync(`mysql -N ${DB} -e "${q}"`).toString().trim();
+const sql = (q) => execFileSync('mysql', ['-N', DB, '-e', q]).toString().trim();
 const firstOrder = sql('select id from orders where delivery_status in ("confirmed","pending") order by id desc limit 1') || sql('select id from orders order by id desc limit 1');
-const enc = (id) => execSync(`php artisan tinker --execute="echo urlencode(encrypt(${id}));"`, { env: process.env }).toString().trim().split('\n').pop();
+const enc = (id) => execFileSync('php', ['artisan', 'tinker', '--execute=echo urlencode(encrypt(' + id + '));'], { env: process.env }).toString().trim().split('\n').pop();
 const firstSupplier = sql('select id from suppliers order by id limit 1'), firstProduct = sql('select id from products order by id limit 1');
 const SCREENS = [
   ['Purchase Dashboard', '/admin/purchasing'], ['Quick Purchase', '/admin/purchasing/quick-purchase'], ['Purchase Requirements', '/admin/purchasing/requirements'],
