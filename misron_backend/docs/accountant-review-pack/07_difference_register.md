@@ -1,4 +1,4 @@
-# Difference register (nothing below has been corrected)
+# Difference register (nothing below has been corrected; source and impact of each item are in 08_source_and_impact_D01_D09.md)
 
 | ID | Difference | Figures | Evidence | What was NOT done | Question for the accountant |
 |---|---|---|---|---|---|

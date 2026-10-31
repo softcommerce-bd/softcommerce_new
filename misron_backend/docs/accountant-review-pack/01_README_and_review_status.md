@@ -1,10 +1,10 @@
 # Accountant review pack
 
-**Generated:** 2026-10-31 00:03 from database `sc_staging` (masked staging copy of the supplied backup `misron.sql`, generated 23 Oct 2026; I cannot verify it is the current production database).
+**Generated:** 2026-10-31 05:54 from database `sc_staging` (masked staging copy of the supplied backup `misron.sql`, generated 23 Oct 2026; I cannot verify it is the current production database).
 **Feature flag:** OFF (`INVENTORY_CONFIRMED_ONLY=false`). The new tables exist but are empty. Every figure below is legacy data; nothing has been corrected, repaired, re-costed or invented.
 **Review status: NOT REVIEWED.** No accountant has seen or approved these figures. The sign-off table at the end is blank on purpose.
 
-Files in this folder: `02_chart_of_accounts_balances.csv`, `03_trial_balance_from_account_balances.csv`, `04_profit_and_loss_balance_vs_statement_rows.csv`, `05_inventory_valuation_fifo_by_variant.csv`, `06_supplier_payables_reconciliation.csv`, `07_difference_register.md`.
+Files in this folder: `02_chart_of_accounts_balances.csv`, `03_trial_balance_from_account_balances.csv`, `04_profit_and_loss_balance_vs_statement_rows.csv`, `05_inventory_valuation_fifo_by_variant.csv`, `06_supplier_payables_reconciliation.csv`, `07_difference_register.md`, **`08_source_and_impact_D01_D09.md` (read this first: source, impact, what is proven vs inferred vs unknown for every difference)**, and the evidence files `08_orphan_cost_layers_by_purchase.csv`, `09_stock_vs_layers_classes.csv`, `10_variants_with_stock_but_no_cost_layer_by_product.csv`, `11_layers_already_consumed.csv`, `12_courier_settlements_vs_orders.csv`.
 
 ## 1. Suspense and opening-adjustment balances
 | Account | Code | Balance |
