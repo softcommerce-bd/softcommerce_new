@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 abstract class VerificationCase extends ConcurrencyTestCase
 {
     private const EXTRA = ['ledger_outbox', 'journal_entries', 'journal_lines', 'idempotency_keys', 'refund_postings', 'wallets', 'refund_requests', 'account_statement_logs', 'suppliers', 'goods_receipts', 'goods_receipt_lines',
-        'order_demands', 'stock_movements', 'stock_allocations', 'purchase_requirement_links', 'supplier_invoices', 'supplier_invoice_payments', 'chart_of_accounts'];
+        'order_demands', 'stock_balances', 'stock_movements', 'stock_allocations', 'purchase_requirement_links', 'supplier_invoices', 'supplier_invoice_payments', 'chart_of_accounts'];
     private array $high = [];
     private array $balances = [];
     private array $userBalances = [];
