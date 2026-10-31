@@ -53,7 +53,7 @@ Status vocabulary: VERIFIED, IMPLEMENTED, TESTED, BLOCKED, REQUIRES BUSINESS APP
 | 38 | `BalanceTransferController::store` | redirect + flash (detected via flash since T-5) | DeadlockRetryFlashCoverageTest (once, always) |
 | 39 | `BalanceTransferController::update` | redirect + flash (detected via flash since T-5) | NOT EXECUTED |
 | 40 | `BalanceTransferController::destroy` | JSON error with message (detected by text) | NOT EXECUTED |
-**Counts:** 40 transactional methods in the retry set; **12 have an executed deadlock test** (once and/or always; 3 also with a real, non-injected deadlock). **28 are IMPLEMENTED by the shared mechanism but NOT EXECUTED** individually: the mechanism is tested on three answer styles (JSON message, redirect+flash, exception), so a method that uses one of them is expected to behave the same, but that expectation is not evidence. Non-transactional listed methods and GET routes are NOT APPLICABLE.
+**SUPERSEDED by `T5_FINAL_VERIFICATION_REPORT.md` section 1 (34 of 34 reachable methods tested; 4 BLOCKED; 2 NOT APPLICABLE).** Earlier counts: 40 transactional methods in the retry set; **12 had an executed deadlock test** (once and/or always; 3 also with a real, non-injected deadlock). **28 are IMPLEMENTED by the shared mechanism but NOT EXECUTED** individually: the mechanism is tested on three answer styles (JSON message, redirect+flash, exception), so a method that uses one of them is expected to behave the same, but that expectation is not evidence. Non-transactional listed methods and GET routes are NOT APPLICABLE.
 
 ## 3. Findings from Phase 0 that this report resolves
 | Finding | Status |
