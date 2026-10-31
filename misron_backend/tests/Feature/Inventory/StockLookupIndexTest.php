@@ -26,6 +26,8 @@ class StockLookupIndexTest extends InventoryV2TestCase
             $hadUnique && DB::statement('ALTER TABLE product_stocks ADD UNIQUE KEY uq_product_stocks_product_variant (product_id, variant)');
             $hadBatch && DB::statement('ALTER TABLE purchase_products ADD KEY idx_purchase_products_product_variant (product_id, variant(100))');
             InventoryMode::reset();
+            // the index DDL commits the test's transaction (MySQL implicit commit), so remove what setUp inserted by hand
+            DB::table('suppliers')->where('id', $this->supplierId)->delete();
         }
         $this->assertSame([], InventoryMode::preflight());
     }

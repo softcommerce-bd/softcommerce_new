@@ -131,7 +131,8 @@ class StorefrontCheckoutTest extends InventoryTestCase
         $pdo = new \PDOException('SQLSTATE[40001]: Serialization failure: 1213 Deadlock found when trying to get lock; secret_table');
         $pdo->errorInfo = ['40001', 1213, 'Deadlock found when trying to get lock'];
         $this->mock(\App\Services\Inventory\StockLedger::class, function ($mock) use ($pdo) {
-            $mock->shouldReceive('take')->once()->andThrow(new \Illuminate\Database\QueryException('update product_stocks set qty = 1', [], $pdo));
+            // the retry middleware runs a deadlocked checkout again (bounded); the customer sees the sanitized 503 only if every attempt deadlocks
+            $mock->shouldReceive('take')->times(\App\Http\Middleware\RetryDeadlockedCheckout::MAX_ATTEMPTS)->andThrow(new \Illuminate\Database\QueryException('update product_stocks set qty = 1', [], $pdo));
             $mock->shouldReceive('release')->never();
         });
 

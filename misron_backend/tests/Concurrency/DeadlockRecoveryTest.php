@@ -7,6 +7,12 @@ use App\Models\ChartOfAccount;
 /** A deadlock victim must not become a lost order / posting: service transactions retry; a plain transaction would just fail. */
 class DeadlockRecoveryTest extends ConcurrencyTestCase
 {
+    protected function tearDown(): void
+    {
+        \Illuminate\Support\Facades\DB::table('chart_of_accounts')->where('code', 'like', 'DL-%')->delete();
+        parent::tearDown();
+    }
+
     private function accounts(): array
     {
         return array_map(fn ($n) => ChartOfAccount::create(['code' => 'DL-' . uniqid(), 'name' => 'DL ' . uniqid(), 'type' => 'asset', 'sub_type' => 'cash', 'opening_balance' => 0, 'current_balance' => 0, 'status' => 'active', 'is_deleted' => 0])->id, [1, 2]);

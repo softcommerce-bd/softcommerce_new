@@ -1,0 +1,43 @@
+PHPUnit 9.6.36 by Sebastian Bergmann and contributors.
+
+Warning:       Your XML configuration validates against a deprecated schema.
+Suggestion:    Migrate your XML configuration using "--migrate-configuration"!
+
+...............................................................  63 / 535 ( 11%)
+........................................F...................... 126 / 535 ( 23%)
+.........................................F..................... 189 / 535 ( 35%)
+............................................................... 252 / 535 ( 47%)
+............................................................... 315 / 535 ( 58%)
+.......................S....................................... 378 / 535 ( 70%)
+............................................................... 441 / 535 ( 82%)
+................................................S.............. 504 / 535 ( 94%)
+...........................E...                                 535 / 535 (100%)
+
+Time: 01:53.336, Memory: 148.50 MB
+
+There was 1 error:
+
+1) Tests\Feature\Security\UploadSafetyTest::test_svg_and_xml_are_accepted_from_staff_only
+ErrorException: file_get_contents(/home/user/softcommerce_new/misron_backend/public/uploads/all/JnuD3XirdTXJfNcE0PBr27mKdAALFRW2DpijKOtO.svg): Failed to open stream: No such file or directory
+
+/home/user/softcommerce_new/misron_backend/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php:270
+/home/user/softcommerce_new/misron_backend/tests/Feature/Security/UploadSafetyTest.php:64
+
+--
+
+There were 2 failures:
+
+1) Tests\Feature\ExampleTest::testBasicTest
+Expected response status code [200] but received 302.
+Failed asserting that 200 is identical to 302.
+
+/home/user/softcommerce_new/misron_backend/vendor/laravel/framework/src/Illuminate/Testing/TestResponse.php:123
+/home/user/softcommerce_new/misron_backend/tests/Feature/ExampleTest.php:19
+
+2) Tests\Feature\Funnel\FunnelEditorMediaAndCatalogueTest::test_orders_carry_nullable_funnel_attribution
+Failed asserting that 4447 is null.
+
+/home/user/softcommerce_new/misron_backend/tests/Feature/Funnel/FunnelEditorMediaAndCatalogueTest.php:203
+
+ERRORS!
+Tests: 535, Assertions: 3431, Errors: 1, Failures: 2, Skipped: 2.

@@ -1,0 +1,51 @@
+== engine
+10.11.14-MariaDB-0ubuntu0.24.04.1	Ubuntu 24.04	STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION	REPEATABLE-READ	50
+== php
+PHP 8.3.6 (cli) (built: Oct 19 2026 15:16:58) (NTS)
+== database under test: inv_v2_test (isolated; not staging, not production)
+journal_entries	InnoDB
+journal_lines	InnoDB
+ledger_outbox	InnoDB
+order_demands	InnoDB
+product_stocks	InnoDB
+purchase_products	InnoDB
+refund_postings	InnoDB
+stock_balances	InnoDB
+Create Table: CREATE TABLE `ledger_outbox` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `token` varchar(40) NOT NULL,
+  `account_id` bigint(20) unsigned NOT NULL,
+  `delta` decimal(20,2) NOT NULL,
+  `source_type` varchar(40) DEFAULT NULL,
+  `source_id` bigint(20) unsigned DEFAULT NULL,
+  `description` varchar(255) DEFAULT NULL,
+  `created_by` int(10) unsigned DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `processed_at` timestamp NULL DEFAULT NULL,
+  `journal_entry_id` bigint(20) unsigned DEFAULT NULL,
+  `last_error` varchar(255) DEFAULT NULL,
+  `attempts` int(10) unsigned NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`),
+  KEY `idx_outbox_pending` (`processed_at`,`id`),
+  KEY `idx_outbox_token` (`token`)
+) ENGINE=InnoDB AUTO_INCREMENT=1298 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+Create Table: CREATE TABLE `refund_postings` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `refund_request_id` bigint(20) unsigned DEFAULT NULL,
+  `order_id` bigint(20) unsigned DEFAULT NULL,
+  `order_detail_id` bigint(20) unsigned DEFAULT NULL,
+  `method` varchar(10) NOT NULL,
+  `amount` decimal(20,2) NOT NULL,
+  `account_id` bigint(20) unsigned DEFAULT NULL,
+  `external_ref` varchar(120) DEFAULT NULL,
+  `idempotency_key` varchar(120) NOT NULL,
+  `journal_entry_id` bigint(20) unsigned DEFAULT NULL,
+  `created_by` int(10) unsigned DEFAULT NULL,
+  `note` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_refund_postings_key` (`idempotency_key`),
+  UNIQUE KEY `uq_refund_postings_request` (`refund_request_id`),
+  UNIQUE KEY `uq_refund_postings_external` (`external_ref`),
+  KEY `refund_postings_order_detail_id_index` (`order_detail_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=56 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
