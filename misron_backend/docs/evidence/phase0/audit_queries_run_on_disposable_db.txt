@@ -1,0 +1,286 @@
++-----------------------------------+--------------+----------------+-------------------+-------------------+------+---------+--------------------+
+| version                           | comment      | default_engine | isolation_mariadb | lock_wait_timeout | lctn | charset | collation          |
++-----------------------------------+--------------+----------------+-------------------+-------------------+------+---------+--------------------+
+| 10.11.14-MariaDB-0ubuntu0.24.04.1 | Ubuntu 24.04 | InnoDB         | REPEATABLE-READ   |                50 |    0 | utf8mb4 | utf8mb4_general_ci |
++-----------------------------------+--------------+----------------+-------------------+-------------------+------+---------+--------------------+
++-------------------------------------------------------------------------------------------+
+| sql_mode                                                                                  |
++-------------------------------------------------------------------------------------------+
+| STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION |
++-------------------------------------------------------------------------------------------+
++--------------------------------+--------+------------+------------+---------+
+| table_name                     | engine | row_format | table_rows | size_mb |
++--------------------------------+--------+------------+------------+---------+
+| account_statement_logs         | InnoDB | Dynamic    |          0 |     0.0 |
+| account_transfers              | InnoDB | Dynamic    |          0 |     0.0 |
+| addons                         | InnoDB | Dynamic    |          7 |     0.0 |
+| addresses                      | InnoDB | Dynamic    |          0 |     0.0 |
+| affiliate_configs              | InnoDB | Dynamic    |          0 |     0.0 |
+| affiliate_logs                 | InnoDB | Dynamic    |          0 |     0.0 |
+| affiliate_options              | InnoDB | Dynamic    |          0 |     0.0 |
+| affiliate_payments             | InnoDB | Dynamic    |          0 |     0.0 |
+| affiliate_stats                | InnoDB | Dynamic    |          0 |     0.0 |
+| affiliate_users                | InnoDB | Dynamic    |          0 |     0.0 |
+| affiliate_withdraw_requests    | InnoDB | Dynamic    |          0 |     0.0 |
+| app_translations               | InnoDB | Dynamic    |          0 |     0.0 |
+| attributes                     | InnoDB | Dynamic    |          0 |     0.0 |
+| attribute_category             | InnoDB | Dynamic    |          0 |     0.0 |
+| attribute_translations         | InnoDB | Dynamic    |          0 |     0.0 |
+| attribute_values               | InnoDB | Dynamic    |          0 |     0.0 |
+| balance_transfers              | InnoDB | Dynamic    |          0 |     0.1 |
+| bank_transactions              | InnoDB | Dynamic    |          0 |     0.0 |
+| barcodes                       | InnoDB | Dynamic    |          0 |     0.0 |
+| bdcouriers                     | InnoDB | Dynamic    |          0 |     0.0 |
+| blogs                          | InnoDB | Dynamic    |          0 |     0.0 |
+| blog_categories                | InnoDB | Dynamic    |          0 |     0.0 |
+| brands                         | InnoDB | Dynamic    |          0 |     0.0 |
+| brand_translations             | InnoDB | Dynamic    |          0 |     0.0 |
+| business_settings              | InnoDB | Dynamic    |        237 |     0.1 |
+| carriers                       | InnoDB | Dynamic    |          0 |     0.0 |
+| carrier_ranges                 | InnoDB | Dynamic    |          0 |     0.0 |
+| carrier_range_prices           | InnoDB | Dynamic    |          0 |     0.0 |
+| carts                          | InnoDB | Dynamic    |          0 |     0.0 |
+| categories                     | InnoDB | Dynamic    |          2 |     0.0 |
+| category_translations          | InnoDB | Dynamic    |          0 |     0.0 |
+| chart_of_accounts              | InnoDB | Dynamic    |         13 |     0.1 |
+| chat_accounts                  | InnoDB | Dynamic    |          0 |     0.0 |
+| chat_account_user              | InnoDB | Dynamic    |          0 |     0.0 |
+| chat_audit_logs                | InnoDB | Dynamic    |         16 |     0.0 |
+| chat_conversations             | InnoDB | Dynamic    |          0 |     0.1 |
+| chat_conversation_orders       | InnoDB | Dynamic    |          0 |     0.1 |
+| chat_messages                  | InnoDB | Dynamic    |          0 |     0.1 |
+| chat_notes                     | InnoDB | Dynamic    |          0 |     0.0 |
+| chat_saved_replies             | InnoDB | Dynamic    |          0 |     0.0 |
+| chat_settings                  | InnoDB | Dynamic    |          0 |     0.0 |
+| chat_webhook_events            | InnoDB | Dynamic    |          0 |     0.0 |
+| cities                         | InnoDB | Dynamic    |          2 |     0.0 |
+| city_translations              | InnoDB | Dynamic    |          0 |     0.0 |
+| club_points                    | InnoDB | Dynamic    |          0 |     0.0 |
+| club_point_details             | InnoDB | Dynamic    |          0 |     0.0 |
+| colors                         | InnoDB | Dynamic    |          0 |     0.0 |
+| combined_orders                | InnoDB | Dynamic    |          0 |     0.0 |
+| commission_histories           | InnoDB | Dynamic    |          0 |     0.0 |
+| conversations                  | InnoDB | Dynamic    |          0 |     0.0 |
+| cost_centers                   | InnoDB | Dynamic    |          0 |     0.1 |
+| coupons                        | InnoDB | Dynamic    |          0 |     0.0 |
+| coupon_usages                  | InnoDB | Dynamic    |          0 |     0.0 |
+| courier_settlements            | InnoDB | Dynamic    |          0 |     0.1 |
+| courier_settlement_details     | InnoDB | Dynamic    |          0 |     0.0 |
+| courier_stats                  | InnoDB | Dynamic    |          0 |     0.0 |
+| currencies                     | InnoDB | Dynamic    |         25 |     0.0 |
+| customer_packages              | InnoDB | Dynamic    |          0 |     0.0 |
+| customer_package_payments      | InnoDB | Dynamic    |          0 |     0.0 |
+| customer_package_translations  | InnoDB | Dynamic    |          0 |     0.0 |
+| customer_payments              | InnoDB | Dynamic    |          0 |     0.0 |
+| customer_products              | InnoDB | Dynamic    |          0 |     0.0 |
+| customer_product_translations  | InnoDB | Dynamic    |          0 |     0.0 |
+| custom_alerts                  | InnoDB | Dynamic    |          0 |     0.0 |
+| delivery_boys                  | InnoDB | Dynamic    |          0 |     0.0 |
+| delivery_boy_collections       | InnoDB | Dynamic    |          0 |     0.0 |
+| delivery_boy_payments          | InnoDB | Dynamic    |          0 |     0.0 |
+| delivery_histories             | InnoDB | Dynamic    |          0 |     0.0 |
+| dynamic_popups                 | InnoDB | Dynamic    |          0 |     0.0 |
+| expense_payments               | InnoDB | Dynamic    |          0 |     0.1 |
+| expense_payment_details        | InnoDB | Dynamic    |          0 |     0.0 |
+| failed_jobs                    | InnoDB | Dynamic    |          0 |     0.0 |
+| firebase_notifications         | InnoDB | Dynamic    |          0 |     0.0 |
+| flash_deals                    | InnoDB | Dynamic    |          0 |     0.0 |
+| flash_deal_products            | InnoDB | Dynamic    |          0 |     0.0 |
+| flash_deal_translations        | InnoDB | Dynamic    |          0 |     0.0 |
+| follow_sellers                 | InnoDB | Dynamic    |          0 |     0.0 |
+| frequently_bought_products     | InnoDB | Dynamic    |          0 |     0.0 |
+| frequently_brought_products    | InnoDB | Dynamic    |          0 |     0.0 |
+| funnels                        | InnoDB | Dynamic    |          0 |     0.1 |
+| funnel_audit_logs              | InnoDB | Dynamic    |          0 |     0.0 |
+| funnel_checkout_attempts       | InnoDB | Dynamic    |          0 |     0.1 |
+| funnel_events                  | InnoDB | Dynamic    |          0 |     0.1 |
+| funnel_order_attributions      | InnoDB | Dynamic    |         27 |     0.1 |
+| funnel_preview_links           | InnoDB | Dynamic    |          0 |     0.1 |
+| funnel_saved_sections          | InnoDB | Dynamic    |          0 |     0.0 |
+| funnel_templates               | InnoDB | Dynamic    |          0 |     0.1 |
+| funnel_versions                | InnoDB | Dynamic    |          0 |     0.0 |
+| goods_receipts                 | InnoDB | Dynamic    |          0 |     0.1 |
+| goods_receipt_lines            | InnoDB | Dynamic    |          0 |     0.0 |
+| home_categories                | InnoDB | Dynamic    |          0 |     0.0 |
+| idempotency_keys               | InnoDB | Dynamic    |          0 |     0.0 |
+| incomes                        | InnoDB | Dynamic    |          0 |     0.1 |
+| income_details                 | InnoDB | Dynamic    |          0 |     0.0 |
+| jobs                           | InnoDB | Dynamic    |          0 |     0.0 |
+| journal_entries                | InnoDB | Dynamic    |          0 |     0.1 |
+| journal_lines                  | InnoDB | Dynamic    |          0 |     0.1 |
+| languages                      | InnoDB | Dynamic    |          3 |     0.0 |
+| last_viewed_products           | InnoDB | Dynamic    |          0 |     0.0 |
+| ledger_baselines               | InnoDB | Dynamic    |          0 |     0.0 |
+| ledger_outbox                  | InnoDB | Dynamic    |          0 |     0.0 |
+| measurement_points             | InnoDB | Dynamic    |          0 |     0.0 |
+| messages                       | InnoDB | Dynamic    |          0 |     0.0 |
+| migrations                     | InnoDB | Dynamic    |         20 |     0.0 |
+| model_has_permissions          | InnoDB | Dynamic    |          0 |     0.0 |
+| model_has_roles                | InnoDB | Dynamic    |          1 |     0.0 |
+| notifications                  | InnoDB | Dynamic    |          0 |     0.0 |
+| notification_types             | InnoDB | Dynamic    |          0 |     0.0 |
+| notification_type_translations | InnoDB | Dynamic    |          0 |     0.0 |
+| orders                         | InnoDB | Dynamic    |          0 |     0.0 |
+| order_demands                  | InnoDB | Dynamic    |          0 |     0.1 |
+| order_details                  | InnoDB | Dynamic    |          0 |     0.0 |
+| order_payment_mappings         | InnoDB | Dynamic    |          0 |     0.0 |
+| otp_configurations             | InnoDB | Dynamic    |          0 |     0.0 |
+| pages                          | InnoDB | Dynamic    |          0 |     0.0 |
+| page_translations              | InnoDB | Dynamic    |          0 |     0.0 |
+| password_resets                | InnoDB | Dynamic    |          0 |     0.0 |
+| payku_payments                 | InnoDB | Dynamic    |          0 |     0.0 |
+| payku_transactions             | InnoDB | Dynamic    |          0 |     0.0 |
+| payments                       | InnoDB | Dynamic    |          0 |     0.0 |
+| payment_gateway_attempts       | InnoDB | Dynamic    |          0 |     0.1 |
+| payment_methods                | InnoDB | Dynamic    |          0 |     0.0 |
+| permissions                    | InnoDB | Dynamic    |        264 |     0.0 |
+| personal_access_tokens         | InnoDB | Dynamic    |          0 |     0.0 |
+| pickup_points                  | InnoDB | Dynamic    |          0 |     0.0 |
+| pickup_point_translations      | InnoDB | Dynamic    |          0 |     0.0 |
+| products                       | InnoDB | Dynamic    |          0 |     0.1 |
+| product_categories             | InnoDB | Dynamic    |          0 |     0.0 |
+| product_detail_accordians      | InnoDB | Dynamic    |          0 |     0.0 |
+| product_queries                | InnoDB | Dynamic    |          0 |     0.0 |
+| product_stocks                 | InnoDB | Dynamic    |          0 |     0.0 |
+| product_stocks_pre_inv1        | InnoDB | Dynamic    |          0 |     0.0 |
+| product_taxes                  | InnoDB | Dynamic    |          0 |     0.0 |
+| product_translations           | InnoDB | Dynamic    |          0 |     0.0 |
+| proxypay_payments              | InnoDB | Dynamic    |          0 |     0.0 |
+| purchases                      | InnoDB | Dynamic    |          0 |     0.0 |
+| purchase_orders                | InnoDB | Dynamic    |          0 |     0.0 |
+| purchase_order_details         | InnoDB | Dynamic    |          0 |     0.0 |
+| purchase_products              | InnoDB | Dynamic    |          0 |     0.0 |
+| purchase_requirement_links     | InnoDB | Dynamic    |          0 |     0.0 |
+| purchase_returns               | InnoDB | Dynamic    |          0 |     0.0 |
+| purchase_return_products       | InnoDB | Dynamic    |          0 |     0.0 |
+| refund_postings                | InnoDB | Dynamic    |          0 |     0.1 |
+| refund_requests                | InnoDB | Dynamic    |          0 |     0.0 |
+| reviews                        | InnoDB | Dynamic    |          0 |     0.0 |
+| roles                          | InnoDB | Dynamic    |          5 |     0.0 |
+| role_has_permissions           | InnoDB | Dynamic    |        395 |     0.0 |
+| role_translations              | InnoDB | Dynamic    |          0 |     0.0 |
+| searches                       | InnoDB | Dynamic    |          0 |     0.0 |
+| sellers                        | InnoDB | Dynamic    |          0 |     0.0 |
+| seller_withdraw_requests       | InnoDB | Dynamic    |          0 |     0.0 |
+| shops                          | InnoDB | Dynamic    |          0 |     0.0 |
+| size_charts                    | InnoDB | Dynamic    |          0 |     0.0 |
+| size_chart_details             | InnoDB | Dynamic    |          0 |     0.0 |
+| sms_templates                  | InnoDB | Dynamic    |          0 |     0.0 |
+| staff                          | InnoDB | Dynamic    |          0 |     0.0 |
+| states                         | InnoDB | Dynamic    |          0 |     0.0 |
+| steadfast_settings             | InnoDB | Dynamic    |          0 |     0.0 |
+| stock_adjustments              | InnoDB | Dynamic    |          0 |     0.0 |
+| stock_adjustment_lines         | InnoDB | Dynamic    |          0 |     0.0 |
+| stock_allocations              | InnoDB | Dynamic    |          0 |     0.0 |
+| stock_balances                 | InnoDB | Dynamic    |          0 |     0.0 |
+| stock_movements                | InnoDB | Dynamic    |          0 |     0.1 |
+| stock_return_receipts          | InnoDB | Dynamic    |          0 |     0.0 |
+| subscribers                    | InnoDB | Dynamic    |          0 |     0.0 |
+| suppliers                      | InnoDB | Dynamic    |          5 |     0.0 |
+| supplier_invoices              | InnoDB | Dynamic    |          0 |     0.1 |
+| supplier_invoice_payments      | InnoDB | Dynamic    |          0 |     0.1 |
+| supplier_payments              | InnoDB | Dynamic    |          0 |     0.0 |
+| supplier_payment_purchases     | InnoDB | Dynamic    |          1 |     0.0 |
+| taxes                          | InnoDB | Dynamic    |          0 |     0.0 |
+| tickets                        | InnoDB | Dynamic    |          0 |     0.0 |
+| ticket_replies                 | InnoDB | Dynamic    |          0 |     0.0 |
+| transactions                   | InnoDB | Dynamic    |          0 |     0.0 |
+| transaction_methods            | InnoDB | Dynamic    |          0 |     0.0 |
+| translations                   | InnoDB | Dynamic    |        596 |     0.1 |
+| uploads                        | InnoDB | Dynamic    |          0 |     0.0 |
+| users                          | InnoDB | Dynamic    |          5 |     0.0 |
+| user_coupons                   | InnoDB | Dynamic    |          0 |     0.0 |
+| vouchers                       | InnoDB | Dynamic    |          0 |     0.0 |
+| voucher_details                | InnoDB | Dynamic    |          0 |     0.0 |
+| wallets                        | InnoDB | Dynamic    |          0 |     0.0 |
+| wholesale_prices               | InnoDB | Dynamic    |          0 |     0.0 |
+| wishlists                      | InnoDB | Dynamic    |          0 |     0.0 |
+| zones                          | InnoDB | Dynamic    |          0 |     0.0 |
+| blocked_ips                    | MyISAM | Dynamic    |          1 |     0.0 |
+| career_banners                 | MyISAM | Dynamic    |          0 |     0.0 |
+| career_departments             | MyISAM | Dynamic    |          0 |     0.0 |
+| career_job_posts               | MyISAM | Dynamic    |          0 |     0.0 |
+| checkout_otps                  | MyISAM | Dynamic    |          0 |     0.0 |
+| countries                      | MyISAM | Dynamic    |          0 |     0.0 |
+| drafts                         | MyISAM | Dynamic    |          0 |     0.0 |
+| featured_collections           | MyISAM | Dynamic    |          0 |     0.0 |
+| job_applications               | MyISAM | Dynamic    |          0 |     0.0 |
+| pathao_courier_settings        | MyISAM | Dynamic    |          0 |     0.0 |
+| purchase_products_pre_inv1     | MyISAM | Dynamic    |          0 |     0.0 |
+| social_credentials             | MyISAM | Dynamic    |          0 |     0.0 |
++--------------------------------+--------+------------+------------+---------+
++----------------------------+--------+
+| table_name                 | engine |
++----------------------------+--------+
+| blocked_ips                | MyISAM |
+| career_banners             | MyISAM |
+| career_departments         | MyISAM |
+| career_job_posts           | MyISAM |
+| checkout_otps              | MyISAM |
+| countries                  | MyISAM |
+| drafts                     | MyISAM |
+| featured_collections       | MyISAM |
+| job_applications           | MyISAM |
+| pathao_courier_settings    | MyISAM |
+| purchase_products_pre_inv1 | MyISAM |
+| social_credentials         | MyISAM |
++----------------------------+--------+
++-----------------------+-----------------------------------------------+-----------------------+
+| table_name            | constraint_name                               | referenced_table_name |
++-----------------------+-----------------------------------------------+-----------------------+
+| chart_of_accounts     | chart_of_accounts_parent_id_foreign           | chart_of_accounts     |
+| funnel_versions       | funnel_versions_funnel_id_foreign             | funnels               |
+| model_has_permissions | model_has_permissions_permission_id_foreign   | permissions           |
+| model_has_roles       | model_has_roles_role_id_foreign               | roles                 |
+| payku_payments        | payku_payments_transaction_id_foreign         | payku_transactions    |
+| role_has_permissions  | role_has_permissions_permission_id_foreign    | permissions           |
+| role_has_permissions  | role_has_permissions_role_id_foreign          | roles                 |
+| transaction_methods   | transaction_methods_source_account_id_foreign | chart_of_accounts     |
++-----------------------+-----------------------------------------------+-----------------------+
++----------------------------+-----------------------------------------------------------+------------+------------------------------+
+| table_name                 | index_name                                                | non_unique | cols                         |
++----------------------------+-----------------------------------------------------------+------------+------------------------------+
+| account_statement_logs     | account_statement_logs_account_id_transaction_date_index  |          1 | account_id,transaction_date  |
+| account_statement_logs     | PRIMARY                                                   |          0 | id                           |
+| addresses                  | PRIMARY                                                   |          0 | id                           |
+| carts                      | PRIMARY                                                   |          0 | id                           |
+| combined_orders            | PRIMARY                                                   |          0 | id                           |
+| orders                     | orders_funnel_id_index                                    |          1 | funnel_id                    |
+| orders                     | orders_funnel_version_id_index                            |          1 | funnel_version_id            |
+| orders                     | PRIMARY                                                   |          0 | id                           |
+| order_details              | idx_order_details_mode                                    |          1 | stock_mode,order_id          |
+| order_details              | idx_order_details_order                                   |          1 | order_id                     |
+| order_details              | PRIMARY                                                   |          0 | id                           |
+| order_payment_mappings     | order_payment_mappings_order_id_customer_payment_id_index |          1 | order_id,customer_payment_id |
+| order_payment_mappings     | PRIMARY                                                   |          0 | id                           |
+| purchases                  | PRIMARY                                                   |          0 | id                           |
+| purchase_orders            | PRIMARY                                                   |          0 | id                           |
+| purchase_returns           | PRIMARY                                                   |          0 | id                           |
+| suppliers                  | PRIMARY                                                   |          0 | id                           |
+| supplier_payment_purchases | PRIMARY                                                   |          0 | id                           |
++----------------------------+-----------------------------------------------------------+------------+------------------------------+
++----------------------+
+| has_idempotency_keys |
++----------------------+
+|                    1 |
++----------------------+
++-------------------------------------------------+---+
+| purchases not Ref-N (report: legacy references) | n |
++-------------------------------------------------+---+
+| purchases not Ref-N (report: legacy references) | 0 |
++-------------------------------------------------+---+
++-------------+------------+----------------+------------+
+| supplier_id | due_amount | purchases_open | difference |
++-------------+------------+----------------+------------+
+|        1260 |     165.00 |           0.00 |     165.00 |
++-------------+------------+----------------+------------+
++-------------+
+| carts_total |
++-------------+
+|           0 |
++-------------+
++------------------------------+
+| legacy_purchases_without_key |
++------------------------------+
+|                            0 |
++------------------------------+
