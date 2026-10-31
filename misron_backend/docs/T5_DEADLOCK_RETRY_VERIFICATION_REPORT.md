@@ -1,4 +1,85 @@
-# T-5 Deadlock retry – verification report
+# T-5 Deadlock retry – verification report (second edition: real-process HTTP verification)
+
+
+---
+
+## 0. Second edition – final targeted verification (this is the part to review)
+
+**Status: T-5 is IMPLEMENTED, NOT ACCEPTED.** Production NO-GO; staging NOT activated; no flag enabled outside isolated test processes; staging fingerprint identical; nothing merged or deployed; no historical record touched. R1–R4 still UNRESOLVED. The checks ran on the isolated MariaDB 10.11 test database `inv_v2_test` only.
+
+### 0.1 What you asked for and where it is proven
+
+| # | Request | Evidence (all pass) |
+|---|---|---|
+| 1 | Authenticated real-process parallel tests, admin create-order | `AdminOrderParallelTest` (2): a double submit by one admin ×4; five admins racing for the last units |
+| 2 | Courier settlement | `CourierSettlementParallelTest` (2): same order ×4 admins; four orders into one account |
+| 3 | Legacy purchase and goods receipt | `PurchasingParallelTest` (4): same purchase ×4; four different purchases; purchases racing with orders; three goods receipts + two repeats. `SupplierPaymentParallelTest` (2) for the payment screen |
+| 4 | Duplicates cannot create duplicate orders, stock movements, supplier payments, journal entries | assertions in the tests above: one order / one settlement / one purchase / one layer / one payment / one journal entry per key; `assertJournalSettles` checks no entry is journalled twice |
+| 5 | FIFO costing and supplier balances preserved | orders racing for 6 units cost exactly 2x400 + 4x410 (oldest layer first); purchases racing with orders leave layers = shelf and cost 4x100; supplier due = exact sum of 4 racing purchases; cash = exact sum of 4 payments |
+| 6 | Retries never repeat external side effects | `DeadlockSideEffectTest` (7): admin order, legacy purchase (upload), supplier payment (attachment), chat order, courier settlement produce identical Http/Mail/Notification/Queue/Bus/event/file effects with and without a deadlock; a positive control proves the harness would count a repeated call; a static audit of every retried controller method in `config/deadlock_retry.php` finds no outgoing call, mail, notification, SMS, event or dispatch of their own |
+| 7 | PO conversion and customer-payment auto-import | documented as excluded, section 0.4 |
+| 8 | Full suite and concurrency suite, not overlapping | section 0.5 |
+| 9 | Staging fingerprints unchanged | section 0.5 |
+
+**Real deadlocks, not injected** (`RealDeadlockHttpTest`, 3): a helper process takes a row and then wants one the request already holds, while the request is paused on purpose after its first lock, so the database itself raises 1213 against the request. In each of the three runs (and in 3 of 3 repetitions) the middleware retried exactly once (`X-Deadlock-Retries: 1`) and: courier settlement settled once (cash, COGS, statement log, journal once); the legacy purchase exists once (one purchase, one layer, stock +5, supplier due once, cash once, one double-submit key); the admin order took stock and FIFO layers once. The helper completed in every case.
+
+### 0.2 DEFECTS the parallel tests found in the existing screens, and the fixes
+
+The fault-injection tests of the first edition could not see these. Each was reproduced failing before it was fixed.
+
+| # | Defect (real parallel requests) | Fix | Files |
+|---|---|---|---|
+| D1 | Concurrent courier settlements of different orders: all but one failed with a duplicate `settlement_no` (3 of 3 runs before the fix); the number was read, not reserved | `CourierSettlement::createNumbered` (own savepoint, locking read, retry on the unique-index clash, max 5) | `app/Models/CourierSettlement.php` |
+| D2 | `settle()` read the order without a lock, so a double settlement was prevented only by accident (the colliding number in D1) | order row and every account the settlement can touch are locked by primary key, in id order, as the transaction's first statements | `CourierSettlementController.php` |
+| D3 | **Account balance lost updates**: legacy screens read `current_balance`, add in PHP and save the absolute number; 4 parallel purchases paid 40 from the cash account instead of 10 x 4 (990 instead of 960) | `ChartOfAccount::performUpdate` now writes the CHANGE (`current_balance = current_balance + delta`) through the ledger-bridge increment, so concurrent postings all count and the outbox records the exact delta. **This is the widest change in this edition: it affects every legacy screen that saves a balance. A single request ends with the same value as before.** Absolute "set the balance to X" writes become "apply the difference". | `app/Models/ChartOfAccount.php` |
+| D4 | **Supplier balance lost updates**: 4 parallel purchases left `due_amount` at 20 instead of 460 | supplier rows read with `lockForUpdate` in purchase store/update/delete/return, supplier payment store/update/delete, PO store/update/convert paths and `SupplierController@processPayment`; the payment account is locked before the funds check | `PurchaseController`, `SupplierPaymentController`, `SupplierController`, `PurchaseOrderController` |
+| D5 | Payments to different suppliers at once collided on `payment_no` (`PAY-000001` twice) | `SupplierPayment::createNumbered` (same pattern as D1) | `app/Models/SupplierPayment.php`, `SupplierPaymentController.php` |
+| D6 | **Admin create-order double submit created 4 orders** for one cart (the screen does not empty the cart) | cart rows locked first; an identical cart (same products, variants, quantities) placed by the same user within 15 seconds is answered with the earlier order instead of a new one. **Behaviour change: a deliberate repeat of an identical order must wait 15 seconds.** | `OrderController.php` |
+
+D3 and D6 change behaviour and should be reviewed by someone who knows how the accountants and order desk use these screens.
+
+### 0.3 Files changed in this edition (under `misron_backend/`)
+
+Application: `app/Models/ChartOfAccount.php`, `app/Models/CourierSettlement.php`, `app/Models/SupplierPayment.php`, `app/Http/Controllers/{CourierSettlementController,OrderController,PurchaseController,PurchaseOrderController,SupplierController,SupplierPaymentController}.php`.
+
+Tests (new): `tests/Concurrency/{HttpWorkflowCase,AdminOrderParallelTest,CourierSettlementParallelTest,PurchasingParallelTest,SupplierPaymentParallelTest,RealDeadlockHttpTest}.php`, `tests/Feature/Inventory/DeadlockSideEffectTest.php`; changed: `tests/Concurrency/worker.php` (`http_as` with pause window and header capture, `lock_then_lock`).
+
+Evidence: `docs/evidence/verification/{phpunit_full_t5b,phpunit_concurrency_t5b,fingerprint_t5b_test_db,fingerprint_t5b_staging}.txt`.
+
+### 0.4 Paths deliberately excluded, and why they need a separate transaction redesign
+
+**`PurchaseOrderController@convertToPurchase`.** It calls `PurchaseController::store` (which opens, commits and journals its own transaction) and then, outside any transaction, marks the PO `purchased` and writes the received quantities line by line. Failure modes: (a) a deadlock or error after the purchase committed leaves a purchase with the PO still open, so the user converting again creates a **second purchase** (stock, FIFO layer, supplier due and journal doubled); (b) wrapping the whole request in a retry would repeat the committed purchase; (c) wrapping it in one outer transaction would turn the inner commit into a savepoint and change when the outbox journals. A safe design needs the purchase logic extracted to a service that can run inside the caller's transaction, one transaction covering purchase + PO status + received quantities, and an idempotency key derived from the PO id so a repeat returns the existing purchase. Until then a deadlock here shows the user an error and must be checked by hand for a purchase that already exists.
+
+**`CustomerPaymentController@autoImport`.** It loops over customers and calls `store` for each one, each its own commit, and its `catch (\Exception)` swallows every error into a list while the response always says `success: true`. Failure modes: (a) a deadlock on one customer is never seen by the retry middleware (it is caught and hidden), so that customer is silently skipped; (b) retrying the whole request is unsafe while it is half-done unless every customer's payment is individually idempotent; (c) the response cannot tell the operator which customers failed except by reading the `errors` list. A safe design is one idempotency key per customer (customer + the set of order ids paid), a per-customer bounded retry that rethrows deadlocks instead of swallowing them, and a result that distinguishes imported / already-paid / failed.
+
+Also not retried (unchanged from the first edition): order status/payment updates (they send notifications and SMS after saving), anything that calls a courier or payment API, and `PurchasingController` (already retries inside `Idempotency::once`).
+
+### 0.5 Execution record (run one after the other; nothing overlapped, checked with `pgrep` before each)
+
+| Run | Result |
+|---|---|
+| Full PHPUnit | 556 tests, 3 failures, the same pre-existing three (`ExampleTest`, `FunnelEditorMediaAndCatalogueTest::test_orders_carry_nullable_funnel_attribution`, `UploadSafetyTest::test_svg_and_xml_are_accepted_from_staff_only`); no new failure. Output: `phpunit_full_t5b.txt` |
+| Concurrency suite | **61 tests, 1695 assertions, all pass** (48 before + 13 in this edition). Output: `phpunit_concurrency_t5b.txt` |
+| Each new parallel test file | repeated 2-5 times; stable |
+| Test-database fingerprint (`inv_v2_test`) | financial/stock section identical to the previous verification; all new tables at 0 rows (outbox, journal, receipts, settlements, supplier payments, adjustments...) |
+| `sc_staging` fingerprint | **identical** to `/tmp/claude-0/staging/fp_final.txt` |
+
+### 0.6 Limitations added by this edition
+
+1. **MariaDB 10.11 only.** The production engine/version is still blocked; victim selection, lock wait and error text may differ on the real engine.
+2. The three real-deadlock tests stage one specific lock cycle each with a deliberate pause; they prove the retry path on a real 1213, not that every possible cycle is covered.
+3. Parallel tests cover the creation paths. **Purchase update/delete, purchase returns, vouchers, expenses, income, bank transactions, transfers and customer payments were not run as parallel HTTP requests.** D3 (balance writes) and D4 (supplier rows) were applied where the controllers read them, but those screens have only the first-edition injection tests plus the full-suite regression.
+4. Non-account read-modify-write rows other than suppliers (for example customer or wallet balances in other screens) were not audited one by one.
+5. After a burst of parallel postings the journalling of some groups may still be pending for seconds; the scheduled `ledger:process-outbox` completes it (the tests run it and then require zero waiting, balanced trial balance and no duplicated entry). That is the designed R4 recovery path and is unchanged.
+6. The static audit of external calls looks one level deep (the method body, not the helpers it calls); helpers are covered by the behavioural side-effect tests, which count only effects that go through the framework (Http, Mail, Notification, Queue, Bus, events, Storage). A raw curl call elsewhere would not be seen.
+
+### 0.7 Status
+
+T-5: **implemented, not accepted** (awaiting your review, real-engine confirmation and accountant review of D3/D4). R1–R4: **UNRESOLVED**. Blocked and not complete: production engine/version output, fresh production backup, real admin theme, accountant review. **Stopped; waiting for your explicit approval. No staging activation.**
+
+---
+
+## First edition (previous report, kept for the record)
 
 **Decision unchanged: PRODUCTION NO-GO. Staging activation NOT authorized.** All four technical risks (R1 stale-statistics deadlocks, R2 wallet-only refunds, R3 historical uncosted lines, R4 journal posting after legacy commit) remain **UNRESOLVED** until real-engine and accountant verification. T-5 is *implemented and tested on the isolated MariaDB 10.11 test database only*; it is not accepted by anyone but the author.
 
