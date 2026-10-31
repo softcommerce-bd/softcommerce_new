@@ -1277,8 +1277,27 @@ class OrderController extends Controller
         // stock deductions, and order rows are all-or-nothing).
         $outOfStockProduct = null;
         $stockTake = null;
+        $cartGone = false;
         try {
-        DB::transaction(function () use ($request, $user_id, $shippingAddress, $carts, &$outOfStockProduct, &$stockTake, &$placedCombinedOrderId) {
+        DB::transaction(function () use ($request, $user_id, $shippingAddress, $carts, &$outOfStockProduct, &$stockTake, &$placedCombinedOrderId, &$cartGone) {
+
+        // Lock this user's cart rows before anything else, so two submits of one cart are handled one after the other.
+        $lockedCartIds = Cart::where('user_id', $user_id)->lockForUpdate()->pluck('id')->all();
+        if (array_diff($carts->pluck('id')->all(), $lockedCartIds) !== []) {
+            $cartGone = true;
+            throw new \RuntimeException('cart_gone');
+        }
+        // This screen does not empty the cart, so a double click or a second tab would place the same order again. An identical cart placed by the
+        // same user in the last few seconds is answered with that earlier order instead (a deliberate repeat order must wait that long).
+        $signature = fn ($rows) => collect($rows)->map(fn ($r) => $r['product_id'] . '|' . ($r['variation'] ?? $r['variant'] ?? '') . '|' . (int) $r['quantity'])->sort()->values()->all();
+        $recent = CombinedOrder::where('user_id', $user_id)->where('created_at', '>=', now()->subSeconds(15))->orderByDesc('id')->first();
+        if ($recent) {
+            $recentLines = OrderDetail::whereIn('order_id', Order::where('combined_order_id', $recent->id)->pluck('id'))->get(['product_id', 'variation', 'quantity']);
+            if ($signature($recentLines->toArray()) === $signature($carts->toArray())) {
+                $placedCombinedOrderId = $recent->id; // the earlier submit's order; nothing is created or taken again
+                return;
+            }
+        }
 
         // Take the stock and the purchase batches for the whole cart first, in one place shared with
         // the storefront API, POS and funnel checkout: the database checks and subtracts in one step,
@@ -1469,9 +1488,15 @@ class OrderController extends Controller
             if ($stockTake !== null) {
                 app(StockLedger::class)->release($stockTake);
             }
-            if (!($outOfStockProduct && $e instanceof \RuntimeException && $e->getMessage() === 'out_of_stock')) {
+            if (!($cartGone && $e instanceof \RuntimeException && $e->getMessage() === 'cart_gone')
+                && !($outOfStockProduct && $e instanceof \RuntimeException && $e->getMessage() === 'out_of_stock')) {
                 throw $e;
             }
+        }
+
+        if ($cartGone) {
+            flash(translate('Your cart is empty'))->warning();
+            return redirect()->route('home');
         }
 
         // Handle out-of-stock redirect (transaction already rolled back via exception)
