@@ -215,6 +215,23 @@ try {
             $result['ok'] = true;
             break;
 
+        case 'http_as': // a real request through the HTTP kernel as a given staff user (form post), e.g. an admin screen
+            Illuminate\Support\Facades\Auth::loginUsingId($job['user_id']);
+            $request = Request::create($job['uri'], $job['method'] ?? 'POST', $job['body'] ?? [], [], [], ['HTTP_ACCEPT' => 'application/json']);
+            $response = $app->make(HttpKernel::class)->handle($request);
+            $result['status'] = $response->getStatusCode();
+            $result['body'] = json_decode($response->getContent(), true) ?? substr((string) $response->getContent(), 0, 300);
+            $result['ok'] = true;
+            break;
+
+        case 'chat_place':
+            $conv = App\Models\ChatConversation::findOrFail($job['conversation_id']);
+            $staff = App\Models\User::findOrFail($job['user_id']);
+            $combined = app(App\Services\Chat\ChatOrderService::class)->place($conv, $staff, $job['input'], '127.0.0.1');
+            $result['combined_order_id'] = $combined->id;
+            $result['ok'] = true;
+            break;
+
         case 'outbox_process':
             $result['outbox'] = app(App\Services\Accounting\LedgerOutboxProcessor::class)->processPending($job['limit'] ?? 200);
             $result['ok'] = true;
