@@ -1,6 +1,6 @@
 # Technical risk verification report
 
-**Result: the four risks are better protected and much better evidenced, but ALL FOUR REMAIN UNRESOLVED** (reasons in section 7). Nothing here is a staging or production result. Staging was not touched (its financial/stock fingerprint is identical to before, apart from nothing: no change at all since the last report), no feature flag was enabled outside test processes, no historical record was repaired.
+**Result: the four risks are better protected and much better evidenced, but ALL FOUR REMAIN UNRESOLVED** (reasons in section 7). Nothing here is a staging or production result. Staging was not touched (its financial and stock fingerprint is identical to the last report), no feature flag was enabled outside test processes, no historical record was repaired.
 
 ## 1. Environment (isolated)
 | Item | Value |
