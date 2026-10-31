@@ -711,7 +711,7 @@ public function store(Request $request)
     {
         DB::beginTransaction();
         try {
-            $payment = SupplierPayment::findOrFail($id);
+            $payment = SupplierPayment::lockForUpdate()->findOrFail($id); // document first: a repeated/simultaneous delete waits here and then finds it gone
             $supplier = Supplier::lockForUpdate()->findOrFail($payment->supplier_id);
 
             foreach ($payment->purchases as $purchase) {

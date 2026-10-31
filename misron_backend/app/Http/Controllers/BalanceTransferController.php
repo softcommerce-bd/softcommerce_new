@@ -199,6 +199,7 @@ class BalanceTransferController extends Controller
 
         DB::beginTransaction();
         try {
+            $transaction = BalanceTransfer::lockForUpdate()->findOrFail($id); // document first: re-read under the lock (a repeated delete finds it gone)
             // STEP 1: Insert deletion reversal logs
             $this->insertReversalLogs($transaction, 'delete');
             

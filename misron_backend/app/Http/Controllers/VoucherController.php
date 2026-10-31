@@ -675,7 +675,7 @@ class VoucherController extends Controller
         try {
             DB::beginTransaction();
 
-            $voucher = Voucher::findOrFail($id);
+            $voucher = Voucher::lockForUpdate()->findOrFail($id); // document first (a repeated delete finds it gone)
 
             // Reverse balances
             $this->reverseAccountBalances($voucher);

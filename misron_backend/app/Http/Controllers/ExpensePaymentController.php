@@ -373,7 +373,7 @@ public function index(Request $request)
         try {
             DB::beginTransaction();
 
-            $expensePayment = ExpensePayment::findOrFail($id);
+            $expensePayment = ExpensePayment::lockForUpdate()->findOrFail($id); // document first (a repeated delete finds it gone)
 
             // Reverse chart_of_accounts balances
             $expensePayment->reverseAccountBalance();

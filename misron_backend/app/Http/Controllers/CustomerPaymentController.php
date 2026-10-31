@@ -311,6 +311,7 @@ class CustomerPaymentController extends Controller
         DB::beginTransaction();
         
         try {
+            $payment = CustomerPayment::lockForUpdate()->findOrFail($id); // document first: re-read under the lock (a repeated delete finds it gone)
             // Reverse order payment statuses
             foreach ($payment->orders as $order) {
                 $newPaidAmount = $order->customerPayments()

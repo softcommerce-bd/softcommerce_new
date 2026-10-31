@@ -1134,7 +1134,8 @@ public function settle(Request $request)
         try {
             DB::beginTransaction();
 
-            $settlement = CourierSettlement::with('order')->findOrFail($request->settlement_id);
+            // document first: a repeated/simultaneous unsettle waits here and then finds the settlement gone (it is deleted below), so the reversal is applied once
+            $settlement = CourierSettlement::with('order')->lockForUpdate()->findOrFail($request->settlement_id);
             $order = $settlement->order;
 
             if (!$order) {

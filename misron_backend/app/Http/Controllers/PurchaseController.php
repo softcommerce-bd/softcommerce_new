@@ -2004,7 +2004,7 @@ public function searchProducts(Request $request)
     {
         DB::beginTransaction();
         try {
-            $purchase = Purchase::findOrFail($id);
+            $purchase = Purchase::lockForUpdate()->findOrFail($id); // document first: a repeated/simultaneous delete waits here and then finds it gone
             $this->refuseLedgerPurchase((int) $purchase->id);
             $supplier = Supplier::lockForUpdate()->find($purchase->supplier_id);
 
