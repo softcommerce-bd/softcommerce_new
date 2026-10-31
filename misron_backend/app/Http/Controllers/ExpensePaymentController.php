@@ -279,6 +279,7 @@ public function index(Request $request)
 
         try {
             DB::beginTransaction();
+            $expensePayment = ExpensePayment::lockForUpdate()->findOrFail($id); // document first: re-read under its lock (a repeated/simultaneous update waits and sees the committed state)
 
             // the same rule again, now under the account's row lock
             $paymentAccount = ChartOfAccount::lockForUpdate()->find($request->payment_account_id);

@@ -229,6 +229,7 @@ class IncomeController extends Controller
 
         try {
             DB::beginTransaction();
+            $income = Income::lockForUpdate()->findOrFail($id); // document first: re-read under its lock (a repeated/simultaneous update waits and sees the committed state)
 
             // Reverse old balances
             $income->reverseAccountBalance();

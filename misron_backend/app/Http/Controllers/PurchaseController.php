@@ -495,7 +495,7 @@ class PurchaseController extends Controller
     {
         DB::beginTransaction();
         try {
-            $purchase = Purchase::findOrFail($purchaseId);
+            $purchase = Purchase::lockForUpdate()->findOrFail($purchaseId); // document first: re-read under its lock (a repeated/simultaneous edit waits and sees the committed state)
             $this->refuseLedgerPurchase((int) $purchase->id);
             $oldSupplierId = $purchase->supplier_id;
 
@@ -1357,7 +1357,7 @@ public function searchProducts(Request $request)
             }
 
             $purchaseId = $request->purchase_id[0];
-            $purchase = Purchase::findOrFail($purchaseId);
+            $purchase = Purchase::lockForUpdate()->findOrFail($purchaseId); // locked: simultaneous returns against one purchase must see each other's effect on its open amount
             $this->refuseLedgerPurchase((int) $purchaseId);
             $supplier = Supplier::lockForUpdate()->findOrFail($request->supplier_id);
 

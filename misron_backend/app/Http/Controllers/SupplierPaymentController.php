@@ -546,7 +546,7 @@ public function store(Request $request)
 
         DB::beginTransaction();
         try {
-            $payment = SupplierPayment::findOrFail($id);
+            $payment = SupplierPayment::lockForUpdate()->findOrFail($id); // document first: re-read under its lock
             $oldSupplier = Supplier::lockForUpdate()->findOrFail($payment->supplier_id);
             $newSupplier = Supplier::lockForUpdate()->findOrFail($request->supplier_id);
 

@@ -115,6 +115,7 @@ class CustomerPaymentController extends Controller
             $orders = Order::whereIn('id', $request->order_ids)
                 ->where('user_id', $customer->id)
                 ->where('payment_status', 'paid')
+                ->orderBy('id')->lockForUpdate() // the orders being paid, ascending: a simultaneous payment waits and then sees what was already applied
                 ->with(['customerPayments' => function($q) {
                     $q->withPivot('amount_applied');
                 }])

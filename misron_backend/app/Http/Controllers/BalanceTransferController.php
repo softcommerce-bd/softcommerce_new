@@ -167,6 +167,7 @@ class BalanceTransferController extends Controller
 
         DB::beginTransaction();
         try {
+            $transaction = BalanceTransfer::lockForUpdate()->findOrFail($id); // document first: re-read under its lock (a repeated/simultaneous update waits and sees the committed state)
             // STEP 1: Insert reversal logs
             $this->insertReversalLogs($transaction, 'edit');
             

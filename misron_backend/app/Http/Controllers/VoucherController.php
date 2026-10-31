@@ -484,6 +484,7 @@ class VoucherController extends Controller
 
         try {
             DB::beginTransaction();
+            $voucher = Voucher::lockForUpdate()->findOrFail($id); // document first: re-read under its lock (a repeated/simultaneous update waits and sees the committed state)
 
             // Reverse old balances (also loads & caches the OLD details relation)
             $this->reverseAccountBalances($voucher);
