@@ -7,7 +7,7 @@ UPDATE users SET name = CONCAT('Staging ', user_type, ' ', id), email = CONCAT('
 UPDATE addresses SET name = CONCAT('Masked ', id), email = CONCAT('addr', id, '@staging.invalid'), phone = CONCAT('0172000', LPAD(id, 4, '0')), address = 'Masked address';
 UPDATE orders SET shipping_address = JSON_OBJECT('name', CONCAT('Masked customer ', id), 'phone', CONCAT('0173000', LPAD(id, 4, '0')), 'address', 'Masked address', 'city', 'Dhaka') WHERE shipping_address IS NOT NULL AND shipping_address <> '';
 UPDATE combined_orders SET shipping_address = JSON_OBJECT('name', CONCAT('Masked customer ', id), 'phone', CONCAT('0173000', LPAD(id, 4, '0')), 'address', 'Masked address', 'city', 'Dhaka') WHERE shipping_address IS NOT NULL AND shipping_address <> '';
-UPDATE suppliers SET contact_person_name = CONCAT('Contact ', id), mobile = CONCAT('0174000', LPAD(id, 4, '0')), email = CONCAT('supplier', id, '@staging.invalid'), address = IF(address IS NULL OR address = '', address, 'Masked address');
+UPDATE suppliers SET business_name = CONCAT('Supplier ', id), contact_person_name = CONCAT('Contact ', id), mobile = CONCAT('0174000', LPAD(id, 4, '0')), email = CONCAT('supplier', id, '@staging.invalid'), address = IF(address IS NULL OR address = '', address, 'Masked address');
 UPDATE drafts SET name = CONCAT('Masked ', id), phone = CONCAT('0175000', LPAD(id, 4, '0')), email = NULL, address = 'Masked address';
 UPDATE subscribers SET email = CONCAT('sub', id, '@staging.invalid');
 UPDATE blocked_ips SET customer_phone = NULL, customer_email = NULL;

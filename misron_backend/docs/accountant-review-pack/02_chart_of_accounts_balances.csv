@@ -1,0 +1,59 @@
+id,code,name,type,sub_type,current_balance,status
+52,1-10002,Opening Stock,asset,,0.00,active
+50,1-11001,Additional Cash,asset,cash,0.00,active
+81,1-11002,General cash,asset,cash,0.00,active
+23,1-11003,Petty cash,asset,cash,0.00,active
+47,1-12001,BRAC Bank - Main,asset,bank,0.00,active
+76,1-12002,Islami Bank,asset,bank,0.00,active
+86,1-12003,Locer Bank,asset,bank,0.00,active
+48,1-13002,Bkash 01817500048,asset,mobile_bank,0.00,active
+8,1-1301,Accounts Receivable,asset,receivable,0.00,active
+97,1-14001,Salim,asset,receivable,0.00,active
+49,1-15001,Inventory,asset,inventory,147089280.00,active
+75,1-15002,Asset,asset,inventory,0.00,active
+93,1-15003,Model Video Investment,asset,inventory,0.00,active
+94,1-15004,Website Investment,asset,inventory,0.00,active
+95,1-15005,Current Stock Value,asset,inventory,0.00,inactive
+10,2-2000,Liabilities,liability,NULL,0.00,active
+11,2-2100,Current Liabilities,liability,NULL,0.00,active
+72,2-21003,Electricity payable,liability,payable,0.00,active
+73,2-21004,Salary payable,liability,payable,0.00,active
+74,2-21005,Robiul payment Due,liability,payable,0.00,active
+80,2-21006,Supplier Payable,liability,payable,0.00,inactive
+96,2-21007,Tahamina Akter,liability,payable,0.00,active
+12,2-2101,Accounts Payable,liability,payable,147089280.00,active
+13,2-2102,Tax Payable,liability,tax,0.00,active
+53,2-22001,gov tax,asset,tax,0.00,active
+59,2-23001,Current Year Earnings,liability,equity,0.00,active
+60,2-23002,Opening Customer Balance,liability,equity,0.00,active
+61,2-23003,Opening Stock,liability,equity,0.00,active
+62,2-23004,Opening Supplier Balance,liability,equity,0.00,active
+63,2-23005,Owners Equity,liability,equity,0.00,active
+64,2-23006,Retained Earnings,liability,equity,0.00,active
+19,4-4100,Sales Revenue,income,sales,0.00,active
+70,4-41001,Sales,income,sales,0.00,active
+20,4-4200,Other Income,income,revenue,0.00,active
+78,4-42001,Courier Income,income,income,52.20,active
+21,5-5000,Expenses,expense,NULL,0.00,active
+66,5-51001,Bad Debt Expense,expense,expense,0.00,active
+67,5-51002,Card/Mobile Banking Charge,expense,expense,0.00,active
+68,5-51003,Courier Fee Expense,expense,expense,0.00,active
+69,5-51004,Supplier Discount/ Credit,expense,expense,0.00,active
+71,5-51005,Additional Expense,expense,expense,0.00,active
+77,5-51006,Courier Settlement Expense,expense,expense,353.95,active
+83,5-51007,Stock Adjustment,expense,expense,0.00,active
+84,5-51008,Electricity Bill,expense,expense,0.00,active
+85,5-51009,Mobile Bill,expense,expense,0.00,active
+87,5-51010,Model Charge,expense,expense,0.00,active
+88,5-51011,Others Expense,expense,expense,0.00,active
+89,5-51012,Security Bill,expense,expense,0.00,active
+90,5-51013,Server Side Taking Charge,expense,expense,0.00,active
+91,5-51014,Showroom Rent,expense,expense,0.00,active
+92,5-51015,Staff salary,expense,expense,0.00,active
+98,5-51016,Marketing Cost,expense,expense,0.00,active
+82,6-61000,Cost of Goods Sold,expense,cost_of_sales,0.00,active
+101,SYS-ADV,Supplier Advances,asset,receivable,0.00,active
+99,SYS-GRNI,Goods Received Not Invoiced,liability,payable,0.00,active
+103,SYS-OPEN,Inventory Opening Adjustment,equity,equity,0.00,active
+100,SYS-PPV,Purchase Price Variance,expense,expense,0.00,active
+102,SYS-SUSP,Legacy Posting Suspense,equity,equity,0.00,active
