@@ -63,4 +63,30 @@ class OutboxVerificationTest extends VerificationCase
         $this->assertSame(12, DB::table('journal_entries')->whereIn('idempotency_key', array_map(fn ($t) => 'legacy:' . $t, $tokens))->count());
         $this->assertSame(0, DB::table('ledger_outbox')->whereIn('token', $tokens)->whereNull('processed_at')->count());
     }
+
+    public function test_live_old_screen_postings_racing_outbox_workers_never_deadlock_or_lose_a_posting()
+    {
+        // regression: processing used to lock the outbox by token / processed_at, taking gap locks that deadlocked against live transactions
+        $a = $this->account('asset', 'cash', 10000); $b = $this->account('expense', 'expense', 0);
+        for ($round = 1; $round <= 3; $round++) {
+            $jobs = [];
+            foreach (range(1, 16) as $n) {
+                $jobs[] = ['action' => 'legacy_post', 'from' => $a, 'to' => $b, 'amount' => 5];
+            }
+            foreach (range(1, 4) as $n) {
+                $jobs[] = ['action' => 'outbox_process'];
+            }
+            shuffle($jobs);
+            $results = $this->race($jobs, 120);
+            foreach ($results as $i => $r) {
+                $this->assertTrue(!empty($r['ok']), "round {$round} {$jobs[$i]['action']}: " . json_encode($r));
+            }
+        }
+        $this->runOne(['action' => 'outbox_process']);
+        $this->assertEquals(10000 - 48 * 5.0, (float) DB::table('chart_of_accounts')->where('id', $a)->value('current_balance'));
+        $this->assertSame(48, DB::table('ledger_outbox')->where('account_id', $a)->count());
+        $this->assertSame(48, DB::table('journal_lines')->where('account_id', $a)->count(), 'one journal line per posting, none lost, none doubled');
+        $this->assertSame(0, DB::table('ledger_outbox')->whereNull('processed_at')->count());
+        $this->assertTrue(JournalService::trialBalance(now()->toDateString())['balanced']);
+    }
 }

@@ -35,7 +35,10 @@ class LedgerOutboxProcessor
     private function processTokenInTransaction(string $token): ?int
     {
         return DB::transaction(function () use ($token) {
-            $rows = DB::table('ledger_outbox')->where('token', $token)->whereNull('processed_at')->orderBy('id')->lockForUpdate()->get();
+            // Find the group's rows with a plain read, then lock exactly those rows by primary key. Locking by token would take gap locks on the
+            // token index, and a live legacy transaction inserting its own outbox rows would then deadlock against this processor.
+            $ids = DB::table('ledger_outbox')->where('token', $token)->whereNull('processed_at')->orderBy('id')->pluck('id');
+            $rows = $ids->isEmpty() ? collect() : DB::table('ledger_outbox')->whereIn('id', $ids)->orderBy('id')->lockForUpdate()->get()->filter(fn ($r) => $r->processed_at === null)->values(); // PRIMARY-key locks only: a condition on the indexed processed_at column would lock index gaps
             if ($rows->isEmpty()) {
                 return null; // another worker already did it
             }
