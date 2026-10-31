@@ -786,6 +786,16 @@ public static function orderStore($data)
 
             DB::beginTransaction();
 
+            // Lock exactly the cart rows being sold (primary key, ascending): the same cart submitted twice (double click, two tabs, a retry) queues here,
+            // and the second finds the rows already consumed and gets the answer a sequential repeat gets ("Please select a product.").
+            $cartIds = $carts->pluck('id')->map(fn ($id) => (int) $id)->sort()->values()->all();
+            $lockedCartIds = Cart::whereIn('id', $cartIds)->orderBy('id')->lockForUpdate()->pluck('id')->map(fn ($id) => (int) $id)->all();
+            if (array_diff($cartIds, $lockedCartIds) !== []) {
+                DB::rollBack();
+
+                return array('success' => 0, 'message' => translate("Please select a product."));
+            }
+
             // Take the stock for the whole sale first, in one place. A line that cannot be served
             // stops the sale here with nothing half-taken.
             $stockLines = [];
@@ -1127,7 +1137,9 @@ public static function orderStore($data)
                 $order->save();
 
                 // Clear cart
-                Cart::where('user_id', $order->user_id)->orWhere('temp_user_id', $order->guest_id)->delete();
+                // Only the cart rows of THIS sale. The old condition (user_id = NULL OR temp_user_id = ...) matched every walk-in cart of every counter
+                // (user_id is NULL for all of them), so completing one sale deleted the carts of all the other customers waiting at the POS.
+                Cart::whereIn('id', $cartIds)->delete();
 
                 DB::commit();
 

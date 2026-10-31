@@ -261,6 +261,18 @@ try {
             $result['ok'] = true;
             break;
 
+        case 'pos_order': // the POS sale, as PosController::order_store calls it, in its own process
+            Illuminate\Support\Facades\Auth::loginUsingId($job['user_id']);
+            $result['pos'] = App\Utility\PosUtility::orderStore($job['data']);
+            $result['ok'] = true;
+            break;
+
+        case 'console': // an Artisan command in its own process (exit code and output captured)
+            $result['exit'] = Illuminate\Support\Facades\Artisan::call($job['command'], $job['args'] ?? []);
+            $result['output'] = substr(Illuminate\Support\Facades\Artisan::output(), 0, 400);
+            $result['ok'] = true;
+            break;
+
         case 'chat_place':
             $conv = App\Models\ChatConversation::findOrFail($job['conversation_id']);
             $staff = App\Models\User::findOrFail($job['user_id']);
