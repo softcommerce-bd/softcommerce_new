@@ -15,8 +15,26 @@ class AutoDepositFunds extends Command
     protected $signature = 'accounts:auto-deposit';
     protected $description = 'Nightly transfer of balances from mobile bank accounts to linked bank accounts';
 
+    /** Stable text for log searches and monitoring. */
+    public const PAUSED_TAG = 'AUTO_DEPOSIT_PAUSED_AD1';
+
     public function handle()
     {
+        // GUARD G1 (owner decisions AD-1.1 option C, AD-1.2): the job is paused pending approval. It returns before ANY database access -
+        // no query, no transaction, no lock, no number taken, nothing moved - and says so once, instead of failing once per method every night.
+        // Status: SUCCESS (0). Paused-by-decision is the intended state, not a failure; a non-zero code would make the scheduler report a
+        // failure every night and hide real ones. The log line is a warning with a fixed tag so it can be searched or alerted on.
+        if (!config('accounts.auto_deposit_approved')) {
+            $message = self::PAUSED_TAG . ': accounts:auto-deposit is PAUSED pending owner approval (decision AD-1, option C selected). '
+                . 'No transaction was opened and no money was moved. To resume it the owner must approve an AD-1 option '
+                . '(a: system user as creator, b: nullable created_by) and the change must be implemented and tested; see docs/T5_AD1_AUTO_DEPOSIT_OPTIONS.md. '
+                . 'Until then make deposits on the Balance Transfers screen.';
+            Log::warning($message);
+            $this->warn($message);
+
+            return self::SUCCESS;
+        }
+
         $autoMethods = TransactionMethod::where('deposit_type', 'auto')
             ->where('status', 'active')
             ->with(['sourceAccount', 'bankAccount'])

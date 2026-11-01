@@ -90,8 +90,8 @@ class PosAndConsoleParallelTest extends HttpWorkflowCase
         $b = $this->cashAccount(0);
         $before = DB::table('balance_transfers')->count();
         $res = $this->race([
-            ['action' => 'console', 'command' => 'accounts:auto-deposit'],
-            ['action' => 'console', 'command' => 'accounts:auto-deposit'],
+            ['action' => 'console', 'command' => 'accounts:auto-deposit', 'config' => ['accounts.auto_deposit_approved' => true]],
+            ['action' => 'console', 'command' => 'accounts:auto-deposit', 'config' => ['accounts.auto_deposit_approved' => true]],
             $this->req($this->admin(), route('accounts.balance-transfers.store', [], false), ['transaction_type' => 'transfer', 'date' => now()->toDateString(), 'from_account_id' => $a, 'to_account_id' => $b, 'amount' => 100, 'charge' => 0]),
         ], 120);
 
@@ -119,7 +119,7 @@ class PosAndConsoleParallelTest extends HttpWorkflowCase
             $source = $this->cashAccount(300);
             $bank = $this->account('asset', 'bank', 0);
             $method = (int) DB::table('transaction_methods')->insertGetId(['name' => 'PC ' . uniqid(), 'type' => 'mobile', 'deposit_type' => 'auto', 'charge' => 0, 'bank_account_id' => $bank, 'source_account_id' => $source, 'status' => 'active', 'created_at' => now(), 'updated_at' => now()]);
-            $res = $this->race([['action' => 'console', 'command' => 'accounts:auto-deposit'], ['action' => 'console', 'command' => 'accounts:auto-deposit']], 120);
+            $res = $this->race([['action' => 'console', 'command' => 'accounts:auto-deposit', 'config' => ['accounts.auto_deposit_approved' => true]], ['action' => 'console', 'command' => 'accounts:auto-deposit', 'config' => ['accounts.auto_deposit_approved' => true]]], 120);
 
             $this->assertSame([0, 0], [$res[0]['exit'] ?? -1, $res[1]['exit'] ?? -1]);
             $this->assertSame(1, DB::table('balance_transfers')->where('from_account_id', $source)->count(), 'one auto deposit: ' . json_encode(array_column($res, 'output')));
@@ -145,7 +145,7 @@ class PosAndConsoleParallelTest extends HttpWorkflowCase
         $source = $this->cashAccount(300);
         $bank = $this->account('asset', 'bank', 0);
         $method = (int) DB::table('transaction_methods')->insertGetId(['name' => 'PC ' . uniqid(), 'type' => 'mobile', 'deposit_type' => 'auto', 'charge' => 0, 'bank_account_id' => $bank, 'source_account_id' => $source, 'status' => 'active', 'created_at' => now(), 'updated_at' => now()]);
-        $r = $this->runOne(['action' => 'console', 'command' => 'accounts:auto-deposit']);
+        $r = $this->runOne(['action' => 'console', 'command' => 'accounts:auto-deposit', 'config' => ['accounts.auto_deposit_approved' => true]]);
         $this->assertStringContainsString("created_by' cannot be null", (string) ($r['output'] ?? ''));
         $this->assertEquals(300.0, $this->bal($source), 'nothing moved');
         DB::table('transaction_methods')->where('id', $method)->delete();

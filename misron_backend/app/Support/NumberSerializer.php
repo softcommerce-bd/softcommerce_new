@@ -30,7 +30,8 @@ final class NumberSerializer
     /** @var array<string,int> lock name => times acquired in this session */
     private static array $held = [];
 
-    private static bool $listening = false;
+    /** the event dispatcher (weakly held; object ids can be reused) the listeners are registered on (a new application instance, as in tests, has a new dispatcher) */
+    private static ?\WeakReference $listeningOn = null;
 
     public static function hold(string $series, int $timeoutSeconds = 10): bool
     {
@@ -78,10 +79,11 @@ final class NumberSerializer
 
     private static function listen(): void
     {
-        if (self::$listening) {
+        $dispatcher = \Illuminate\Support\Facades\Event::getFacadeRoot();
+        if (self::$listeningOn !== null && self::$listeningOn->get() === $dispatcher) {
             return;
         }
-        self::$listening = true;
+        self::$listeningOn = \WeakReference::create($dispatcher);
         $done = function ($event) {
             if (self::$held !== [] && $event->connection->transactionLevel() <= DeadlockRetry::$baseLevel) {
                 self::releaseAll();

@@ -5,8 +5,8 @@
 |---|---|
 | P-1 POS cart isolation | **APPROVED**: a POS sale deletes only its own cart rows; a registered customer's separate website cart stays untouched (test: `PosCartIsolationTest`) |
 | Supplier payment edit treatment | **APPROVED** as intended application behaviour: reverse the old payment's effects, apply the new payment exactly once; journal and allocation integrity preserved; **no historical correction authorized** |
-| AD-1 auto-deposit schema | **NOT YET APPROVED**: option comparison and recommendation in `T5_AD1_AUTO_DEPOSIT_OPTIONS.md` (recommendation: keep disabled now = option c; if nightly deposits are wanted, option a with a non-login system user; b not recommended) |
-| B-1 bank numbering | **PENDING**: all four bank actions stay disabled; `BankActionsStayDisabledTest` enforces that nothing posts |
+| AD-1 auto-deposit schema | **OPTION C SELECTED (UPDATE 6)**; superseded text follows:  option comparison and recommendation in `T5_AD1_AUTO_DEPOSIT_OPTIONS.md` (recommendation: keep disabled now = option c; if nightly deposits are wanted, option a with a non-login system user; b not recommended) |
+| B-1 bank numbering | **B-1.1 APPROVED (UPDATE 6): the four duplicate bank actions are RETIRED; the balance-transfer workflow is the supported mechanism; cheque clearing NOT implemented.** Numbering is therefore not needed (B-1.2-B-1.6 stay unanswered and only matter if bank screens are ever revived) |
 | N-1 historical supplier drift | **PENDING ACCOUNTANT REVIEW**: no historical supplier balance is modified |
 T-5 and staging acceptance remain open.
 
@@ -164,3 +164,16 @@ Answer each line; "no answer" = stays as is (disabled / unchanged). Evidence and
 | **N-1.3** | Add an edit audit table for supplier payments? | yes later (schema approval) | no |
 | **INC.1** | Confirm production runs one connection per request with no multiplexing proxy / multi-primary (see `T5_INCOME_NUMBER_DEADLOCK_REPORT.md` section 7) | DBA confirms | - |
 | **SEQ.1** | Approve decision 7 (a `document_sequences` table) for the other numbered series and any new bank numbers? | yes, after a rehearsal | keep "latest row + 1" with retry |
+
+
+---
+## UPDATE 6 - OWNER RULINGS (recorded verbatim in substance; this is the authoritative record)
+| ID | Owner ruling | Implemented as | Not decided (remains pending) |
+|---|---|---|---|
+| **B-1.1** | **APPROVED.** Retire the four duplicate bank actions (deposit, withdraw, transfer, cheque clearing; and cash-out, which is the withdrawal). Keep the existing balance-transfer workflow as the supported deposit, withdrawal and transfer mechanism. **Do not implement cheque clearing.** Do not delete historical bank records or audit history; do not silently change bank accounting. | The five POST routes keep their names but refuse every request (HTTP 410, no write); the model refuses create/update/delete; history screens (`index`, `show`) stay readable; the screen points to balance transfers. Balance-transfer code untouched. Tests: `BankActionsRetiredTest`. | B-1.2 bank-charge account, B-1.3-B-1.6 (relevant only to a future revival), any cheque-clearing design |
+| **AD-1.1** | **Option C for now.** No schema change; nightly auto-deposit not enabled. | nothing changed in the schema; the job is made inert by G1 | Options a / b remain open for a future decision |
+| **AD-1.2** | **APPROVED: implement guard G1.** The scheduled command must clearly report that it is paused pending approval and exit before opening a transaction. | `accounts:auto-deposit` preflight; log tag `AUTO_DEPOSIT_PAUSED_AD1`; the schedule line and schema untouched. Tests: `AutoDepositPausedGuardTest`. | whether to remove the schedule line (G2/G3) - not requested |
+| **N-1.1** | **APPROVED:** prepare the read-only Q1-Q10 investigation for an authorised accountant/DBA against an isolated restored database. No production access by me. | `T5_N1_READONLY_AUDIT_RUNBOOK.md` + `tests/staging/n1_readonly_audit.sh` (refuses to run unless read-only and explicitly confirmed) | N-1.2 correction procedure, N-1.3 audit table; accountant review of results |
+| **INC.1** | **APPROVED as a task:** prepare a precise checklist for the production DBA (connection pooling, persistent connections, primary configuration, request-to-connection behaviour). | `T5_INC1_DBA_CHECKLIST.md` + `php artisan accounts:number-lock-selfcheck` (takes and releases one throw-away named lock; writes nothing) | the DBA's answers (BLOCKED until given) |
+| Unanswered | AD-1 options a/b, B-1.2-B-1.6, N-1.2, N-1.3, SEQ.1 (decision 7), decisions 1-5, 6, 8-15 | unchanged | all pending |
+T-5 and staging acceptance remain OPEN.

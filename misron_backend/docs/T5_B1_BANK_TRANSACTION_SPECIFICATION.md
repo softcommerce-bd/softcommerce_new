@@ -1,3 +1,5 @@
+> **SUPERSEDED by owner decision B-1.1 (UPDATE 6 in the register): the four bank actions are RETIRED, not specified for revival; cheque clearing is not to be implemented. This document is kept as history and only applies if the bank screens are ever revived.**
+
 # B-1: Bank transaction workflows - implementation-ready specification (NOT approved; the actions stay DISABLED)
 
 **Status: PENDING OWNER/ACCOUNTANT APPROVAL.** Nothing in this document is implemented. No numbering format, accounting entry or policy has been invented: every cell that needs a business answer is marked **[DECISION]**. Facts below were read from the repository and the local disposable schema on this branch.

@@ -1,3 +1,5 @@
+> **Owner decision B-1.1 (approved): the supported mechanism is the balance-transfer workflow shown in section 1 (LIVE). The PROPOSAL sections are history and not to be implemented.**
+
 # B-1: complete accounting example for the four bank actions (decision support - nothing is enabled)
 
 **The four bank actions remain disabled.** Two kinds of statement are separated below: **[LIVE]** = recorded by running the same movements through the working balance-transfer screen on synthetic accounts (`tests/Feature/Inventory/BankReferenceExampleTest.php`, output in `docs/evidence/final6/b1_reference_run.json`); **[PROPOSAL]** = what the bank screens would do if they followed that live behaviour; it is not implemented and **needs your/the accountant's approval**.

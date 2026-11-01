@@ -1,6 +1,6 @@
 # AD-1: nightly auto-deposit and the NOT NULL `created_by` - option comparison
 
-**Status: NOT YET APPROVED. Nothing here is implemented; no production or staging change is proposed to run.** This document compares the three options and recommends the safest.
+**Status (UPDATE 6): OPTION C SELECTED by the owner; guard G1 IMPLEMENTED (`accounts:auto-deposit` returns before any database access, logs `AUTO_DEPOSIT_PAUSED_AD1`, exit code 0); schema and schedule untouched.** Earlier text: NOT YET APPROVED. Nothing here is implemented; no production or staging change is proposed to run.** This document compares the three options and recommends the safest.
 
 ## 1. Verified facts
 * `app/Console/Commands/AutoDepositFunds.php` (`accounts:auto-deposit`, scheduled daily 00:01 Asia/Dhaka, `withoutOverlapping`) creates one `balance_transfers` row per active method with `deposit_type = 'auto'`, with `created_by => null`.

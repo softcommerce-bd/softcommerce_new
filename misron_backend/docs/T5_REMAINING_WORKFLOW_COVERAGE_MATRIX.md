@@ -36,3 +36,8 @@ Y = a passing test exists in that category; N = none; PART = only part of the wo
 - Income store: added repeated real-parallel rounds from an empty year (first-number case) and lock-release-after-failure; zero deadlock retries.
 - Bank actions: still disabled; `BankActionsStayDisabledTest` now also pins the empty model shell (see B-1 specification).
 - Other numbered series: first-of-period race on different accounts analysed, not reproduced per series (decision 7).
+
+## UPDATE 6
+- Bank actions: RETIRED (B-1.1). `BankActionsRetiredTest` replaces `BankActionsStayDisabledTest`: all five POST routes refuse with 410 before any write (no query/transaction), no other write route/code path exists, history readable and immutable, balance-transfer workflow still posts and reverses.
+- Auto-deposit: guard G1; `AutoDepositPausedGuardTest` (no query, no transaction, nothing moves); the existing race tests run the real body with `accounts.auto_deposit_approved=true` on the disposable database.
+- Income number lock: self-check command `accounts:number-lock-selfcheck` + test.

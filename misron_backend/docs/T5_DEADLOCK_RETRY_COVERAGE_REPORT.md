@@ -65,3 +65,6 @@ Status vocabulary: VERIFIED, IMPLEMENTED, TESTED, BLOCKED, REQUIRES BUSINESS APP
 
 ## 4. Real-process evidence
 `RealDeadlockHttpTest` (3 tests, real 1213 raised by the database, request is the victim, retried once, effects once): courier settlement, legacy purchase store, admin order. All pass (concurrency suite, 72/72).
+
+## UPDATE 6
+Rows 34-37 and cash-out (`BankTransactionController::{deposit,withdraw,transfer,chequeClearing,cashOut}`) are RETIRED (owner decision B-1.1): they refuse with HTTP 410 before any database access, so deadlock retry does not apply (NOT APPLICABLE, no longer BLOCKED).
