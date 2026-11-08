@@ -1,0 +1,15 @@
+Read-only inspection of the repository dump files (no database used) - 2026-11-08
+misron.sql (supplied backup, 12.5 MB):
+  purchases                 MyISAM  25 cols  PK(id) only   ~103 rows   ~21 KB of INSERT text   AUTO_INCREMENT=104
+  purchase_products         MyISAM  13 cols  PK(id) only   ~3,462 rows ~601 KB                 AUTO_INCREMENT=3463
+  suppliers                 MyISAM  15 cols  PK(id) only   2 rows                              AUTO_INCREMENT=3
+  purchase_returns          MyISAM   8 cols  PK(id) only   0 rows
+  purchase_return_products  MyISAM  10 cols  PK(id) only   0 rows
+  all five: charset utf8mb4 / utf8mb4_general_ci; no secondary keys, no FULLTEXT, no triggers, no views; zero-date literals in their data: 0
+  foreign keys in the whole dump: 6 (chart_of_accounts self, model_has_permissions, model_has_roles, payku_payments, role_has_permissions, transaction_methods); none to or from the five tables
+  type mismatches that would block adding foreign keys later: purchases.supplier_id int vs suppliers.id bigint; purchase_products.purchase_id int vs purchases.id bigint; purchase_returns.purchase_id/supplier_id int; purchase_return_products.purchase_return_id int vs purchase_returns.id bigint
+empty_misron.sql (9.9 MB): same structure; purchase_products is InnoDB there and purchase_products_pre_inv1 is MyISAM; suppliers 26 rows; the other four tables empty.
+balance_transfers (dump): ENGINE=InnoDB; transaction_type enum('withdraw','deposit','transfer','cashout') NOT NULL; status enum('pending','approved','rejected','cancelled'); created_by bigint unsigned NOT NULL
+expense_payments (dump): ENGINE=InnoDB; created_by bigint unsigned NOT NULL; status enum('pending','approved','rejected','cancelled')
+inv_v2_test (disposable MariaDB, read-only information_schema query): same three facts for balance_transfers / expense_payments.
+The supplied backup is not proven to be production; production sizes are unknown.

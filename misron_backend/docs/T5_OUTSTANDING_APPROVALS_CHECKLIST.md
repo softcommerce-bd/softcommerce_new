@@ -51,3 +51,13 @@ State at commit `a967de0` (2026-11-08). Every box is **unchecked on purpose: no 
 
 ## E. Rule that applies to everything above
 Nothing is deployed, merged, activated or applied to staging/production until the owner says so in writing; every schema change (T-02 indexes, DEC-07, DEC-09, DEC-19, DEC-14) needs its own approval and a rehearsal on the masked backup first.
+
+## F. Added by the R-01 / R-03 / R-04 investigation (all unchecked; detail in `T5_DECISION_TRACKER.md`)
+- [ ] **R01-A** approve the conversion rehearsal on a masked restore (Owner + DBA).
+- [ ] **R01-B** approve an engine-only conversion script; the existing one also adds a unique key that belongs to DEC-14 (Tech lead + DBA + Accountant).
+- [ ] **R01-C** approve the InnoDB gate in the activation checklist/preflight (Owner).
+- [ ] **R01-D** approve the disposable MyISAM retry-hazard experiment (Owner).
+- [ ] **R03-A** confirm option C after the DBA answers DBA-04 (Owner).
+- [ ] **R04-A** choose the auto-deposit activation safeguards S1-S9; recommended minimum S1, S2, S3, S6, S7 (Owner + Tech lead).
+- [ ] **DBA-04 (extended)** also return the ENUM definitions of `balance_transfers.transaction_type/status`, `expense_payments.status`, the nullability of `expense_payments.created_by`, and the four read-only counts of the trace document (DBA).
+- [ ] **DBA-05 (extended)** engines **and sizes** of the five tables (DBA).

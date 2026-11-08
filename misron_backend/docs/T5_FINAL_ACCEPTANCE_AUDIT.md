@@ -161,3 +161,9 @@ Responsible = role (no person names are recorded anywhere in the project). Statu
 6. T-23 gaps accepted or closed; VER-01/02 completed with the real theme and roles.
 7. The owner gives P6 in writing. Only then P8 (`accounting:baseline`, `ANALYZE TABLE`) and the staged activation.
 Until 1-7 hold: **T-5 and staging acceptance remain OPEN; production NO-GO.**
+
+## 8. Corrections after the R-01 / R-03 / R-04 investigation (2026-11-08, documentation only)
+* **R-01 widened:** besides voiding locks and transactions, MyISAM makes the deadlock **retry** unsafe (MyISAM writes are not rolled back but are repeated), and every T-5 test ran on converted copies, never on the backup's real engine configuration. See `T5_R01_MYISAM_INVESTIGATION.md` (table-by-table proposal) and decisions R01-A..D in `T5_DECISION_TRACKER.md`.
+* **R-03 corrected:** a nullable `balance_transfers.created_by` would *not* by itself let the old auto-deposit body complete. It also writes `transaction_type='auto_deposit'` and `status='completed'` (illegal ENUM values in the dump/test schema, stored blank in non-strict mode), `expense_payments.created_by=NULL` for charged methods, and no statement lines. See `T5_R03_R04_AUTO_DEPOSIT_TRACE.md`.
+* **R-04 extended:** nine activation mechanisms (E1-E9), the most realistic being a rollback to a release before `25aec82`; safeguards S1-S9 proposed, none implemented.
+* New findings NB-1..NB-7 are listed in `T5_APPROVAL_REMEDIATION_ROADMAP.md` section 2. Status counts in section 1 are unchanged (the new items are additions to the tracker, not new audit rows).

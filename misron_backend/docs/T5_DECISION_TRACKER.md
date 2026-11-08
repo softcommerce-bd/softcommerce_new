@@ -1,0 +1,70 @@
+# T-5 decision tracker
+
+State at commit `775a236` + this phase's analysis (2026-11-08). **Every status is NOT APPROVED / NOT DECIDED unless it says otherwise. The Recommendation column is the assistant's technical recommendation; it is not an approval and must not be read as one.** Roles, not names. Source lists: `T5_OUTSTANDING_APPROVALS_CHECKLIST.md`, `T5_FINAL_ACCEPTANCE_AUDIT.md`, and the three analyses of this phase (`T5_R01_MYISAM_INVESTIGATION.md`, `T5_R03_R04_AUTO_DEPOSIT_TRACE.md`). New IDs R01-A..D and R03/R04 come from this phase.
+
+## A. Owner / business decisions (18)
+| ID | Exact question | Role | Recommendation (not an approval) | Consequence of not deciding | Required evidence | Status |
+|---|---|---|---|---|---|---|
+| R01-A | Approve rehearsing the MyISAM->InnoDB conversion of the five tables on a masked restore of the production backup, with the production target engine (`T5_R01_MYISAM_INVESTIGATION.md` section 4) | Owner + DBA | Yes | T-5 retry/locking stays unsafe on the backup's schema; no deployment can be considered | Backup + checksum (DBA-03); production engine/version (DBA-02); rehearsal logs and fingerprints | NOT APPROVED |
+| R01-C | Add an explicit 'all money/stock tables are InnoDB' gate to the activation checklist and preflight (code change later) | Owner | Yes | Nothing stops the legacy T-5 paths from running on MyISAM | Owner approval; later a test that fails on a non-InnoDB schema | NOT APPROVED |
+| R01-D | Approve a disposable-database experiment that reproduces the retry hazard on a MyISAM copy and shows it gone after conversion | Owner | Yes (cheap, no real data) | The hazard stays an argument from code reading, not evidence | Experiment log on a disposable `*_test` database | NOT APPROVED |
+| R03-A | After DBA-04, confirm that pausing the nightly auto-deposit (guard G1) is still wanted if production turns out to run it | Owner | Yes, stay on option C | A working production job would stop silently at deploy | DBA-04 answers (nullable? ENUMs? active auto methods? `AD-%` vouchers? blank-type transfers?) | NOT APPROVED |
+| R04-A | Which of safeguards S1-S9 (`T5_R03_R04_AUTO_DEPOSIT_TRACE.md` section 4) are adopted? Recommended minimum: S1, S2, S3, S6, S7 | Owner + Tech lead | Adopt S1-S3, S6, S7 now (no code); S4/S5/S8 with the AD-1 decision | The old body can be re-enabled by a variable, a cached config or a rollback to an older build | Checklist entries; CI grep (S2) if approved | NOT APPROVED |
+| DEC-16 | Run nightly auto-deposit at all? a) non-login system user b) nullable column c) stay paused. Note: a/b also need ENUM values, charge-expense creator and statement lines | Owner | c (stay paused) | Job stays paused (the safe default); manual deposits continue | If a/b: business case, schema plan, accountant rules for the charge account | NOT APPROVED |
+| DEC-07 | SEQ.1: create a `document_sequences` table (schema change) for the other numbered series, or accept retry-only protection | Owner + DBA | Yes, after a rehearsal | First-document-of-period collisions on expense/transfer/voucher/stock adjustment/customer payment remain covered only by the 3-attempt retry | Rehearsal on the masked copy; seeding plan from current maxima | NOT APPROVED |
+| DEC-12 | Data-access approval and environment for the full Phase 0 audit SQL on an isolated restore (supplier part approved as N-1.1) | Owner | Yes, read-only, restore only | Phase 0 audit findings (duplicates, orphans) stay unknown; blocks DEC-14 | Named person, restore location, read-only account | NOT APPROVED |
+| DEC-18 | N-1.2: correction procedure and approver for any distorted supplier balance | Owner + Accountant | Accountant-led, supplier by supplier, adjustment document, never a script | Past drift stays uncorrected (no harm to new data) | Results of ACC-01 | NOT APPROVED |
+| DEC-19 | N-1.3: add a supplier-payment edit audit table (schema change) | Owner | Later | Future edits traceable only through logs | Schema plan if yes | NOT APPROVED |
+| DEC-01 | Wording and status for 'already done' answers on repeated requests; which forms carry tokens; cut-off date; tombstone storage | Order desk, Accountant, Tech lead | Server-issued token + 'already done' 200 | Repeated reversals keep answering 'not found' (safe, confusing) | Approved wording, form list, date | NOT APPROVED |
+| DEC-05 | Checkout duplicate identity: token mandatory/optional, retention, owner of the payment view, replay message; accept the cart-identity behaviour (T-11) | Order desk + Tech lead | Optional token + cart identity fallback | Today's cart-identity rule stays; deliberate identical resubmission returns the first order | Approved design; owner of the payment template | NOT APPROVED |
+| DEC-09 | Purchase-order conversion: one transaction, repeat-click rule, `converted_purchase_id` column, partial conversion | Purchasing + Accountant | Approve a design before any code | A failure between purchase and PO update leaves an open PO; a repeat creates a second purchase (`convertToPurchase` is not retried) | Design sign-off; schema approval | NOT APPROVED |
+| DEC-11 | Retention of `idempotency_keys` and alert owner/thresholds | Tech lead | 30 days token / 24 h fallback | Key table grows without limit | Retention periods; alert owner | NOT APPROVED |
+| DEC-15 | Order cancel/delete/status without transaction; notification outbox pattern; does `OrderController::destroy` stay | Order desk + Tech lead | Transaction + after-commit notification outbox | Those paths remain unprotected and unretried | Pattern approval | NOT APPROVED |
+| VER-01 | Provide the real admin theme package so P4 screen re-verification can be done | Owner | Provide it | UI claims stay unverified | Theme package | NOT APPROVED |
+| DEC-20 / P6 | Written approval to enable `INVENTORY_CONFIRMED_ONLY` on staging | Owner | Not before the roadmap's staging prerequisites are met | Flag stays off (the safe state) | Roadmap section 5 satisfied | NOT APPROVED |
+| VER-06 | Final acceptance of T-5 and of staging | Owner | Only after every earlier gate | T-5 stays open | Roadmap section 6 conditions | NOT APPROVED |
+
+## B. Accountant rulings and reviews (15)
+| ID | Exact question | Role | Recommendation (not an approval) | Consequence of not deciding | Required evidence | Status |
+|---|---|---|---|---|---|---|
+| ACC-01 | Run the N-1.1 investigation (Q1-Q10) on an isolated restore with the DBA; classify every flagged supplier; sign the report | Accountant + DBA | Yes | Historical supplier drift stays unmeasured | Returned template of `T5_N1_ACCOUNTANT_REVIEW_PACKAGE.md`, `00_context.tsv`, signatures | PREPARED - not run |
+| ACC-02 | Rule on the nine differences D-01..D-09 of the accountant review pack and sign (P5) | Accountant | Rule each | Staging prerequisite P5 stays unmet | Completed sign-off table of `docs/accountant-review-pack/` | PREPARED - not reviewed |
+| ACC-03 | Which expense account receives bank/withdrawal/transfer charges (the working balance-transfer screen credits the source with amount + charge and debits no expense) | Accountant | Name the account or confirm one-sided posting | Charges stay unbooked as expense (existing behaviour) | Account name/code | NOT APPROVED |
+| ACC-04 | T-2: accept the wallet-only refund treatment (wallet top-ups/spending are not journalled) | Accountant | Accept or specify | Refund accounting stays unaccepted | Written acceptance | NOT APPROVED |
+| ACC-05 | T-3: accept the historical uncosted-order reporting policy | Accountant | Accept or specify | Profit reports keep estimated-cost handling unaccepted | Written acceptance | NOT APPROVED |
+| ACC-06 | Review D3 (balance deltas) and D4 (supplier row locks) | Accountant | Accept after review | Two changed behaviours stay unaccepted | Written review | NOT APPROVED |
+| DEC-02 | Purchase delete vs supplier due: A keep B reduce due C forbid delete with payments | Accountant | Decide; report-only for historical mismatches | Supplier due and payable keep diverging on delete | Choice + rule for history | NOT APPROVED |
+| DEC-03 | Overdraft policy per screen (block/warn/none) and when updates are evaluated | Accountant + Management | Per-screen table; keep today's rules until decided | Only the existing rules apply | Per-screen table | NOT APPROVED |
+| DEC-04 | Supplier edit/delete: A lock+refuse stale B difference C overwrite+audit; who may edit balances | Accountant | A | Supplier edit/delete stay unlocked writes | Choice + permission | NOT APPROVED |
+| DEC-06 | Numbering formats, resets, gap-free rule, order code generation | Accountant | Keep existing formats | Existing formats stay | Written rule | NOT APPROVED |
+| DEC-08 | Which maintenance commands may run while trading; who authorises `--apply` | Accountant + Tech lead | Maintenance mode only | Repair commands stay unverified | Rule + approver list | NOT APPROVED |
+| DEC-10 | Customer-payment auto-import: wanted? account/method rule, response format | Accountant | Decide; job stays removed meanwhile | No scheduled import | Business rule | NOT APPROVED |
+| DEC-13 | Timing of money-column conversion (varchar/double -> decimal) | Accountant | After the accountant baseline | Text money columns remain | Schedule | NOT APPROVED |
+| DEC-14 | Unique constraints (`orders.code`, per-order settlements, returns/PO references) and handling of any duplicates; also the `purchases.reference_no` unique key currently bundled in the conversion script (NB-3) | DBA + Accountant | After DEC-12 audit shows no duplicates; keep it out of the engine conversion | No uniqueness guarantee at the database level | Audit results (DEC-12) | NOT APPROVED |
+| ACC-07 | Take `accounting:baseline` immediately before any activation | Accountant + Tech lead | Only after P6 | n/a until activation | Baseline record | NOT DUE |
+
+## C. DBA confirmations and DBA-led work (8)
+| ID | Exact question | Role | Recommendation (not an approval) | Consequence of not deciding | Required evidence | Status |
+|---|---|---|---|---|---|---|
+| DBA-01 | INC.1: return the answer sheet (ten infrastructure answers + `accounts:number-lock-selfcheck` + `inc1_db_facts.sql`) | DBA | Return it | Income-number protection effectiveness unknown (falls back to retry) | `T5_INC1_DBA_HANDOFF.md` section 4 filled | PREPARED - no answer |
+| DBA-02 | P1: production engine and exact version, storage engines, isolation level, FKs/indexes | DBA | Run `inc1_db_facts.sql` and the Phase 0 section 0 queries (read-only) | Every compatibility statement stays unproven | Query output | BLOCKED |
+| DBA-03 | P2/P3: fresh backup with checksum; rehearsal (conversion, artisan + SQL, parity, rollback) on the masked copy | DBA | Do it | Nothing can be deployed | Backup, checksum, logs, fingerprints | BLOCKED |
+| DBA-04 | Is `balance_transfers.created_by` nullable? What are the `transaction_type` and `status` ENUM definitions of `balance_transfers` and `expense_payments` and is `expense_payments.created_by` nullable? How many active `deposit_type='auto'` methods? Any `AD-%` vouchers or blank-type/blank-status transfers? (queries in the trace doc) | DBA | Run the read-only queries | The effect of guard G1 on production stays unknown (R-03) | Query output | BLOCKED |
+| DBA-05 | Confirm the engine of `purchases`, `purchase_products`, `suppliers`, `purchase_returns`, `purchase_return_products` in production and their sizes | DBA | Run the table-facts query of the R-01 proposal | R-01 cannot be sized or scheduled | Query output | BLOCKED |
+| R01-B | Approve an engine-only conversion script (the existing one also adds a unique key on `purchases.reference_no`, which belongs to DEC-14) | Tech lead + DBA + Accountant | Yes, split it | Running the existing file as-is applies an unapproved constraint (fails if duplicates exist) | Reviewed script | NOT APPROVED |
+| VER-03 | Production-like proof for T-1 (original deadlock / stale statistics) | DBA + Tech lead | Do it on the rehearsal copy | T-1 stays 'not reproduced' | Load-test log | BLOCKED |
+| VER-04 | T-4 outbox load test with the scheduler running | Tech lead + DBA | Do it on the rehearsal copy | Outbox behaviour under production load unproven | Load-test log | BLOCKED |
+
+## D. Technical acceptance (7)
+| ID | Exact question | Role | Recommendation (not an approval) | Consequence of not deciding | Required evidence | Status |
+|---|---|---|---|---|---|---|
+| T-07 | Accept the technical re-check of existing overdraft rules under the row lock (policy is DEC-03) | Tech lead + Accountant | Accept | Fix stays unaccepted | `OverdraftParallelTest`, commit 9c0eda8 | NOT APPROVED |
+| T-09 | Accept the D3 balance-delta mechanism as implemented | Tech lead + Accountant | Accept after ACC-06 | as ACC-06 | Verification report D3; parallel tests | NOT APPROVED |
+| T-10 | Accept D4 supplier row locks as implemented (supplier edit/delete excluded, DEC-04) | Tech lead + Accountant | Accept after ACC-06 | as ACC-06 | Parallel tests | NOT APPROVED |
+| T-11 | Accept the cart-identity checkout duplicate protection (DEC-05) | Tech lead + Order desk | Accept with DEC-05 | Behaviour change stays unaccepted | `CartLockingParallelTest` | NOT APPROVED |
+| T-23 | Accept the documented test-coverage gaps (no workflow has all five categories for all operations) or fund more tests | Tech lead | Accept after R-01/DBA work; fund supplier edit/delete and purchase update parallel tests | Gaps remain visible | `T5_REMAINING_WORKFLOW_COVERAGE_MATRIX.md` | NOT APPROVED |
+| VER-02 | Permissions (`view_financial_reports`, `manage_accounting`, order-status) tested with the real staff roles (P7) | Tech lead | After DBA-03 | Role gaps undiscovered | Test log on the restored roles | BLOCKED |
+| VER-05 | The 3 known unrelated failing tests: fix or accept | Tech lead | Accept (unrelated) or fix separately | They stay visible in every run | Suite logs | NOT APPROVED |
+
+## Totals
+48 items; **0 approved**. Items already decided by the owner (P-1, supplier-edit treatment, B-1.1, AD-1.1/1.2, N-1.1, INC.1 checklist, MYSQL84.1/.2, OUTBOX.1) are closed and not listed.
