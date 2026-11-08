@@ -418,6 +418,45 @@ class WorkflowParallelCoverageTest extends HttpWorkflowCase
 
     // ---- first number of a period for the OTHER series (T-22): expense, transfer, voucher ---------------------------------------
 
+    // ---- supplier edit / delete (T-10, technical part of decision 4): the row is read under its lock -------------------------
+
+    private function ap(): int
+    {
+        return (int) (DB::table('chart_of_accounts')->where('name', 'Accounts Payable')->where('type', 'liability')->value('id') ?: $this->account('liability', 'payable', 0));
+    }
+
+    private function supplierWithDue(float $due): int
+    {
+        return (int) DB::table('suppliers')->insertGetId(['slug' => 's-' . uniqid(), 'contact_id' => 'SC' . uniqid(), 'business_name' => 'Race ' . uniqid(), 'mobile' => '0170000' . random_int(1000, 9999), 'opening_balance' => '0', 'due_amount' => $due, 'paid_amount' => 0, 'created_at' => now(), 'updated_at' => now()]);
+    }
+
+    public function test_deleting_a_supplier_three_times_at_once_reverses_its_due_once()
+    {
+        $this->flag(true);
+        $ap = $this->ap();
+        $sid = $this->supplierWithDue(80);
+        $before = $this->bal($ap);
+        $this->race(array_map(fn () => $this->req($this->admin(), route('supplier.delete', $sid, false), [], 'DELETE'), range(1, 3)), 120);
+        $this->assertSame(0, DB::table('suppliers')->where('id', $sid)->count());
+        $this->assertEquals(-80.0, $this->bal($ap) - $before, 'Accounts Payable reduced by the due once');
+    }
+
+    public function test_editing_and_deleting_a_supplier_at_once_ends_consistent_in_either_order()
+    {
+        $this->flag(true);
+        $ap = $this->ap();
+        for ($round = 1; $round <= 4; $round++) {
+            $sid = $this->supplierWithDue(80);
+            $row = DB::table('suppliers')->where('id', $sid)->first();
+            $before = $this->bal($ap);
+            $edit = $this->req($this->admin(), route('supplier.update', $sid, false), ['business_name' => 'Edited', 'contact_id' => $row->contact_id, 'mobile' => '01711111111', 'opening_balance' => 50, 'balance_type' => 'due']);
+            $this->race([$edit, $this->req($this->admin(), route('supplier.delete', $sid, false), [], 'DELETE')], 120);
+            $this->assertSame(0, DB::table('suppliers')->where('id', $sid)->count(), "round $round: the supplier is gone");
+            $this->assertEquals(-80.0, $this->bal($ap) - $before, "round $round: edit-then-delete and delete-then-edit both net the original 80 off Accounts Payable");
+        }
+    }
+
+
     private function retriesIn(array $res): int
     {
         $n = 0;

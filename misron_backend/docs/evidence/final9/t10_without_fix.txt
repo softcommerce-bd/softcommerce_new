@@ -1,0 +1,5 @@
+== supplier edit/delete race WITHOUT the row lock (old code), MariaDB
+Failed asserting that -240.0 matches expected -80.0. Tests: 2, Assertions: 32, Failures: 1. 
+Failed asserting that -240.0 matches expected -80.0. Tests: 2, Assertions: 32, Failures: 1. 
+Failed asserting that -240.0 matches expected -80.0. Tests: 2, Assertions: 32, Failures: 1. 
+Failed asserting that -240.0 matches expected -80.0. Tests: 2, Assertions: 32, Failures: 1. 

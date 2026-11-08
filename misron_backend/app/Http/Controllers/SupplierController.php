@@ -525,6 +525,16 @@ public function supplierUpdate(Request $request, $id)
         // Use a transaction to ensure data integrity
         DB::beginTransaction();
 
+        // Document first (T-5 / decision 4, technical part): re-read the supplier UNDER its row lock. Purchases, payments and returns lock the same row, so the
+        // "old" opening balance / due that the ledger reversal below uses is the committed current one, not the value read before the transaction began.
+        // (Whether an edit may overwrite balances at all - absolute overwrite vs stale-form refusal - is the open business decision 4; unchanged here.)
+        $supplier = Supplier::lockForUpdate()->find($id);
+        if (!$supplier) {
+            DB::rollBack();
+
+            return redirect()->back()->withErrors(['error' => 'Supplier not found.']);
+        }
+
         // Store old values for comparison
         $oldOpeningBalance = $supplier->opening_balance;
         $oldDueAmount = $supplier->due_amount;
@@ -730,6 +740,16 @@ public function supplierDelete($id)
 
     try {
         DB::beginTransaction();
+
+        // Document first: lock the supplier row and read it again. A purchase or payment for this supplier takes the same lock, so none can slip in
+        // between the guards below and the delete.
+        $supplier = Supplier::lockForUpdate()->find($id);
+        if (!$supplier) {
+            DB::rollBack();
+            flash(translate('Supplier not found.'))->error();
+
+            return back();
+        }
 
         // Check if supplier has any pending transactions
         $hasPurchases = Purchase::where('supplier_id', $supplier->id)->exists();
