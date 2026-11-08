@@ -416,6 +416,70 @@ class WorkflowParallelCoverageTest extends HttpWorkflowCase
         $this->assertTrue($try('income:INC-25'));
     }
 
+    // ---- first number of a period for the OTHER series (T-22): expense, transfer, voucher ---------------------------------------
+
+    private function retriesIn(array $res): int
+    {
+        $n = 0;
+        foreach ($res as $r) {
+            $n += (isset($r['headers']['x-deadlock-retries']) || isset($r['headers']['X-Deadlock-Retries'])) ? 1 : 0;
+        }
+
+        return $n;
+    }
+
+    /** 4 creators on 4 DIFFERENT accounts (account locks cannot serialise them), 6 rounds from an empty period: no request may meet a deadlock. */
+    public function test_first_number_of_a_period_never_deadlocks_for_expenses_transfers_and_vouchers()
+    {
+        $this->flag(true);
+        $admin = $this->admin();
+        $today = now()->toDateString();
+        $retried = ['expense' => 0, 'transfer' => 0, 'voucher' => 0];
+        for ($round = 1; $round <= 6; $round++) {
+            $cash = [$this->cashAccount(1000), $this->cashAccount(1000), $this->cashAccount(1000), $this->cashAccount(1000)];
+            $exp = $this->account('expense', 'expense', 0);
+            $to = [$this->cashAccount(0), $this->cashAccount(0), $this->cashAccount(0), $this->cashAccount(0)];
+            $cr = $this->account('liability', 'payable', 500);
+            foreach (['expense_payments', 'balance_transfers', 'vouchers'] as $t) {
+                $this->assertSame(0, DB::table($t)->where('created_at', '>=', now()->startOfYear())->count(), "round $round: $t starts the period empty");
+            }
+            $jobs = [];
+            foreach ([0, 1, 2, 3] as $i) {
+                $jobs[] = $this->req($admin, route('accounts.expense-payments.store', [], false), ['date' => $today, 'payment_account_id' => $cash[$i], 'expense_account_ids' => [$exp], 'amounts' => [10 + $i]]);
+            }
+            $res = $this->race($jobs, 120);
+            $retried['expense'] += $this->retriesIn($res);
+            $nos = DB::table('expense_payments')->whereIn('payment_account_id', $cash)->pluck('voucher_no')->all();
+            $this->assertSame(['000001', '000002', '000003', '000004'], array_map(fn ($n) => substr($n, -6), $this->sortNos($nos)), "round $round expense numbers " . json_encode($nos));
+
+            $jobs = [];
+            foreach ([0, 1, 2, 3] as $i) {
+                $jobs[] = $this->req($admin, route('accounts.balance-transfers.store', [], false), ['transaction_type' => 'transfer', 'date' => $today, 'from_account_id' => $cash[$i], 'to_account_id' => $to[$i], 'amount' => 5, 'charge' => 0]);
+            }
+            $res = $this->race($jobs, 120);
+            $retried['transfer'] += $this->retriesIn($res);
+            $nos = DB::table('balance_transfers')->whereIn('from_account_id', $cash)->pluck('voucher_no')->all();
+            $this->assertSame(['0001', '0002', '0003', '0004'], array_map(fn ($n) => substr($n, -4), $this->sortNos($nos)), "round $round transfer numbers " . json_encode($nos));
+
+            $jobs = [];
+            foreach ([0, 1, 2, 3] as $i) {
+                $jobs[] = $this->req($admin, route('accounts.vouchers.store', [], false), ['date' => $today, 'type' => 'JV', 'account_ids' => [$to[$i], $cr], 'debits' => [7, 0], 'credits' => [0, 7]]);
+            }
+            $res = $this->race($jobs, 120);
+            $retried['voucher'] += $this->retriesIn($res);
+            $vnos = DB::table('vouchers')->whereIn('id', DB::table('voucher_details')->whereIn('account_id', $to)->pluck('voucher_id'))->pluck('voucher_no')->all();
+            $this->assertSame(['0001', '0002', '0003', '0004'], array_map(fn ($n) => substr($n, -4), $this->sortNos($vnos)), "round $round voucher numbers " . json_encode($vnos));
+
+            DB::table('expense_payment_details')->whereIn('expense_payment_id', DB::table('expense_payments')->whereIn('payment_account_id', $cash)->pluck('id'))->delete();
+            DB::table('expense_payments')->whereIn('payment_account_id', $cash)->delete();
+            DB::table('balance_transfers')->whereIn('from_account_id', $cash)->delete();
+            DB::table('voucher_details')->whereIn('voucher_id', DB::table('voucher_details')->whereIn('account_id', $to)->pluck('voucher_id'))->delete();
+            DB::table('vouchers')->whereIn('id', $vnos ? DB::table('vouchers')->whereIn('voucher_no', $vnos)->pluck('id') : [0])->delete();
+        }
+        $this->assertSame(['expense' => 0, 'transfer' => 0, 'voucher' => 0], $retried, 'no request needed a deadlock retry');
+    }
+
+
     private function sortNos(array $n): array
     {
         sort($n);

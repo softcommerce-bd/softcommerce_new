@@ -95,6 +95,7 @@ class BalanceTransferController extends Controller
 
         DB::beginTransaction();
         try {
+            \App\Support\NumberSerializer::hold(BalanceTransfer::voucherSeries($request->transaction_type)); // number series first, then both accounts in ascending id order
             $this->lockAccountsAscending($request->from_account_id, $request->to_account_id); // both accounts, ascending id, before anything else
             // the same rule again, now under the source account's row lock: a concurrent withdrawal/transfer that committed first is seen
             if (in_array($request->transaction_type, ['withdraw', 'transfer', 'cashout'])) {

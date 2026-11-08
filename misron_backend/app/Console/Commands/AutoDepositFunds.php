@@ -76,6 +76,11 @@ class AutoDepositFunds extends Command
             DB::beginTransaction();
 
             try {
+                // one global lock order: number series first (as the transfer and expense screens do), then the accounts
+                \App\Support\NumberSerializer::hold(\App\Models\BalanceTransfer::voucherSeries(AutoDepositReadiness::TYPE));
+                if ((float) ($method->charge ?? 0) > 0) {
+                    \App\Support\NumberSerializer::hold(ExpensePayment::voucherSeries());
+                }
                 // The balance to move is read UNDER the source account's row lock, inside the transaction. It used to be read before it, so two runs at the
                 // same moment (a manual run during the scheduled one, or two hosts) each moved the whole balance: the destination got it twice and the
                 // source went negative. The second run now waits, finds the balance already moved and skips.

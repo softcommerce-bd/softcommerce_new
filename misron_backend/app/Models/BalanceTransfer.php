@@ -48,8 +48,16 @@ class BalanceTransfer extends Model
     }
 
     // Auto-generate voucher number
+    public static function voucherSeries($type): string
+    {
+        $prefixes = ['withdraw' => 'WD', 'deposit' => 'DP', 'transfer' => 'TR', 'cashout' => 'CO', 'auto_deposit' => 'AD'];
+
+        return 'transfer:' . ($prefixes[$type] ?? 'TR') . '-' . now()->format('ym');
+    }
+
     public static function generateVoucherNo($type)
     {
+        \App\Support\NumberSerializer::hold(self::voucherSeries($type));
         $prefixes = [
             'withdraw' => 'WD',
             'deposit'  => 'DP',

@@ -34,9 +34,15 @@ class StockAdjustment extends Model
         return $this->hasMany(StockAdjustmentLine::class);
     }
 
+    public static function referenceSeries(): string
+    {
+        return 'adjustment:SA' . date('Y');
+    }
+
     public static function generateReferenceNo()
     {
         $year = date('Y');
+        \App\Support\NumberSerializer::hold(self::referenceSeries());
         $lastRecord = self::withTrashed()->whereYear('created_at', $year) // trashed rows keep their unique number
             ->orderBy('id', 'desc')
             ->lockForUpdate() // inside the creating transaction: a concurrent creation waits for this one and then reads the next free number

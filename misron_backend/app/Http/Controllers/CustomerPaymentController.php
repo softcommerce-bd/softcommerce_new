@@ -109,6 +109,9 @@ class CustomerPaymentController extends Controller
         DB::beginTransaction();
         
         try {
+            // the receipt voucher's number series is taken first (same order as the voucher screen); the type is known from the payment account
+            $seriesAccount = ChartOfAccount::find($request->payment_account_id);
+            \App\Support\NumberSerializer::hold(Voucher::voucherSeries(($seriesAccount && $seriesAccount->sub_type === 'cash') ? 'CR' : 'BR'));
             $customer = User::findOrFail($request->customer_id);
             
             // Get the selected orders with their remaining amounts

@@ -120,6 +120,7 @@ public function index(Request $request)
 
         try {
             DB::beginTransaction();
+            \App\Support\NumberSerializer::hold(ExpensePayment::voucherSeries()); // number series first, then account locks (one global lock order)
 
             // the same rule again, now under the account's row lock: a concurrent payment that committed first is seen
             $paymentAccount = ChartOfAccount::lockForUpdate()->find($request->payment_account_id);
