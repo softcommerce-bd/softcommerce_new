@@ -61,3 +61,6 @@ Nothing is deployed, merged, activated or applied to staging/production until th
 - [ ] **R04-A** choose the auto-deposit activation safeguards S1-S9; recommended minimum S1, S2, S3, S6, S7 (Owner + Tech lead).
 - [ ] **DBA-04 (extended)** also return the ENUM definitions of `balance_transfers.transaction_type/status`, `expense_payments.status`, the nullability of `expense_payments.created_by`, and the four read-only counts of the trace document (DBA).
 - [ ] **DBA-05 (extended)** engines **and sizes** of the five tables (DBA).
+
+## G. After the autonomous completion mandate (2026-11-08)
+Engineering is finished for what can be done without you; the unchecked boxes above are unchanged and still need the named person. Newly relevant, all unchecked: **E9** provide an isolated staging environment with sandbox-only credentials (nothing was deployed); **E7** the theme package (two deferred UI specs); confirm the `FINANCIAL_ENGINE_POLICY=enforce` default (or choose warn/off in writing); decide whether the auto-deposit job is wanted at all (DEC-16) - until then it stays paused and, if switched on, refuses to run.

@@ -167,3 +167,6 @@ Until 1-7 hold: **T-5 and staging acceptance remain OPEN; production NO-GO.**
 * **R-03 corrected:** a nullable `balance_transfers.created_by` would *not* by itself let the old auto-deposit body complete. It also writes `transaction_type='auto_deposit'` and `status='completed'` (illegal ENUM values in the dump/test schema, stored blank in non-strict mode), `expense_payments.created_by=NULL` for charged methods, and no statement lines. See `T5_R03_R04_AUTO_DEPOSIT_TRACE.md`.
 * **R-04 extended:** nine activation mechanisms (E1-E9), the most realistic being a rollback to a release before `25aec82`; safeguards S1-S9 proposed, none implemented.
 * New findings NB-1..NB-7 are listed in `T5_APPROVAL_REMEDIATION_ROADMAP.md` section 2. Status counts in section 1 are unchanged (the new items are additions to the tracker, not new audit rows).
+
+## 9. Update after the autonomous completion mandate
+The acceptance matrix with the honest statuses DONE / TESTED / BLOCKED / DEFERRED / NOT APPLICABLE is in `T5_FINAL_COMPLETION_REPORT.md` section 3 and supersedes the status columns above for items it covers. R-01 is gated and tooled (not "resolved in production": production facts unknown), R-03/R-04 are gated and tested, the three known failures are fixed, T-22 and the technical part of decision 4 are implemented. Nothing in this section is a human approval.
