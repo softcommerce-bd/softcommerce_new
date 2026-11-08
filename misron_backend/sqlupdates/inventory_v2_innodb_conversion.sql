@@ -1,3 +1,5 @@
+-- NOTE (T-5): this file ALSO adds a UNIQUE key on purchases.reference_no (decision 14, not approved). Use sqlupdates/t5_engine_only_conversion.sql or
+-- `php artisan db:convert-engines` for the engine change alone.
 -- Inventory v2, PREREQUISITE (not run by any migration): convert the MyISAM purchasing tables to InnoDB.
 --
 -- WHY: MyISAM ignores transactions and row locks. Goods receipts, purchases and supplier balances cannot be made

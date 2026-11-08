@@ -1,0 +1,45 @@
+== fingerprint BEFORE
+suppliers	5	147089280.00	0.00
+purchases	103	147089280.00
+purchase_products	3462	686700	147089280.00
+purchase_returns	0
+purchase_return_products	0
+== dry run
+database=t5_prodshape_test  target engine=InnoDB  tables to change: purchase_products, purchase_return_products, purchase_returns, purchases, suppliers
+  purchase_products          engine=MyISAM  rows=3462     data+index=0.55 MB auto_increment=3463
+  purchase_return_products   engine=MyISAM  rows=0        data+index=0.00 MB auto_increment=1
+  purchase_returns           engine=MyISAM  rows=0        data+index=0.00 MB auto_increment=1
+  purchases                  engine=MyISAM  rows=103      data+index=0.02 MB auto_increment=104
+  suppliers                  engine=MyISAM  rows=5        data+index=0.00 MB auto_increment=6
+DRY RUN: nothing changed. To run: back up, (real database: php artisan down), then add --execute --confirm=t5_prodshape_test
+== refusal: wrong confirm
+database=t5_prodshape_test  target engine=InnoDB  tables to change: purchase_products, purchase_return_products, purchase_returns, purchases, suppliers
+  purchase_products          engine=MyISAM  rows=3462     data+index=0.55 MB auto_increment=3463
+  purchase_return_products   engine=MyISAM  rows=0        data+index=0.00 MB auto_increment=1
+  purchase_returns           engine=MyISAM  rows=0        data+index=0.00 MB auto_increment=1
+  purchases                  engine=MyISAM  rows=103      data+index=0.02 MB auto_increment=104
+  suppliers                  engine=MyISAM  rows=5        data+index=0.00 MB auto_increment=6
+Refused: --confirm must repeat the database name exactly ('t5_prodshape_test').
+exit=1
+== execute
+database=t5_prodshape_test  target engine=InnoDB  tables to change: purchase_products, purchase_return_products, purchase_returns, purchases, suppliers
+  purchase_products          engine=MyISAM  rows=3462     data+index=0.55 MB auto_increment=3463
+  purchase_return_products   engine=MyISAM  rows=0        data+index=0.00 MB auto_increment=1
+  purchase_returns           engine=MyISAM  rows=0        data+index=0.00 MB auto_increment=1
+  purchases                  engine=MyISAM  rows=103      data+index=0.02 MB auto_increment=104
+  suppliers                  engine=MyISAM  rows=5        data+index=0.00 MB auto_increment=6
+  purchase_products          -> InnoDB in 0.053s rows 3462 -> 3462
+  purchase_return_products   -> InnoDB in 0.011s rows 0 -> 0
+  purchase_returns           -> InnoDB in 0.012s rows 0 -> 0
+  purchases                  -> InnoDB in 0.013s rows 103 -> 103
+  suppliers                  -> InnoDB in 0.011s rows 5 -> 5
+DONE: 5 table(s) converted to InnoDB; row counts and AUTO_INCREMENT unchanged. Next: ANALYZE TABLE, db:engine-preflight, reconciliation, smoke tests.
+exit=0
+== fingerprint AFTER
+suppliers	5	147089280.00	0.00
+purchases	103	147089280.00
+purchase_products	3462	686700	147089280.00
+purchase_returns	0
+purchase_return_products	0
+== preflight
+PASS: every checked money/stock table is InnoDB. Deadlock retry and the purchasing gate are active.

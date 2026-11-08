@@ -15,5 +15,4 @@ return [
     | an explicitly configured expense account (the accounting rule for charges is an open ruling; no account is guessed).
     */
     'auto_deposit_user_id' => env('AUTO_DEPOSIT_USER_ID') ? (int) env('AUTO_DEPOSIT_USER_ID') : null,
-    'auto_deposit_charge_account_id' => env('AUTO_DEPOSIT_CHARGE_ACCOUNT_ID') ? (int) env('AUTO_DEPOSIT_CHARGE_ACCOUNT_ID') : null,
 ];

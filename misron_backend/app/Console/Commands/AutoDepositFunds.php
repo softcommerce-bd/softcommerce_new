@@ -6,7 +6,6 @@ use App\Models\TransactionMethod;
 use App\Services\Accounting\AutoDepositReadiness;
 use App\Models\ChartOfAccount;
 use App\Models\BalanceTransfer;
-use App\Models\ExpensePayment;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -39,8 +38,8 @@ class AutoDepositFunds extends Command
             return self::SUCCESS;
         }
 
-        // R-03/R-04: the switch alone is never enough. Without a creator, legal ENUM values, InnoDB tables and (for charged methods) an explicit charge
-        // account the job refuses before opening any transaction; a non-zero exit makes the scheduler report it.
+        // R-03/R-04: the switch alone is never enough. Without a creator, legal ENUM values, InnoDB tables and with no charged method,
+        // the job refuses before opening any transaction; a non-zero exit makes the scheduler report it.
         $problems = AutoDepositReadiness::problems();
         if ($problems) {
             $message = self::BLOCKED_TAG . ': accounts:auto-deposit is switched on but NOT READY, so it did nothing. ' . implode(' | ', $problems);
@@ -79,7 +78,7 @@ class AutoDepositFunds extends Command
                 // one global lock order: number series first (as the transfer and expense screens do), then the accounts
                 \App\Support\NumberSerializer::hold(\App\Models\BalanceTransfer::voucherSeries(AutoDepositReadiness::TYPE));
                 if ((float) ($method->charge ?? 0) > 0) {
-                    \App\Support\NumberSerializer::hold(ExpensePayment::voucherSeries());
+                    throw new \RuntimeException("Method '{$method->name}' charges a fee; charged auto-deposit methods are not supported (the charge cannot be booked yet).");
                 }
                 // The balance to move is read UNDER the source account's row lock, inside the transaction. It used to be read before it, so two runs at the
                 // same moment (a manual run during the scheduled one, or two hosts) each moved the whole balance: the destination got it twice and the
@@ -121,10 +120,9 @@ class AutoDepositFunds extends Command
                 $this->insertStatementLog($source->id, $transfer->date, $transfer->voucher_no, AutoDepositReadiness::TYPE, 0, $balance, $label, $transfer);
                 $this->insertStatementLog($destination->id, $transfer->date, $transfer->voucher_no, AutoDepositReadiness::TYPE, $transferAmount, 0, $label, $transfer);
 
-                // 3. Record charge expense if any
-                if ($chargeAmount > 0) {
-                    $this->recordChargeExpense($method, $chargeAmount, $source, $transfer);
-                }
+                // (3. The charge expense is NOT recorded here any more: the old code created an expense_payments row with keys that are not columns of that table
+                // (description, expense_account_id, transaction_method_id, reference_no were silently dropped), so the charge was linked to no expense account.
+                // Charged methods are refused by AutoDepositReadiness until the accountant rules how the charge is booked (ACC-03).)
 
                 DB::commit();
                 
@@ -145,38 +143,5 @@ class AutoDepositFunds extends Command
         $this->info("Auto-deposit completed. Success: {$successCount}, Failed: {$failedCount}");
 
         return $failedCount > 0 ? self::FAILURE : self::SUCCESS; // a failed method must not look like a clean run to the scheduler
-    }
-
-    private function recordChargeExpense($method, $chargeAmount, $sourceAccount, $transferRecord)
-    {
-        // The charge account is an explicit configuration (AutoDepositReadiness refuses to run without it); the former name/code search with a
-        // fallback to account id 67 was a guess and is gone.
-        $expenseAccount = ChartOfAccount::find((int) config('accounts.auto_deposit_charge_account_id'));
-        if (!$expenseAccount) {
-            throw new \RuntimeException('Charge account AUTO_DEPOSIT_CHARGE_ACCOUNT_ID not found; nothing was posted for this method.');
-        }
-
-        // Generate voucher number for expense
-        $voucherNo = 'EXP-' . now()->format('Ymd') . '-' . uniqid();
-        
-        // Check if ExpensePayment model has method to generate voucher
-        if (method_exists(ExpensePayment::class, 'generateVoucherNo')) {
-            $voucherNo = ExpensePayment::generateVoucherNo('expense');
-        }
-
-        ExpensePayment::create([
-            'voucher_no'           => $voucherNo,
-            'date'                 => now()->format('Y-m-d'),
-            'expense_account_id'   => $expenseAccount->id, // IMPORTANT: Link expense account
-            'payment_account_id'   => $sourceAccount->id,
-            'total_amount'         => $chargeAmount,
-            'description'          => "Auto-deposit charge for {$method->name} (Transfer: {$transferRecord->voucher_no})",
-            'status'               => AutoDepositReadiness::STATUS,
-            'transaction_method_id'=> $method->id,
-            'reference_no'         => $transferRecord->reference_no,
-            'created_by'           => (int) config('accounts.auto_deposit_user_id'),
-        ]);
-        
-        $this->info("  → Recorded charge expense: {$chargeAmount} to account {$expenseAccount->name}");
     }
 }

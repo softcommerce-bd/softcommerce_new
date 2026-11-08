@@ -1,0 +1,26 @@
+== ROLLBACK rehearsal: revert all five to MyISAM (test database only)
+  purchases                  engine=InnoDB  rows=103      data+index=0.03 MB auto_increment=104
+  suppliers                  engine=InnoDB  rows=5        data+index=0.02 MB auto_increment=6
+  purchase_products          -> MyISAM in 0.022s rows 3462 -> 3462
+  purchase_return_products   -> MyISAM in 0.008s rows 0 -> 0
+  purchase_returns           -> MyISAM in 0.009s rows 0 -> 0
+  purchases                  -> MyISAM in 0.011s rows 103 -> 103
+  suppliers                  -> MyISAM in 0.009s rows 5 -> 5
+DONE: 5 table(s) converted to MyISAM; row counts and AUTO_INCREMENT unchanged. Next: ANALYZE TABLE, db:engine-preflight, reconciliation, smoke tests.
+FAIL: 5 money/stock table(s) are not InnoDB: purchase_products, purchase_return_products, purchase_returns, purchases, suppliers
+== production-shape HTTP gate test again (now MyISAM again)
+
+OK (3 tests, 20 assertions)
+== convert with the plain-SQL script instead
+stage	suppliers	purchases	purchase_products	purchase_returns	purchase_return_products	layer_units	supplier_due
+before	8	103	3462	0	0	686700	147089280.00
+stage	suppliers	purchases	purchase_products	purchase_returns	purchase_return_products	layer_units	supplier_due
+after	8	103	3462	0	0	686700	147089280.00
+TABLE_NAME	ENGINE
+purchase_products	InnoDB
+purchase_return_products	InnoDB
+purchase_returns	InnoDB
+purchases	InnoDB
+suppliers	InnoDB
+PASS: every checked money/stock table is InnoDB. Deadlock retry and the purchasing gate are active.
+== revert-refusal on a name that is not a test database is covered by EngineGuardTest; shadow-swap alternative not needed at this size

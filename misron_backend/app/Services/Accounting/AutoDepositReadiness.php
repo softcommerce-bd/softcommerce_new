@@ -13,8 +13,8 @@ use Illuminate\Support\Facades\DB;
  *  2. the values the job writes are legal in the database: balance_transfers.transaction_type 'auto_deposit', balance_transfers.status and
  *     expense_payments.status 'completed' (otherwise a non-strict connection stores them as blank);
  *  3. the tables it writes are InnoDB (rollback, row locks);
- *  4. if any active auto method charges a fee, AUTO_DEPOSIT_CHARGE_ACCOUNT_ID names an existing active expense account (the accounting rule for charges is an open
- *     ruling: nothing is guessed, the old fallback to account id 67 is gone).
+ *  4. no active auto method charges a fee (the charge cannot be booked correctly yet; the old code wrote it into columns that do not exist, and the
+ *     fallback to account id 67 was a guess - both are gone).
  */
 final class AutoDepositReadiness
 {
@@ -50,10 +50,7 @@ final class AutoDepositReadiness
         }
         $charged = DB::table('transaction_methods')->where('deposit_type', 'auto')->where('status', 'active')->where('charge', '>', 0)->count();
         if ($charged > 0) {
-            $acc = config('accounts.auto_deposit_charge_account_id');
-            if (!$acc || !DB::table('chart_of_accounts')->where('id', $acc)->where('type', 'expense')->where('status', 'active')->where('is_deleted', 0)->exists()) {
-                $p[] = "$charged active auto method(s) charge a fee but AUTO_DEPOSIT_CHARGE_ACCOUNT_ID is not an existing active expense account (accounting ruling needed; no account is guessed)";
-            }
+            $p[] = "$charged active auto method(s) charge a fee: charged methods are not supported (the old code wrote the charge expense into columns that do not exist, so it was linked to no expense account; how a charge is booked is an open accounting ruling)";
         }
 
         return $p;

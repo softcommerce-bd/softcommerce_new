@@ -54,17 +54,12 @@ class AutoDepositReadinessTest extends InventoryV2TestCase
         $this->assertTrue($this->has($p, "expense_payments.status"));
     }
 
-    public function test_a_charged_method_needs_an_explicit_existing_expense_account_no_guess()
+    public function test_a_charged_method_makes_the_job_not_ready_whatever_is_configured()
     {
         $mk = fn (string $type) => DB::table('chart_of_accounts')->insertGetId(['code' => 'RD-' . uniqid(), 'name' => 'RD ' . uniqid(), 'type' => $type, 'sub_type' => $type === 'expense' ? 'expense' : 'bank', 'opening_balance' => 0, 'current_balance' => 0, 'status' => 'active', 'is_deleted' => 0, 'created_at' => now(), 'updated_at' => now()]);
         $src = $mk('asset');
         $dst = $mk('asset');
         DB::table('transaction_methods')->insert(['name' => 'RD ' . uniqid(), 'type' => 'mobile', 'deposit_type' => 'auto', 'charge' => 1.5, 'bank_account_id' => $dst, 'source_account_id' => $src, 'status' => 'active', 'created_at' => now(), 'updated_at' => now()]);
-        config(['accounts.auto_deposit_charge_account_id' => null]);
-        $this->assertTrue($this->has(AutoDepositReadiness::problems(), 'AUTO_DEPOSIT_CHARGE_ACCOUNT_ID'));
-        config(['accounts.auto_deposit_charge_account_id' => $src]); // an asset account is not a charge (expense) account
-        $this->assertTrue($this->has(AutoDepositReadiness::problems(), 'AUTO_DEPOSIT_CHARGE_ACCOUNT_ID'));
-        config(['accounts.auto_deposit_charge_account_id' => $mk('expense')]);
-        $this->assertFalse($this->has(AutoDepositReadiness::problems(), 'AUTO_DEPOSIT_CHARGE_ACCOUNT_ID'));
+        $this->assertTrue($this->has(AutoDepositReadiness::problems(), 'charged methods are not supported'));
     }
 }

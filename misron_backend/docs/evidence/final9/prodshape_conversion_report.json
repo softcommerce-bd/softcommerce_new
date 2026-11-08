@@ -1,0 +1,49 @@
+{
+    "database": "t5_prodshape_test",
+    "target": "InnoDB",
+    "plan": null,
+    "started": "2026-11-08T10:35:27+00:00",
+    "tables": {
+        "purchase_products": {
+            "seconds": 0.053,
+            "rows_before": 3462,
+            "rows_after": 3462,
+            "auto_increment_before": 3463,
+            "auto_increment_after": 3463,
+            "engine_after": "InnoDB"
+        },
+        "purchase_return_products": {
+            "seconds": 0.011,
+            "rows_before": 0,
+            "rows_after": 0,
+            "auto_increment_before": 1,
+            "auto_increment_after": 1,
+            "engine_after": "InnoDB"
+        },
+        "purchase_returns": {
+            "seconds": 0.012,
+            "rows_before": 0,
+            "rows_after": 0,
+            "auto_increment_before": 1,
+            "auto_increment_after": 1,
+            "engine_after": "InnoDB"
+        },
+        "purchases": {
+            "seconds": 0.013,
+            "rows_before": 103,
+            "rows_after": 103,
+            "auto_increment_before": 104,
+            "auto_increment_after": 104,
+            "engine_after": "InnoDB"
+        },
+        "suppliers": {
+            "seconds": 0.011,
+            "rows_before": 5,
+            "rows_after": 5,
+            "auto_increment_before": 6,
+            "auto_increment_after": 6,
+            "engine_after": "InnoDB"
+        }
+    },
+    "finished": "2026-11-08T10:35:27+00:00"
+}

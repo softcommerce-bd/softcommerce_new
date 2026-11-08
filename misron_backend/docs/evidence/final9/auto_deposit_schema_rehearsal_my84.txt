@@ -1,0 +1,15 @@
+== auto-deposit schema step on the backup-shaped 8.4 copy (disposable)
+-- column types before:
+balance_transfers	status	enum('pending','approved','rejected','cancelled')
+balance_transfers	transaction_type	enum('withdraw','deposit','transfer','cashout')
+expense_payments	status	enum('pending','approved','rejected','cancelled')
+-- readiness problems before: ["AUTO_DEPOSIT_USER_ID is not set: the job needs a named non-login syste","balance_transfers.transaction_type is enum('withdraw','deposit','trans","balance_transfers.status is enum('pending','approved','rejected','canc","expense_payments.status is enum('pending','approved','rejected','cance"]
+-- column types after:
+balance_transfers	status	enum('pending','approved','rejected','cancelled','completed')
+balance_transfers	transaction_type	enum('withdraw','deposit','transfer','cashout','auto_deposit')
+expense_payments	status	enum('pending','approved','rejected','cancelled','completed')
+-- readiness problems after schema step (user/charge settings still missing): ["AUTO_DEPOSIT_USER_ID is not set: the job needs a named non-login syste"]
+-- rollback:
+balance_transfers	status	enum('pending','approved','rejected','cancelled')
+balance_transfers	transaction_type	enum('withdraw','deposit','transfer','cashout')
+expense_payments	status	enum('pending','approved','rejected','cancelled')
