@@ -1,0 +1,4 @@
+Phase 3 notes (MariaDB inv_v2_test vs MySQL 8.4 t5_mysql84_test after load of empty_misron.sql + migrations):
+- Columns: identical after normalising integer display widths and CURRENT_TIMESTAMP spelling, except table failed_jobs (absent in the dump; not used by the code under test).
+- Indexes: identical except failed_jobs (absent) and chat_settings PRIMARY(key) (present in the 8.4 copy of the dump, absent in the MariaDB test DB).
+- Engines: the dump keeps purchases, suppliers, purchase_returns, purchase_return_products on MyISAM; the MariaDB test DB had them converted to InnoDB earlier. They were converted here the same way (ALTER TABLE ... ENGINE=InnoDB) on the disposable database. 12 other small tables stay MyISAM in both.

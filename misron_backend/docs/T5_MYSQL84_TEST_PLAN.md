@@ -1,6 +1,6 @@
 # MySQL 8.4 compatibility test plan (disposable databases only)
 
-**Status: PLAN ONLY. MySQL 8.4 has NOT been run. No MySQL 8.4 compatibility is claimed anywhere.** Until a run is attached, the only validated engine is MariaDB 10.11.14. Production engine and version are unknown (BLOCKED, P1); the 8.4.3 in the header of `empty_misron.sql` / `misron.sql` is the dump tool's server and is not proof of what production runs.
+**Status (updated): EXECUTED on 2026-11-08 under owner decision MYSQL84.1 = Option A. Results: `T5_MYSQL84_REHEARSAL_REPORT.md`. Original text follows: PLAN ONLY, MySQL 8.4 had NOT been run.** No production MySQL 8.4 compatibility is claimed. Until a run is attached, the only validated engine is MariaDB 10.11.14. Production engine and version are unknown (BLOCKED, P1); the 8.4.3 in the header of `empty_misron.sql` / `misron.sql` is the dump tool's server and is not proof of what production runs.
 
 ## 1. Can a server be had here? (checked 2026-11-08)
 | Route | Result |

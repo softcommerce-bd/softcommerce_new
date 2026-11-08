@@ -12,7 +12,8 @@ SELECT 'sql_mode', @@sql_mode;
 SHOW VARIABLES LIKE '%isolation%';                       -- transaction_isolation (MySQL 8.x) / tx_isolation (MariaDB < 11.1); expected REPEATABLE-READ
 SHOW VARIABLES LIKE 'wsrep_on';                          -- ON = Galera / multi-primary: GET_LOCK is node-local, NOT safe
 SHOW VARIABLES LIKE 'super_read_only';
-SHOW VARIABLES LIKE 'group_replication%';                -- MySQL Group Replication multi-primary
+SHOW VARIABLES LIKE 'group_replication%';                -- NOTE: MySQL 8.4 lists group_replication_consistency even when Group Replication is NOT used; that line alone is not evidence of multi-primary.
+                                                          -- Real check: SELECT * FROM performance_schema.replication_group_members;  (empty = not a group member)
 SHOW GLOBAL STATUS LIKE 'Threads_connected';
 SHOW GLOBAL STATUS LIKE 'Connections';
 -- Is the application connecting directly or through a proxy? Count client addresses (no user data):

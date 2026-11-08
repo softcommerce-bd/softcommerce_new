@@ -202,3 +202,8 @@ Verification (disposable DB): PHPUnit 635 tests / 4149 assertions, only the 3 kn
 
 ## UPDATE 7 - remaining-requirements review (T-5 and staging acceptance remain OPEN)
 Prepared, no code change: `T5_REMAINING_REQUIREMENTS.md`, `T5_N1_ACCOUNTANT_REVIEW_PACKAGE.md`, `T5_INC1_DBA_HANDOFF.md` (+ `tests/staging/inc1_db_facts.sql`, validated on the disposable MariaDB only), `T5_MYSQL84_TEST_PLAN.md`. Verified again that bank actions are retired (410, no write) and the paused auto-deposit command runs 0 queries (`docs/evidence/final8/`). No approval, accountant sign-off or DBA answer exists; none was invented. MySQL 8.4 still not run. No production/staging access, schema change, migration, deployment, merge or flag change.
+
+---
+
+## UPDATE 8 - MySQL 8.4 rehearsal (T-5 and staging acceptance remain OPEN)
+Executed on a disposable MySQL 8.4.13 container (owner decision MYSQL84.1 = A), results in `T5_MYSQL84_REHEARSAL_REPORT.md`: concurrency suite 96/96 OK x3, income-number fix verified (0 vs 12-20 deadlocks per 40 requests), T-5 index migration reversible; default suite 31 failures vs 21 on a same-built MariaDB control, 10 only on 8.4 = one real incompatibility (writes to generated column `purchase_order_details.pending_quantity`, MySQL error 3105; 8 tests) + environment items. No repository code changed; container, data and image destroyed. Production compatibility unknown.

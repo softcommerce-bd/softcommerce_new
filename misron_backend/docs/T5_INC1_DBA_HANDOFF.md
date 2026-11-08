@@ -38,5 +38,8 @@ Everything below is read-only or writes nothing: SELECT/SHOW statements, and one
 * Self-check FAIL on "connection id changed inside one transaction" -> a multiplexing proxy is in front of the database; question 2/3 become the finding.
 * A self-check PASS does **not** replace 4C: a multiplexer that happens to keep these few statements together would pass.
 
+## 5b. Rehearsal note (MySQL 8.4.13, disposable)
+`accounts:number-lock-selfcheck` and `tests/staging/inc1_db_facts.sql` were run on a throw-away MySQL 8.4.13 server and behave as described (`T5_MYSQL84_REHEARSAL_REPORT.md`). On 8.4 the `group_replication%` query lists `group_replication_consistency` even when Group Replication is not used - judge multi-primary by `performance_schema.replication_group_members`, not by that line.
+
 ## 6. Still unknown to me (listed so nobody assumes)
 Production engine, version, isolation level, storage engines (MyISAM would void all row-lock reasoning), topology, proxy, connection handling. Status of INC.1: **BLOCKED until this sheet is returned.**

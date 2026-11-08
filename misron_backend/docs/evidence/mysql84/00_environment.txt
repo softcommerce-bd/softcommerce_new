@@ -1,0 +1,29 @@
+== phase 0 identity (from the container)
+version	8.4.13
+comment	MySQL Community Server - GPL
+sql_mode	ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
+isolation	REPEATABLE-READ
+innodb_lock_wait_timeout	50
+autoinc_lock_mode	2
+collation_server	utf8mb4_0900_ai_ci
+deadlock_detect	1
+default_storage_engine	InnoDB
+authentication_policy	*,,
+php PHP 8.3.6 (cli) (built: Oct 19 2026 15:16:58) (NTS)
+pdo client: mysqlnd 8.3.6
+host client: mysql  Ver 15.1 Distrib 10.11.14-MariaDB, for debian-linux-gnu (x86_64) using  EditLine wrapper
+image digest: sha256:a81d043930e51745522bd5c430961cf8286f0a23f0a9a2a6e0108f7ea71b0902
+== container / host details
+docker client 29.9.2 / server 29.9.2
+container 828101fa625d6f0ffafe18116569e96e1adf45f6830bb1272eaa79949ff435ed image sha256:a81d043930e51745522bd5c430961cf8286f0a23f0a9a2a6e0108f7ea71b0902 network=host started 2026-11-08T08:26:30.390331384Z cmd=[--port=3307 --bind-address=127.0.0.1 --skip-name-resolve]
+image id sha256:a81d043930e51745522bd5c430961cf8286f0a23f0a9a2a6e0108f7ea71b0902 repo digest mysql@sha256:a81d043930e51745522bd5c430961cf8286f0a23f0a9a2a6e0108f7ea71b0902 created 2026-11-03T00:28:00.628827072Z
+Linux 6.18.44-fc-v310 x86_64
+4
+Mem:           16086        1647       12300          15        2450       14438
+--------------
+select user,host,plugin from mysql.user where user='t5'
+--------------
+
+ERROR 1142 (42000) at line 1: SELECT command denied to user 't5'@'127.0.0.1' for table 'user'
+information_schema misron_test performance_schema t5_mysql84_test t5_scratch_test 
+MariaDB local (control + original test DB): 10.11.14-MariaDB-0ubuntu0.24.04.1

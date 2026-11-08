@@ -189,3 +189,11 @@ Nothing was approved in this review. Hand-off material prepared; every answer/si
 | MySQL 8.4 | PLAN only; **not run**; needs the owner's choice A/B/C (a `mysql:8.4` image was pulled but starting it was refused by the session's permission classifier) | `T5_MYSQL84_TEST_PLAN.md` |
 | Bank actions / automatic deposits still disabled | VERIFIED (routes 410, 0 queries by the paused command, flags false) | `docs/evidence/final8/disabled_state_check.txt` |
 New question for the owner: **MYSQL84.1** - how to obtain a MySQL 8.4 server for disposable testing (A run the pulled container here with your permission, B a server you provide, C the DBA/CI runs the script). Recommended: A.
+
+---
+## UPDATE 8 - MySQL 8.4 rehearsal executed (MYSQL84.1 = Option A, owner-approved 2026-11-08)
+Report: `T5_MYSQL84_REHEARSAL_REPORT.md`; evidence `docs/evidence/mysql84/`. Disposable MySQL 8.4.13 container on loopback, disposable `*_test` databases only, destroyed afterwards (`teardown.txt`). **T-5 and staging acceptance remain OPEN.**
+* Income-number fix and all 96 concurrency tests (3 runs) pass on 8.4.13; the empty-range deadlock reproduces on 8.4 without the fix (12-20 of 40 requests) and disappears with it.
+* **NEW FINDING F1 (needs a decision): `PurchaseOrderService` (insert `:55`, update `:83`) and `GoodsReceiptService` (`:144`) write to the generated column `purchase_order_details.pending_quantity`; MySQL 8.4 rejects this (error 3105), MariaDB ignores it silently.** On 8.4 purchase-order creation, receiving, bulk commit and the requirements screen fail (8 tests). Proposed: **MYSQL84.2 - approve removing `pending_quantity` from those three writes** (no schema change, no financial rule change, MariaDB behaviour unchanged) and reviewing the cancel write at `:83`. Not changed.
+* Other findings: F3 the rehearsal script needs updating (migrate step, engine conversion, unified_chat path, mask, `misron_test`); F5 the passing baseline depends on the seed state of `inv_v2_test`; strict mode exposes legacy 1364 errors (informational).
+* Production compatibility remains UNKNOWN (P1 BLOCKED).

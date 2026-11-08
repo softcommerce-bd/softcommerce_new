@@ -1,0 +1,7 @@
+== 7d. EXPLAIN of the income number generator's locking read on the real tables
+-- MySQL 8.4
+id	select_type	table	partitions	type	possible_keys	key	key_len	ref	rows	filtered	Extra
+1	SIMPLE	incomes	NULL	index	incomes_voucher_no_unique,incomes_voucher_no_index	PRIMARY	8	NULL	1	100.00	Using where; Backward index scan
+-- MariaDB 10.11 (inv_v2_test)
+id	select_type	table	type	possible_keys	key	key_len	ref	rows	Extra
+1	SIMPLE	incomes	index	incomes_voucher_no_unique,incomes_voucher_no_index	PRIMARY	8	NULL	1	Using where

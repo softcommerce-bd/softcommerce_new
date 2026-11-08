@@ -1,0 +1,5 @@
+85a86
+> chat_settings	PRIMARY	0	key
+147,148d147
+< failed_jobs	PRIMARY	0	id
+< failed_jobs	uuid	0	uuid

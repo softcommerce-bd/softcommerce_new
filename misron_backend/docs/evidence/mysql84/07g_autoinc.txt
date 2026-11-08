@@ -1,0 +1,2 @@
+== 7g. AUTO_INCREMENT burn on rolled-back test inserts (payment_methods.id)
+8.4 now: 59 (was 59 before the default suite; innodb_autoinc_lock_mode=2; MariaDB burns about 13 per full run, tinyint unsigned limit 255)

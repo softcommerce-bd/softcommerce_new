@@ -1,0 +1,3 @@
+== 7c. deadlock-handling tests (from the junit logs of this MySQL 8.4 run)
+default suite: 85 deadlock-related tests, 84 passed, failing: ['DeadlockWorkflowRetryTest::test_courier_settlement_retries_a_deadlock_and_books_cogs_inventory_and_journal_once']
+concurrency run 1: 11 deadlock-related tests, 11 passed, failing: []

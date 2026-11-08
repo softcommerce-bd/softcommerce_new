@@ -1,0 +1,48 @@
+== 7a. empty-index-range deadlock on MySQL 8.4 (two sessions, same statements as the MariaDB reproduction)
+--------------
+insert into incomes(voucher_no) values('INC-26000001-a')
+--------------
+id	voucher_no
+1	INC-26000001-b
+id	select_type	table	partitions	type	possible_keys	key	key_len	ref	rows	filtered	Extra
+1	SIMPLE	incomes	NULL	index	voucher_no,idx	PRIMARY	4	NULL	1	100.00	Using where; Backward index scan
+LATEST DETECTED DEADLOCK
+------------------------
+2026-11-08 08:39:29 140468474062400
+*** (1) TRANSACTION:
+TRANSACTION 64827, ACTIVE 1 sec inserting
+mysql tables in use 1, locked 1
+LOCK WAIT 3 lock struct(s), heap size 1128, 2 row lock(s)
+MySQL thread id 3827, OS thread handle 140468455163456, query id 570287 127.0.0.1 t5 update
+insert into incomes(voucher_no) values('INC-26000001-b')
+
+*** (1) HOLDS THE LOCK(S):
+RECORD LOCKS space id 950 page no 4 n bits 72 index PRIMARY of table `t5_scratch_test`.`incomes` trx id 64827 lock_mode X
+Record lock, heap no 1 PHYSICAL RECORD: n_fields 1; compact format; info bits 0
+ 0: len 8; hex 73757072656d756d; asc supremum;;
+
+
+*** (1) WAITING FOR THIS LOCK TO BE GRANTED:
+RECORD LOCKS space id 950 page no 4 n bits 72 index PRIMARY of table `t5_scratch_test`.`incomes` trx id 64827 lock_mode X insert intention waiting
+Record lock, heap no 1 PHYSICAL RECORD: n_fields 1; compact format; info bits 0
+ 0: len 8; hex 73757072656d756d; asc supremum;;
+
+
+*** (2) TRANSACTION:
+TRANSACTION 64828, ACTIVE 1 sec inserting
+mysql tables in use 1, locked 1
+LOCK WAIT 3 lock struct(s), heap size 1128, 2 row lock(s)
+MySQL thread id 3828, OS thread handle 140467006060096, query id 570288 127.0.0.1 t5 update
+insert into incomes(voucher_no) values('INC-26000001-a')
+
+*** (2) HOLDS THE LOCK(S):
+RECORD LOCKS space id 950 page no 4 n bits 72 index PRIMARY of table `t5_scratch_test`.`incomes` trx id 64828 lock_mode X
+Record lock, heap no 1 PHYSICAL RECORD: n_fields 1; compact format; info bits 0
+ 0: len 8; hex 73757072656d756d; asc supremum;;
+
+
+*** (2) WAITING FOR THIS LOCK TO BE GRANTED:
+RECORD LOCKS space id 950 page no 4 n bits 72 index PRIMARY of table `t5_scratch_test`.`incomes` trx id 64828 lock_mode X insert intention waiting
+Record lock, heap no 1 PHYSICAL RECORD: n_fields 1; compact format; info bits 0
+ 0: len 8; hex 73757072656d756d; asc supremum;;
+
