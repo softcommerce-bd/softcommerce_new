@@ -1280,8 +1280,8 @@ if (!function_exists('static_asset')) {
 // if (!function_exists('getFileBaseURL')) {
 //     function getFileBaseURL()
 //     {
-//         if (env('FILESYSTEM_DRIVER') != 'local') {
-//             return env(Str::upper(env('FILESYSTEM_DRIVER')) . '_URL') . '/';
+//         if (config('filesystems.default') != 'local') {
+//             return env(Str::upper(config('filesystems.default')) . '_URL') . '/';
 //         }
 
 //         return getBaseURL() . 'public/';
@@ -1304,8 +1304,8 @@ if (!function_exists('getBaseURL')) {
 if (!function_exists('getFileBaseURL')) {
     function getFileBaseURL()
     {
-        if (env('FILESYSTEM_DRIVER') != 'local') {
-            return env(Str::upper(env('FILESYSTEM_DRIVER')) . '_URL') . '/';
+        if (config('filesystems.default') != 'local') {
+            return env(Str::upper(config('filesystems.default')) . '_URL') . '/';
         }
 
         // Remove 'public/' from the base URL for local filesystem

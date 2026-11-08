@@ -22,6 +22,16 @@ class Funnel extends Model
 
     protected $guarded = ['id'];
 
+    protected static function booted(): void
+    {
+        // An order keeps its history if a funnel row is ever hard-deleted: it only loses the reference. The ON DELETE SET NULL foreign keys do this
+        // when they exist, but they are created only when orders, funnels and funnel_versions were all InnoDB at migration time (and the supplied
+        // backup's schema has none), so the model guarantees it too.
+        static::forceDeleted(function (Funnel $funnel) {
+            \Illuminate\Support\Facades\DB::table('orders')->where('funnel_id', $funnel->id)->update(['funnel_id' => null, 'funnel_version_id' => null]);
+        });
+    }
+
     protected $casts = [
         'draft_content' => CompactJson::class,
         'settings' => CompactJson::class,

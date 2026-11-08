@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\TransactionMethod;
+use App\Services\Accounting\AutoDepositReadiness;
 use App\Models\ChartOfAccount;
 use App\Models\BalanceTransfer;
 use App\Models\ExpensePayment;
@@ -12,11 +13,14 @@ use Illuminate\Support\Facades\Log;
 
 class AutoDepositFunds extends Command
 {
+    use \App\Traits\StatementLogTrait;
+
     protected $signature = 'accounts:auto-deposit';
     protected $description = 'Nightly transfer of balances from mobile bank accounts to linked bank accounts';
 
     /** Stable text for log searches and monitoring. */
     public const PAUSED_TAG = 'AUTO_DEPOSIT_PAUSED_AD1';
+    public const BLOCKED_TAG = 'AUTO_DEPOSIT_BLOCKED_NOT_READY';
 
     public function handle()
     {
@@ -33,6 +37,17 @@ class AutoDepositFunds extends Command
             $this->warn($message);
 
             return self::SUCCESS;
+        }
+
+        // R-03/R-04: the switch alone is never enough. Without a creator, legal ENUM values, InnoDB tables and (for charged methods) an explicit charge
+        // account the job refuses before opening any transaction; a non-zero exit makes the scheduler report it.
+        $problems = AutoDepositReadiness::problems();
+        if ($problems) {
+            $message = self::BLOCKED_TAG . ': accounts:auto-deposit is switched on but NOT READY, so it did nothing. ' . implode(' | ', $problems);
+            Log::critical($message);
+            $this->error($message);
+
+            return self::FAILURE;
         }
 
         $autoMethods = TransactionMethod::where('deposit_type', 'auto')
@@ -80,20 +95,26 @@ class AutoDepositFunds extends Command
                 $transfer = BalanceTransfer::create([
                     'voucher_no'       => BalanceTransfer::generateVoucherNo('auto_deposit'),
                     'date'             => now()->format('Y-m-d'),
-                    'transaction_type' => 'auto_deposit',
+                    'transaction_type' => AutoDepositReadiness::TYPE,
                     'from_account_id'  => $source->id,
                     'to_account_id'    => $destination->id,
                     'amount'           => $transferAmount,
                     'charge'           => $chargeAmount, // Store actual charge here
                     'reference_no'     => 'AUTO-' . now()->format('Ymd-His') . '-' . $method->id,
                     'note'             => "Auto deposit: {$source->name} → {$destination->name}",
-                    'status'           => 'completed',
-                    'created_by'       => null,
+                    'status'           => AutoDepositReadiness::STATUS,
+                    'created_by'       => (int) config('accounts.auto_deposit_user_id'),
                 ]);
 
                 // 2. Update account balances
                 $source->decrement('current_balance', $balance);
                 $destination->increment('current_balance', $transferAmount);
+
+                // statement lines exactly as the manual balance-transfer screen writes them (source credited with amount + charge, destination debited
+                // with the amount): the old job moved balances without any trail in the account statements
+                $label = 'Auto deposit: ' . $source->name . ' → ' . $destination->name . ' | ' . number_format($transferAmount, 2);
+                $this->insertStatementLog($source->id, $transfer->date, $transfer->voucher_no, AutoDepositReadiness::TYPE, 0, $balance, $label, $transfer);
+                $this->insertStatementLog($destination->id, $transfer->date, $transfer->voucher_no, AutoDepositReadiness::TYPE, $transferAmount, 0, $label, $transfer);
 
                 // 3. Record charge expense if any
                 if ($chargeAmount > 0) {
@@ -117,30 +138,17 @@ class AutoDepositFunds extends Command
         }
 
         $this->info("Auto-deposit completed. Success: {$successCount}, Failed: {$failedCount}");
-        return 0;
+
+        return $failedCount > 0 ? self::FAILURE : self::SUCCESS; // a failed method must not look like a clean run to the scheduler
     }
 
     private function recordChargeExpense($method, $chargeAmount, $sourceAccount, $transferRecord)
     {
-        // Find the charge expense account
-        $expenseAccount = ChartOfAccount::where('type', 'expense')
-            ->where('sub_type', 'expense')
-            ->where('status', 'active')
-            ->where(function($query) {
-                $query->where('name', 'like', '%Card/Mobile Banking Charge%')
-                      ->orWhere('code', '5-51002');
-            })
-            ->where('is_deleted', 0)
-            ->first();
-
+        // The charge account is an explicit configuration (AutoDepositReadiness refuses to run without it); the former name/code search with a
+        // fallback to account id 67 was a guess and is gone.
+        $expenseAccount = ChartOfAccount::find((int) config('accounts.auto_deposit_charge_account_id'));
         if (!$expenseAccount) {
-            // Fallback to ID 67
-            $expenseAccount = ChartOfAccount::find(67);
-        }
-
-        if (!$expenseAccount) {
-            $this->warn('No charge expense account found. Skipping expense entry.');
-            return;
+            throw new \RuntimeException('Charge account AUTO_DEPOSIT_CHARGE_ACCOUNT_ID not found; nothing was posted for this method.');
         }
 
         // Generate voucher number for expense
@@ -158,10 +166,10 @@ class AutoDepositFunds extends Command
             'payment_account_id'   => $sourceAccount->id,
             'total_amount'         => $chargeAmount,
             'description'          => "Auto-deposit charge for {$method->name} (Transfer: {$transferRecord->voucher_no})",
-            'status'               => 'completed',
+            'status'               => AutoDepositReadiness::STATUS,
             'transaction_method_id'=> $method->id,
             'reference_no'         => $transferRecord->reference_no,
-            'created_by'           => null,
+            'created_by'           => (int) config('accounts.auto_deposit_user_id'),
         ]);
         
         $this->info("  → Recorded charge expense: {$chargeAmount} to account {$expenseAccount->name}");

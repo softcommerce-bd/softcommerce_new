@@ -283,7 +283,7 @@ try {
                 config([$k => $v]);
             }
             $result['exit'] = Illuminate\Support\Facades\Artisan::call($job['command'], $job['args'] ?? []);
-            $result['output'] = substr(Illuminate\Support\Facades\Artisan::output(), 0, 400);
+            $result['output'] = substr(Illuminate\Support\Facades\Artisan::output(), 0, 2500);
             $result['ok'] = true;
             break;
 

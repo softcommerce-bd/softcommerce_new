@@ -362,7 +362,7 @@ class LoginController extends Controller
         $uploads = $auth_user->uploads;
         if ($uploads) {
             foreach ($uploads as $upload) {
-                if (env('FILESYSTEM_DRIVER') == 's3') {
+                if (config('filesystems.default') == 's3') {
                     Storage::disk('s3')->delete($upload->file_name);
                     if (file_exists(public_path() . '/' . $upload->file_name)) {
                         unlink(public_path() . '/' . $upload->file_name);

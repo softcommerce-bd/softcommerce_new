@@ -212,9 +212,9 @@ class AizUploadController extends Controller
                 //     }
                 // }
 
-                if (env('FILESYSTEM_DRIVER') != 'local') {
+                if (config('filesystems.default') != 'local') {
 
-                    Storage::disk(env('FILESYSTEM_DRIVER'))->put(
+                    Storage::disk(config('filesystems.default'))->put(
                         $path,
                         file_get_contents(base_path('public/') . $path),
                         [
@@ -276,8 +276,8 @@ class AizUploadController extends Controller
             return back();
         }
         try {
-            if (env('FILESYSTEM_DRIVER') != 'local') {
-                Storage::disk(env('FILESYSTEM_DRIVER'))->delete($upload->file_name);
+            if (config('filesystems.default') != 'local') {
+                Storage::disk(config('filesystems.default'))->delete($upload->file_name);
                 if (file_exists(public_path() . '/' . $upload->file_name)) {
                     unlink(public_path() . '/' . $upload->file_name);
                 }
@@ -327,8 +327,8 @@ class AizUploadController extends Controller
         $uploads = Upload::all();
         foreach ($uploads as $upload) {
             try {
-                if (env('FILESYSTEM_DRIVER') != 'local') {
-                    Storage::disk(env('FILESYSTEM_DRIVER'))->delete($upload->file_name);
+                if (config('filesystems.default') != 'local') {
+                    Storage::disk(config('filesystems.default'))->delete($upload->file_name);
                     if (file_exists(public_path() . '/' . $upload->file_name)) {
                         unlink(public_path() . '/' . $upload->file_name);
                     }

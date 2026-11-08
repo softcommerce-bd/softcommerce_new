@@ -147,7 +147,7 @@ class SellerFileUploadController extends Controller
                         }
                     }
 
-                    if (env('FILESYSTEM_DRIVER') == 's3') {
+                    if (config('filesystems.default') == 's3') {
                         Storage::disk('s3')->put(
                             $path,
                             file_get_contents(base_path('public/') . $path),
@@ -184,7 +184,7 @@ class SellerFileUploadController extends Controller
             return $this->failed(translate("You don't have permission for deleting this!"));
         }
         try {
-            if (env('FILESYSTEM_DRIVER') == 's3') {
+            if (config('filesystems.default') == 's3') {
                 Storage::disk('s3')->delete($upload->file_name);
                 if (file_exists(public_path() . '/' . $upload->file_name)) {
                     unlink(public_path() . '/' . $upload->file_name);
@@ -235,7 +235,7 @@ class SellerFileUploadController extends Controller
         $uploads = Upload::all();
         foreach ($uploads as $upload) {
             try {
-                if (env('FILESYSTEM_DRIVER') == 's3') {
+                if (config('filesystems.default') == 's3') {
                     Storage::disk('s3')->delete($upload->file_name);
                     if (file_exists(public_path() . '/' . $upload->file_name)) {
                         unlink(public_path() . '/' . $upload->file_name);
