@@ -1,0 +1,37 @@
+fact	value
+engine/version	10.11.14-MariaDB-0ubuntu0.24.04.1
+hostname	vm
+port	3306
+read_only	0
+innodb_lock_wait_timeout	50
+wait_timeout	28800
+max_connections	151
+sql_mode	STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION
+Variable_name	Value
+innodb_snapshot_isolation	OFF
+tx_isolation	REPEATABLE-READ
+Variable_name	Value
+wsrep_on	OFF
+Variable_name	Value
+Threads_connected	1
+Variable_name	Value
+Connections	15
+client_address	user	connections
+localhost	root	1
+table_name	engine
+balance_transfers	InnoDB
+carts	InnoDB
+chart_of_accounts	InnoDB
+idempotency_keys	InnoDB
+incomes	InnoDB
+orders	InnoDB
+purchases	InnoDB
+suppliers	InnoDB
+supplier_payments	InnoDB
+engine	tables
+InnoDB	185
+MyISAM	12
+balance_transfers_created_by_nullable
+NO
+active_auto_deposit_methods
+0

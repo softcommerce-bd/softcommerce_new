@@ -177,3 +177,15 @@ Answer each line; "no answer" = stays as is (disabled / unchanged). Evidence and
 | **INC.1** | **APPROVED as a task:** prepare a precise checklist for the production DBA (connection pooling, persistent connections, primary configuration, request-to-connection behaviour). | `T5_INC1_DBA_CHECKLIST.md` + `php artisan accounts:number-lock-selfcheck` (takes and releases one throw-away named lock; writes nothing) | the DBA's answers (BLOCKED until given) |
 | Unanswered | AD-1 options a/b, B-1.2-B-1.6, N-1.2, N-1.3, SEQ.1 (decision 7), decisions 1-5, 6, 8-15 | unchanged | all pending |
 T-5 and staging acceptance remain OPEN.
+
+---
+## UPDATE 7 - remaining-requirements review (2026-11-08, commit base `25aec82`) - NO new approval recorded
+Nothing was approved in this review. Hand-off material prepared; every answer/sign-off in it is blank.
+| Item | State | Where |
+|---|---|---|
+| Full list of remaining approvals, reviews, verifications | written | `T5_REMAINING_REQUIREMENTS.md` |
+| N-1.1 accountant review | PREPARED, not run on real data, sign-off blank | `T5_N1_ACCOUNTANT_REVIEW_PACKAGE.md` |
+| INC.1 DBA hand-off | PREPARED, **all ten answers UNANSWERED**, plus read-only `tests/staging/inc1_db_facts.sql` | `T5_INC1_DBA_HANDOFF.md` |
+| MySQL 8.4 | PLAN only; **not run**; needs the owner's choice A/B/C (a `mysql:8.4` image was pulled but starting it was refused by the session's permission classifier) | `T5_MYSQL84_TEST_PLAN.md` |
+| Bank actions / automatic deposits still disabled | VERIFIED (routes 410, 0 queries by the paused command, flags false) | `docs/evidence/final8/disabled_state_check.txt` |
+New question for the owner: **MYSQL84.1** - how to obtain a MySQL 8.4 server for disposable testing (A run the pulled container here with your permission, B a server you provide, C the DBA/CI runs the script). Recommended: A.
