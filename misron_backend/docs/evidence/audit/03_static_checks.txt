@@ -1,0 +1,59 @@
+== MyISAM tables in the supplied dumps (production engine unknown; the dump header says 8.4.3)
+empty_misron.sql: 16
+misron.sql: 16
+blocked_ips career_banners career_departments career_job_posts checkout_otps countries delivery_histories drafts expense_payment_details featured_collections job_applications jobs password_resets pathao_courier_settings purchase_products purchase_return_products purchase_returns purchases social_credentials suppliers 
+== repository-wide flag / switch checks
+./config/inventory.php:19:    'confirmed_only' => (bool) env('INVENTORY_CONFIRMED_ONLY', false),
+./app/Services/Inventory/InventoryMode.php:31:            Log::critical('INVENTORY_CONFIRMED_ONLY is set but the system is not ready: ' . im
+./app/Console/Commands/InventoryPreflight.php:11:    protected $description = 'Is it safe to set INVENTORY_CONFIRMED_ONLY=true? Read-only.';
+./app/Console/Commands/InventoryPreflight.php:20:        $this->line($problems ? 'NOT READY: do not enable INVENTORY_CONFIRMED_ONLY.' : 'Rea
+(tests set it only in isolated processes:)
+tests/ui/storefront-browser-suite.js
+tests/ui/admin-browser-suite.js
+tests/Concurrency/VerificationCase.php
+tests/Concurrency/InventoryV2ConcurrencyTest.php
+tests/Concurrency/HttpWorkflowCase.php
+-- AUTO_DEPOSIT_APPROVED outside tests/docs:
+app/Console/Commands/AutoDepositFunds.php:27:        if (!config('accounts.auto_deposit_approved')) {
+config/accounts.php:10:    'auto_deposit_approved' => (bool) env('AUTO_DEPOSIT_APPROVED', false),
+-- schedule
+    protected function schedule(Schedule $schedule)
+    {
+        $schedule->call(function () {
+            \Log::info('Laravel scheduler working: ' . now());
+        })->everyMinute();
+
+        // DISABLED (T-5 Phase 0/C): `accounts:import-customer-payments` has never existed in this repository (it appears only in the first import commit's
+        // Kernel; `git log -S` finds no command class). Scheduling an undefined command makes `schedule:run` fail every hour. Its intended business
+        // behaviour cannot be established from code or history (the manual screen CustomerPaymentController::autoImport is a different, unscheduled path
+        // whose redesign is business decision 10). Re-enable only after that decision defines what the job must do. See docs/T5_PHASE0_BUSINESS_DECISIONS.md.
+        // $schedule->command('accounts:import-customer-payments')->hourly();
+        // crash recovery for the legacy-ledger outbox: completes any committed posting whose journal entry is still missing (no-op while the table is empty)
+        $schedule->command('ledger:process-outbox --alert')->everyMinute()->withoutOverlapping(5);
+
+        $schedule->command('courier:sync-status')
+            ->hourly()  // Changed to hourly as requested
+            ->everyMinute()
+            ->withoutOverlapping();
+
+        $schedule->command('accounts:auto-deposit')
+            ->dailyAt('00:01')
+            ->timezone('Asia/Dhaka')
+            ->withoutOverlapping();
+    }
+
+== code anchors
+app/Models/Income.php:107:        \App\Support\NumberSerializer::hold('income:' . $prefix . '-' . $year);
+app/Console/Commands/NumberLockSelfCheck.php:68:            $held = NumberSerializer::hold($series, 2);
+19:    public const PAUSED_TAG = 'AUTO_DEPOSIT_PAUSED_AD1';
+27:        if (!config('accounts.auto_deposit_approved')) {
+28:            $message = self::PAUSED_TAG . ': accounts:auto-deposit is PAUSED pending owner approval (decision AD-1, option C se
+83:        ], 410);
+writes to pending_quantity in app/: 1
+== D3/D6 anchors
+39:     * (one posting vanishes). Saving a changed balance now writes the CHANGE (`current_balance = current_balance + delta`), which the da
+43:    protected function performUpdate(\Illuminate\Database\Eloquent\Builder $query)
+46:            return parent::performUpdate($query);
+1312:                DB::table('idempotency_keys')->insert(['scope' => 'checkout_cart', 'key' => $checkoutKey, 'created_at' => now(), 'updat
+1314:                $row = DB::table('idempotency_keys')->where('scope', 'checkout_cart')->where('key', $checkoutKey)->lockForUpdate()->fir
+1503:            DB::table('idempotency_keys')->where('scope', 'checkout_cart')->where('key', $checkoutKey)->update(['result' => json_encode

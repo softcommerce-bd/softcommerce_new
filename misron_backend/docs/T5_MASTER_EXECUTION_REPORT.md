@@ -169,3 +169,9 @@ Executed on a disposable MySQL 8.4.13 container (owner decision MYSQL84.1 = A), 
 
 ## UPDATE 10 - OUTBOX.1 (test hardening) done (T-5 and staging acceptance remain OPEN)
 `T5_OUTBOX_TEST_HARDENING.md`: root cause = race inside the test (not an engine or processor defect; 3/20 failures on MySQL 8.4, 1/20 on MariaDB). Fixed with a second start barrier and a kill-point signal; assertions kept and extended, mutation-checked; 30/30 consecutive passes per engine (two tests); concurrency suite 97 tests OK on MariaDB 10.11.14 and MySQL 8.4.13. No production code changed. Disposable databases only; container destroyed.
+
+
+---
+
+## UPDATE 11 - final closure-readiness audit (T-5 and staging acceptance remain OPEN)
+`T5_FINAL_ACCEPTANCE_AUDIT.md` and `T5_OUTSTANDING_APPROVALS_CHECKLIST.md`: 18 verified technical items, 4 awaiting written acceptance, 22 open decisions, 6 prepared items waiting for a person, 10 blocked items; new findings R-01 (MyISAM money tables, no gate) and R-03 (G1 vs a possibly working production job). No code, database or flag changed.

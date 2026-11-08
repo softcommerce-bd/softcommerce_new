@@ -1,0 +1,4 @@
+MyISAM tables in the repository dumps (parsed from CREATE TABLE ... ENGINE=MyISAM; 2026-11-08, read-only inspection of files)
+empty_misron.sql (16): blocked_ips, career_banners, career_departments, career_job_posts, checkout_otps, countries, drafts, featured_collections, job_applications, pathao_courier_settings, purchases, purchase_products_pre_inv1, purchase_returns, purchase_return_products, social_credentials, suppliers
+misron.sql (16): blocked_ips, career_banners, career_departments, career_job_posts, checkout_otps, countries, drafts, featured_collections, job_applications, pathao_courier_settings, purchases, purchase_products, purchase_returns, purchase_return_products, social_credentials, suppliers
+Note: the MariaDB test database and the 8.4 rehearsal copy had purchases, suppliers, purchase_returns and purchase_return_products converted to InnoDB (as the rehearsal runbook prescribes); 12 small tables stay MyISAM there.
