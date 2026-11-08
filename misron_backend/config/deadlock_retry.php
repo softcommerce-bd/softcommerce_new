@@ -23,7 +23,6 @@ return [
         \App\Http\Controllers\VoucherController::class => '*',
         \App\Http\Controllers\ExpensePaymentController::class => '*',
         \App\Http\Controllers\IncomeController::class => '*',
-        \App\Http\Controllers\BankTransactionController::class => '*',
         \App\Http\Controllers\BalanceTransferController::class => '*',
     ],
 
