@@ -42,7 +42,7 @@ Evidence: `docs/evidence/mysql84_fix/` (`comparison.txt` lists the 10 tests fixe
 ## 5. Test-data alignment on the disposable 8.4 copy (stated so nobody mistakes it for a code change)
 The database built from the repository dump carries 61 chart-of-accounts rows with real-looking balances (about 294 million in total) and 5 funnel rows, whereas `inv_v2_test` has 13 zero-balance accounts and no funnels; the accounting and funnel tests assert absolute values from that clean state, so they fail on **any** freshly built database, MariaDB included (finding F5). On the disposable 8.4 copy only, `chart_of_accounts` was replaced by the 13 rows of `inv_v2_test` and the 5 funnel rows (and children) deleted (`my84_seed_alignment.txt`). No production, staging or historical data was touched; the whole copy was destroyed afterwards (`teardown.txt`).
 
-## 6. Open item found while running (not caused by this change)
+## 6. Open item found while running (not caused by this change) - CLOSED by OUTBOX.1, see `T5_OUTBOX_TEST_HARDENING.md`
 `OutboxVerificationTest::test_a_killed_worker_does_not_block_the_other_workers` is timing-dependent on MySQL 8.4: it failed in 3 of 12 isolated runs on 8.4 and 0 of 12 on MariaDB (`outbox_kill_flakiness.txt`), and once in the last concurrency run; it had passed in the earlier three 8.4 concurrency runs. Failure mode: "the first worker was killed" is false - the worker meant to be killed finished without reaching the kill point, most likely because the two other workers drained the 12-entry backlog first. It tests the outbox processor, not purchasing, and is unrelated to `pending_quantity`. It needs hardening (a larger backlog or a start barrier) - not done here, out of scope.
 
 ## 7. Not shown

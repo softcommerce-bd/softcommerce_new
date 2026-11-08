@@ -65,6 +65,17 @@ if (!empty($job['lock_wait'])) { // shorten this process's lock wait to prove wh
 if (!empty($job['delay_ms'])) { // let another process get going first
     usleep($job['delay_ms'] * 1000);
 }
+if (!empty($job['wait_for'])) { // second barrier: do not start until another worker has reached a given point (it creates this file). Bounded, and a timeout is reported, never silent.
+    $until = microtime(true) + ($job['wait_for_timeout'] ?? 30);
+    while (!file_exists($job['wait_for'])) {
+        if (microtime(true) > $until) {
+            $result['wait_for_timed_out'] = true;
+            break;
+        }
+        usleep(500);
+    }
+    $result['waited_until'] = microtime(true);
+}
 
 try {
     $ledger = app(StockLedger::class);
@@ -292,6 +303,9 @@ try {
         case 'outbox_kill_at': // dies (SIGKILL: no cleanup, no rollback code) at the named boundary of processing
             App\Services\Accounting\LedgerOutboxProcessor::$boundaryHook = function ($name) use ($job) {
                 if ($name === $job['at']) {
+                    if (!empty($job['signal_file'])) { // tell the other workers "I am at the kill point holding my locks": they start now
+                        touch($job['signal_file']);
+                    }
                     function_exists('posix_kill') ? posix_kill(getmypid(), 9) : exit(137);
                 }
             };

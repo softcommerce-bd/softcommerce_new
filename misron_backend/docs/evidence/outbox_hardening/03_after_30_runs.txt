@@ -1,0 +1,4 @@
+AFTER hardening, test_a_killed_worker_does_not_block_the_other_workers - MySQL 8.4.13: pass=30 fail=0 of 30 consecutive runs
+AFTER hardening, test_a_worker_killed_while_holding_only_the_group_row_locks... - MySQL 8.4.13: pass=30 fail=0 of 30 consecutive runs
+AFTER hardening, test_a_killed_worker_does_not_block_the_other_workers - MariaDB 10.11.14: pass=30 fail=0 of 30 consecutive runs
+AFTER hardening, test_a_worker_killed_while_holding_only_the_group_row_locks... - MariaDB 10.11.14: pass=30 fail=0 of 30 consecutive runs

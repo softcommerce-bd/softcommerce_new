@@ -164,3 +164,8 @@ Executed on a disposable MySQL 8.4.13 container (owner decision MYSQL84.1 = A), 
 
 ## UPDATE 9 - MYSQL84.2 (generated column) fixed and verified (T-5 and staging acceptance remain OPEN)
 `T5_PENDING_QUANTITY_FIX.md`: three invalid writes to `purchase_order_details.pending_quantity` removed (create, cancel, receive), 6 regression tests; MariaDB 10.11.14 and MySQL 8.4.13 each 641 tests / 4187 assertions with only the 3 known failures, purchase subset 69/69 on both. New open item: an outbox kill-worker test is timing-dependent on 8.4 (not related). Disposable databases only; container destroyed.
+
+---
+
+## UPDATE 10 - OUTBOX.1 (test hardening) done (T-5 and staging acceptance remain OPEN)
+`T5_OUTBOX_TEST_HARDENING.md`: root cause = race inside the test (not an engine or processor defect; 3/20 failures on MySQL 8.4, 1/20 on MariaDB). Fixed with a second start barrier and a kill-point signal; assertions kept and extended, mutation-checked; 30/30 consecutive passes per engine (two tests); concurrency suite 97 tests OK on MariaDB 10.11.14 and MySQL 8.4.13. No production code changed. Disposable databases only; container destroyed.

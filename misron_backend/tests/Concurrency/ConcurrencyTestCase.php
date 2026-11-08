@@ -214,6 +214,12 @@ abstract class ConcurrencyTestCase extends TestCase
         return $results;
     }
 
+    /** The per-test scratch directory (workers' job and result files live here); tests may put synchronisation files in it. */
+    protected function workDirectory(): string
+    {
+        return $this->workDir;
+    }
+
     private function diagnostics(): string
     {
         $text = '';

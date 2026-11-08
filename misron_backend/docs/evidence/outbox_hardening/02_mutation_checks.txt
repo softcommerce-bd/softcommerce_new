@@ -1,0 +1,18 @@
+== mutation 1: the doomed worker no longer announces the kill point (survivors would wait for the timeout)
+1
+it announced the kill point before dying
+Failed asserting that file "/tmp/misron-conc-HaODGp2T/killer-at-after_journal" exists.
+Tests: 1, Assertions: 9, Failures: 1.
+== mutation 2 (production-code defect): after the first group a worker stops processing (a worker that gives up when it meets a dead worker's group)
+every group, including the dead worker's, produced exactly one entry
+Failed asserting that 2 is identical to 12.
+every group, including the dead worker's, produced exactly one entry
+Failed asserting that 2 is identical to 12.
+Tests: 2, Assertions: 36, Failures: 2.
+== mutation 3 (re-done correctly): a SURVIVING worker stalls 35 s while holding a group's locks (a worker blocked behind a dead one would look like this); the killer is not affected
+Tests: 1, Assertions: 6, Failures: 1.
+1) Tests\Concurrency\OutboxVerificationTest::test_a_killed_worker_does_not_block_the_other_workers
+Worker 1 did not finish: (no worker output)
+
+/home/user/softcommerce_new/misron_backend/tests/Concurrency/ConcurrencyTestCase.php:199
+/home/user/softcommerce_new/misron_backend/tests/Concurrency/OutboxVerificationTest.php:85
