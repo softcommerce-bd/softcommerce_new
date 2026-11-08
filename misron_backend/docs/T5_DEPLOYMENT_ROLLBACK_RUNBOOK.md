@@ -1,5 +1,7 @@
 # T-5 deployment and rollback runbook (DRAFT — nothing here is authorised)
 
+> **SUPERSEDED at `98339a1` by `T5_FINAL_DEPLOYMENT_RUNBOOK.md`** (use that one; this draft predates the engine guard, the conversion command and the engine-only SQL).
+
 Production and staging remain NO-GO. Feature flags stay off (`INVENTORY_CONFIRMED_ONLY=false`). This runbook records what a later, explicitly approved rollout would need; it has not been executed anywhere.
 
 ## Preconditions (all currently open)

@@ -1,5 +1,7 @@
 # R-03 / R-04: `accounts:auto-deposit` - complete execution path, production schema dependency, activation paths and safeguards
 
+> **STATUS AT `98339a1`:** safeguards S4 (readiness check inside the command) and S8 (no repository file enables the switch) are IMPLEMENTED and tested; the old body was also corrected (statement lines, system-user creator, charged methods unsupported). S1-S3, S6, S7 are operational rules in `T5_FINAL_DEPLOYMENT_RUNBOOK.md`. The job stays paused by default. Text below that says 'no application code changed' describes the moment of writing.
+
 **Status: ANALYSIS AND PROPOSAL ONLY. No flag, schedule, financial logic or application code was changed; no database was written; no `.env` content was read or printed (no env file exists in this checkout). Nothing here is an approval.** Evidence: `docs/evidence/r01_r03/02_dump_facts.txt`, `03_autodeposit_env_checks.txt`. Production schema and configuration are UNKNOWN (DBA-04).
 
 ## 1. Execution path (as the code stands at `775a236`)

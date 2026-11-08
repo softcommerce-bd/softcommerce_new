@@ -8,7 +8,7 @@ echo "== 1 baseline of masked staging (before anything)"; snap $S baseline_befor
 mysql -N $S < tests/staging/fingerprint.sql > $R/fp_baseline.txt
 echo "== 2 disposable copies: sql path, pre-migration reference"; copy $S ${S}_sql; copy $S ${S}_pre
 echo "== 3 InnoDB conversion (staging + both copies)"
-for d in $S ${S}_sql ${S}_pre; do mysql $d < sqlupdates/inventory_v2_innodb_conversion.sql > $R/innodb_$d.txt 2>&1; done
+for d in $S ${S}_sql ${S}_pre; do mysql $d < sqlupdates/t5_engine_only_conversion.sql > $R/innodb_$d.txt 2>&1; done
 mysql -N $S -e "select table_name, engine from information_schema.tables where table_schema=database() and table_name in ('purchases','purchase_products','purchase_returns','purchase_return_products','suppliers') order by 1" > $R/engines_after.txt
 snap $S after_innodb
 echo "== 4 artisan migrate on staging; SQL script on copy"

@@ -1,5 +1,7 @@
 # T-5 approval and remediation roadmap
 
+> **STATUS AT `98339a1`:** the engineering items of this roadmap are done (see `T5_FINAL_COMPLETION_REPORT.md`); what remains is exactly the human/DBA/accountant work in `T5_HANDOVER_DEPENDENCY_TRACKER.md` and the sequence in `T5_STAGING_EXECUTION_SEQUENCE.md`. Critical blocker CB-1 is GATED and tooled, not resolved in production.
+
 Prepared 2026-11-08 on top of commit `775a236` (documentation only; nothing executed, nothing changed in code, databases, flags, schedules or environments; no production/staging access). **Nothing here is an approval or a decision; every gate needs the named person's written approval.** Companion documents: `T5_R01_MYISAM_INVESTIGATION.md`, `T5_R03_R04_AUTO_DEPOSIT_TRACE.md`, `T5_DECISION_TRACKER.md` (48 items, 0 approved), `T5_FINAL_ACCEPTANCE_AUDIT.md`, `T5_OUTSTANDING_APPROVALS_CHECKLIST.md`. **T-5 and staging acceptance remain OPEN; production NO-GO.**
 
 ## 1. Critical blockers (nothing can be deployed while any of these is open)

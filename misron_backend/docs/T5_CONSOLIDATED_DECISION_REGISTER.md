@@ -239,3 +239,7 @@ Documents: `T5_FINAL_COMPLETION_REPORT.md` (acceptance matrix with honest status
 * **Known failures:** all three fixed in code/tests.
 **Unchanged and still requiring people:** DEC-01..DEC-20, AD-1, N-1.2/N-1.3, ACC-01..07, DBA-01..05, P4-P8, VER-03/04, P6.
 New open items: **F-G** tests/feature code attempt outbound SMS/courier calls (use sandbox credentials on staging); **T-33** two funnel-admin UI specs fail under the stand-in theme (DEFERRED, theme).
+
+---
+## UPDATE 14 - handover package (no decision taken, none invented) - T-5 and staging acceptance remain OPEN
+Documents: `T5_HANDOVER_README.md`, `T5_HANDOVER_DEPENDENCY_TRACKER.md` (E1-E11 as actions, owners, deliverables, with the Claude-independent / external split), `T5_DBA_INFORMATION_REQUEST.md`, `T5_ACCOUNTANT_INFORMATION_REQUEST.md`, `T5_OWNER_DECISION_REQUEST.md`, `T5_STAGING_EXECUTION_SEQUENCE.md`, `T5_E2E_DEFERRED_FAILURES.md`. `tests/staging/rehearse.sh` now uses the engine-only SQL (the old script also adds the unapproved unique key). Stale documents carry status banners. Every item in the tracker is OPEN and needs the named role.

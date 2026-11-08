@@ -1,5 +1,7 @@
 # R-01: MyISAM money/stock tables - investigation and InnoDB migration proposal
 
+> **STATUS AT `98339a1`:** the tooling this proposal described is now IMPLEMENTED and rehearsed on disposable databases (`db:engine-preflight`, `db:convert-engines`, retry never on non-InnoDB, purchasing gate, `sqlupdates/t5_engine_only_conversion.sql`; R01-B/C/D are done as tooling/tests). Running the conversion on staging/production still needs the DBA facts, a restore proof and the owner's written plan. See `T5_DATABASE_MIGRATION_REPORT.md`. The statements below that say 'no code changed' describe the moment this analysis was written.
+
 **Status: ANALYSIS AND PROPOSAL ONLY. Nothing was executed, no database was touched (the analysis reads repository files and source code), no engine was changed, no application code was changed. Nothing in this document is an approval.** Evidence: `docs/evidence/r01_r03/01_static_method_trace.txt` (regex-assisted method map; indicative, not a proof of every call path) and `02_dump_facts.txt` (facts parsed from the dump files). Production sizes, engines and versions are UNKNOWN (DBA-02/DBA-05): everything about size and time below is for the supplied backup `misron.sql` only, which is not proven to be production.
 
 ## 1. The five tables as found in the supplied backup

@@ -1,5 +1,7 @@
 # T-5 remaining requirements (first written at `25aec82`; superseded in detail by `T5_FINAL_ACCEPTANCE_AUDIT.md` at `a967de0`, 2026-11-08)
 
+> **STATUS AT `98339a1`:** read `T5_HANDOVER_DEPENDENCY_TRACKER.md` first. Sections A-D below are the history; R-01 is gated and tooled, R-03/R-04 gated, the three known failures fixed, and the MySQL 8.4 run is done.
+
 > **Read `T5_FINAL_ACCEPTANCE_AUDIT.md` and `T5_OUTSTANDING_APPROVALS_CHECKLIST.md` first.** Since this page was written: bank actions retired (B-1.1), guard G1 and option C (AD-1), N-1.1/INC.1 material prepared, MySQL 8.4 rehearsed, MYSQL84.2 and OUTBOX.1 done. Still open: everything in sections A-C below plus the new items R-01 (MyISAM gate) and R-03 (G1 vs a working production job).
 
 Source: `T5_CONSOLIDATED_DECISION_REGISTER.md` (UPDATE 4-6), `STAGING_ACTIVATION_PREREQUISITES.md`, `T5_OWNER_DECISION_REPORT.md`, `docs/evidence/final7/` (PHPUnit 635 tests, only the 3 known unrelated failures; concurrency 96 tests OK; fingerprints and all 197 table row counts identical before/after) and `docs/evidence/final8/` (this review). **No approval below has been given unless the register says so. T-5 and staging acceptance are OPEN.**

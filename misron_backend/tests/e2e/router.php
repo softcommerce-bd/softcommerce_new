@@ -53,4 +53,12 @@ if ($uri !== '/' && file_exists($publicPath . $uri)) {
     return false;
 }
 
+// Optional TEST-ONLY stand-in for the proprietary admin theme (tests/e2e/build-standin-theme.sh): serves the theme files the repository does not contain.
+$theme = getenv('E2E_THEME_DIR');
+if ($theme && preg_match('#^/assets/(css|js)/[A-Za-z0-9._-]+$#', $uri) && is_file($theme . $uri)) {
+    header('Content-Type: ' . (str_ends_with($uri, '.css') ? 'text/css' : 'application/javascript'));
+    readfile($theme . $uri);
+    exit;
+}
+
 require_once $publicPath . '/index.php';

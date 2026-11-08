@@ -1,5 +1,7 @@
 # T-5 decision tracker
 
+> **STATUS AT `98339a1`:** still 0 approved. R01-B/C/D and R04-A (S4/S8) were implemented as engineering tooling; the decisions that remain human are tracked, with owners and exact questions, in `T5_HANDOVER_DEPENDENCY_TRACKER.md`.
+
 State at commit `775a236` + this phase's analysis (2026-11-08). **Every status is NOT APPROVED / NOT DECIDED unless it says otherwise. The Recommendation column is the assistant's technical recommendation; it is not an approval and must not be read as one.** Roles, not names. Source lists: `T5_OUTSTANDING_APPROVALS_CHECKLIST.md`, `T5_FINAL_ACCEPTANCE_AUDIT.md`, and the three analyses of this phase (`T5_R01_MYISAM_INVESTIGATION.md`, `T5_R03_R04_AUTO_DEPOSIT_TRACE.md`). New IDs R01-A..D and R03/R04 come from this phase.
 
 ## A. Owner / business decisions (18)
