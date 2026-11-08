@@ -1,0 +1,19 @@
+run_at_utc	2026-10-31T23:44:39Z
+server	vm
+version	10.11.14-MariaDB-0ubuntu0.24.04.1
+database	inv_v2_test
+server_read_only	0
+user	root@localhost
+query_file_sha256	544fe0f67b6147c0202df1d56f2f62e13eb4e3e9ce0fadaeb7cfb397a0412e51
+read-only probe: write refused as required
+Q01: 0 row(s) -> docs/evidence/final7/n1_script_run/Q01.tsv
+Q02: 1 row(s) -> docs/evidence/final7/n1_script_run/Q02.tsv
+Q03: 0 row(s) -> docs/evidence/final7/n1_script_run/Q03.tsv
+Q04: 0 row(s) -> docs/evidence/final7/n1_script_run/Q04.tsv
+Q05: 0 row(s) -> docs/evidence/final7/n1_script_run/Q05.tsv
+Q06: 0 row(s) -> docs/evidence/final7/n1_script_run/Q06.tsv
+Q07: 5 row(s) -> docs/evidence/final7/n1_script_run/Q07.tsv
+Q08: 0 row(s) -> docs/evidence/final7/n1_script_run/Q08.tsv
+Q09: 0 row(s) -> docs/evidence/final7/n1_script_run/Q09.tsv
+Q10: 0 row(s) -> docs/evidence/final7/n1_script_run/Q10.tsv
+Finished. Nothing was written to the database. Give the TSV files and 00_context.tsv to the accountant; read docs/T5_N1_READONLY_AUDIT_RUNBOOK.md.

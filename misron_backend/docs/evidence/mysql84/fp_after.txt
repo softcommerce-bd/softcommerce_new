@@ -1,0 +1,13 @@
+orders.grand_total	NULL	0
+order_details.price	NULL	0
+order_details.buying_price	NULL	0
+product_stocks.qty	NULL	0
+purchase_products.remaining	NULL	0
+purchase_products.cost	NULL	0
+purchases.net	NULL	0
+suppliers.due	147179280	26
+chart.current_balance	294178966.15	61
+statement.debit	0	105
+statement.credit	147089280	105
+users	4	2
+products	0	NULL

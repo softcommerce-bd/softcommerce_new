@@ -12,13 +12,15 @@ use Illuminate\Support\Facades\Schema;
  */
 abstract class HttpWorkflowCase extends VerificationCase
 {
-    private const MORE = ['balance_transfers', 'voucher_details', 'vouchers', 'purchase_return_products', 'purchase_returns', 'income_details', 'incomes', 'stock_adjustment_lines', 'expense_payment_details', 'expense_payments', 'purchase_order_details', 'purchase_orders', 'order_payment_mappings', 'customer_payments', 'transaction_methods', 'courier_settlements', 'courier_settlement_details', 'supplier_payments', 'supplier_payment_purchases', 'stock_adjustments', 'addresses', 'model_has_roles', 'purchases', 'purchase_products', 'order_details', 'orders', 'carts', 'users'];
+    private const MORE = ['balance_transfers', 'voucher_details', 'vouchers', 'purchase_return_products', 'purchase_returns', 'income_details', 'incomes', 'stock_adjustment_lines', 'expense_payment_details', 'expense_payments', 'purchase_order_details', 'purchase_orders', 'order_payment_mappings', 'customer_payments', 'transaction_methods', 'courier_settlements', 'courier_settlement_details', 'supplier_payments', 'supplier_payment_purchases', 'stock_adjustments', 'addresses', 'model_has_roles', 'purchases', 'purchase_products', 'order_details', 'orders', 'carts', 'users', 'chat_audit_logs', 'funnel_order_attributions'];
     private array $moreHigh = [];
     private array $roleLinks = [];
+    private ?string $startedAt = null;
 
     protected function setUp(): void
     {
         parent::setUp();
+        $this->startedAt = now()->subSecond()->toDateTimeString();
         foreach (self::MORE as $t) {
             if (Schema::hasTable($t)) {
                 $this->moreHigh[$t] = (int) DB::table($t)->max($t === 'model_has_roles' ? 'role_id' : 'id');
@@ -29,10 +31,13 @@ abstract class HttpWorkflowCase extends VerificationCase
 
     protected function tearDown(): void
     {
-        foreach (['order_payment_mappings', 'customer_payments', 'transaction_methods', 'balance_transfers', 'voucher_details', 'vouchers', 'purchase_return_products', 'purchase_returns', 'income_details', 'incomes', 'stock_adjustment_lines', 'expense_payment_details', 'expense_payments', 'purchase_order_details', 'purchase_orders', 'courier_settlement_details', 'courier_settlements', 'supplier_payment_purchases', 'supplier_payments', 'stock_adjustments', 'addresses', 'carts'] as $t) {
+        foreach (['order_payment_mappings', 'customer_payments', 'transaction_methods', 'balance_transfers', 'voucher_details', 'vouchers', 'purchase_return_products', 'purchase_returns', 'income_details', 'incomes', 'stock_adjustment_lines', 'expense_payment_details', 'expense_payments', 'purchase_order_details', 'purchase_orders', 'courier_settlement_details', 'courier_settlements', 'supplier_payment_purchases', 'supplier_payments', 'stock_adjustments', 'addresses', 'carts', 'chat_audit_logs', 'funnel_order_attributions'] as $t) {
             if (Schema::hasTable($t) && isset($this->moreHigh[$t])) {
                 DB::table($t)->where('id', '>', $this->moreHigh[$t])->delete();
             }
+        }
+        if ($this->startedAt && Schema::hasTable('notifications')) {
+            DB::table('notifications')->where('created_at', '>=', $this->startedAt)->delete(); // uuid keys: by time, disposable database only
         }
         $created = DB::table('users')->where('id', '>', $this->moreHigh['users'] ?? PHP_INT_MAX)->pluck('id');
         DB::table('model_has_roles')->where('model_type', \App\Models\User::class)->whereIn('model_id', $created)->delete();

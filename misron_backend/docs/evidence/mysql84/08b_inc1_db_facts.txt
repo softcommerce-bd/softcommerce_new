@@ -1,0 +1,39 @@
+== 8b. inc1_db_facts.sql on MySQL 8.4
+fact	value
+engine/version	8.4.13
+hostname	vm
+port	3307
+read_only	0
+innodb_lock_wait_timeout	50
+wait_timeout	28800
+max_connections	151
+sql_mode	ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
+Variable_name	Value
+transaction_isolation	REPEATABLE-READ
+Variable_name	Value
+super_read_only	OFF
+Variable_name	Value
+group_replication_consistency	BEFORE_ON_PRIMARY_FAILOVER
+Variable_name	Value
+Threads_connected	1
+Variable_name	Value
+Connections	4225
+client_address	user	connections
+127.0.0.1	t5	1
+TABLE_NAME	ENGINE
+balance_transfers	InnoDB
+carts	InnoDB
+chart_of_accounts	InnoDB
+idempotency_keys	InnoDB
+incomes	InnoDB
+orders	InnoDB
+purchases	InnoDB
+supplier_payments	InnoDB
+suppliers	InnoDB
+ENGINE	tables
+InnoDB	184
+MyISAM	12
+balance_transfers_created_by_nullable
+NO
+active_auto_deposit_methods
+0

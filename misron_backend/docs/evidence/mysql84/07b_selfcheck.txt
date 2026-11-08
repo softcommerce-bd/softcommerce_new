@@ -1,0 +1,11 @@
+== 7b. number-lock self-check on MySQL 8.4 (real connection path of the application)
+driver=mysql host=127.0.0.1 port=3307 database=t5_mysql84_test
+server version=8.4.13 hostname=vm port=3307 read_only=0
+wsrep_on=(not present)   [ON = Galera/multi-primary: GET_LOCK is node-local, NOT safe]
+persistent_connection_option=false   [must be false]
+connection ids sampled inside one transaction: 4209,4209,4209,4209,4209,4209
+PASS: one connection for the whole transaction.
+PASS: the lock is held and a second connection is refused.
+PASS: the lock was released when the transaction ended.
+RESULT: PASS (does not replace the DBA checklist: proxy/pool settings must still be confirmed from the infrastructure side).
+exit=0

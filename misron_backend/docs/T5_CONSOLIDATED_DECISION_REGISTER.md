@@ -5,8 +5,8 @@
 |---|---|
 | P-1 POS cart isolation | **APPROVED**: a POS sale deletes only its own cart rows; a registered customer's separate website cart stays untouched (test: `PosCartIsolationTest`) |
 | Supplier payment edit treatment | **APPROVED** as intended application behaviour: reverse the old payment's effects, apply the new payment exactly once; journal and allocation integrity preserved; **no historical correction authorized** |
-| AD-1 auto-deposit schema | **NOT YET APPROVED**: option comparison and recommendation in `T5_AD1_AUTO_DEPOSIT_OPTIONS.md` (recommendation: keep disabled now = option c; if nightly deposits are wanted, option a with a non-login system user; b not recommended) |
-| B-1 bank numbering | **PENDING**: all four bank actions stay disabled; `BankActionsStayDisabledTest` enforces that nothing posts |
+| AD-1 auto-deposit schema | **OPTION C SELECTED (UPDATE 6)**; superseded text follows:  option comparison and recommendation in `T5_AD1_AUTO_DEPOSIT_OPTIONS.md` (recommendation: keep disabled now = option c; if nightly deposits are wanted, option a with a non-login system user; b not recommended) |
+| B-1 bank numbering | **B-1.1 APPROVED (UPDATE 6): the four duplicate bank actions are RETIRED; the balance-transfer workflow is the supported mechanism; cheque clearing NOT implemented.** Numbering is therefore not needed (B-1.2-B-1.6 stay unanswered and only matter if bank screens are ever revived) |
 | N-1 historical supplier drift | **PENDING ACCOUNTANT REVIEW**: no historical supplier balance is modified |
 T-5 and staging acceptance remain open.
 
@@ -135,3 +135,65 @@ Also: (1) are these four screens in use, or should bank operations go through th
 | 13 Money columns | varchar/double columns | helper now, decimal later | timing after the accountant baseline |
 | 14 Unique constraints | none on `orders.code`, per-order settlements, returns/PO references | add after audit shows no duplicates | what to do with any duplicates found |
 | 15 Order cancel/delete/notifications | `update_delivery_status`, `bulkAssignCourier`, `OrderController::destroy` have no transaction; status updates notify | transaction + after-commit notification outbox | pattern approval; whether `destroy` stays |
+
+
+---
+## UPDATE 4 (final remediation) - register changes
+* **Decisions 6 / 7:** decision 6 (formats) is NOT needed for the income deadlock; decision 7 (sequence table) is NOT needed for incomes (fixed with `NumberSerializer`, no schema) but remains the recommended permanent design for the other numbered series and for bank numbers. See `T5_INCOME_NUMBER_DEADLOCK_REPORT.md`.
+* **B-1:** now has an implementation-ready specification, `T5_B1_BANK_TRANSACTION_SPECIFICATION.md`. New finding: the `BankTransaction` model is an empty shell (no `$fillable`, `complete()`, relations), so approving the number format alone does NOT enable the actions; the posting (debit/credit) per type is an additional accountant decision. Still PENDING; actions still disabled and guarded by tests.
+* **AD-1:** options document extended (section 5): compatibility, maintenance, exactly what (c) does not disable (the schedule still runs and fails harmlessly). Recommendation unchanged: (c) now, (a) if enabling. Still NOT approved.
+* **N-1:** read-only queries Q7-Q10 added (opening positions, allocation integrity, purchase totals, cash/bank ledger effect). Still PENDING ACCOUNTANT REVIEW; nothing executed on real data.
+
+
+---
+## UPDATE 5 - exact approval questions and recommended options (decision-support package)
+Answer each line; "no answer" = stays as is (disabled / unchanged). Evidence and detail: `T5_OWNER_DECISION_REPORT.md`.
+
+| ID | Exact question | Recommended | Alternatives |
+|---|---|---|---|
+| **B-1.1** | Bank screens: retire the four duplicate bank actions and use the balance-transfer screen for deposit / withdrawal / transfer (numbers `DP/WD/TR/CO-YYMMNNNN`, monthly, per type), building only cheque clearing new? | **Yes** | keep the bank screens with new numbers (you choose prefix, width, reset) or one shared sequence |
+| **B-1.2** | Which account receives a bank charge (expense account)? | accountant names it | leave charges one-sided as today |
+| **B-1.3** | Counter-account of a bank deposit / withdrawal / cash-out on the bank screens (only if B-1.1 = No) | n/a if B-1.1 = Yes (the transfer screen asks both accounts) | name the account(s) |
+| **B-1.4** | Cheque clearing: account credited, whether anything is posted when the cheque is received, treatment of a bounced cheque | accountant to specify | - |
+| **B-1.5** | Withdrawal and cash-out: one type or two? | one (cash-out = withdrawal, as the code does today) | two |
+| **B-1.6** | Cancelling a bank transaction: delete with mirror lines (as transfers) or a numbered reversing document with reason and actor; audit table yes/no | delete with mirror lines now; audit table later (needs schema approval) | reversing document |
+| **AD-1.1** | Option for the nightly auto-deposit | **(c) no change now**; (a) system user if you want it running | (b) nullable column (not recommended) |
+| **AD-1.2** | Authorize guard **G1** (command prints one "paused pending AD-1" line and stops, no schedule or schema change)? | **Yes** | G2 schedule switch / G3 remove line / nothing |
+| **N-1.1** | Authorize running Q1-Q10 on an authorised isolated restore of production data by the accountant/DBA? | **Yes, read-only, restore only** | not yet |
+| **N-1.2** | Procedure and approver for any correction after the audit (supplier by supplier, adjustment document, never a script) | accountant-led | - |
+| **N-1.3** | Add an edit audit table for supplier payments? | yes later (schema approval) | no |
+| **INC.1** | Confirm production runs one connection per request with no multiplexing proxy / multi-primary (see `T5_INCOME_NUMBER_DEADLOCK_REPORT.md` section 7) | DBA confirms | - |
+| **SEQ.1** | Approve decision 7 (a `document_sequences` table) for the other numbered series and any new bank numbers? | yes, after a rehearsal | keep "latest row + 1" with retry |
+
+
+---
+## UPDATE 6 - OWNER RULINGS (recorded verbatim in substance; this is the authoritative record)
+| ID | Owner ruling | Implemented as | Not decided (remains pending) |
+|---|---|---|---|
+| **B-1.1** | **APPROVED.** Retire the four duplicate bank actions (deposit, withdraw, transfer, cheque clearing; and cash-out, which is the withdrawal). Keep the existing balance-transfer workflow as the supported deposit, withdrawal and transfer mechanism. **Do not implement cheque clearing.** Do not delete historical bank records or audit history; do not silently change bank accounting. | The five POST routes keep their names but refuse every request (HTTP 410, no write); the model refuses create/update/delete; history screens (`index`, `show`) stay readable; the screen points to balance transfers. Balance-transfer code untouched. Tests: `BankActionsRetiredTest`. | B-1.2 bank-charge account, B-1.3-B-1.6 (relevant only to a future revival), any cheque-clearing design |
+| **AD-1.1** | **Option C for now.** No schema change; nightly auto-deposit not enabled. | nothing changed in the schema; the job is made inert by G1 | Options a / b remain open for a future decision |
+| **AD-1.2** | **APPROVED: implement guard G1.** The scheduled command must clearly report that it is paused pending approval and exit before opening a transaction. | `accounts:auto-deposit` preflight; log tag `AUTO_DEPOSIT_PAUSED_AD1`; the schedule line and schema untouched. Tests: `AutoDepositPausedGuardTest`. | whether to remove the schedule line (G2/G3) - not requested |
+| **N-1.1** | **APPROVED:** prepare the read-only Q1-Q10 investigation for an authorised accountant/DBA against an isolated restored database. No production access by me. | `T5_N1_READONLY_AUDIT_RUNBOOK.md` + `tests/staging/n1_readonly_audit.sh` (refuses to run unless read-only and explicitly confirmed) | N-1.2 correction procedure, N-1.3 audit table; accountant review of results |
+| **INC.1** | **APPROVED as a task:** prepare a precise checklist for the production DBA (connection pooling, persistent connections, primary configuration, request-to-connection behaviour). | `T5_INC1_DBA_CHECKLIST.md` + `php artisan accounts:number-lock-selfcheck` (takes and releases one throw-away named lock; writes nothing) | the DBA's answers (BLOCKED until given) |
+| Unanswered | AD-1 options a/b, B-1.2-B-1.6, N-1.2, N-1.3, SEQ.1 (decision 7), decisions 1-5, 6, 8-15 | unchanged | all pending |
+T-5 and staging acceptance remain OPEN.
+
+---
+## UPDATE 7 - remaining-requirements review (2026-11-08, commit base `25aec82`) - NO new approval recorded
+Nothing was approved in this review. Hand-off material prepared; every answer/sign-off in it is blank.
+| Item | State | Where |
+|---|---|---|
+| Full list of remaining approvals, reviews, verifications | written | `T5_REMAINING_REQUIREMENTS.md` |
+| N-1.1 accountant review | PREPARED, not run on real data, sign-off blank | `T5_N1_ACCOUNTANT_REVIEW_PACKAGE.md` |
+| INC.1 DBA hand-off | PREPARED, **all ten answers UNANSWERED**, plus read-only `tests/staging/inc1_db_facts.sql` | `T5_INC1_DBA_HANDOFF.md` |
+| MySQL 8.4 | PLAN only; **not run**; needs the owner's choice A/B/C (a `mysql:8.4` image was pulled but starting it was refused by the session's permission classifier) | `T5_MYSQL84_TEST_PLAN.md` |
+| Bank actions / automatic deposits still disabled | VERIFIED (routes 410, 0 queries by the paused command, flags false) | `docs/evidence/final8/disabled_state_check.txt` |
+New question for the owner: **MYSQL84.1** - how to obtain a MySQL 8.4 server for disposable testing (A run the pulled container here with your permission, B a server you provide, C the DBA/CI runs the script). Recommended: A.
+
+---
+## UPDATE 8 - MySQL 8.4 rehearsal executed (MYSQL84.1 = Option A, owner-approved 2026-11-08)
+Report: `T5_MYSQL84_REHEARSAL_REPORT.md`; evidence `docs/evidence/mysql84/`. Disposable MySQL 8.4.13 container on loopback, disposable `*_test` databases only, destroyed afterwards (`teardown.txt`). **T-5 and staging acceptance remain OPEN.**
+* Income-number fix and all 96 concurrency tests (3 runs) pass on 8.4.13; the empty-range deadlock reproduces on 8.4 without the fix (12-20 of 40 requests) and disappears with it.
+* **NEW FINDING F1 (needs a decision): `PurchaseOrderService` (insert `:55`, update `:83`) and `GoodsReceiptService` (`:144`) write to the generated column `purchase_order_details.pending_quantity`; MySQL 8.4 rejects this (error 3105), MariaDB ignores it silently.** On 8.4 purchase-order creation, receiving, bulk commit and the requirements screen fail (8 tests). Proposed: **MYSQL84.2 - approve removing `pending_quantity` from those three writes** (no schema change, no financial rule change, MariaDB behaviour unchanged) and reviewing the cancel write at `:83`. Not changed.
+* Other findings: F3 the rehearsal script needs updating (migrate step, engine conversion, unified_chat path, mask, `misron_test`); F5 the passing baseline depends on the seed state of `inv_v2_test`; strict mode exposes legacy 1364 errors (informational).
+* Production compatibility remains UNKNOWN (P1 BLOCKED).

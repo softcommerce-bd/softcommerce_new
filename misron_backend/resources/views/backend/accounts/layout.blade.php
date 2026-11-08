@@ -162,7 +162,6 @@
     </div>
 
     @include('backend.accounts.modals.account_modal')
-    @include('backend.accounts.modals.bank_modal')
     @include('backend.accounts.modals.supplier_payment_modal')
     @include('backend.accounts.modals.customer_payment_modal')
     @include('backend.accounts.modals.statement_modal')

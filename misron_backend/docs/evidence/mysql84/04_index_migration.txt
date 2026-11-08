@@ -1,0 +1,33 @@
+== phase 4 T-5 index migration
+before: idx_t5_* = 13
+  2026_10_30_100100_add_unified_chat_permissions ......... Migration not found  
+  2026_10_30_100000_create_unified_chat_tables ........... Migration not found  
+
+after rollback: idx_t5_* = 13
+
+   INFO  Nothing to migrate.  
+
+after re-up: idx_t5_* = 13
+
+after 2nd rollback+up: idx_t5_* = 13
+non-idx_t5 indexes untouched by rollback: checked via index diff above (3 known differences only)
+== phase 4 (redo: rollback by batch 9 so the migration is actually reached; the first attempt's rollback only saw the last batch)
+before: idx_t5_*=13 other index rows=435
+  The "--batch" option does not exist.  
+                                        
+
+after rollback: idx_t5_*=13 other index rows=435
+   INFO  Nothing to migrate.  
+
+after re-up: idx_t5_*=13
+
+after 2nd rollback: idx_t5_*=13
+
+final: idx_t5_*=13 other index rows=435
+server: 8.4.13 database: t5_mysql84_test
+start:        idx_t5=13 other=435
+down #1:      idx_t5=0 other=435
+up #1:        idx_t5=13 other=435
+down #2:      idx_t5=0 other=435
+up #2:        idx_t5=13 other=435
+up (repeat):  idx_t5=13 other=435  (repeat-safe)

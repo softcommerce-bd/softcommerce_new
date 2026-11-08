@@ -1,0 +1,159 @@
+13d12
+< attributes	InnoDB
+16a16
+> attributes	InnoDB
+22d21
+< blogs	InnoDB
+24c23
+< brands	InnoDB
+---
+> blogs	InnoDB
+25a25
+> brands	InnoDB
+30,31d29
+< carriers	InnoDB
+< carrier_ranges	InnoDB
+32a31,32
+> carrier_ranges	InnoDB
+> carriers	InnoDB
+37d36
+< chat_accounts	InnoDB
+38a38
+> chat_accounts	InnoDB
+40d39
+< chat_conversations	InnoDB
+41a41
+> chat_conversations	InnoDB
+50d49
+< club_points	InnoDB
+51a51
+> club_points	InnoDB
+58d57
+< coupons	InnoDB
+60c59
+< courier_settlements	InnoDB
+---
+> coupons	InnoDB
+61a61
+> courier_settlements	InnoDB
+64c64
+< customer_packages	InnoDB
+---
+> custom_alerts	InnoDB
+66a67
+> customer_packages	InnoDB
+68d68
+< customer_products	InnoDB
+70,71c70
+< custom_alerts	InnoDB
+< delivery_boys	InnoDB
+---
+> customer_products	InnoDB
+73a73
+> delivery_boys	InnoDB
+77d76
+< expense_payments	InnoDB
+79c78
+< failed_jobs	InnoDB
+---
+> expense_payments	InnoDB
+82d80
+< flash_deals	InnoDB
+84a83
+> flash_deals	InnoDB
+88d86
+< funnels	InnoDB
+97c95
+< goods_receipts	InnoDB
+---
+> funnels	InnoDB
+98a97
+> goods_receipts	InnoDB
+101d99
+< incomes	InnoDB
+103c101
+< jobs	InnoDB
+---
+> incomes	InnoDB
+104a103
+> jobs	InnoDB
+116,117d114
+< notifications	InnoDB
+< notification_types	InnoDB
+119c116,117
+< orders	InnoDB
+---
+> notification_types	InnoDB
+> notifications	InnoDB
+122a121
+> orders	InnoDB
+124d122
+< pages	InnoDB
+125a124
+> pages	InnoDB
+130d128
+< payments	InnoDB
+132a131
+> payments	InnoDB
+135d133
+< pickup_points	InnoDB
+137c135
+< products	InnoDB
+---
+> pickup_points	InnoDB
+144a143
+> products	InnoDB
+146,147d144
+< purchases	InnoDB
+< purchase_orders	InnoDB
+148a146
+> purchase_orders	InnoDB
+152,153c150,152
+< purchase_returns	InnoDB
+< purchase_return_products	InnoDB
+---
+> purchase_return_products	MyISAM
+> purchase_returns	MyISAM
+> purchases	MyISAM
+157d155
+< roles	InnoDB
+159a158
+> roles	InnoDB
+161d159
+< sellers	InnoDB
+162a161
+> sellers	InnoDB
+164d162
+< size_charts	InnoDB
+165a164
+> size_charts	InnoDB
+171d169
+< stock_adjustments	InnoDB
+172a171
+> stock_adjustments	InnoDB
+178,179d176
+< suppliers	InnoDB
+< supplier_invoices	InnoDB
+181c178
+< supplier_payments	InnoDB
+---
+> supplier_invoices	InnoDB
+182a180,181
+> supplier_payments	InnoDB
+> suppliers	MyISAM
+184d182
+< tickets	InnoDB
+186c184
+< transactions	InnoDB
+---
+> tickets	InnoDB
+187a186
+> transactions	InnoDB
+190d188
+< users	InnoDB
+192c190
+< vouchers	InnoDB
+---
+> users	InnoDB
+193a192
+> vouchers	InnoDB

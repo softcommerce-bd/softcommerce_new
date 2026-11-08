@@ -1,0 +1,29 @@
+== 2026-11-08T08:20:53Z commit 25aec82 branch claude/peaceful-planck-elqcki
+== 1. flags / settings in the repository (must all be off / unset)
+config/inventory.php:19:    'confirmed_only' => (bool) env('INVENTORY_CONFIRMED_ONLY', false),
+./config/accounts.php:10:    'auto_deposit_approved' => (bool) env('AUTO_DEPOSIT_APPROVED', false),
+config accounts.auto_deposit_approved (default env) = false
+config inventory.confirmed_only (default env) = false
+== 2. schedule: auto-deposit still scheduled (unchanged), customer-payment import not
+31:        // DISABLED (T-5 Phase 0/C): `accounts:import-customer-payments` has never existed in this repository (it appears only in the first import commit's
+35:        // $schedule->command('accounts:import-customer-payments')->hourly();
+67:        $schedule->command('accounts:auto-deposit')
+== 3. the retired bank routes and writes (route inventory)
+GET|HEAD admin/accounts/bank-transactions App\Http\Controllers\BankTransactionController@index
+GET|HEAD admin/accounts/bank-transactions/accounts App\Http\Controllers\BankTransactionController@getAccounts
+POST admin/accounts/bank-transactions/deposit App\Http\Controllers\BankTransactionController@deposit
+POST admin/accounts/bank-transactions/withdraw App\Http\Controllers\BankTransactionController@withdraw
+POST admin/accounts/bank-transactions/transfer App\Http\Controllers\BankTransactionController@transfer
+POST admin/accounts/bank-transactions/cash-out App\Http\Controllers\BankTransactionController@cashOut
+POST admin/accounts/bank-transactions/cheque-clearing App\Http\Controllers\BankTransactionController@chequeClearing
+GET|HEAD admin/accounts/bank-transactions/show/{id} App\Http\Controllers\BankTransactionController@show
+GET|HEAD admin/accounts/bank-transactions/export App\Http\Controllers\BankTransactionController@export
+== 4. running the paused command in the default configuration, counting queries
+exit=0 queries=0
+AUTO_DEPOSIT_PAUSED_AD1: accounts:auto-deposit is PAUSED pending owner approval (decision AD-1, option C selected). No transaction was opened and no money was moved. To resume it the owner must approve an AD-1 option (a: system user as creator, b: nullable cre
+== 5. tests
+....                                                                4 / 4 (100%)
+
+Time: 00:01.081, Memory: 44.50 MB
+
+OK (4 tests, 138 assertions)

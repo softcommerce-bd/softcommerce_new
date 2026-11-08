@@ -1,0 +1,45 @@
+  2021_06_07_000000_create_payku_transactions_table .................. Pending  
+  2021_06_07_000001_create_payku_payments_table ...................... Pending  
+  2021_12_15_000000_add_new_columns_to_tables ........................ Pending  
+  2022_06_29_075906_create_product_queries_table ..................... Pending  
+  2026_04_28_112417_create_expense_categories_table .................. Pending  
+  2026_04_28_112502_create_expenses_table ............................ Pending  
+  2026_09_17_000000_add_gift_box_to_orders_table ..................... Pending  
+
+---
+    758▕         // lot more helpful to the developer instead of just the database's errors.
+    759▕         catch (Exception $e) {
+  ➜ 760▕             throw new QueryException(
+    761▕                 $query, $this->prepareBindings($bindings), $e
+    762▕             );
+    763▕         }
+    764▕     }
+
+      [2m+9 vendor frames [22m
+  10  database/migrations/2019_12_14_000001_create_personal_access_tokens_table.php:16
+      Illuminate\Support\Facades\Facade::__callStatic()
+
+      [2m+25 vendor frames [22m
+  36  artisan:35
+      Illuminate\Foundation\Console\Kernel::handle()
+--- inventory_v2
+
+   INFO  Running migrations.  
+
+  2026_11_01_100000_add_purchasing_permissions ..................... 30ms DONE
+  2026_11_01_100100_create_inventory_v2_tables .................... 240ms DONE
+  2026_11_01_100200_add_inventory_v2_columns ...................... 102ms DONE
+  2026_11_02_100000_add_legacy_ledger_bridge ....................... 30ms DONE
+  2026_11_02_100100_add_estimated_unit_cost ........................ 13ms DONE
+  2026_11_02_100200_add_accounting_permissions ...................... 2ms DONE
+  2026_11_03_100000_create_ledger_outbox ........................... 15ms DONE
+  2026_11_03_100100_create_refund_postings ......................... 24ms DONE
+  2026_11_03_100200_add_stock_lookup_indexes ........................ 3ms DONE
+  2026_11_04_100000_add_checkout_and_lock_lookup_indexes .......... 134ms DONE
+
+
+   INFO  Running migrations.  
+
+  2026_10_30_100000_create_unified_chat_tables .................... 151ms DONE
+  2026_10_30_100100_add_unified_chat_permissions ................... 11ms DONE
+

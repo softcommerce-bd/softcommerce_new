@@ -1,0 +1,2 @@
+supplier_id	supplier_due	supplier_paid	purchases_open_due	live_payments	live_payments_total	edits_recorded	sum_reversed_upper_bound_of_drift	due_minus_purchases_open	due_residual_if_drift_explains	paid_minus_live_payments	paid_residual_if_drift_explains
+1260	165.00	0.00	0.00	0	0.00	0	0.00	165.00	165.00	0.00	0.00

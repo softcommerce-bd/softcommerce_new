@@ -1,0 +1,8 @@
+........
+STALE-STATISTICS EXPERIMENT {"no_indexes_stale_stats":[{"deadlocks":0,"ok":14,"refused":10,"other":0},{"deadlocks":0,"ok":14,"refused":10,"other":0},{"deadlocks":0,"ok":12,"refused":12,"other":0}],"indexes_stale_stats":[{"deadlocks":0,"ok":18,"refused":6,"other":0},{"deadlocks":0,"ok":12,"refused":12,"other":0},{"deadlocks":0,"ok":14,"refused":10,"other":0}],"after_recovery":[{"deadlocks":0,"ok":13,"refused":11,"other":0},{"deadlocks":0,"ok":16,"refused":8,"other":0},{"deadlocks":0,"ok":14,"refused":10,"other":0},{"deadlocks":0,"ok":11,"refused":13,"other":0},{"deadlocks":0,"ok":15,"refused":9,"other":0}]}
+............. 65 / 93 ( 69%)
+............................                                      93 / 93 (100%)
+
+Time: 02:10.024, Memory: 62.50 MB
+
+OK (93 tests, 2200 assertions)

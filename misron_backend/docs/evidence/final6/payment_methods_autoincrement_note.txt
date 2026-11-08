@@ -1,0 +1,1 @@
+payment_methods.id is tinyint unsigned; its AUTO_INCREMENT reached 256 after repeated rolled-back test inserts (ids are not returned by rollback), failing 14 funnel tests with 'Out of range value for column id'. Disposable DB only: ALTER TABLE payment_methods AUTO_INCREMENT=1 (table is empty).

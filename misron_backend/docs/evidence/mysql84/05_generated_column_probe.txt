@@ -1,0 +1,31 @@
+== generated-column behaviour, MySQL 8.4 vs MariaDB 10.11 (scratch tables in the disposable databases)
+-- 8.4.13
+insert explicit value for p:
+--------------
+insert into gc_probe_t5 (a,b,p) values (5,2,99)
+--------------
+
+ERROR 3105 (HY000) at line 1: The value specified for generated column 'p' in table 'gc_probe_t5' is not allowed.
+update explicit value for p:
+--------------
+update gc_probe_t5 set p=0
+--------------
+
+ERROR 3105 (HY000) at line 1: The value specified for generated column 'p' in table 'gc_probe_t5' is not allowed.
+insert with DEFAULT for p:
+5.00	2.00	3.00;7.00	1.00	6.00;
+-- 10.11.14-MariaDB-0ubuntu0.24.04.1
+insert explicit value for p:
+--------------
+insert into gc_probe_t5 (a,b,p) values (5,2,99)
+--------------
+
+ERROR 1906 (HY000) at line 1: The value specified for generated column 'p' in table 'gc_probe_t5' has been ignored
+update explicit value for p:
+--------------
+update gc_probe_t5 set p=0
+--------------
+
+ERROR 1906 (HY000) at line 1: The value specified for generated column 'p' in table 'gc_probe_t5' has been ignored
+insert with DEFAULT for p:
+5.00	2.00	3.00;7.00	1.00	6.00;

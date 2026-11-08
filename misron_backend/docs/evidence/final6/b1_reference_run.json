@@ -1,0 +1,122 @@
+{
+    "start (cash, bankA, bankB)": [
+        1000,
+        5000,
+        200
+    ],
+    "after deposit 300 cash->bankA": [
+        700,
+        5300,
+        200
+    ],
+    "after withdraw 100 (+5 charge) bankA->cash": [
+        800,
+        5195,
+        200
+    ],
+    "after transfer 400 (+10 charge) bankA->bankB": [
+        800,
+        4785,
+        600
+    ],
+    "numbers": [
+        "DP-26100001",
+        "WD-26100001",
+        "TR-26100001"
+    ],
+    "lines after the three postings": [
+        {
+            "account_id": 10358,
+            "reference_no": "DP-26100001",
+            "transaction_type": "deposit",
+            "debit": "0.00",
+            "credit": "300.00"
+        },
+        {
+            "account_id": 10359,
+            "reference_no": "DP-26100001",
+            "transaction_type": "deposit",
+            "debit": "300.00",
+            "credit": "0.00"
+        },
+        {
+            "account_id": 10359,
+            "reference_no": "WD-26100001",
+            "transaction_type": "withdraw",
+            "debit": "0.00",
+            "credit": "105.00"
+        },
+        {
+            "account_id": 10358,
+            "reference_no": "WD-26100001",
+            "transaction_type": "withdraw",
+            "debit": "100.00",
+            "credit": "0.00"
+        },
+        {
+            "account_id": 10359,
+            "reference_no": "TR-26100001",
+            "transaction_type": "transfer",
+            "debit": "0.00",
+            "credit": "410.00"
+        },
+        {
+            "account_id": 10360,
+            "reference_no": "TR-26100001",
+            "transaction_type": "transfer",
+            "debit": "400.00",
+            "credit": "0.00"
+        }
+    ],
+    "after deleting all three (reversal)": [
+        1000,
+        5000,
+        200
+    ],
+    "reversal lines added": [
+        {
+            "account_id": 10359,
+            "reference_no": "TR-26100001-DEL",
+            "transaction_type": "transfer_deletion",
+            "debit": "410.00",
+            "credit": "0.00"
+        },
+        {
+            "account_id": 10360,
+            "reference_no": "TR-26100001-DEL",
+            "transaction_type": "transfer_deletion",
+            "debit": "0.00",
+            "credit": "400.00"
+        },
+        {
+            "account_id": 10359,
+            "reference_no": "WD-26100001-DEL",
+            "transaction_type": "withdraw_deletion",
+            "debit": "105.00",
+            "credit": "0.00"
+        },
+        {
+            "account_id": 10358,
+            "reference_no": "WD-26100001-DEL",
+            "transaction_type": "withdraw_deletion",
+            "debit": "0.00",
+            "credit": "100.00"
+        },
+        {
+            "account_id": 10358,
+            "reference_no": "DP-26100001-DEL",
+            "transaction_type": "deposit_deletion",
+            "debit": "300.00",
+            "credit": "0.00"
+        },
+        {
+            "account_id": 10359,
+            "reference_no": "DP-26100001-DEL",
+            "transaction_type": "deposit_deletion",
+            "debit": "0.00",
+            "credit": "300.00"
+        }
+    ],
+    "rows still in table (soft-deleted kept)": 3,
+    "rows visible": 0
+}

@@ -121,3 +121,41 @@ Branch `claude/peaceful-planck-elqcki`; this phase's commits: `fdce744`, `dbf106
 **Regression:** PHPUnit 626 tests / 3956 assertions, only the 3 known unrelated failures (UploadSafetyTest svg, ExampleTest, FunnelEditorMedia…); concurrency suite 91 tests OK. Evidence: `docs/evidence/final4/`.
 
 **Not done / still open:** MySQL 8.4 never run; production/staging facts BLOCKED; no deploy, merge, flag activation, or staging/production write; B-1, AD-1, N-1 and register decisions 1–15 awaiting approval.
+
+
+---
+
+## UPDATE 4 - final remediation (T-5 and staging acceptance remain OPEN)
+
+**Starting state verified:** branch `claude/peaceful-planck-elqcki`, HEAD `32da71e` = origin, working tree clean, no newer commits.
+
+**Implemented**
+* Income first-of-year number deadlock: root cause reproduced (index-gap locks on an empty period; plain SQL and real processes: 19/40 requests deadlocked without the fix, 0/40 with it). Fix `app/Support/NumberSerializer.php` (named lock held until the outermost transaction ends, used only by `Income::generateVoucherNo`, no schema/format change). Not applied to other series (lock-order inversion). Report: `T5_INCOME_NUMBER_DEADLOCK_REPORT.md`.
+* New tests: first-income repeated-rounds parallel test (10 rounds x 4 processes), lock-release-after-failure test, bank "bare shell" test. 
+* Documentation: `T5_B1_BANK_TRANSACTION_SPECIFICATION.md`, AD-1 addendum, N-1 queries Q7-Q10 (syntax validated on the empty disposable database only), register UPDATE 4.
+
+**Verified (disposable `inv_v2_test`, MariaDB 10.11.14)**: PHPUnit 627 tests / 3966 assertions, only the 3 known unrelated failures; concurrency suite 93 tests / 2200 assertions OK; auto-deposit locking tests 3/3; the income repeat test 5 consecutive passes; no leaked rows (incomes, bank_transactions, helper accounts = 0); `balance_transfers.created_by` still NOT NULL. Evidence: `docs/evidence/final5/`. No before/after fingerprint of the read-only staging copy was taken this time (it was not touched).
+
+**Not done / blocked**: B-1 numbering and posting decisions; AD-1 choice; N-1 accountant review (Q7-Q10 semantics untested on real-shaped data); decision 7 for other series; MySQL 8.4 never run; production/staging facts BLOCKED; production connection setup unknown (named lock needs one session = one connection); UI not verified. No deploy, merge, PR, flag change, schema change, or staging/production access. The task text ended mid-sentence ("Cash/bank ledger effect"); Q10 covers that item, anything further was not received.
+
+---
+
+## UPDATE 5 - decision-support package (T-5 and staging acceptance remain OPEN)
+Owner decision report: `docs/T5_OWNER_DECISION_REPORT.md`. New: B-1 accounting example (live reference run, evidence `docs/evidence/final6/b1_reference_run.json`), AD-1 side-by-side + interim guard proposal G1 (not implemented), N-1 queries Q1-Q10 proven on planted synthetic discrepancies (`SupplierDriftQueriesTest`), income-number fix re-verified (different accounts, previous year, rollback/commit release, nested/reentrant; production session assumptions documented), register UPDATE 5 with exact approval questions. Final regression: PHPUnit 629 tests / 4003 assertions with only the 3 known failures; concurrency 96 tests / 2330 assertions OK; fingerprints and all 197 table row counts identical before/after (`docs/evidence/final6/`). Test-hygiene fixes on the disposable setup: concurrency base classes now clean three more tables; `payment_methods` auto-increment reset (tinyint exhaustion). Unchanged: no deploy/merge/flag/schema/schedule/staging/production change; MySQL 8.4 untested; production facts BLOCKED.
+
+
+---
+
+## UPDATE 6 - owner rulings implemented (T-5 and staging acceptance remain OPEN)
+Rulings recorded first in `T5_CONSOLIDATED_DECISION_REGISTER.md` (UPDATE 6). Implemented only those: **B-1.1** bank actions retired (410 before any write, model read-only, historical rows untouched, balance-transfer workflow unchanged; modal view removed, list screen shows a pointer; cheque clearing NOT built); **AD-1.1/1.2** option C + guard G1 (`AUTO_DEPOSIT_PAUSED_AD1`, exit 0, no database access, schedule and schema untouched); **N-1.1** `T5_N1_READONLY_AUDIT_RUNBOOK.md` + `tests/staging/n1_readonly_audit.sh` (refuses without confirmation, proves read-only, never run on real data); **INC.1** `T5_INC1_DBA_CHECKLIST.md` + `accounts:number-lock-selfcheck`. Also fixed: `NumberSerializer` re-registers its commit/rollback listeners per application instance (found by the full-suite run).
+Verification (disposable DB): PHPUnit 635 tests / 4149 assertions, only the 3 known unrelated failures; concurrency 96 tests / 2329 assertions OK; income tests 3x OK; financial fingerprint and all table row counts identical before/after (`docs/evidence/final7/`). Not done: MySQL 8.4; production facts (INC.1 answers) BLOCKED; no deploy/merge/flag/schema/schedule/staging/production change.
+
+---
+
+## UPDATE 7 - remaining-requirements review (T-5 and staging acceptance remain OPEN)
+Prepared, no code change: `T5_REMAINING_REQUIREMENTS.md`, `T5_N1_ACCOUNTANT_REVIEW_PACKAGE.md`, `T5_INC1_DBA_HANDOFF.md` (+ `tests/staging/inc1_db_facts.sql`, validated on the disposable MariaDB only), `T5_MYSQL84_TEST_PLAN.md`. Verified again that bank actions are retired (410, no write) and the paused auto-deposit command runs 0 queries (`docs/evidence/final8/`). No approval, accountant sign-off or DBA answer exists; none was invented. MySQL 8.4 still not run. No production/staging access, schema change, migration, deployment, merge or flag change.
+
+---
+
+## UPDATE 8 - MySQL 8.4 rehearsal (T-5 and staging acceptance remain OPEN)
+Executed on a disposable MySQL 8.4.13 container (owner decision MYSQL84.1 = A), results in `T5_MYSQL84_REHEARSAL_REPORT.md`: concurrency suite 96/96 OK x3, income-number fix verified (0 vs 12-20 deadlocks per 40 requests), T-5 index migration reversible; default suite 31 failures vs 21 on a same-built MariaDB control, 10 only on 8.4 = one real incompatibility (writes to generated column `purchase_order_details.pending_quantity`, MySQL error 3105; 8 tests) + environment items. No repository code changed; container, data and image destroyed. Production compatibility unknown.

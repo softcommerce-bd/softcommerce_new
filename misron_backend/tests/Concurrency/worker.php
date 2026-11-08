@@ -268,6 +268,9 @@ try {
             break;
 
         case 'console': // an Artisan command in its own process (exit code and output captured)
+            foreach (($job['config'] ?? []) as $k => $v) {
+                config([$k => $v]);
+            }
             $result['exit'] = Illuminate\Support\Facades\Artisan::call($job['command'], $job['args'] ?? []);
             $result['output'] = substr(Illuminate\Support\Facades\Artisan::output(), 0, 400);
             $result['ok'] = true;

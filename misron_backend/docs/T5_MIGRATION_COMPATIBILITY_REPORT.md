@@ -27,7 +27,7 @@ The migration was also applied to the disposable test database `inv_v2_test` so 
 | Item | Status |
 |---|---|
 | MariaDB 10.11.14 (disposable) | VERIFIED: migrations, locking, savepoints, deadlock handling, all suites |
-| MySQL 8.4 | **NOT EXECUTED**. `tests/staging/mysql84-rehearsal.sh` is prepared (refuses unless the server reports 8.4.x and the database name ends in `_test`). Static review: the migration uses `information_schema.STATISTICS/COLUMNS` (present in 8.x), `ALTER TABLE ... ADD KEY`, no MariaDB-only syntax; the code uses `FOR UPDATE` row locks, savepoints, `GET_LOCK` (API checkout) — all available in 8.4. This is a review, not a validation |
+| MySQL 8.4 | **EXECUTED 2026-11-08 on a disposable 8.4.13 container (see `T5_MYSQL84_REHEARSAL_REPORT.md`): concurrency OK, one code incompatibility F1 found.** Earlier text: NOT EXECUTED. `tests/staging/mysql84-rehearsal.sh` is prepared (refuses unless the server reports 8.4.x and the database name ends in `_test`). Static review: the migration uses `information_schema.STATISTICS/COLUMNS` (present in 8.x), `ALTER TABLE ... ADD KEY`, no MariaDB-only syntax; the code uses `FOR UPDATE` row locks, savepoints, `GET_LOCK` (API checkout) — all available in 8.4. This is a review, not a validation |
 | Production engine/version/table engines/FKs/indexes | **BLOCKED** — required: output of section 0 of `docs/T5_PHASE0_AUDIT_QUERIES.sql` from production or a restored backup |
 | MyISAM limitations | transactions, savepoints and row locks do not exist on MyISAM: every locking design here is void on a MyISAM `purchases`/`suppliers`; whether production still has them is BLOCKED |
 | Isolation | all lock reasoning assumes REPEATABLE READ (verified locally); production isolation BLOCKED |

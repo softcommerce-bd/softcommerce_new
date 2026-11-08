@@ -1,0 +1,8 @@
+767,773d766
+< failed_jobs	connection	text	NO
+< failed_jobs	exception	longtext	NO
+< failed_jobs	failed_at	timestamp	NO
+< failed_jobs	id	bigint unsigned	NO
+< failed_jobs	payload	longtext	NO
+< failed_jobs	queue	text	NO
+< failed_jobs	uuid	varchar(255)	NO
