@@ -1,0 +1,59 @@
+PHPUnit 9.6.36 by Sebastian Bergmann and contributors.
+
+Warning:       Your XML configuration validates against a deprecated schema.
+Suggestion:    Migrate your XML configuration using "--migrate-configuration"!
+
+................................FFFFF.FF.F.F..................... 65 / 69 ( 94%)
+....                                                              69 / 69 (100%)
+
+Time: 00:16.478, Memory: 78.50 MB
+
+There were 9 failures:
+
+1) Tests\Feature\Inventory\PurchasingAccountingTest::test_receiving_creates_a_fifo_layer_at_actual_cost_and_a_balanced_entry_without_a_payable
+Failed asserting that 147089935.0 matches expected 655.0.
+
+/home/user/softcommerce_new/misron_backend/tests/Feature/Inventory/PurchasingAccountingTest.php:83
+
+2) Tests\Feature\Inventory\PurchasingAccountingTest::test_landed_cost_is_capitalised_into_the_layers_in_proportion_and_the_books_balance
+Failed asserting that 147091310.0 matches expected 2030.0.
+
+/home/user/softcommerce_new/misron_backend/tests/Feature/Inventory/PurchasingAccountingTest.php:102
+
+3) Tests\Feature\Inventory\PurchasingAccountingTest::test_invoice_clears_grni_posts_the_payable_and_records_a_price_difference
+Failed asserting that 147090330.0 matches expected 1050.0.
+
+/home/user/softcommerce_new/misron_backend/tests/Feature/Inventory/PurchasingAccountingTest.php:114
+
+4) Tests\Feature\Inventory\PurchasingAccountingTest::test_invoice_difference_on_units_already_sold_is_expensed_and_history_is_not_rewritten
+Failed asserting that 147090330.0 matches expected 1050.0.
+
+/home/user/softcommerce_new/misron_backend/tests/Feature/Inventory/PurchasingAccountingTest.php:133
+
+5) Tests\Feature\Inventory\PurchasingAccountingTest::test_supplier_return_of_uninvoiced_goods_clears_grni_and_invoiced_goods_credits_the_payable
+Failed asserting that 147089980.0 matches expected 700.0.
+
+/home/user/softcommerce_new/misron_backend/tests/Feature/Inventory/PurchasingAccountingTest.php:149
+
+6) Tests\Feature\Inventory\PurchasingAccountingTest::test_duplicate_invoice_number_and_replayed_invoice_post_once
+Failed asserting that 147089290.0 matches expected 10.0.
+
+/home/user/softcommerce_new/misron_backend/tests/Feature/Inventory/PurchasingAccountingTest.php:180
+
+7) Tests\Feature\Inventory\PurchasingAccountingTest::test_partial_payments_reduce_payable_and_cash_and_are_never_expenses_and_retries_do_not_double_pay
+Failed asserting that 147089880.0 matches expected 600.0.
+
+/home/user/softcommerce_new/misron_backend/tests/Feature/Inventory/PurchasingAccountingTest.php:197
+
+8) Tests\Feature\Inventory\PurchasingAccountingTest::test_supplier_advance_then_applied_to_an_invoice_and_one_payment_across_invoices
+Failed asserting that 147089280.0 matches expected 0.0.
+
+/home/user/softcommerce_new/misron_backend/tests/Feature/Inventory/PurchasingAccountingTest.php:239
+
+9) Tests\Feature\Inventory\PurchasingAccountingTest::test_reversal_posts_the_mirror_once_and_history_is_reported_as_of_a_date
+Failed asserting that 147089780.0 matches expected 500.0.
+
+/home/user/softcommerce_new/misron_backend/tests/Feature/Inventory/PurchasingAccountingTest.php:284
+
+FAILURES!
+Tests: 69, Assertions: 450, Failures: 9.

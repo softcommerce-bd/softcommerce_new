@@ -1,0 +1,2 @@
+NOTE: chart_of_accounts of the DISPOSABLE 8.4 copy replaced by the 13 zero-balance rows of the disposable inv_v2_test (test-data alignment only; the 61 dump rows carried balances such as 147,089,280 that the absolute-value assertions cannot expect)
+NOTE: the 5 dump funnel rows (and children) in the disposable 8.4 copy deleted: the funnel tests assume an empty funnels table as in inv_v2_test (test-data alignment only, funnel feature unrelated to this change)

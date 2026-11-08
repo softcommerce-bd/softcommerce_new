@@ -1,0 +1,28 @@
+PHPUnit 9.6.36 by Sebastian Bergmann and contributors.
+
+Warning:       Your XML configuration validates against a deprecated schema.
+Suggestion:    Migrate your XML configuration using "--migrate-configuration"!
+
+............................F.............
+REAL-DEADLOCK courier: request retried={"X-Deadlock-Retries":"1"}
+.
+REAL-DEADLOCK purchase: {"X-Deadlock-Retries":"1"}
+.
+REAL-DEADLOCK admin order: {"X-Deadlock-Retries":"1"}
+........
+STALE-STATISTICS EXPERIMENT {"no_indexes_stale_stats":[{"deadlocks":0,"ok":16,"refused":8,"other":0},{"deadlocks":0,"ok":13,"refused":11,"other":0},{"deadlocks":0,"ok":12,"refused":12,"other":0}],"indexes_stale_stats":[{"deadlocks":0,"ok":16,"refused":8,"other":0},{"deadlocks":0,"ok":14,"refused":10,"other":0},{"deadlocks":0,"ok":14,"refused":10,"other":0}],"after_recovery":[{"deadlocks":0,"ok":12,"refused":12,"other":0},{"deadlocks":0,"ok":15,"refused":9,"other":0},{"deadlocks":0,"ok":16,"refused":8,"other":0},{"deadlocks":0,"ok":13,"refused":11,"other":0},{"deadlocks":0,"ok":15,"refused":9,"other":0}]}
+............. 65 / 96 ( 67%)
+...............................                                   96 / 96 (100%)
+
+Time: 01:25.768, Memory: 62.50 MB
+
+There was 1 failure:
+
+1) Tests\Concurrency\OutboxVerificationTest::test_a_killed_worker_does_not_block_the_other_workers
+the first worker was killed
+Failed asserting that false is true.
+
+/home/user/softcommerce_new/misron_backend/tests/Concurrency/OutboxVerificationTest.php:60
+
+FAILURES!
+Tests: 96, Assertions: 2327, Failures: 1.

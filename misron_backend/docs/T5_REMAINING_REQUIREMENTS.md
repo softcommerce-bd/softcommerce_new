@@ -38,7 +38,7 @@ Status words: OPEN (nothing done), PREPARED (material ready, waiting for the nam
 ## D. Verification still to do
 | Item | Needs | Status |
 |---|---|---|
-| MySQL 8.4 run of migrations, all suites, concurrency | a MySQL 8.4 server for disposable databases | EXECUTED 2026-11-08 (report `T5_MYSQL84_REHEARSAL_REPORT.md`; finding F1 open) - earlier: PLAN WRITTEN (`T5_MYSQL84_TEST_PLAN.md`); **cannot run here** (no 8.4 binary, Docker daemon down, `dev.mysql.com`/`repo.mysql.com` unreachable); needs your decision on how to obtain one |
+| MySQL 8.4 run of migrations, all suites, concurrency | a MySQL 8.4 server for disposable databases | EXECUTED 2026-11-08 (report `T5_MYSQL84_REHEARSAL_REPORT.md`; finding F1 fixed by MYSQL84.2, see `T5_PENDING_QUANTITY_FIX.md`) - earlier: PLAN WRITTEN (`T5_MYSQL84_TEST_PLAN.md`); **cannot run here** (no 8.4 binary, Docker daemon down, `dev.mysql.com`/`repo.mysql.com` unreachable); needs your decision on how to obtain one |
 | P3 real-engine rehearsal on the masked production backup | P1 + P2 | BLOCKED |
 | P4 real admin theme and screen re-verification (7 sweep failures, bank list now a notice) | theme package | BLOCKED |
 | P7 permissions with real staff roles | roles from the restored backup | NOT STARTED |

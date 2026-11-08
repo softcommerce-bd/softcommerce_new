@@ -1,0 +1,2271 @@
+PHPUnit 9.6.36 by Sebastian Bergmann and contributors.
+
+Warning:       Your XML configuration validates against a deprecated schema.
+Suggestion:    Migrate your XML configuration using "--migrate-configuration"!
+
+...............................................................  63 / 641 (  9%)
+........................................FF..F.................. 126 / 641 ( 19%)
+...F.......F.F...........................F..................... 189 / 641 ( 29%)
+............................................................... 252 / 641 ( 39%)
+...........................F................................... 315 / 641 ( 49%)
+............................................................... 378 / 641 ( 58%)
+........................F............F.............S........... 441 / 641 ( 68%)
+............................................................... 504 / 641 ( 78%)
+..........FFFFF.FF.F.F..............................F.......... 567 / 641 ( 88%)
+................S.............................................. 630 / 641 ( 98%)
+.......E...                                                     641 / 641 (100%)
+
+Time: 01:46.329, Memory: 169.50 MB
+
+There was 1 error:
+
+1) Tests\Feature\Security\UploadSafetyTest::test_svg_and_xml_are_accepted_from_staff_only
+ErrorException: file_get_contents(/home/user/softcommerce_new/misron_backend/public/uploads/all/rvtvrahcr6Ku7YJSns4PnOZccgELNWtiQ8EIJBKW.svg): Failed to open stream: No such file or directory
+
+/home/user/softcommerce_new/misron_backend/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php:270
+/home/user/softcommerce_new/misron_backend/tests/Feature/Security/UploadSafetyTest.php:64
+
+--
+
+There were 20 failures:
+
+1) Tests\Feature\ExampleTest::testBasicTest
+Expected response status code [200] but received 302.
+Failed asserting that 200 is identical to 302.
+
+/home/user/softcommerce_new/misron_backend/vendor/laravel/framework/src/Illuminate/Testing/TestResponse.php:123
+/home/user/softcommerce_new/misron_backend/tests/Feature/ExampleTest.php:19
+
+2) Tests\Feature\Funnel\FunnelAdminPagesTest::test_admin_sees_the_list_and_empty_state
+Failed asserting that '<!doctype html>\n
+    <html lang="en">\n
+\n
+<head>\n
+    <meta name="csrf-token" content="Zx3jjIRkcaVHBlIEvLishxsFJZmIngNFkdG4qSL2">\n
+    <meta name="app-url" content="http://localhost/">\n
+    <meta name="file-base-url" content="/">\n
+\n
+    <!-- Required meta tags -->\n
+    <meta charset="utf-8">\n
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">\n
+\n
+    <!-- Favicon -->\n
+    <link rel="icon" href="http://localhost/assets/img/placeholder.jpg">\n
+    <link rel="apple-touch-icon" href="http://localhost/assets/img/placeholder.jpg">\n
+    <title>Misron | Unique premium solution</title>\n
+\n
+    \n
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">\n
+\n
+    <!-- google font -->\n
+    \n
+    <link rel="preconnect" href="https://fonts.googleapis.com">\n
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap">\n
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">\n
+\n
+      <!-- Include DataTables Bootstrap 4 CSS -->\n
+      <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap4.min.css" />\n
+  <link rel="stylesheet" href="http://localhost/assets/css/dashboard.css">\n
+    <!-- aiz core css -->\n
+    <link rel="stylesheet" href="http://localhost/assets/css/vendors.css">\n
+        <link rel="stylesheet" href="http://localhost/assets/css/aiz-core.css?v=6230">\n
+\n
+ \n
+\n
+\n
+    <style>\n
+        :root {\n
+            --blue: #3390f3;\n
+            --hov-blue: #1f6dc2;\n
+            --soft-blue: #f1fafd;\n
+\n
+            --primary: #009ef7;\n
+            --hov-primary: #008cdd;\n
+            --soft-primary: #f1fafd;\n
+            --secondary: #a1a5b3;\n
+            --soft-secondary: rgba(143, 151, 171, 0.15);\n
+            --success: #19c553;\n
+            --hov-success: #16a846;\n
+            --soft-success:  #e6fff3;\n
+            --info: #8f60ee;\n
+            --hov-info: #714cbd;\n
+            --soft-info: #f4effe;\n
+            --warning: #ffc700;\n
+            --soft-warning: #fff9e3;\n
+            --danger: #F0416C;\n
+            --soft-danger: #fff4f8;\n
+            --dark: #232734;\n
+            --soft-dark: #1b2133;\n
+\n
+            --secondary-base: #f1416c;\n
+            --hov-secondary-base: #c73459;\n
+            --soft-secondary-base: rgb(241, 65, 108, 0.15);\n
+        }\n
+        body {\n
+            font-size: 12px;\n
+            font-family: 'Public Sans', sans-serif;\n
+        }\n
+        /* .bootstrap-select .btn,\n
+        .btn:not(.btn-circle),\n
+        .form-control,\n
+        .input-group-text,\n
+        .custom-file-label, .custom-file-label::after {\n
+            border-radius: 0;\n
+        } */\n
+        .border-gray {\n
+            border-color: #e4e5eb !important;\n
+        }\n
+        .card {\n
+            border-radius: 8px;\n
+            background: #fff;\n
+            border: 1px solid #f1f1f4;\n
+            box-shadow: 0px 6px 14px rgba(35, 39, 52, 0.04);\n
+        }\n
+        .form-control {\n
+            border: 1px solid #e4e5eb;\n
+        }\n
+        .aiz-color-input{\n
+            border-top-left-radius: 4px !important;\n
+            border-bottom-left-radius: 4px !important;\n
+        }\n
+        .form-control.file-amount{\n
+            border-top-right-radius: 4px !important;\n
+            border-bottom-right-radius: 4px !important;\n
+        }\n
+    </style>\n
+ \n
+    \n
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>\n
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>\n
+ \n
+    <script>\n
+        var AIZ = AIZ || {};\n
+        AIZ.local = {\n
+            nothing_selected: 'Nothing selected',\n
+            nothing_found: 'Nothing found',\n
+            choose_file: 'Choose File',\n
+            file_selected: 'File selected',\n
+            files_selected: 'Files selected',\n
+            add_more_files: 'Add more files',\n
+            adding_more_files: 'Adding more files',\n
+            drop_files_here_paste_or: 'Drop files here, paste or',\n
+            browse: 'Browse',\n
+            upload_complete: 'Upload complete',\n
+            upload_paused: 'Upload paused',\n
+            resume_upload: 'Resume upload',\n
+            pause_upload: 'Pause upload',\n
+            retry_upload: 'Retry upload',\n
+            cancel_upload: 'Cancel upload',\n
+            uploading: 'Uploading',\n
+            processing: 'Processing',\n
+            complete: 'Complete',\n
+            file: 'File',\n
+            files: 'Files',\n
+        }\n
+    </script>\n
+\n
+\n
+</head>\n
+\n
+<body class="">\n
+\n
+    <div class="aiz-main-wrapper " style="background-color:#F6F8FA;">\n
+        <div class="aiz-sidebar-wrap">\n
+    <div class="aiz-sidebar left c-scrollbar">\n
+        <div class="aiz-side-nav-logo-wrap">\n
+            <a href="http://localhost/admin" class="d-block text-left">\n
+                                    <img class="mw-100" src="http://localhost/assets/img/placeholder.jpg" class="brand-icon"\n
+                        alt="Misron">\n
+                            </a>\n
+        </div>\n
+        <div class="aiz-side-nav-wrap">\n
+            <div class="px-3 mb-3 position-relative">\n
+                <input class="form-control bg-transparent rounded-2 form-control-sm text-black fs-14" type="text"\n
+                    name="" placeholder="Search in menu" id="menu-search"\n
+                    onkeyup="menuSearch()">\n
+                <span class="absolute-top-right pr-3 mr-3" style="margin-top: 10px;">\n
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">\n
+                        <path id="search_FILL0_wght200_GRAD0_opsz20"\n
+                            d="M176.921-769.231l6.255-6.255a5.99,5.99,0,0,0,1.733.949,5.687,5.687,0,0,0,1.885.329,5.317,5.317,0,0,0,3.9-1.608,5.31,5.31,0,0,0,1.609-3.9,5.322,5.322,0,0,0-1.608-3.9,5.306,5.306,0,0,0-3.9-1.611,5.321,5.321,0,0,0-3.9,1.609,5.312,5.312,0,0,0-1.611,3.9,5.554,5.554,0,0,0,.35,1.946,6.043,6.043,0,0,0,.929,1.672l-6.255,6.255Zm9.874-5.82a4.51,4.51,0,0,1-3.317-1.352,4.51,4.51,0,0,1-1.352-3.317,4.51,4.51,0,0,1,1.352-3.317,4.51,4.51,0,0,1,3.317-1.352,4.51,4.51,0,0,1,3.317,1.352,4.51,4.51,0,0,1,1.352,3.317,4.51,4.51,0,0,1-1.352,3.317A4.51,4.51,0,0,1,186.8-775.051Z"\n
+                            transform="translate(-176.307 785.231)" fill="#4e5767" />\n
+                    </svg>\n
+                </span>\n
+            </div>\n
+            <ul class="aiz-side-nav-list" id="search-menu">\n
+            </ul>\n
+            <ul class="aiz-side-nav-list" id="main-menu" data-toggle="aiz-side-menu">\n
+\n
+                \n
+                                    <li class="aiz-side-nav-item mx-2">\n
+                        <a href="http://localhost/admin" class="aiz-side-nav-link">\n
+                            <div class="aiz-side-nav-icon">\n
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">\n
+                                    <path id="_3d6902ec768df53cd9e274ca8a57e401"\n
+                                        data-name="3d6902ec768df53cd9e274ca8a57e401"\n
+                                        d="M18,12.286a1.715,1.715,0,0,0-1.714-1.714h-4a1.715,1.715,0,0,0-1.714,1.714v4A1.715,1.715,0,0,0,12.286,18h4A1.715,1.715,0,0,0,18,16.286Zm-8.571,0a1.715,1.715,0,0,0-1.714-1.714h-4A1.715,1.715,0,0,0,2,12.286v4A1.715,1.715,0,0,0,3.714,18h4a1.715,1.715,0,0,0,1.714-1.714Zm7.429,0v4a.57.57,0,0,1-.571.571h-4a.57.57,0,0,1-.571-.571v-4a.57.57,0,0,1,.571-.571h4a.57.57,0,0,1,.571.571Zm-8.571,0v4a.57.57,0,0,1-.571.571h-4a.57.57,0,0,1-.571-.571v-4a.57.57,0,0,1,.571-.571h4a.57.57,0,0,1,.571.571ZM9.429,3.714A1.715,1.715,0,0,0,7.714,2h-4A1.715,1.715,0,0,0,2,3.714v4A1.715,1.715,0,0,0,3.714,9.429h4A1.715,1.715,0,0,0,9.429,7.714Zm8.571,0A1.715,1.715,0,0,0,16.286,2h-4a1.715,1.715,0,0,0-1.714,1.714v4a1.715,1.715,0,0,0,1.714,1.714h4A1.715,1.715,0,0,0,18,7.714Zm-9.714,0v4a.57.57,0,0,1-.571.571h-4a.57.57,0,0,1-.571-.571v-4a.57.57,0,0,1,.571-.571h4a.57.57,0,0,1,.571.571Zm8.571,0v4a.57.57,0,0,1-.571.571h-4a.57.57,0,0,1-.571-.571v-4a.57.57,0,0,1,.571-.571h4a.57.57,0,0,1,.571.571Z"\n
+                                        transform="translate(-2 -2)" fill="#575b6a" fill-rule="evenodd" />\n
+                                </svg>\n
+                            </div>\n
+                            <span class="aiz-side-nav-text">Dashboard</span>\n
+                        </a>\n
+                    </li>\n
+                \n
+                \n
+                <li class="aiz-side-nav-item mx-2">\n
+                    <a href="#" class="aiz-side-nav-link">\n
+                        <div class="aiz-side-nav-icon">\n
+                            <svg xmlns="http://www.w3.org/2000/svg" width="13.79" height="16"\n
+                                viewBox="0 0 13.79 16">\n
+                                <g id="_371925cdd3f531725a9fa8f3ebf8fe9e" data-name="371925cdd3f531725a9fa8f3ebf8fe9e"\n
+                                    transform="translate(-2.26 0)">\n
+                                    <path id="Path_40673" data-name="Path 40673"\n
+                                        d="M10.69,7H3.26a1.025,1.025,0,0,0-1,1V18.45a1.03,1.03,0,0,0,1,1.05h7.43a1.03,1.03,0,0,0,1.03-1.03V8A1.025,1.025,0,0,0,10.69,7ZM4.94,17.86H3.995v-.95H4.94Zm0-2.355H3.995v-.95H4.94Zm0-2.355H3.995V12.2H4.94Zm2.5,4.71H6.5v-.95h.955Zm0-2.355H6.5v-.95h.955Zm0-2.355H6.5V12.2h.955Zm2.5,4.71H8.99v-.95h.95Zm0-2.355H8.99v-.95h.95Zm0-2.355H8.99V12.2h.95Zm.325-3a.17.17,0,0,1-.165.17H3.835a.17.17,0,0,1-.165-.17V8.795a.165.165,0,0,1,.165-.165H10.13a.165.165,0,0,1,.165.165Zm5.09-1.45H15.13v9.09h.25a.67.67,0,0,0,.67-.67V9.375a.67.67,0,0,0-.695-.675Z"\n
+                                        transform="translate(0 -3.5)" fill="#4e5767" />\n
+                                    <rect id="Rectangle_20842" data-name="Rectangle 20842" width="1.465" height="9.095"\n
+                                        transform="translate(12.185 5.2)" fill="#4e5767" />\n
+                                    <rect id="Rectangle_20843" data-name="Rectangle 20843" width="0.63" height="9.095"\n
+                                        transform="translate(14.06 5.2)" fill="#4e5767" />\n
+                                    <path id="Path_40674" data-name="Path 40674"\n
+                                        d="M13.895.895a.89.89,0,0,0-.26-.635A.91.91,0,0,0,13,0a.895.895,0,0,0-.91.895v.53h1.79Zm-2.2,0a.76.76,0,0,1,0-.145.68.68,0,0,1,0-.1h.01A.5.5,0,0,1,11.755.5.43.43,0,0,1,11.79.4a1.2,1.2,0,0,1,.145-.26.5.5,0,0,1,.04-.055L12.045,0H7.995A.815.815,0,0,0,7.18.81V3.03h4.5Z"\n
+                                        transform="translate(-2.46)" fill="#4e5767" />\n
+                                </g>\n
+                            </svg>\n
+                        </div>\n
+                        <span class="aiz-side-nav-text">Inventory And Purchase</span>\n
+                        <span class="aiz-side-nav-arrow"></span>\n
+                    </a>\n
+                    <ul class="aiz-side-nav-list level-2">\n
+                        <li class="aiz-side-nav-item mx-2">\n
+                            <a href="http://localhost/supplier/index"\n
+                                class="aiz-side-nav-link ">\n
+                                <span class="aiz-side-nav-text">Suppliers</span>\n
+                            </a>\n
+                        </li>\n
+                      \n
+                        \n
+\n
+                        <li class="aiz-side-nav-item mx-2">\n
+                            <a href="http://localhost/purchase/index"\n
+                                class="aiz-side-nav-link ">\n
+                                <span class="aiz-side-nav-text">List Purchases</span>\n
+                            </a>\n
+                        </li>\n
+                      \n
+                        <li class="aiz-side-nav-item mx-2">\n
+                            <a href="http://localhost/purchase/return"\n
+                                class="aiz-side-nav-link ">\n
+                                <span class="aiz-side-nav-text">List Purchase Returns</span>\n
+                            </a>\n
+                        </li>\n
+\n
+                    </ul>\n
+                </li>\n
+                 \n
+                <li class="aiz-side-nav-item mx-2">\n
+                    <a href="#" class="aiz-side-nav-link">\n
+                        <div class="aiz-side-nav-icon">\n
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"\n
+                                fill="none">\n
+                                <path d="M21 8L12 3L3 8L12 13L21 8Z" stroke="#4e5767" stroke-width="1.8"\n
+                                    stroke-linecap="round" stroke-linejoin="round" />\n
+\n
+                                <path d="M3 8V16L12 21L21 16V8" stroke="#4e5767" stroke-width="1.8"\n
+                                    stroke-linecap="round" stroke-linejoin="round" />\n
+\n
+                                <path d="M12 13V21" stroke="#4e5767" stroke-width="1.8" stroke-linecap="round" />\n
+\n
+                                <path d="M8 15H11.5C12.6 15 13.5 14.1 13.5 13" stroke="#4e5767" stroke-width="1.6"\n
+                                    stroke-linecap="round" />\n
+\n
+                                <path d="M10 13L8 15L10 17" stroke="#4e5767" stroke-width="1.6"\n
+                                    stroke-linecap="round" stroke-linejoin="round" />\n
+\n
+                                <path d="M16 9H12.5C11.4 9 10.5 9.9 10.5 11" stroke="#4e5767" stroke-width="1.6"\n
+                                    stroke-linecap="round" />\n
+\n
+                                <path d="M14 7L16 9L14 11" stroke="#4e5767" stroke-width="1.6" stroke-linecap="round"\n
+                                    stroke-linejoin="round" />\n
+                            </svg>\n
+                        </div>\n
+                        <span class="aiz-side-nav-text">Stock Adjustment</span>\n
+                        <span class="aiz-side-nav-arrow"></span>\n
+                    </a>\n
+                    <ul class="aiz-side-nav-list level-2">\n
+                        <li class="aiz-side-nav-item mx-2">\n
+                            <a href="http://localhost/admin/stock-adjustments"\n
+                                class="aiz-side-nav-link ">\n
+                                <span class="aiz-side-nav-text">List Stock Adjustments</span>\n
+                            </a>\n
+                        </li>\n
+\n
+                        <li class="aiz-side-nav-item mx-2">\n
+                            <a href="http://localhost/admin/stock-adjustments/create"\n
+                                class="aiz-side-nav-link ">\n
+                                <span class="aiz-side-nav-text">Add Stock Adjustments</span>\n
+                            </a>\n
+                        </li>\n
+\n
+\n
+                    </ul>\n
+                </li>\n
+                <!-- Product -->\n
+                                    <li class="aiz-side-nav-item mx-2">\n
+                        <a href="#" class="aiz-side-nav-link">\n
+                            <div class="aiz-side-nav-icon">\n
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="13.714"\n
+                                    viewBox="0 0 16 13.714">\n
+                                    <g id="Layer_2" data-name="Layer 2" transform="translate(-2 -4)">\n
+                                        <path id="Path_40719" data-name="Path 40719"\n
+                                            d="M17.429,4H2.571A.571.571,0,0,0,2,4.571V8a.571.571,0,0,0,.571.571h.571v8.571a.571.571,0,0,0,.571.571H16.286a.571.571,0,0,0,.571-.571V8.571h.571A.571.571,0,0,0,18,8V4.571A.571.571,0,0,0,17.429,4ZM15.714,16.571H4.286v-8H15.714Zm1.143-9.143H3.143V5.143H16.857Z"\n
+                                            fill="#575b6a" />\n
+                                        <path id="Path_40720" data-name="Path 40720"\n
+                                            d="M12.571,15.143H16A.571.571,0,0,0,16,14H12.571a.571.571,0,0,0,0,1.143Z"\n
+                                            transform="translate(-4.286 -4.286)" fill="#575b6a" />\n
+                                    </g>\n
+                                </svg>\n
+                            </div>\n
+                            <span class="aiz-side-nav-text">Products</span>\n
+                            <span class="aiz-side-nav-arrow"></span>\n
+                        </a>\n
+                        <!--Submenu-->\n
+                        <ul class="aiz-side-nav-list level-2">\n
+                                                            <li class="aiz-side-nav-item mx-2">\n
+                                    <a class="aiz-side-nav-link" href="http://localhost/admin/products/create">\n
+                                        <span class="aiz-side-nav-text">Add New Product</span>\n
+                                    </a>\n
+                                </li>\n
+                                                                                        <li class="aiz-side-nav-item mx-2">\n
+                                    <a href="http://localhost/admin/products/all" class="aiz-side-nav-link">\n
+                                        <span class="aiz-side-nav-text">All products</span>\n
+                                    </a>\n
+                                </li>\n
+                                                        \n
+                                                            <li class="aiz-side-nav-item mx-2">\n
+                                    <a href="http://localhost/admin/digitalproducts"\n
+                                        class="aiz-side-nav-link ">\n
+                                        <span class="aiz-side-nav-text">Digital Products</span>\n
+                                    </a>\n
+                                </li>\n
+                                                        \n
+                                                            <li class="aiz-side-nav-item mx-2">\n
+                                    <a href="http://localhost/admin/product-bulk-upload/index" class="aiz-side-nav-link">\n
+                                        <span class="aiz-side-nav-text">Bulk Import</span>\n
+                                    </a>\n
+                                </li>\n
+                                                                                        <li class="aiz-side-nav-item mx-2">\n
+                                    <a href="http://localhost/admin/product-bulk-export" class="aiz-side-nav-link">\n
+                                        <span class="aiz-side-nav-text">Bulk Export</span>\n
+                                    </a>\n
+                                </li>\n
+                                                                                        <li class="aiz-side-nav-item mx-2">\n
+                                    <a href="http://localhost/admin/categories"\n
+                                        class="aiz-side-nav-link ">\n
+                                        <span class="aiz-side-nav-text">Category</span>\n
+                                    </a>\n
+                                </li>\n
+                                                                                        <li class="aiz-side-nav-item mx-2">\n
+                                    <a href="http://localhost/admin/categories-wise-product-discount" class="aiz-side-nav-link">\n
+                                        <span class="aiz-side-nav-text">Category Based Discount</span>\n
+                                    </a>\n
+                                </li>\n
+                                                                                        <li class="aiz-side-nav-item mx-2">\n
+                                    <a href="javascript:void(0);" class="aiz-side-nav-link">\n
+                                        <span class="aiz-side-nav-text">Brand</span>\n
+                                        <span class="aiz-side-nav-arrow"></span>\n
+                                    </a>\n
+                                    <ul class="aiz-side-nav-list level-3">\n
+                                                                                    <li class="aiz-side-nav-item mx-2">\n
+                                                <a href="http://localhost/admin/brands"\n
+                                                    class="aiz-side-nav-link ">\n
+                                                    <span class="aiz-side-nav-text">All Brands</span>\n
+                                                </a>\n
+                                            </li>\n
+                                                                                                                            <li class="aiz-side-nav-item mx-2">\n
+                                                <a href="http://localhost/admin/brand-bulk-upload" class="aiz-side-nav-link">\n
+                                                    <span class="aiz-side-nav-text">Brand Bulk Import</span>\n
+                                                </a>\n
+                                            </li>\n
+                                                                            </ul>\n
+                                </li>\n
+                            \n
+                                                            <li class="aiz-side-nav-item mx-2">\n
+                                    <a href="http://localhost/admin/attributes"\n
+                                        class="aiz-side-nav-link ">\n
+                                        <span class="aiz-side-nav-text">Attribute</span>\n
+                                    </a>\n
+                                </li>\n
+                                                                                        <li class="aiz-side-nav-item mx-2">\n
+                                    <a href="http://localhost/admin/colors"\n
+                                        class="aiz-side-nav-link ">\n
+                                        <span class="aiz-side-nav-text">Colors</span>\n
+                                    </a>\n
+                                </li>\n
+                                                                                        <li class="aiz-side-nav-item mx-2">\n
+                                    <a href="javascript:void(0);" class="aiz-side-nav-link">\n
+                                        <span class="aiz-side-nav-text">Size Guide</span>\n
+                                        <span class="aiz-side-nav-arrow"></span>\n
+                                    </a>\n
+                                    <ul class="aiz-side-nav-list level-3">\n
+                                                                                    <li class="aiz-side-nav-item mx-2">\n
+                                                <a href="http://localhost/admin/size-charts"\n
+                                                    class="aiz-side-nav-link ">\n
+                                                    <span class="aiz-side-nav-text">Size Chart</span>\n
+                                                </a>\n
+                                            </li>\n
+                                                                                                                            <li class="aiz-side-nav-item mx-2">\n
+                                                <a href="http://localhost/admin/measurement-points" class="aiz-side-nav-link">\n
+                                                    <span class="aiz-side-nav-text">Measurement Points</span>\n
+                                                </a>\n
+                                            </li>\n
+                                                                            </ul>\n
+                                </li>\n
+                                                                                        <li class="aiz-side-nav-item mx-2">\n
+                                    <a href="http://localhost/reviews" class="aiz-side-nav-link">\n
+                                        <span class="aiz-side-nav-text">Product Reviews</span>\n
+                                    </a>\n
+                                </li>\n
+                                                    </ul>\n
+                    </li>\n
+                \n
+                <!-- Wholesale Product -->\n
+                \n
+                <!-- POS Addon-->\n
+                \n
+                                    <li class="aiz-side-nav-item mx-2">\n
+                        <a href="#" class="aiz-side-nav-link">\n
+                            <div class="aiz-side-nav-icon">\n
+                                <svg xmlns="http://www.w3.org/2000/svg" width="13.79" height="16"\n
+                                    viewBox="0 0 13.79 16">\n
+                                    <g id="_371925cdd3f531725a9fa8f3ebf8fe9e"\n
+                                        data-name="371925cdd3f531725a9fa8f3ebf8fe9e" transform="translate(-2.26 0)">\n
+                                        <path id="Path_40673" data-name="Path 40673"\n
+                                            d="M10.69,7H3.26a1.025,1.025,0,0,0-1,1V18.45a1.03,1.03,0,0,0,1,1.05h7.43a1.03,1.03,0,0,0,1.03-1.03V8A1.025,1.025,0,0,0,10.69,7ZM4.94,17.86H3.995v-.95H4.94Zm0-2.355H3.995v-.95H4.94Zm0-2.355H3.995V12.2H4.94Zm2.5,4.71H6.5v-.95h.955Zm0-2.355H6.5v-.95h.955Zm0-2.355H6.5V12.2h.955Zm2.5,4.71H8.99v-.95h.95Zm0-2.355H8.99v-.95h.95Zm0-2.355H8.99V12.2h.95Zm.325-3a.17.17,0,0,1-.165.17H3.835a.17.17,0,0,1-.165-.17V8.795a.165.165,0,0,1,.165-.165H10.13a.165.165,0,0,1,.165.165Zm5.09-1.45H15.13v9.09h.25a.67.67,0,0,0,.67-.67V9.375a.67.67,0,0,0-.695-.675Z"\n
+                                            transform="translate(0 -3.5)" fill="#4e5767" />\n
+                                        <rect id="Rectangle_20842" data-name="Rectangle 20842" width="1.465"\n
+                                            height="9.095" transform="translate(12.185 5.2)" fill="#4e5767" />\n
+                                        <rect id="Rectangle_20843" data-name="Rectangle 20843" width="0.63"\n
+                                            height="9.095" transform="translate(14.06 5.2)" fill="#4e5767" />\n
+                                        <path id="Path_40674" data-name="Path 40674"\n
+                                            d="M13.895.895a.89.89,0,0,0-.26-.635A.91.91,0,0,0,13,0a.895.895,0,0,0-.91.895v.53h1.79Zm-2.2,0a.76.76,0,0,1,0-.145.68.68,0,0,1,0-.1h.01A.5.5,0,0,1,11.755.5.43.43,0,0,1,11.79.4a1.2,1.2,0,0,1,.145-.26.5.5,0,0,1,.04-.055L12.045,0H7.995A.815.815,0,0,0,7.18.81V3.03h4.5Z"\n
+                                            transform="translate(-2.46)" fill="#4e5767" />\n
+                                    </g>\n
+                                </svg>\n
+                            </div>\n
+                            <span class="aiz-side-nav-text">POS System</span>\n
+                                                        <span class="aiz-side-nav-arrow"></span>\n
+                        </a>\n
+                        <ul class="aiz-side-nav-list level-2">\n
+                                                            <li class="aiz-side-nav-item mx-2">\n
+                                    <a href="http://localhost/admin/pos"\n
+                                        class="aiz-side-nav-link ">\n
+                                        <span class="aiz-side-nav-text">POS Manager</span>\n
+                                    </a>\n
+                                </li>\n
+                                                                                        <li class="aiz-side-nav-item mx-2">\n
+                                    <a href="http://localhost/admin/pos-activation" class="aiz-side-nav-link">\n
+                                        <span class="aiz-side-nav-text">POS Configuration</span>\n
+                                    </a>\n
+                                </li>\n
+                                                        \n
+                            <li class="aiz-side-nav-item mx-2">\n
+                                <a href="http://localhost/admin/barcodes" class="aiz-side-nav-link">\n
+                                    <span class="aiz-side-nav-text">Barcode Generate</span>\n
+                                </a>\n
+                            </li>\n
+                        </ul>\n
+                    </li>\n
+                \n
+                <!-- Sale -->\n
+                                    <li class="aiz-side-nav-item mx-2">\n
+                        <a href="#" class="aiz-side-nav-link">\n
+                            <div class="aiz-side-nav-icon">\n
+                                <svg xmlns="http://www.w3.org/2000/svg" width="15.997" height="16"\n
+                                    viewBox="0 0 15.997 16">\n
+                                    <g id="Layer_2" data-name="Layer 2" transform="translate(-2 -1.994)">\n
+                                        <path id="Path_40726" data-name="Path 40726"\n
+                                            d="M4.857,12.571H3.714A1.714,1.714,0,0,0,2,14.285V20.57a1.714,1.714,0,0,0,1.714,1.714H4.857A1.714,1.714,0,0,0,6.571,20.57V14.285a1.714,1.714,0,0,0-1.714-1.714Zm.571,8a.571.571,0,0,1-.571.571H3.714a.571.571,0,0,1-.571-.571V14.285a.571.571,0,0,1,.571-.571H4.857a.571.571,0,0,1,.571.571Zm5.142-6.284H9.427A1.714,1.714,0,0,0,7.713,16V20.57a1.714,1.714,0,0,0,1.714,1.714H10.57a1.714,1.714,0,0,0,1.714-1.714V16A1.714,1.714,0,0,0,10.57,14.285Zm.571,6.284a.571.571,0,0,1-.571.571H9.427a.571.571,0,0,1-.571-.571V16a.571.571,0,0,1,.571-.571H10.57a.571.571,0,0,1,.571.571ZM16.283,12H15.14a1.714,1.714,0,0,0-1.714,1.714V20.57a1.714,1.714,0,0,0,1.714,1.714h1.143A1.714,1.714,0,0,0,18,20.57V13.714A1.714,1.714,0,0,0,16.283,12Zm.571,8.57a.571.571,0,0,1-.571.571H15.14a.571.571,0,0,1-.571-.571V13.714a.571.571,0,0,1,.571-.571h1.143a.571.571,0,0,1,.571.571Z"\n
+                                            transform="translate(0 -4.289)" fill="#575b6a" />\n
+                                        <path id="Path_40727" data-name="Path 40727"\n
+                                            d="M17.947,2.548a.571.571,0,0,0-.366-.24l-1.588-.3a.571.571,0,1,0-.213,1.122l.093.018L11.233,5.932l-5.45-2.18a.572.572,0,1,0-.424,1.062L11.072,7.1a.571.571,0,0,0,.506-.041L16.68,4l-.067.354a.571.571,0,0,0,.457.668.579.579,0,0,0,.107.01.571.571,0,0,0,.56-.465l.3-1.588A.568.568,0,0,0,17.947,2.548Z"\n
+                                            transform="translate(-1.286)" fill="#575b6a" />\n
+                                    </g>\n
+                                </svg>\n
+                            </div>\n
+                            <span class="aiz-side-nav-text">Sales</span>\n
+                            <span class="aiz-side-nav-arrow"></span>\n
+                        </a>\n
+                        <!--Submenu-->\n
+                        <ul class="aiz-side-nav-list level-2">\n
+                                                            <li class="aiz-side-nav-item mx-2">\n
+                                    <a href="http://localhost/admin/all_orders"\n
+                                        class="aiz-side-nav-link ">\n
+                                        <span class="aiz-side-nav-text">All Orders</span>\n
+                                    </a>\n
+                                </li>\n
+                                                      \n
+                            <li class="aiz-side-nav-item mx-2">\n
+                                <a href="http://localhost/courier-settlement/index"\n
+                                    class="aiz-side-nav-link ">\n
+                                    <span class="aiz-side-nav-text">Courier Settlement</span>\n
+                                </a>\n
+                            </li>\n
+                            <li class="aiz-side-nav-item mx-2">\n
+                                <a href="http://localhost/draft/index"\n
+                                    class="aiz-side-nav-link ">\n
+                                    <span class="aiz-side-nav-text">Incomplete Orders</span>\n
+                                </a>\n
+                            </li>\n
+                        \n
+                            \n
+                                                            <li class="aiz-side-nav-item mx-2">\n
+                                    <a href="http://localhost/admin/orders_by_pickup_point"\n
+                                        class="aiz-side-nav-link ">\n
+                                        <span class="aiz-side-nav-text">Pick-up Point Order</span>\n
+                                    </a>\n
+                                </li>\n
+                                                    </ul>\n
+                    </li>\n
+                \n
+              \n
+\n
+                \n
+\n
+\n
+                <!-- Accounts Part -->\n
+                <li class="aiz-side-nav-item mx-2">\n
+                    <a href="http://localhost/admin/accounts"\n
+                        class="aiz-side-nav-link ">\n
+\n
+                        <div class="aiz-side-nav-icon">\n
+                            <i class="las la-university fs-20"></i>\n
+                        </div>\n
+\n
+                        <span class="aiz-side-nav-text">\n
+                            Accounts\n
+                        </span>\n
+                    </a>\n
+                </li>\n
+                <!-- Reports -->\n
+                                    <li class="aiz-side-nav-item">\n
+                        <a href="#" class="aiz-side-nav-link">\n
+                            <div class="aiz-side-nav-icon">\n
+                                <svg id="stats_3916778" xmlns="http://www.w3.org/2000/svg" width="16" height="16"\n
+                                    viewBox="0 0 16 16">\n
+                                    <path id="Path_40739" data-name="Path 40739"\n
+                                        d="M16,16H2a2,2,0,0,1-2-2V0H1.333V14A.667.667,0,0,0,2,14.667H16Z" fill="#575b6a" />\n
+                                    <rect id="Rectangle_21340" data-name="Rectangle 21340" width="1.333" height="6"\n
+                                        transform="translate(9.333 7.333)" fill="#575b6a" />\n
+                                    <rect id="Rectangle_21341" data-name="Rectangle 21341" width="1.333" height="6"\n
+                                        transform="translate(4 7.333)" fill="#575b6a" />\n
+                                    <rect id="Rectangle_21342" data-name="Rectangle 21342" width="1.333" height="9.333"\n
+                                        transform="translate(12 4)" fill="#575b6a" />\n
+                                    <rect id="Rectangle_21343" data-name="Rectangle 21343" width="1.333" height="9.333"\n
+                                        transform="translate(6.667 4)" fill="#575b6a" />\n
+                                </svg>\n
+                            </div>\n
+                            <span class="aiz-side-nav-text">Reports</span>\n
+                            <span class="aiz-side-nav-arrow"></span>\n
+                        </a>\n
+                        <ul class="aiz-side-nav-list level-2">\n
+                                                            <li class="aiz-side-nav-item">\n
+                                    <a href="http://localhost/admin/reports/earning-payout-report" class="aiz-side-nav-link">\n
+                                        <span class="aiz-side-nav-text">Earning Report</span>\n
+                                    </a>\n
+                                </li>\n
+                                                                                        <li class="aiz-side-nav-item">\n
+                                    <a href="http://localhost/admin/in_house_sale_report"\n
+                                        class="aiz-side-nav-link ">\n
+                                        <span class="aiz-side-nav-text">In House Product Sale</span>\n
+                                    </a>\n
+                                </li>\n
+                                                                                        <li class="aiz-side-nav-item">\n
+                                    <a href="http://localhost/admin/seller_sale_report"\n
+                                        class="aiz-side-nav-link ">\n
+                                        <span class="aiz-side-nav-text">Seller Products Sale</span>\n
+                                    </a>\n
+                                </li>\n
+                                                                                        <li class="aiz-side-nav-item">\n
+                                    <a href="http://localhost/admin/stock_report"\n
+                                        class="aiz-side-nav-link ">\n
+                                        <span class="aiz-side-nav-text">Products Stock</span>\n
+                                    </a>\n
+                                </li>\n
+                                                                                        <li class="aiz-side-nav-item">\n
+                                    <a href="http://localhost/admin/wish_report"\n
+                                        class="aiz-side-nav-link ">\n
+                                        <span class="aiz-side-nav-text">Products wishlist</span>\n
+                                    </a>\n
+                                </li>\n
+                                                                                        <li class="aiz-side-nav-item">\n
+                                    <a href="http://localhost/admin/user_search_report"\n
+                                        class="aiz-side-nav-link ">\n
+                                        <span class="aiz-side-nav-text">User Searches</span>\n
+                                    </a>\n
+                                </li>\n
+                                                                                        <li class="aiz-side-nav-item">\n
+                                    <a href="http://localhost/admin/commission-log" class="aiz-side-nav-link">\n
+                                        <span class="aiz-side-nav-text">Commission History</span>\n
+                                    </a>\n
+                                </li>\n
+                                                                                        <li class="aiz-side-nav-item">\n
+                                    <a href="http://localhost/admin/wallet-history" class="aiz-side-nav-link">\n
+                                        <span class="aiz-side-nav-text">Wallet Recharge History</span>\n
+                                    </a>\n
+                                </li>\n
+                                                        <li class="aiz-side-nav-item">\n
+                                <a href="http://localhost/admin/sales_report" class="aiz-side-nav-link">\n
+                                    <span class="aiz-side-nav-text">Sales Report</span>\n
+                                </a>\n
+                            </li>\n
+                        </ul>\n
+                    </li>\n
+                \n
+                \n
+                <li class="aiz-side-nav-item mx-2">\n
+                    <a href="http://localhost/admin/uploaded-files"\n
+                        class="aiz-side-nav-link ">\n
+                        <div class="aiz-side-nav-icon">\n
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"\n
+                                viewBox="0 0 16 16">\n
+                                <g id="layer1" transform="translate(-0.53 -0.53)">\n
+                                    <path id="path3159"\n
+                                        d="M3.386.53A2.862,2.862,0,0,0,.53,3.386V13.67a2.865,2.865,0,0,0,2.856,2.86H13.67a2.869,2.869,0,0,0,2.86-2.86V3.386A2.865,2.865,0,0,0,13.67.53Zm0,1.143H13.67a1.7,1.7,0,0,1,1.718,1.713V13.67a1.7,1.7,0,0,1-1.718,1.718H3.386A1.7,1.7,0,0,1,1.673,13.67V3.386A1.7,1.7,0,0,1,3.386,1.673ZM8.12,3.557,5.34,6.37a.572.572,0,0,0,0,.809.564.564,0,0,0,.81,0l1.8-1.824V10.8a.571.571,0,0,0,1.143,0V5.347l1.8,1.829a.571.571,0,0,0,.81-.806L8.935,3.557a.511.511,0,0,0-.815,0Zm-4.156,8.97a.571.571,0,0,0,0,1.143h9.128a.571.571,0,0,0,0-1.143Z"\n
+                                        fill="#575b6a" />\n
+                                </g>\n
+                            </svg>\n
+                        </div>\n
+                        <span class="aiz-side-nav-text">Uploaded Files</span>\n
+                    </a>\n
+                </li>\n
+                \n
+\n
+                \n
+                                    <li class="aiz-side-nav-item mx-2">\n
+                        <a href="#" class="aiz-side-nav-link">\n
+                            <div class="aiz-side-nav-icon">\n
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">\n
+                                    <path d="M1.5 2a.5.5 0 0 0-.39.81L6 8.92V14a.5.5 0 0 0 .72.45l2.5-1.25A.5.5 0 0 0 9.5 12.75V8.92l4.89-6.11A.5.5 0 0 0 14 2Zm1.04 1h10.92L8.61 9.06A.5.5 0 0 0 8.5 9.4v3.04l-1.5.75V9.4a.5.5 0 0 0-.11-.31Z"\n
+                                        fill="#575b6a" />\n
+                                </svg>\n
+                            </div>\n
+                            <span class="aiz-side-nav-text">Sales Funnels</span>\n
+                            <span class="aiz-side-nav-arrow"></span>\n
+                        </a>\n
+                        <ul class="aiz-side-nav-list level-2">\n
+                                                            <li class="aiz-side-nav-item mx-2">\n
+                                    <a href="http://localhost/admin/funnels"\n
+                                        class="aiz-side-nav-link active">\n
+                                        <span class="aiz-side-nav-text">All Funnels</span>\n
+                                    </a>\n
+                                </li>\n
+                                                                                        <li class="aiz-side-nav-item mx-2">\n
+                                    <a href="http://localhost/admin/funnels/create"\n
+                                        class="aiz-side-nav-link ">\n
+                                        <span class="aiz-side-nav-text">Create Funnel</span>\n
+                                    </a>\n
+                                </li>\n
+                                                                                        <li class="aiz-side-nav-item mx-2">\n
+                                    <a href="http://localhost/admin/funnels/templates"\n
+                                        class="aiz-side-nav-link ">\n
+                                        <span class="aiz-side-nav-text">Funnel Templates</span>\n
+                                    </a>\n
+                                </li>\n
+                                                                                        <li class="aiz-side-nav-item mx-2">\n
+                                    <a href="http://localhost/admin/funnels/saved-sections"\n
+                                        class="aiz-side-nav-link ">\n
+                                        <span class="aiz-side-nav-text">Saved Sections</span>\n
+                                    </a>\n
+                                </li>\n
+                                                                                        <li class="aiz-side-nav-item mx-2">\n
+                                    <a href="http://localhost/admin/funnels/analytics"\n
+                                        class="aiz-side-nav-link ">\n
+                                        <span class="aiz-side-nav-text">Analytics</span>\n
+                                    </a>\n
+                                </li>\n
+                                                                                        <li class="aiz-side-nav-item mx-2">\n
+                                    <a href="http://localhost/admin/funnels/settings"\n
+                                        class="aiz-side-nav-link ">\n
+                                        <span class="aiz-side-nav-text">Settings</span>\n
+                                    </a>\n
+                                </li>\n
+                                                    </ul>\n
+                    </li>\n
+                \n
+                \n
+                                    <li class="aiz-side-nav-item mx-2">\n
+                        <a href="#" class="aiz-side-nav-link">\n
+                            <div class="aiz-side-nav-icon"><i class="las la-boxes"></i></div>\n
+                            <span class="aiz-side-nav-text">Purchasing &amp; Stock</span>\n
+                            <span class="aiz-side-nav-arrow"></span>\n
+                        </a>\n
+                        <ul class="aiz-side-nav-list level-2">\n
+                            <li class="aiz-side-nav-item mx-2"><a href="http://localhost/admin/purchasing" class="aiz-side-nav-link"><span class="aiz-side-nav-text">Purchase Dashboard</span></a></li>                            <li class="aiz-side-nav-item mx-2"><a href="http://localhost/admin/purchasing/quick-purchase" class="aiz-side-nav-link"><span class="aiz-side-nav-text">Quick Purchase</span></a></li>                            <li class="aiz-side-nav-item mx-2"><a href="http://localhost/admin/purchasing/requirements" class="aiz-side-nav-link"><span class="aiz-side-nav-text">Purchase Requirements</span></a></li>                            <li class="aiz-side-nav-item mx-2"><a href="http://localhost/admin/purchasing/reports/purchase-orders" class="aiz-side-nav-link"><span class="aiz-side-nav-text">Purchase Orders</span></a></li>                            <li class="aiz-side-nav-item mx-2"><a href="http://localhost/admin/purchasing/receiving" class="aiz-side-nav-link"><span class="aiz-side-nav-text">Goods Receiving</span></a></li>                            <li class="aiz-side-nav-item mx-2"><a href="http://localhost/purchase/index" class="aiz-side-nav-link"><span class="aiz-side-nav-text">Purchase History</span></a></li>                            <li class="aiz-side-nav-item mx-2"><a href="http://localhost/admin/purchasing/supplier-outstanding" class="aiz-side-nav-link"><span class="aiz-side-nav-text">Supplier Outstanding</span></a></li>                            <li class="aiz-side-nav-item mx-2"><a href="http://localhost/admin/purchasing/supplier-payments" class="aiz-side-nav-link"><span class="aiz-side-nav-text">Supplier Payments (new)</span></a></li>\n
+                            <li class="aiz-side-nav-item mx-2"><a href="http://localhost/admin/purchasing/reports/supplier-statement" class="aiz-side-nav-link"><span class="aiz-side-nav-text">Supplier Statement</span></a></li>                            <li class="aiz-side-nav-item mx-2"><a href="http://localhost/admin/purchasing/supplier-returns" class="aiz-side-nav-link"><span class="aiz-side-nav-text">Return to Supplier</span></a></li>                                                            <li class="aiz-side-nav-item mx-2"><a href="http://localhost/admin/purchasing/stock" class="aiz-side-nav-link"><span class="aiz-side-nav-text">Stock Overview</span></a></li>\n
+                                <li class="aiz-side-nav-item mx-2"><a href="http://localhost/admin/purchasing/movements" class="aiz-side-nav-link"><span class="aiz-side-nav-text">Stock Movements</span></a></li>\n
+                                <li class="aiz-side-nav-item mx-2"><a href="http://localhost/admin/purchasing/backorders" class="aiz-side-nav-link"><span class="aiz-side-nav-text">Backorders</span></a></li>\n
+                                <li class="aiz-side-nav-item mx-2"><a href="http://localhost/admin/purchasing/valuation" class="aiz-side-nav-link"><span class="aiz-side-nav-text">Inventory Valuation</span></a></li>\n
+                                <li class="aiz-side-nav-item mx-2"><a href="http://localhost/admin/purchasing/reports/trial-balance" class="aiz-side-nav-link"><span class="aiz-side-nav-text">Trial Balance (journal)</span></a></li>\n
+                                <li class="aiz-side-nav-item mx-2"><a href="http://localhost/admin/purchasing/reports/reconciliation" class="aiz-side-nav-link"><span class="aiz-side-nav-text">Reconciliation</span></a></li>\n
+                                <li class="aiz-side-nav-item mx-2"><a href="http://localhost/admin/purchasing/reports/general-ledger" class="aiz-side-nav-link"><span class="aiz-side-nav-text">General Ledger</span></a></li>\n
+                                <li class="aiz-side-nav-item mx-2"><a href="http://localhost/admin/purchasing/reports/actual-order-profit" class="aiz-side-nav-link"><span class="aiz-side-nav-text">Order Profit</span></a></li>\n
+                                                    </ul>\n
+                    </li>\n
+                \n
+                \n
+                                    <li class="aiz-side-nav-item mx-2">\n
+                        <a href="http://localhost/admin/unified-chat"\n
+                            class="aiz-side-nav-link ">\n
+                            <div class="aiz-side-nav-icon">\n
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">\n
+                                    <path d="M2 2h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H6l-3.5 3v-3H2a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1Z" fill="#575b6a" />\n
+                                </svg>\n
+                            </div>\n
+                            <span class="aiz-side-nav-text">Unified Chat</span>\n
+                            <span class="badge badge-danger d-none" id="uc-nav-unread"></span>\n
+                        </a>\n
+                    </li>\n
+                \n
+                <!-- marketing -->\n
+                                    <li class="aiz-side-nav-item mx-2">\n
+                        <a href="#" class="aiz-side-nav-link">\n
+                            <div class="aiz-side-nav-icon">\n
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"\n
+                                    viewBox="0 0 16 16">\n
+                                    <g id="_8dbc7a38f7bdee3f0be2c44d010760a2" data-name="8dbc7a38f7bdee3f0be2c44d010760a2"\n
+                                        transform="translate(0 -4.027)">\n
+                                        <path id="Path_40740" data-name="Path 40740"\n
+                                            d="M38.286,16.393a.555.555,0,0,1-.344-.119L34.032,13.2a.557.557,0,0,1-.213-.438v-5.1a.556.556,0,0,1,.212-.438l3.91-3.074a.557.557,0,0,1,.9.438V15.836a.556.556,0,0,1-.556.557Zm-3.354-3.9,2.8,2.2V5.73l-2.8,2.2Z"\n
+                                            transform="translate(-25.364 0)" fill="#575b6a" />\n
+                                        <path id="Path_40741" data-name="Path 40741"\n
+                                            d="M9.011,22.556H3.093a3.1,3.1,0,0,1,0-6.192H9.011a.557.557,0,0,1,.557.557V22A.557.557,0,0,1,9.011,22.556ZM3.093,17.478a1.982,1.982,0,0,0,0,3.964H8.455V17.478Z"\n
+                                            transform="translate(0 -9.25)" fill="#575b6a" />\n
+                                        <path id="Path_40742" data-name="Path 40742"\n
+                                            d="M10.2,31.9a1.895,1.895,0,0,1-1.847-1.5l-.974-5.455a.557.557,0,1,1,1.089-.229l.975,5.455a.777.777,0,1,0,1.521-.32l-.824-4.74a.557.557,0,1,1,1.089-.229l.824,4.74A1.894,1.894,0,0,1,10.2,31.9Zm8.487-7.6h-.862a.557.557,0,0,1,0-1.114h.862a1.105,1.105,0,0,0,1.1-1.105,1.106,1.106,0,0,0-1.1-1.105h-.862a.557.557,0,0,1,0-1.114h.862a2.22,2.22,0,0,1,1.566,3.79A2.2,2.2,0,0,1,18.683,24.3Z"\n
+                                            transform="translate(-4.9 -11.875)" fill="#575b6a" />\n
+                                    </g>\n
+                                </svg>\n
+                            </div>\n
+                            <span class="aiz-side-nav-text">Marketing</span>\n
+                            <span class="aiz-side-nav-arrow"></span>\n
+                        </a>\n
+                        <ul class="aiz-side-nav-list level-2">\n
+                                                            <li class="aiz-side-nav-item mx-2">\n
+                                    <a href="http://localhost/admin/flash_deals"\n
+                                        class="aiz-side-nav-link ">\n
+                                        <span class="aiz-side-nav-text">Flash deals</span>\n
+                                    </a>\n
+                                </li>\n
+                                                                                        <li class="aiz-side-nav-item mx-2">\n
+                                    <a href="http://localhost/admin/dynamic-popups"\n
+                                        class="aiz-side-nav-link ">\n
+                                        <span class="aiz-side-nav-text">Dynamic Pop-up</span>\n
+                                    </a>\n
+                                </li>\n
+                                                                                        <li class="aiz-side-nav-item mx-2">\n
+                                    <a href="http://localhost/admin/custom-alerts"\n
+                                        class="aiz-side-nav-link ">\n
+                                        <span class="aiz-side-nav-text">Custom Alert</span>\n
+                                    </a>\n
+                                </li>\n
+                                                                                        <li class="aiz-side-nav-item mx-2">\n
+                                    <a href="http://localhost/admin/newsletter" class="aiz-side-nav-link">\n
+                                        <span class="aiz-side-nav-text">Newsletters</span>\n
+                                    </a>\n
+                                </li>\n
+                                                                                        <li class="aiz-side-nav-item mx-2">\n
+                                    <a href="javascript:void(0);" class="aiz-side-nav-link">\n
+                                        <span class="aiz-side-nav-text">Notification</span>\n
+                                        <span class="aiz-side-nav-arrow"></span>\n
+                                    </a>\n
+                                    <ul class="aiz-side-nav-list level-3">\n
+                                                                                    <li class="aiz-side-nav-item mx-2">\n
+                                                <a href="http://localhost/admin/notification-settings" class="aiz-side-nav-link">\n
+                                                    <span class="aiz-side-nav-text">Settings</span>\n
+                                                </a>\n
+                                            </li>\n
+                                                                                                                            <li class="aiz-side-nav-item mx-2">\n
+                                                <a href="http://localhost/admin/notification-type"\n
+                                                    class="aiz-side-nav-link ">\n
+                                                    <span class="aiz-side-nav-text">Notification Types</span>\n
+                                                </a>\n
+                                            </li>\n
+                                                                                                                            <li class="aiz-side-nav-item mx-2">\n
+                                                <a href="http://localhost/admin/custom-notification" class="aiz-side-nav-link">\n
+                                                    <span class="aiz-side-nav-text">Custom Notification</span>\n
+                                                </a>\n
+                                            </li>\n
+                                                                                                                            <li class="aiz-side-nav-item mx-2">\n
+                                                <a href="http://localhost/admin/custom-notification/history" class="aiz-side-nav-link">\n
+                                                    <span\n
+                                                        class="aiz-side-nav-text">Custom Notification History</span>\n
+                                                </a>\n
+                                            </li>\n
+                                                                            </ul>\n
+                                </li>\n
+                                                                                        <li class="aiz-side-nav-item mx-2">\n
+                                    <a href="http://localhost/admin/sms" class="aiz-side-nav-link">\n
+                                        <span class="aiz-side-nav-text">Bulk SMS</span>\n
+                                                                            </a>\n
+                                </li>\n
+                                                                                        <li class="aiz-side-nav-item mx-2">\n
+                                    <a href="http://localhost/subscribers" class="aiz-side-nav-link">\n
+                                        <span class="aiz-side-nav-text">Subscribers</span>\n
+                                    </a>\n
+                                </li>\n
+                                                                                        <li class="aiz-side-nav-item mx-2">\n
+                                    <a href="http://localhost/admin/coupon"\n
+                                        class="aiz-side-nav-link ">\n
+                                        <span class="aiz-side-nav-text">Coupon</span>\n
+                                    </a>\n
+                                </li>\n
+                                                    </ul>\n
+                    </li>\n
+                \n
+                <!-- Website Setup -->\n
+                                    <li class="aiz-side-nav-item mx-2">\n
+                        <a href="#"\n
+                            class="aiz-side-nav-link ">\n
+                            <div class="aiz-side-nav-icon">\n
+                                <svg id="Group_28315" data-name="Group 28315" xmlns="http://www.w3.org/2000/svg"\n
+                                    width="16" height="16" viewBox="0 0 16 16">\n
+                                    <circle id="Ellipse_893" data-name="Ellipse 893" cx="0.625" cy="0.625"\n
+                                        r="0.625" transform="translate(7.375 6.125)" fill="#575b6a" />\n
+                                    <path id="Path_40777" data-name="Path 40777"\n
+                                        d="M13.5,0H2.5A2.5,2.5,0,0,0,0,2.5V11a2.5,2.5,0,0,0,2.5,2.5H7.375v1.25H5.5A.625.625,0,0,0,5.5,16h5a.625.625,0,0,0,0-1.25H8.625V12.875A.625.625,0,0,0,8,12.25H2.5A1.251,1.251,0,0,1,1.25,11V2.5A1.251,1.251,0,0,1,2.5,1.25h11A1.251,1.251,0,0,1,14.75,2.5V11a1.251,1.251,0,0,1-1.25,1.25h-3a.625.625,0,0,0,0,1.25h3A2.5,2.5,0,0,0,16,11V2.5A2.5,2.5,0,0,0,13.5,0Z"\n
+                                        fill="#575b6a" />\n
+                                    <path id="Path_40778" data-name="Path 40778"\n
+                                        d="M120.375,84.75a.625.625,0,0,0,.625-.625v-.688a3.107,3.107,0,0,0,1.1-.456l.487.487a.625.625,0,0,0,.884-.884l-.487-.487a3.108,3.108,0,0,0,.456-1.1h.688a.625.625,0,1,0,0-1.25h-.688a3.108,3.108,0,0,0-.456-1.1l.487-.487a.625.625,0,0,0-.884-.884l-.487.487a3.107,3.107,0,0,0-1.1-.456v-.688a.625.625,0,0,0-1.25,0v.688a3.108,3.108,0,0,0-1.1.456l-.487-.487a.625.625,0,0,0-.884.884l.487.487a3.108,3.108,0,0,0-.456,1.1h-.688a.625.625,0,0,0,0,1.25h.688a3.108,3.108,0,0,0,.456,1.1l-.487.487a.625.625,0,0,0,.884.884l.487-.487a3.107,3.107,0,0,0,1.1.456v.688A.625.625,0,0,0,120.375,84.75ZM118.5,80.375a1.875,1.875,0,1,1,1.875,1.875A1.877,1.877,0,0,1,118.5,80.375Z"\n
+                                        transform="translate(-112.375 -73.625)" fill="#575b6a" />\n
+                                </svg>\n
+                            </div>\n
+                            <span class="aiz-side-nav-text">Website Setup</span>\n
+                            <span class="aiz-side-nav-arrow"></span>\n
+                        </a>\n
+                        <ul class="aiz-side-nav-list level-2">\n
+                            \n
+                                                            <li class="aiz-side-nav-item mx-2">\n
+                                    <a href="http://localhost/admin/website/custom-pages/edit/home?page=home"\n
+                                        class="aiz-side-nav-link ">\n
+                                        <span class="aiz-side-nav-text">Homepage Settings</span>\n
+                                    </a>\n
+                                </li>\n
+                                                                                        <li class="aiz-side-nav-item mx-2">\n
+                                    <a href="http://localhost/admin/website/authentication-layout-settings"\n
+                                        class="aiz-side-nav-link">\n
+                                        <span\n
+                                            class="aiz-side-nav-text">Authentication Layout &amp; Settings</span>\n
+                                    </a>\n
+                                </li>\n
+                                                                                        <li class="aiz-side-nav-item mx-2">\n
+                                    <a href="http://localhost/admin/website/header" class="aiz-side-nav-link">\n
+                                        <span class="aiz-side-nav-text">Header</span>\n
+                                    </a>\n
+                                </li>\n
+                                                                                        <li class="aiz-side-nav-item mx-2">\n
+                                    <a href="http://localhost/admin/website/footer?lang=en"\n
+                                        class="aiz-side-nav-link ">\n
+                                        <span class="aiz-side-nav-text">Footer</span>\n
+                                    </a>\n
+                                </li>\n
+                                                                                        <li class="aiz-side-nav-item mx-2">\n
+                                    <a href="http://localhost/admin/website/pages"\n
+                                        class="aiz-side-nav-link ">\n
+                                        <span class="aiz-side-nav-text">Pages</span>\n
+                                    </a>\n
+                                </li>\n
+                                                                                        <li class="aiz-side-nav-item mx-2">\n
+                                    <a href="http://localhost/admin/website/appearance" class="aiz-side-nav-link">\n
+                                        <span class="aiz-side-nav-text">Appearance</span>\n
+                                    </a>\n
+                                </li>\n
+                                                    </ul>\n
+                    </li>\n
+                \n
+                <!-- System & Configurations -->\n
+                                    <li class="aiz-side-nav-item mx-2">\n
+                        <a href="#" class="aiz-side-nav-link">\n
+                            <div class="aiz-side-nav-icon">\n
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"\n
+                                    viewBox="0 0 16 16">\n
+                                    <path id="Path_40779" data-name="Path 40779"\n
+                                        d="M7.688,16h.625a1.877,1.877,0,0,0,1.875-1.875V13.81a.209.209,0,0,1,.133-.191l.011,0a.209.209,0,0,1,.23.041l.223.223a1.875,1.875,0,0,0,2.652,0l.442-.442a1.875,1.875,0,0,0,0-2.652l-.223-.223a.209.209,0,0,1-.041-.23l0-.012a.209.209,0,0,1,.191-.133h.315A1.877,1.877,0,0,0,16,8.313V7.688a1.877,1.877,0,0,0-1.875-1.875H13.81a.209.209,0,0,1-.191-.133l0-.011a.209.209,0,0,1,.041-.23l.223-.223a1.875,1.875,0,0,0,0-2.652l-.442-.442a1.875,1.875,0,0,0-2.652,0l-.223.223a.21.21,0,0,1-.23.041l-.012,0a.209.209,0,0,1-.133-.191V1.875A1.877,1.877,0,0,0,8.312,0H7.687A1.877,1.877,0,0,0,5.812,1.875V2.19a.209.209,0,0,1-.133.191l-.012,0a.209.209,0,0,1-.23-.041l-.223-.223a1.875,1.875,0,0,0-2.652,0l-.442.442a1.875,1.875,0,0,0,0,2.652l.223.223a.209.209,0,0,1,.041.23l0,.011a.209.209,0,0,1-.191.133H1.875A1.877,1.877,0,0,0,0,7.687v.625a1.874,1.874,0,0,0,1.407,1.816.625.625,0,1,0,.312-1.211.624.624,0,0,1-.468-.605V7.688a.626.626,0,0,1,.625-.625H2.19a1.455,1.455,0,0,0,1.347-.906l0-.011a1.455,1.455,0,0,0-.312-1.591l-.223-.223a.625.625,0,0,1,0-.884l.442-.442a.625.625,0,0,1,.884,0l.223.223a1.456,1.456,0,0,0,1.593.311l.009,0A1.455,1.455,0,0,0,7.063,2.19V1.875a.626.626,0,0,1,.625-.625h.625a.626.626,0,0,1,.625.625V2.19a1.455,1.455,0,0,0,.906,1.347l.009,0a1.455,1.455,0,0,0,1.593-.311l.223-.223a.625.625,0,0,1,.884,0l.442.442a.625.625,0,0,1,0,.884l-.223.223a1.455,1.455,0,0,0-.311,1.593l0,.009a1.455,1.455,0,0,0,1.347.906h.315a.626.626,0,0,1,.625.625v.625a.626.626,0,0,1-.625.625H13.81a1.455,1.455,0,0,0-1.347.906l0,.009a1.455,1.455,0,0,0,.311,1.593l.223.223a.625.625,0,0,1,0,.884l-.442.442a.625.625,0,0,1-.884,0l-.223-.223a1.456,1.456,0,0,0-1.593-.311l-.009,0a1.455,1.455,0,0,0-.906,1.347v.315a.626.626,0,0,1-.625.625H7.688a.622.622,0,0,1-.6-.437.625.625,0,1,0-1.193.375A1.867,1.867,0,0,0,7.688,16ZM.536,15.433a1.829,1.829,0,0,1,0-2.586h0L4.589,8.811a3.234,3.234,0,0,1-.308-1.259,2.97,2.97,0,0,1,.9-2.141A4.228,4.228,0,0,1,8.13,4.255h.007a3.322,3.322,0,0,1,1.086.188A.625.625,0,0,1,9.47,5.473L7.964,7.01l.188.811L8.95,8,10.479,6.47a.625.625,0,0,1,1.034.24,3.472,3.472,0,0,1,.2,1.121,4.373,4.373,0,0,1-.8,2.556,3.047,3.047,0,0,1-2.49,1.3H8.417A3.414,3.414,0,0,1,7.159,11.4L3.122,15.433a1.829,1.829,0,0,1-2.586,0Zm6.876-5.311a2.1,2.1,0,0,0,1.007.316,1.818,1.818,0,0,0,1.487-.792,2.988,2.988,0,0,0,.528-1.361l-.843.845A.625.625,0,0,1,9.01,9.3L7.494,8.953a.625.625,0,0,1-.471-.468L6.669,6.959a.625.625,0,0,1,.162-.579l.823-.84A2.844,2.844,0,0,0,6.067,6.3,1.723,1.723,0,0,0,5.531,7.55a2.123,2.123,0,0,0,.342,1,.625.625,0,0,1-.065.809L1.419,13.731a.579.579,0,1,0,.819.818l4.368-4.361a.625.625,0,0,1,.806-.066Z"\n
+                                        fill="#575b6a" />\n
+                                </svg>\n
+                            </div>\n
+                            <span class="aiz-side-nav-text">System &amp; Configurations</span>\n
+                            <span class="aiz-side-nav-arrow"></span>\n
+                        </a>\n
+                        <ul class="aiz-side-nav-list level-2">\n
+                           \n
+                                <li class="aiz-side-nav-item mx-2">\n
+                                    <a href="http://localhost/admin/courier-setup" class="aiz-side-nav-link">\n
+                                        <span class="aiz-side-nav-text">Courier Setup</span>\n
+                                    </a>\n
+                                </li>\n
+                    \n
+                                                            <li class="aiz-side-nav-item mx-2">\n
+                                    <a href="http://localhost/admin/activation" class="aiz-side-nav-link">\n
+                                        <span class="aiz-side-nav-text">Features activation</span>\n
+                                    </a>\n
+                                </li>\n
+                                                                                        <li class="aiz-side-nav-item mx-2">\n
+                                    <a href="http://localhost/admin/languages"\n
+                                        class="aiz-side-nav-link ">\n
+                                        <span class="aiz-side-nav-text">Languages</span>\n
+                                    </a>\n
+                                </li>\n
+                                                                                        <li class="aiz-side-nav-item mx-2">\n
+                                    <a href="http://localhost/admin/currency" class="aiz-side-nav-link">\n
+                                        <span class="aiz-side-nav-text">Currency</span>\n
+                                    </a>\n
+                                </li>\n
+                                                                                        <li class="aiz-side-nav-item mx-2">\n
+                                    <a href="http://localhost/admin/tax"\n
+                                        class="aiz-side-nav-link ">\n
+                                        <span class="aiz-side-nav-text">Vat &amp; TAX</span>\n
+                                    </a>\n
+                                </li>\n
+                                                                                        <li class="aiz-side-nav-item mx-2">\n
+                                    <a href="http://localhost/admin/pick_up_points"\n
+                                        class="aiz-side-nav-link ">\n
+                                        <span class="aiz-side-nav-text">Pickup point</span>\n
+                                    </a>\n
+                                </li>\n
+                                                                                        <li class="aiz-side-nav-item mx-2">\n
+                                    <a href="http://localhost/admin/smtp-settings" class="aiz-side-nav-link">\n
+                                        <span class="aiz-side-nav-text">SMTP Settings</span>\n
+                                    </a>\n
+                                </li>\n
+                                                                                        <li class="aiz-side-nav-item mx-2">\n
+                                    <a href="http://localhost/admin/payment-method" class="aiz-side-nav-link">\n
+                                        <span class="aiz-side-nav-text">Payment Methods</span>\n
+                                    </a>\n
+                                </li>\n
+                                                                                        <li class="aiz-side-nav-item mx-2">\n
+                                    <a href="http://localhost/admin/order-configuration" class="aiz-side-nav-link">\n
+                                        <span class="aiz-side-nav-text">Order Configuration</span>\n
+                                    </a>\n
+                                </li>\n
+                                                                                        <li class="aiz-side-nav-item mx-2">\n
+                                    <a href="http://localhost/admin/file_system" class="aiz-side-nav-link">\n
+                                        <span\n
+                                            class="aiz-side-nav-text">File System &amp; Cache Configuration</span>\n
+                                    </a>\n
+                                </li>\n
+                                                                                        <li class="aiz-side-nav-item mx-2">\n
+                                    <a href="http://localhost/admin/social-login" class="aiz-side-nav-link">\n
+                                        <span class="aiz-side-nav-text">Social media Logins</span>\n
+                                    </a>\n
+                                </li>\n
+                            \n
+                                                            <li class="aiz-side-nav-item mx-2">\n
+                                    <a href="http://localhost/admin/whatsapp-chat" class="aiz-side-nav-link">\n
+                                        <span class="aiz-side-nav-text">WhatsApp Chat</span>\n
+                                    </a>\n
+                                </li>\n
+                                                                                        <li class="aiz-side-nav-item mx-2">\n
+                                    <a href="javascript:void(0);" class="aiz-side-nav-link">\n
+                                        <span class="aiz-side-nav-text">Facebook</span>\n
+                                        <span class="aiz-side-nav-arrow"></span>\n
+                                    </a>\n
+                                    <ul class="aiz-side-nav-list level-3">\n
+                                                                                    <li class="aiz-side-nav-item mx-2">\n
+                                                <a href="http://localhost/admin/facebook-chat" class="aiz-side-nav-link">\n
+                                                    <span class="aiz-side-nav-text">Facebook Chat</span>\n
+                                                </a>\n
+                                            </li>\n
+                                                                                                                            <li class="aiz-side-nav-item mx-2">\n
+                                                <a href="http://localhost/admin/facebook-comment" class="aiz-side-nav-link">\n
+                                                    <span class="aiz-side-nav-text">Facebook Comment</span>\n
+                                                </a>\n
+                                            </li>\n
+                                                                            </ul>\n
+                                </li>\n
+                                                                                        <li class="aiz-side-nav-item mx-2">\n
+                                    <a href="javascript:void(0);" class="aiz-side-nav-link">\n
+                                        <span class="aiz-side-nav-text">Google</span>\n
+                                        <span class="aiz-side-nav-arrow"></span>\n
+                                    </a>\n
+                                    <ul class="aiz-side-nav-list level-3">\n
+                                                                                    <li class="aiz-side-nav-item mx-2">\n
+                                                <a href="http://localhost/admin/google-analytics" class="aiz-side-nav-link">\n
+                                                    <span class="aiz-side-nav-text">Analytics Tools</span>\n
+                                                </a>\n
+                                            </li>\n
+                                                                                                                            <li class="aiz-side-nav-item mx-2">\n
+                                                <a href="http://localhost/admin/google-recaptcha" class="aiz-side-nav-link">\n
+                                                    <span class="aiz-side-nav-text">Google reCAPTCHA</span>\n
+                                                </a>\n
+                                            </li>\n
+                                                                                                                            <li class="aiz-side-nav-item mx-2">\n
+                                                <a href="http://localhost/admin/google-map" class="aiz-side-nav-link">\n
+                                                    <span class="aiz-side-nav-text">Google Map</span>\n
+                                                </a>\n
+                                            </li>\n
+                                                                                                                            <li class="aiz-side-nav-item mx-2">\n
+                                                <a href="http://localhost/admin/google-firebase" class="aiz-side-nav-link">\n
+                                                    <span class="aiz-side-nav-text">Google Firebase</span>\n
+                                                </a>\n
+                                            </li>\n
+                                                                            </ul>\n
+                                </li>\n
+                                                                                        <li class="aiz-side-nav-item mx-2">\n
+                                    <a href="javascript:void(0);" class="aiz-side-nav-link">\n
+                                        <span class="aiz-side-nav-text">Shipping</span>\n
+                                        <span class="aiz-side-nav-arrow"></span>\n
+                                    </a>\n
+                                    <ul class="aiz-side-nav-list level-3">\n
+                                                                                    <li class="aiz-side-nav-item mx-2">\n
+                                                <a href="http://localhost/admin/shipping_configuration"\n
+                                                    class="aiz-side-nav-link ">\n
+                                                    <span\n
+                                                        class="aiz-side-nav-text">Shipping Configuration</span>\n
+                                                </a>\n
+                                            </li>\n
+                                                                                                                            <li class="aiz-side-nav-item mx-2">\n
+                                                <a href="http://localhost/admin/countries"\n
+                                                    class="aiz-side-nav-link ">\n
+                                                    <span class="aiz-side-nav-text">Shipping Countries</span>\n
+                                                </a>\n
+                                            </li>\n
+                                                                                                                            <li class="aiz-side-nav-item mx-2">\n
+                                                <a href="http://localhost/admin/states"\n
+                                                    class="aiz-side-nav-link ">\n
+                                                    <span class="aiz-side-nav-text">Shipping States</span>\n
+                                                </a>\n
+                                            </li>\n
+                                                                                                                            <li class="aiz-side-nav-item mx-2">\n
+                                                <a href="http://localhost/admin/cities"\n
+                                                    class="aiz-side-nav-link ">\n
+                                                    <span class="aiz-side-nav-text">Shipping Cities</span>\n
+                                                </a>\n
+                                            </li>\n
+                                                                                                                            <li class="aiz-side-nav-item mx-2">\n
+                                                <a href="http://localhost/admin/zones"\n
+                                                    class="aiz-side-nav-link ">\n
+                                                    <span class="aiz-side-nav-text">Shipping Zones</span>\n
+                                                </a>\n
+                                            </li>\n
+                                                                                                                            <li class="aiz-side-nav-item mx-2">\n
+                                                <a href="http://localhost/admin/carriers"\n
+                                                    class="aiz-side-nav-link ">\n
+                                                    <span class="aiz-side-nav-text">Shipping Carrier</span>\n
+                                                </a>\n
+                                            </li>\n
+                                                                            </ul>\n
+                                </li>\n
+                                                            </ul>\n
+                        </li>\n
+                    \n
+                    <!-- System Update & Server Status -->\n
+                    \n
+\n
+                    \n
+                    \n
+\n
+                    <!-- Auction Product -->\n
+                    \n
+                    <!-- Deliver Boy Addon-->\n
+                    \n
+                    <!-- Refund addon -->\n
+                                                                        <li class="aiz-side-nav-item mx-2">\n
+                                <a href="#" class="aiz-side-nav-link">\n
+                                    <div class="aiz-side-nav-icon">\n
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"\n
+                                            viewBox="0 0 16 16">\n
+                                            <path id="_4436b8ef9250481406399210799cb7f1"\n
+                                                data-name="4436b8ef9250481406399210799cb7f1"\n
+                                                d="M19.25,11.25a8.031,8.031,0,0,1-15.995,1,.688.688,0,0,1,1.365-.169A6.643,6.643,0,1,0,7.112,6.039h.866a.686.686,0,1,1,0,1.371H5.384A.687.687,0,0,1,4.7,6.724V4.138a.688.688,0,0,1,1.376,0v.987A8.024,8.024,0,0,1,19.25,11.25ZM11.278,6.907a.687.687,0,0,0-.688.686v.253a2.053,2.053,0,0,0-1.824,2.247,2.146,2.146,0,0,0,2.175,1.842h.8a.686.686,0,1,1,0,1.371h-1.6a.686.686,0,1,0,0,1.371h.458v.229a.688.688,0,0,0,1.376,0v-.26a2.113,2.113,0,0,0,1.824-1.811,2.062,2.062,0,0,0-2.053-2.272h-.917a.686.686,0,1,1,0-1.371h1.609a.686.686,0,1,0,0-1.371h-.462V7.593A.687.687,0,0,0,11.278,6.907Z"\n
+                                                transform="translate(-3.25 -3.25)" fill="#575b6a" />\n
+                                        </svg>\n
+                                    </div>\n
+                                    <span class="aiz-side-nav-text">Refunds</span>\n
+                                                                        <span class="aiz-side-nav-arrow"></span>\n
+                                </a>\n
+                                <ul class="aiz-side-nav-list level-2">\n
+                                                                            <li class="aiz-side-nav-item mx-2">\n
+                                            <a href="http://localhost/admin/refund-request-all"\n
+                                                class="aiz-side-nav-link ">\n
+                                                <span class="aiz-side-nav-text">Refund Requests</span>\n
+                                            </a>\n
+                                        </li>\n
+                                                                                                                <li class="aiz-side-nav-item mx-2">\n
+                                            <a href="http://localhost/admin/paid-refund" class="aiz-side-nav-link">\n
+                                                <span class="aiz-side-nav-text">Approved Refunds</span>\n
+                                            </a>\n
+                                        </li>\n
+                                                                                                                <li class="aiz-side-nav-item mx-2">\n
+                                            <a href="http://localhost/admin/rejected-refund" class="aiz-side-nav-link">\n
+                                                <span class="aiz-side-nav-text">rejected Refunds</span>\n
+                                            </a>\n
+                                        </li>\n
+                                                                                                                <li class="aiz-side-nav-item mx-2">\n
+                                            <a href="http://localhost/admin/refund-request-config" class="aiz-side-nav-link">\n
+                                                <span class="aiz-side-nav-text">Refund Configuration</span>\n
+                                            </a>\n
+                                        </li>\n
+                                                                    </ul>\n
+                            </li>\n
+                                            \n
+                    <!-- Customers -->\n
+                                            <li class="aiz-side-nav-item mx-2">\n
+                            <a href="#" class="aiz-side-nav-link">\n
+                                <div class="aiz-side-nav-icon">\n
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"\n
+                                        viewBox="0 0 16 16">\n
+                                        <path id="Path_40769" data-name="Path 40769"\n
+                                            d="M8,10.667A2.667,2.667,0,1,1,10.667,8,2.667,2.667,0,0,1,8,10.667Zm0-4A1.333,1.333,0,1,0,9.333,8,1.333,1.333,0,0,0,8,6.667Zm4,8.667a4,4,0,1,0-8,0,.667.667,0,0,0,1.333,0,2.667,2.667,0,1,1,5.333,0,.667.667,0,0,0,1.333,0Zm0-10a2.667,2.667,0,1,1,2.667-2.667A2.667,2.667,0,0,1,12,5.333Zm0-4a1.333,1.333,0,1,0,1.333,1.333A1.333,1.333,0,0,0,12,1.333ZM16,10a4,4,0,0,0-4-4,.667.667,0,0,0,0,1.333A2.667,2.667,0,0,1,14.667,10,.667.667,0,1,0,16,10ZM4,5.333A2.667,2.667,0,1,1,6.667,2.667,2.667,2.667,0,0,1,4,5.333Zm0-4A1.333,1.333,0,1,0,5.333,2.667,1.333,1.333,0,0,0,4,1.333ZM1.333,10A2.667,2.667,0,0,1,4,7.333.667.667,0,0,0,4,6a4,4,0,0,0-4,4,.667.667,0,0,0,1.333,0Z"\n
+                                            fill="#575b6a" />\n
+                                    </svg>\n
+                                </div>\n
+                                <span class="aiz-side-nav-text">Customers</span>\n
+                                <span class="aiz-side-nav-arrow"></span>\n
+                            </a>\n
+                            <ul class="aiz-side-nav-list level-2">\n
+                                                                    <li class="aiz-side-nav-item mx-2">\n
+                                        <a href="http://localhost/admin/customers" class="aiz-side-nav-link">\n
+                                            <span class="aiz-side-nav-text">Customer list</span>\n
+                                        </a>\n
+                                    </li>\n
+                                    <li class="aiz-side-nav-item mx-2">\n
+                                        <a href="http://localhost/admin/ip-tracking" class="aiz-side-nav-link ">\n
+                                            <span class="aiz-side-nav-text">IP Tracking</span>\n
+                                        </a>\n
+                                    </li>\n
+                                                                                            </ul>\n
+                        </li>\n
+                    \n
+                    <!-- Sellers -->\n
+                    \n
+                    <!--Blog System-->\n
+                                            <li class="aiz-side-nav-item mx-2">\n
+                            <a href="#" class="aiz-side-nav-link">\n
+                                <div class="aiz-side-nav-icon">\n
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"\n
+                                        viewBox="0 0 16 16">\n
+                                        <path id="Path_40771" data-name="Path 40771"\n
+                                            d="M9.688,16H3.75A3.754,3.754,0,0,1,0,12.25V3.75A3.754,3.754,0,0,1,3.75,0h8.5A3.754,3.754,0,0,1,16,3.75V9.734a.625.625,0,0,1-1.25,0V3.75a2.5,2.5,0,0,0-2.5-2.5H3.75a2.5,2.5,0,0,0-2.5,2.5v8.5a2.5,2.5,0,0,0,2.5,2.5H9.688a.625.625,0,0,1,0,1.25ZM12.875,3.938a.625.625,0,0,0-.625-.625H6.531a.625.625,0,0,0,0,1.25H12.25A.625.625,0,0,0,12.875,3.938Zm0,2.5a.625.625,0,0,0-.625-.625H3.75a.625.625,0,0,0,0,1.25h8.5A.625.625,0,0,0,12.875,6.438Zm-6.25,2.5A.625.625,0,0,0,6,8.313H3.75a.625.625,0,0,0,0,1.25H6A.625.625,0,0,0,6.625,8.938Zm-3.5-5.062a.781.781,0,1,0,.781-.781A.781.781,0,0,0,3.125,3.875ZM15.332,15.332a2.284,2.284,0,0,0,0-3.226L13.141,9.915a4.506,4.506,0,0,0-2.31-1.236L9.06,8.325a.625.625,0,0,0-.735.735l.354,1.771a4.506,4.506,0,0,0,1.236,2.31l2.191,2.191a2.281,2.281,0,0,0,3.226,0ZM10.586,9.9a3.259,3.259,0,0,1,1.671.894l2.191,2.191a1.031,1.031,0,1,1-1.458,1.458L10.8,12.257A3.26,3.26,0,0,1,9.9,10.586l-.17-.852Z"\n
+                                            fill="#575b6a" />\n
+                                    </svg>\n
+                                </div>\n
+                                <span class="aiz-side-nav-text">Blog System</span>\n
+                                <span class="aiz-side-nav-arrow"></span>\n
+                            </a>\n
+                            <ul class="aiz-side-nav-list level-2">\n
+                                                                    <li class="aiz-side-nav-item mx-2">\n
+                                        <a href="http://localhost/admin/blog"\n
+                                            class="aiz-side-nav-link ">\n
+                                            <span class="aiz-side-nav-text">All Posts</span>\n
+                                        </a>\n
+                                    </li>\n
+                                                                                                    <li class="aiz-side-nav-item mx-2">\n
+                                        <a href="http://localhost/admin/blog-category"\n
+                                            class="aiz-side-nav-link ">\n
+                                            <span class="aiz-side-nav-text">Categories</span>\n
+                                        </a>\n
+                                    </li>\n
+                                                            </ul>\n
+                        </li>\n
+                    \n
+                    <!-- Support -->\n
+                                            <li class="aiz-side-nav-item mx-2">\n
+                            <a href="#" class="aiz-side-nav-link">\n
+                                <div class="aiz-side-nav-icon">\n
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"\n
+                                        viewBox="0 0 16 16">\n
+                                        <g id="Group_28286" data-name="Group 28286" transform="translate(0)">\n
+                                            <path id="Path_40743" data-name="Path 40743"\n
+                                                d="M16,9.125a3.122,3.122,0,0,0-1.255-2.5,6.9,6.9,0,0,0-1.94-4.6,6.725,6.725,0,0,0-9.61,0,6.9,6.9,0,0,0-1.94,4.6,3.124,3.124,0,0,0,1.87,5.627h1.25A.625.625,0,0,0,5,11.625v-5A.625.625,0,0,0,4.375,6H3.125a3.129,3.129,0,0,0-.569.052,5.487,5.487,0,0,1,10.887,0A3.129,3.129,0,0,0,12.875,6h-1.25A.625.625,0,0,0,11,6.625v5a.625.625,0,0,0,.625.625h.625v.625a1.877,1.877,0,0,1-1.875,1.875H8A.625.625,0,0,0,8,16h2.375A3.129,3.129,0,0,0,13.5,12.875v-.688A3.13,3.13,0,0,0,16,9.125ZM3.75,7.25V11H3.125a1.875,1.875,0,0,1,0-3.75ZM12.875,11H12.25V7.25h.625a1.875,1.875,0,1,1,0,3.75Z"\n
+                                                fill="#575b6a" />\n
+                                            <path id="Path_40744" data-name="Path 40744"\n
+                                                d="M197.875,113.25a.626.626,0,0,1,.625.625.618.618,0,0,1-.137.391,4.365,4.365,0,0,0-1.113,2.746v.613a.625.625,0,0,0,1.25,0v-.613a3.186,3.186,0,0,1,.838-1.964A1.875,1.875,0,1,0,196,113.875a.625.625,0,0,0,1.25,0A.626.626,0,0,1,197.875,113.25Z"\n
+                                                transform="translate(-189.875 -108.5)" fill="#575b6a" />\n
+                                            <circle id="Ellipse_891" data-name="Ellipse 891" cx="0.625"\n
+                                                cy="0.625" r="0.625" transform="translate(7.375 11)" fill="#575b6a" />\n
+                                        </g>\n
+                                    </svg>\n
+                                </div>\n
+                                <span class="aiz-side-nav-text">Support</span>\n
+                                <span class="aiz-side-nav-arrow"></span>\n
+                            </a>\n
+                            <ul class="aiz-side-nav-list level-2">\n
+                                                                                                        <li class="aiz-side-nav-item mx-2">\n
+                                        <a href="http://localhost/admin/support_ticket"\n
+                                            class="aiz-side-nav-link ">\n
+                                            <span class="aiz-side-nav-text">Ticket</span>\n
+                                                                                    </a>\n
+                                    </li>\n
+                                \n
+                                                                                                        <li class="aiz-side-nav-item mx-2">\n
+                                        <a href="http://localhost/admin/conversations"\n
+                                            class="aiz-side-nav-link ">\n
+                                            <span class="aiz-side-nav-text">Product Conversations</span>\n
+                                                                                    </a>\n
+                                    </li>\n
+                                                                                                                                            <li class="aiz-side-nav-item mx-2">\n
+                                            <a href="http://localhost/admin/product-queries"\n
+                                                class="aiz-side-nav-link ">\n
+                                                <span class="aiz-side-nav-text">Product Queries</span>\n
+                                            </a>\n
+                                        </li>\n
+                                                                                                </ul>\n
+                        </li>\n
+                    \n
+                    <!-- Affiliate Addon -->\n
+                                                                        <li class="aiz-side-nav-item mx-2">\n
+                                <a href="#" class="aiz-side-nav-link">\n
+                                    <div class="aiz-side-nav-icon">\n
+                                        <svg id="Group_28297" data-name="Group 28297" xmlns="http://www.w3.org/2000/svg"\n
+                                            width="16" height="16" viewBox="0 0 16 16">\n
+                                            <path id="Path_40762" data-name="Path 40762"\n
+                                                d="M43.75,273.875a1.875,1.875,0,1,0-1.875,1.875A1.877,1.877,0,0,0,43.75,273.875Zm-1.875.625a.625.625,0,1,1,.625-.625A.626.626,0,0,1,41.875,274.5Z"\n
+                                                transform="translate(-38.75 -263.5)" fill="#575b6a" />\n
+                                            <path id="Path_40763" data-name="Path 40763"\n
+                                                d="M3.125,392A3.129,3.129,0,0,0,0,395.125a.625.625,0,0,0,.625.625h5a.625.625,0,0,0,.625-.625A3.129,3.129,0,0,0,3.125,392Zm-1.768,2.5a1.875,1.875,0,0,1,3.536,0Z"\n
+                                                transform="translate(0 -379.75)" fill="#575b6a" />\n
+                                            <path id="Path_40764" data-name="Path 40764"\n
+                                                d="M355.75,273.875a1.875,1.875,0,1,0-1.875,1.875A1.877,1.877,0,0,0,355.75,273.875Zm-1.875.625a.625.625,0,1,1,.625-.625A.626.626,0,0,1,353.875,274.5Z"\n
+                                                transform="translate(-341 -263.5)" fill="#575b6a" />\n
+                                            <path id="Path_40765" data-name="Path 40765"\n
+                                                d="M315.125,392A3.129,3.129,0,0,0,312,395.125a.625.625,0,0,0,.625.625h5a.625.625,0,0,0,.625-.625A3.129,3.129,0,0,0,315.125,392Zm-1.768,2.5a1.875,1.875,0,0,1,3.536,0Z"\n
+                                                transform="translate(-302.25 -379.75)" fill="#575b6a" />\n
+                                            <path id="Path_40766" data-name="Path 40766"\n
+                                                d="M199.75,1.875a1.875,1.875,0,1,0-1.875,1.875A1.877,1.877,0,0,0,199.75,1.875Zm-1.875.625a.625.625,0,1,1,.625-.625A.626.626,0,0,1,197.875,2.5Z"\n
+                                                transform="translate(-189.875)" fill="#575b6a" />\n
+                                            <path id="Path_40767" data-name="Path 40767"\n
+                                                d="M156.625,123.75h5a.625.625,0,0,0,.625-.625,3.125,3.125,0,0,0-6.25,0A.625.625,0,0,0,156.625,123.75Zm2.5-2.5a1.878,1.878,0,0,1,1.768,1.25h-3.536A1.878,1.878,0,0,1,159.125,121.25Z"\n
+                                                transform="translate(-151.125 -116.25)" fill="#575b6a" />\n
+                                            <path id="Path_40768" data-name="Path 40768"\n
+                                                d="M180.893,279.472a.625.625,0,0,0-.173-.867l-1.6-1.064v-.915a.625.625,0,0,0-1.25,0v.915l-1.6,1.064a.625.625,0,1,0,.693,1.04l1.528-1.019,1.528,1.019A.625.625,0,0,0,180.893,279.472Z"\n
+                                                transform="translate(-170.498 -267.375)" fill="#575b6a" />\n
+                                        </svg>\n
+                                    </div>\n
+                                    <span class="aiz-side-nav-text">Affiliate System</span>\n
+                                                                        <span class="aiz-side-nav-arrow"></span>\n
+                                </a>\n
+                                <ul class="aiz-side-nav-list level-2">\n
+                                                                            <li class="aiz-side-nav-item mx-2">\n
+                                            <a href="http://localhost/admin/affiliate/configs" class="aiz-side-nav-link">\n
+                                                <span\n
+                                                    class="aiz-side-nav-text">Affiliate Registration Form</span>\n
+                                            </a>\n
+                                        </li>\n
+                                                                                                                <li class="aiz-side-nav-item mx-2">\n
+                                            <a href="http://localhost/admin/affiliate" class="aiz-side-nav-link">\n
+                                                <span\n
+                                                    class="aiz-side-nav-text">Affiliate Configurations</span>\n
+                                            </a>\n
+                                        </li>\n
+                                                                                                                <li class="aiz-side-nav-item mx-2">\n
+                                            <a href="http://localhost/admin/affiliate/users"\n
+                                                class="aiz-side-nav-link ">\n
+                                                <span class="aiz-side-nav-text">Affiliate Users</span>\n
+                                            </a>\n
+                                        </li>\n
+                                                                                                                <li class="aiz-side-nav-item mx-2">\n
+                                            <a href="http://localhost/admin/refferal/users" class="aiz-side-nav-link">\n
+                                                <span class="aiz-side-nav-text">Referral Users</span>\n
+                                            </a>\n
+                                        </li>\n
+                                                                                                                <li class="aiz-side-nav-item mx-2">\n
+                                            <a href="http://localhost/admin/affiliate/withdraw_requests" class="aiz-side-nav-link">\n
+                                                <span\n
+                                                    class="aiz-side-nav-text">Affiliate Withdraw Requests</span>\n
+                                            </a>\n
+                                        </li>\n
+                                                                                                                <li class="aiz-side-nav-item mx-2">\n
+                                            <a href="http://localhost/admin/affiliate/logs" class="aiz-side-nav-link">\n
+                                                <span class="aiz-side-nav-text">Affiliate Logs</span>\n
+                                            </a>\n
+                                        </li>\n
+                                                                    </ul>\n
+                            </li>\n
+                                            \n
+                    <!-- Offline Payment Addon-->\n
+                    \n
+                    <!-- Paytm Addon -->\n
+                    \n
+                    <!-- Club Point Addon-->\n
+                    \n
+                    <!--OTP addon -->\n
+                                                                        <li class="aiz-side-nav-item mx-2">\n
+                                <a href="#" class="aiz-side-nav-link">\n
+                                    <div class="aiz-side-nav-icon">\n
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"\n
+                                            viewBox="0 0 16 16">\n
+                                            <path id="pin-code"\n
+                                                d="M4.25,12.25a.625.625,0,0,1,.625.625h0a.625.625,0,1,1-1.25,0h0A.625.625,0,0,1,4.25,12.25Zm1.875.625h0a.625.625,0,1,0,1.25,0h0a.625.625,0,1,0-1.25,0Zm2.5,0h0a.625.625,0,1,0,1.25,0h0a.625.625,0,1,0-1.25,0Zm2.5,0h0a.625.625,0,1,0,1.25,0h0a.625.625,0,0,0-1.25,0Zm3-3.046a.625.625,0,0,0-.312,1.211,1.249,1.249,0,0,1,.937,1.211V13.5a1.251,1.251,0,0,1-1.25,1.25H2.5A1.251,1.251,0,0,1,1.25,13.5V12.25a1.257,1.257,0,0,1,.9-1.2.625.625,0,1,0-.354-1.2,2.518,2.518,0,0,0-1.284.888A2.478,2.478,0,0,0,0,12.25V13.5A2.5,2.5,0,0,0,2.5,16h11A2.5,2.5,0,0,0,16,13.5V12.25A2.5,2.5,0,0,0,14.125,9.829Zm-10.562-.7V5.749A1.877,1.877,0,0,1,5.437,3.874h.124V2.387a2.438,2.438,0,0,1,4.875,0V3.874h.126a1.877,1.877,0,0,1,1.875,1.875V9.124A1.877,1.877,0,0,1,10.562,11H5.437A1.877,1.877,0,0,1,3.562,9.124Zm3.249-5.25H9.187V2.387a1.189,1.189,0,0,0-2.375,0V3.874Zm-2,5.25a.626.626,0,0,0,.625.625h5.125a.626.626,0,0,0,.625-.625V5.749a.626.626,0,0,0-.625-.625H5.437a.626.626,0,0,0-.625.625ZM8,8.125A.625.625,0,0,0,8.625,7.5h0a.625.625,0,0,0-1.25,0h0A.625.625,0,0,0,8,8.125Z"\n
+                                                transform="translate(0)" fill="#575b6a" />\n
+                                        </svg>\n
+                                    </div>\n
+                                    <span class="aiz-side-nav-text">OTP System</span>\n
+                                                                        <span class="aiz-side-nav-arrow"></span>\n
+                                </a>\n
+                                <ul class="aiz-side-nav-list level-2">\n
+                                                                            <li class="aiz-side-nav-item mx-2">\n
+                                            <a href="http://localhost/admin/otp-configuration" class="aiz-side-nav-link">\n
+                                                <span class="aiz-side-nav-text">OTP Configurations</span>\n
+                                            </a>\n
+                                        </li>\n
+                                                                                                                <li class="aiz-side-nav-item mx-2">\n
+                                            <a href="http://localhost/admin/sms-templates" class="aiz-side-nav-link">\n
+                                                <span class="aiz-side-nav-text">SMS Templates</span>\n
+                                            </a>\n
+                                        </li>\n
+                                                                                                                <li class="aiz-side-nav-item mx-2">\n
+                                            <a href="http://localhost/admin/otp-credentials-configuration" class="aiz-side-nav-link">\n
+                                                <span class="aiz-side-nav-text">Set OTP Credentials</span>\n
+                                            </a>\n
+                                        </li>\n
+                                                                    </ul>\n
+                            </li>\n
+                                            \n
+                    <!-- African Payment Gateway -->\n
+                    \n
+                    <!-- Staffs -->\n
+                                            <li class="aiz-side-nav-item mx-2">\n
+                            <a href="#" class="aiz-side-nav-link">\n
+                                <div class="aiz-side-nav-icon">\n
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"\n
+                                        viewBox="0 0 16 16">\n
+                                        <g id="Group_28314" data-name="Group 28314" transform="translate(-19299 2175)">\n
+                                            <path id="Path_40774" data-name="Path 40774"\n
+                                                d="M87.867,3.07H84.133V1.72A.716.716,0,0,0,83.422,1H80.578a.716.716,0,0,0-.711.72V3.07H76.133A2.149,2.149,0,0,0,74,5.229V14.84A2.149,2.149,0,0,0,76.133,17H87.867A2.149,2.149,0,0,0,90,14.84V5.229A2.149,2.149,0,0,0,87.867,3.07Zm-6.578-.63h1.422V3.79a.711.711,0,1,1-1.422,0Zm7.289,12.4a.716.716,0,0,1-.711.72H76.133a.716.716,0,0,1-.711-.72V5.229a.716.716,0,0,1,.711-.72h3.856a2.124,2.124,0,0,0,4.022,0h3.856a.716.716,0,0,1,.711.72Z"\n
+                                                transform="translate(19225 -2176)" fill="#575b6a" />\n
+                                            <g id="Group_28312" data-name="Group 28312"\n
+                                                transform="translate(19305.07 -2169.197)">\n
+                                                <path id="Path_40775" data-name="Path 40775"\n
+                                                    d="M199.864,197.932a1.932,1.932,0,1,0-1.932,1.932A1.934,1.934,0,0,0,199.864,197.932Zm-1.932.644a.644.644,0,1,1,.644-.644A.645.645,0,0,1,197.932,198.576Z"\n
+                                                    transform="translate(-196 -196)" fill="#575b6a" />\n
+                                            </g>\n
+                                            <g id="Group_28313" data-name="Group 28313"\n
+                                                transform="translate(19303.779 -2165)">\n
+                                                <path id="Path_40776" data-name="Path 40776"\n
+                                                    d="M160.508,316h-2.576A1.934,1.934,0,0,0,156,317.932v1.288a.644.644,0,1,0,1.288,0v-1.288a.645.645,0,0,1,.644-.644h2.576a.645.645,0,0,1,.644.644v1.288a.644.644,0,1,0,1.288,0v-1.288A1.934,1.934,0,0,0,160.508,316Z"\n
+                                                    transform="translate(-156 -316)" fill="#575b6a" />\n
+                                            </g>\n
+                                        </g>\n
+                                    </svg>\n
+                                </div>\n
+                                <span class="aiz-side-nav-text">Staffs</span>\n
+                                <span class="aiz-side-nav-arrow"></span>\n
+                            </a>\n
+                            <ul class="aiz-side-nav-list level-2">\n
+                                                                    <li class="aiz-side-nav-item mx-2">\n
+                                        <a href="http://localhost/admin/staffs"\n
+                                            class="aiz-side-nav-link ">\n
+                                            <span class="aiz-side-nav-text">All staffs</span>\n
+                                        </a>\n
+                                    </li>\n
+                                                                                                    <li class="aiz-side-nav-item mx-2">\n
+                                        <a href="http://localhost/admin/roles"\n
+                                            class="aiz-side-nav-link ">\n
+                                            <span class="aiz-side-nav-text">Staff permissions</span>\n
+                                        </a>\n
+                                    </li>\n
+                                                            </ul>\n
+                        </li>\n
+                    \n
+                    <!-- Addon Manager -->\n
+                    <!---->\n
+                        <!--    <li class="aiz-side-nav-item mx-2">-->\n
+                        <!--        <a href="http://localhost/admin/addons" class="aiz-side-nav-link ">-->\n
+                        <!--            <div class="aiz-side-nav-icon">-->\n
+                        <!--                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">-->\n
+                        <!--                    <path id="_0339d7f72e6ebf7daea77d00de6c6177" data-name="0339d7f72e6ebf7daea77d00de6c6177" d="M12.2,17H9a.533.533,0,0,1-.533-.533v-1.6a1.067,1.067,0,1,0-2.133,0v1.6A.533.533,0,0,1,5.8,17H2.6A1.6,1.6,0,0,1,1,15.4V12.2a.533.533,0,0,1,.533-.533h1.6a1.067,1.067,0,1,0,0-2.133h-1.6A.533.533,0,0,1,1,9V5.8A1.6,1.6,0,0,1,2.6,4.2H5.267V3.133a2.133,2.133,0,1,1,4.267,0V4.2H12.2a1.6,1.6,0,0,1,1.6,1.6V8.467h1.067a2.133,2.133,0,1,1,0,4.267H13.8V15.4A1.6,1.6,0,0,1,12.2,17ZM9.533,15.933H12.2a.533.533,0,0,0,.533-.533V12.2a.533.533,0,0,1,.533-.533h1.6a1.067,1.067,0,1,0,0-2.133h-1.6A.533.533,0,0,1,12.733,9V5.8a.533.533,0,0,0-.533-.533H9a.533.533,0,0,1-.533-.533v-1.6a1.067,1.067,0,1,0-2.133,0v1.6a.533.533,0,0,1-.533.533H2.6a.533.533,0,0,0-.533.533V8.467H3.133a2.133,2.133,0,0,1,0,4.267H2.067V15.4a.533.533,0,0,0,.533.533H5.267V14.867a2.133,2.133,0,0,1,4.267,0Z" transform="translate(-1 -1)" fill="#575b6a"/>-->\n
+                        <!--                </svg>-->\n
+                        <!--            </div>-->\n
+                        <!--            <span class="aiz-side-nav-text">Addon Manager</span>-->\n
+                        <!--        </a>-->\n
+                        <!--    </li>-->\n
+                    <!---->\n
+                </ul><!-- .aiz-side-nav -->\n
+            </div><!-- .aiz-side-nav-wrap -->\n
+        </div><!-- .aiz-sidebar -->\n
+        <div class="aiz-sidebar-overlay"></div>\n
+    </div><!-- .aiz-sidebar -->\n
+        <div class="aiz-content-wrapper">\n
+            <div class="aiz-topbar px-15px px-lg-25px d-flex align-items-stretch justify-content-between">\n
+    <div class="d-flex">\n
+        <!-- Mobile toggler -->\n
+        <div class="aiz-topbar-nav-toggler d-flex align-items-center justify-content-start ml-0 mr-2" data-toggle="aiz-mobile-nav">\n
+            <a class="btn btn-topbar has-transition btn-icon p-0 d-flex align-items-center" href="javascript:void(0)">\n
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">\n
+                    <g id="Group_28009" data-name="Group 28009" transform="translate(0 16) rotate(-90)">\n
+                      <rect id="Rectangle_18283" data-name="Rectangle 18283" width="2" height="7" rx="1" fill="#9da3ae"/>\n
+                      <rect id="Rectangle_16236" data-name="Rectangle 16236" width="2" height="11" rx="1" transform="translate(14)" fill="#9da3ae"/>\n
+                      <rect id="Rectangle_18284" data-name="Rectangle 18284" width="2" height="16" rx="1" transform="translate(7)" fill="#9da3ae"/>\n
+                    </g>\n
+                </svg>\n
+            </a>\n
+        </div>\n
+\n
+    </div>\n
+    <div class="d-flex justify-content-between align-items-stretch flex-grow-1">\n
+        <div class="d-flex justify-content-around align-items-center align-items-stretch">\n
+            <!-- Browse Website -->\n
+            <div class="aiz-topbar-item mr-3">\n
+                <div class="d-flex align-items-center">\n
+                    <a class="btn btn-topbar has-transition btn-icon btn-circle btn-light p-0 hov-bg-primary hov-svg-white d-flex align-items-center justify-content-center"\n
+                        href="http://localhost" target="_blank" data-toggle="tooltip" data-title="Browse Website">\n
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">\n
+                            <path id="_754bac7463b8b1afad8e10a2355d1700" data-name="754bac7463b8b1afad8e10a2355d1700" d="M56,48a8,8,0,1,0,8,8A8,8,0,0,0,56,48Zm-.829,14.808a6.858,6.858,0,0,1-4.39-11.256,7.6,7.6,0,0,1,.077.93,2.966,2.966,0,0,0,.382,2.26,3.729,3.729,0,0,1,.362,1.08c.1.341.5.519.77.729.552.423,1.081.916,1.666,1.288.387.246.628.368.515.84a2.98,2.98,0,0,1-.313.951,1.927,1.927,0,0,0,.321.861c.288.288.575.553.889.813C55.938,61.706,55.4,62.229,55.171,62.808Zm5.678-1.959a6.808,6.808,0,0,1-3.56,1.888,2.844,2.844,0,0,1,.842-1.129,2.865,2.865,0,0,0,.757-.937,6.506,6.506,0,0,1,.522-.893c.272-.419-.67-1.051-.975-1.184a10.052,10.052,0,0,1-1.814-1.13c-.435-.306-1.318.16-1.808-.054A9.462,9.462,0,0,1,53,56.166c-.6-.454-.574-.984-.574-1.654.472.017,1.144-.131,1.458.249.1.12.439.655.667.465.186-.155-.138-.779-.2-.925-.193-.451.439-.626.762-.932.422-.4,1.326-1.024,1.254-1.309s-.9-1.1-1.394-.969c-.073.019-.719.7-.844.8q0-.332.01-.663c0-.14-.26-.283-.248-.373.031-.227.664-.64.821-.821-.11-.069-.487-.392-.6-.345-.276.115-.588.194-.863.309a1.756,1.756,0,0,0-.025-.274,6.792,6.792,0,0,1,1.743-.506l.542.218.382.454.382.394.334.108.53-.5L57,49.536v-.321a6.782,6.782,0,0,1,2.9,1.146c-.155.014-.326.037-.518.061a1.723,1.723,0,0,0-.268-.1c.251.54.513,1.073.779,1.606.284.569.915,1.18,1.026,1.781.131.708.04,1.352.111,2.185a3.732,3.732,0,0,0,.9,1.714,1.812,1.812,0,0,0,.707.086A6.815,6.815,0,0,1,60.849,60.849Z" transform="translate(-48 -48)" fill="#717580"/>\n
+                        </svg>\n
+                    </a>\n
+                </div>\n
+            </div>\n
+                        <!-- POS -->\n
+            <div class="aiz-topbar-item mr-3">\n
+                <div class="d-flex align-items-center">\n
+                    <a class="btn btn-topbar has-transition btn-icon btn-circle btn-light p-0 hov-bg-primary hov-svg-white d-flex align-items-center justify-content-center"\n
+                        href="http://localhost/admin/pos" target="_blank" data-toggle="tooltip" data-title="POS">\n
+                        <svg xmlns="http://www.w3.org/2000/svg" width="13.79" height="16" viewBox="0 0 13.79 16">\n
+                            <g id="_371925cdd3f531725a9fa8f3ebf8fe9e" data-name="371925cdd3f531725a9fa8f3ebf8fe9e" transform="translate(-2.26 0)">\n
+                            <path id="Path_40673" data-name="Path 40673" d="M10.69,7H3.26a1.025,1.025,0,0,0-1,1V18.45a1.03,1.03,0,0,0,1,1.05h7.43a1.03,1.03,0,0,0,1.03-1.03V8A1.025,1.025,0,0,0,10.69,7ZM4.94,17.86H3.995v-.95H4.94Zm0-2.355H3.995v-.95H4.94Zm0-2.355H3.995V12.2H4.94Zm2.5,4.71H6.5v-.95h.955Zm0-2.355H6.5v-.95h.955Zm0-2.355H6.5V12.2h.955Zm2.5,4.71H8.99v-.95h.95Zm0-2.355H8.99v-.95h.95Zm0-2.355H8.99V12.2h.95Zm.325-3a.17.17,0,0,1-.165.17H3.835a.17.17,0,0,1-.165-.17V8.795a.165.165,0,0,1,.165-.165H10.13a.165.165,0,0,1,.165.165Zm5.09-1.45H15.13v9.09h.25a.67.67,0,0,0,.67-.67V9.375a.67.67,0,0,0-.695-.675Z" transform="translate(0 -3.5)" fill="#717580"/>\n
+                            <rect id="Rectangle_20842" data-name="Rectangle 20842" width="1.465" height="9.095" transform="translate(12.185 5.2)" fill="#717580"/>\n
+                            <rect id="Rectangle_20843" data-name="Rectangle 20843" width="0.63" height="9.095" transform="translate(14.06 5.2)" fill="#717580"/>\n
+                            <path id="Path_40674" data-name="Path 40674" d="M13.895.895a.89.89,0,0,0-.26-.635A.91.91,0,0,0,13,0a.895.895,0,0,0-.91.895v.53h1.79Zm-2.2,0a.76.76,0,0,1,0-.145.68.68,0,0,1,0-.1h.01A.5.5,0,0,1,11.755.5.43.43,0,0,1,11.79.4a1.2,1.2,0,0,1,.145-.26.5.5,0,0,1,.04-.055L12.045,0H7.995A.815.815,0,0,0,7.18.81V3.03h4.5Z" transform="translate(-2.46)" fill="#717580"/>\n
+                            </g>\n
+                        </svg>\n
+                    </a>\n
+                </div>\n
+            </div>\n
+                        <!-- Clear Cache -->\n
+            <div class="aiz-topbar-item mr-3">\n
+                <div class="d-flex align-items-center">\n
+                    <a class="btn btn-topbar has-transition btn-icon btn-circle btn-light p-0 hov-bg-primary hov-svg-white d-flex align-items-center justify-content-center"\n
+                        href="http://localhost/admin/clear-cache" data-toggle="tooltip" data-title="Clear Cache">\n
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">\n
+                            <path id="_74846e5be5db5b666d3893933be03656" data-name="74846e5be5db5b666d3893933be03656" d="M7.719,8.911H8.9V10.1H7.719v1.185H6.539V10.1H5.36V8.911h1.18V7.726h1.18ZM5.36,13.652h1.18v1.185H5.36v1.185H4.18V14.837H3V13.652H4.18V12.467H5.36Zm13.626-2.763H10.138V10.3a1.182,1.182,0,0,1,1.18-1.185h2.36V2h1.77V9.111h2.36a1.182,1.182,0,0,1,1.18,1.185ZM18.4,18H16.044a9.259,9.259,0,0,0,.582-2.963.59.59,0,1,0-1.18,0A7.69,7.69,0,0,1,14.755,18H12.5a9.259,9.259,0,0,0,.582-2.963.59.59,0,1,0-1.18,0A7.69,7.69,0,0,1,11.216,18H8.958a22.825,22.825,0,0,0,1.163-5.926H18.99A19.124,19.124,0,0,1,18.4,18Z" transform="translate(-3 -2)" fill="#717580"/>\n
+                        </svg>\n
+                    </a>\n
+                </div>\n
+            </div>\n
+            <!-- Topbar menus -->\n
+            <div class="aiz-topbar-item mr-2 d-none d-xl-block">\n
+                <div class="d-flex align-items-center h-100">\n
+                    <a class="aiz-topbar-menu fs-13 fw-600 d-flex align-items-center justify-content-center "\n
+                        href="http://localhost/admin">Dashboard</a>\n
+                                            <a class="aiz-topbar-menu fs-13 fw-600 d-flex align-items-center justify-content-center "\n
+                            href="http://localhost/admin/all_orders">Orders</a>\n
+                                                            <a class="aiz-topbar-menu fs-13 fw-600 d-flex align-items-center justify-content-center "\n
+                        href="http://localhost/draft/index">Draft</a>\n
+                                        <a class="aiz-topbar-menu fs-13 fw-600 d-flex align-items-center justify-content-center "\n
+                            href="http://localhost/admin/accounts">Accounts</a>\n
+                                            <a class="aiz-topbar-menu fs-13 fw-600 d-flex align-items-center justify-content-center "\n
+                            href="http://localhost/admin/website/custom-pages/edit/home?page=home">Homepage Settings</a>\n
+                                    </div>\n
+            </div>\n
+            <!-- Add New Button -->\n
+            <div class="d-flex justify-content-around align-items-center align-items-stretch">\n
+                <div class="aiz-topbar-item d-none d-sm-block">\n
+                    <div class="d-flex align-items-center h-100 dropdown">\n
+                        <a class="dropdown-toggle no-arrow h-100" data-toggle="dropdown" href="javascript:void(0);"\n
+                            role="button" aria-haspopup="false" aria-expanded="false">\n
+                            <span class="btn btn-soft-blue btn-sm d-flex align-items-center rounded-2 hov-svg-white">\n
+                                <span class="fw-500 mx-2 mr-0 d-none d-md-block">Add New</span>\n
+                                <i class="las fs-18 la-plus"></i>\n
+                            </span>\n
+                        </a>\n
+\n
+                        <div class="dropdown-menu dropdown-menu-left dropdown-menu-animated dropdown-menu-md" style="top: 15px !important;">\n
+                                                            <a href="http://localhost/admin/products/create" class="dropdown-item">\n
+                                    <i class="las la-plus"></i>\n
+                                    <span>New Product</span>\n
+                                </a>\n
+                                                                                        <a href="http://localhost/admin/categories/create" class="dropdown-item">\n
+                                    <i class="las la-plus"></i>\n
+                                    <span>New Category</span>\n
+                                </a>\n
+                                                                                        <a href="http://localhost/admin/brands" class="dropdown-item">\n
+                                    <i class="las la-plus"></i>\n
+                                    <span>New Brand</span>\n
+                                </a>\n
+                                                    </div>\n
+\n
+                    </div>\n
+                </div>\n
+            </div>\n
+        </div>\n
+        <div class="d-flex justify-content-around align-items-center align-items-stretch">\n
+            <!-- Notifications -->\n
+                            <div class="aiz-topbar-item mr-3">\n
+                    <div class="align-items-stretch d-flex dropdown">\n
+                        <a class="dropdown-toggle no-arrow" data-toggle="dropdown" href="javascript:void(0);" role="button"\n
+                            aria-haspopup="false" aria-expanded="false">\n
+                            <span class="btn btn-topbar btn-circle btn-light p-0 d-flex justify-content-center align-items-center" data-toggle="tooltip" data-title="Notification">\n
+                                <span class="d-flex align-items-center position-relative">\n
+                                    <div class="px-2 hov-svg-dark">\n
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="16" viewBox="0 0 14 16">\n
+                                            <g id="Group_23884" data-name="Group 23884" transform="translate(-677 5110)">\n
+                                            <path id="Union_38" data-name="Union 38" d="M5.5,16a.5.5,0,0,1,0-1h3a.5.5,0,1,1,0,1Zm-5-2a.5.5,0,0,1,0-1H2V7A5.008,5.008,0,0,1,6.5,2.025V.5a.5.5,0,1,1,1,0V2.025A5.007,5.007,0,0,1,12,7H11A4,4,0,1,0,3,7v6h8V7h1v6h1.5a.5.5,0,1,1,0,1Z" transform="translate(677 -5110)" fill="#9da3ae"/>\n
+                                            </g>\n
+                                        </svg>\n
+                                    </div>\n
+                                                                    </span>\n
+                            </span>\n
+                        </a>\n
+\n
+                        <div class="dropdown-menu dropdown-menu-right dropdown-menu-animated dropdown-menu-xl py-0">\n
+                            <div class="notifications">\n
+                                <ul class="nav nav-tabs nav-justified" role="tablist">\n
+                                    <li class="nav-item">\n
+                                        <a class="nav-link text-dark active" data-toggle="tab" data-type="order" href="javascript:void(0);"\n
+                                            data-target="#orders-notifications" role="tab" id="orders-tab">Orders</a>\n
+                                    </li>\n
+                                    <li class="nav-item">\n
+                                        <a class="nav-link text-dark" data-toggle="tab" data-type="seller" href="javascript:void(0);"\n
+                                            data-target="#sellers-notifications" role="tab" id="sellers-tab">Sellers</a>\n
+                                    </li>\n
+                                    <li class="nav-item">\n
+                                        <a class="nav-link text-dark" data-toggle="tab" data-type="seller" href="javascript:void(0);"\n
+                                            data-target="#payouts-notifications" role="tab" id="sellers-tab">Payouts</a>\n
+                                    </li>\n
+                                </ul>\n
+                                <div class="tab-content c-scrollbar-light overflow-auto" style="height: 75vh; max-height: 400px; overflow-y: auto;">\n
+                                    <div class="tab-pane active" id="orders-notifications" role="tabpanel">\n
+                                        <li class="list-group-item">\n
+        <div class="py-4 text-center fs-16">No notification found</div>\n
+    </li>\n
+                                    </div>\n
+                                    <div class="tab-pane" id="sellers-notifications" role="tabpanel">\n
+                                        <li class="list-group-item">\n
+        <div class="py-4 text-center fs-16">No notification found</div>\n
+    </li>\n
+                                    </div>\n
+                                    <div class="tab-pane" id="payouts-notifications" role="tabpanel">\n
+                                        <li class="list-group-item">\n
+        <div class="py-4 text-center fs-16">No notification found</div>\n
+    </li>\n
+                                    </div>\n
+                                </div>\n
+                            </div>\n
+\n
+                            <div class="text-center border-top">\n
+                                <a href="http://localhost/admin/all-notifications" class="text-reset d-block py-2">\n
+                                    View All Notifications\n
+                                </a>\n
+                            </div>\n
+                        </div>\n
+                    </div>\n
+                </div>\n
+            \n
+            <!-- language -->\n
+                        <div class="aiz-topbar-item mr-3">\n
+                <div class="align-items-stretch d-flex dropdown" id="lang-change">\n
+                    <a class="dropdown-toggle no-arrow" data-toggle="dropdown" href="javascript:void(0);"\n
+                        role="button" aria-haspopup="false" aria-expanded="false">\n
+                        <span class="btn btn-topbar btn-circle btn-light p-0 d-flex justify-content-center align-items-center" data-toggle="tooltip" data-title="Language">\n
+                            <img src="http://localhost/assets/img/flags/en.png" height="11">\n
+                        </span>\n
+                    </a>\n
+                    <ul class="dropdown-menu dropdown-menu-right dropdown-menu-animated dropdown-menu-xs">\n
+\n
+                                                    <li>\n
+                                <a href="javascript:void(0)" data-flag="en"\n
+                                    class="dropdown-item  active ">\n
+                                    <img src="http://localhost/assets/img/flags/en.png"\n
+                                        class="mr-2">\n
+                                    <span class="language">English</span>\n
+                                </a>\n
+                            </li>\n
+                                            </ul>\n
+                </div>\n
+            </div>\n
+            <!-- User -->\n
+            <div class="aiz-topbar-item">\n
+                <div class="align-items-stretch d-flex dropdown">\n
+                    <!-- Image & Name -->\n
+                    <a class="dropdown-toggle no-arrow text-dark" data-toggle="dropdown" href="javascript:void(0);"\n
+                        role="button" aria-haspopup="false" aria-expanded="false">\n
+                        <span class="d-flex align-items-center">\n
+                            <span class="d-none d-md-block">\n
+                                <span class="d-block fw-500">Admin ajgIP</span>\n
+                                <span class="d-block small opacity-60 text-right">admin</span>\n
+                            </span>\n
+                            <span class="size-40px rounded-content overflow-hidden ml-md-2">\n
+                                <img src="http://localhost/assets/img/placeholder.jpg" class="img-fit"\n
+                                    onerror="this.onerror=null;this.src='http://localhost/assets/img/avatar-place.png';">\n
+                            </span>\n
+                        </span>\n
+                    </a>\n
+                    <!-- User dropdown Menus -->\n
+                    <div class="dropdown-menu dropdown-menu-right dropdown-menu-animated dropdown-menu-md">\n
+                        <a href="http://localhost/admin/profile" class="dropdown-item">\n
+                            <i class="las la-user-circle"></i>\n
+                            <span>Profile</span>\n
+                        </a>\n
+\n
+                        <a href="http://localhost/logout" class="dropdown-item">\n
+                            <i class="las la-sign-out-alt"></i>\n
+                            <span>Logout</span>\n
+                        </a>\n
+                    </div>\n
+                </div>\n
+            </div><!-- .aiz-topbar-item -->\n
+        </div>\n
+    </div>\n
+</div><!-- .aiz-topbar -->\n
+            <div class="aiz-main-content" >\n
+                <div class="px-15px px-lg-25px">\n
+                    \n
+<style>\n
+    .aiz-table tr td,\n
+    .aiz-table thead th {\n
+        vertical-align: middle;\n
+        padding: 0.6rem 0.5rem;\n
+    }\n
+    .funnel-thumb {\n
+        width: 56px;\n
+        height: 56px;\n
+        border-radius: 8px;\n
+        background: #f2f3f8;\n
+        flex-shrink: 0;\n
+        overflow: hidden;\n
+        display: flex;\n
+        align-items: center;\n
+        justify-content: center;\n
+    }\n
+    .funnel-thumb img { width: 100%; height: 100%; object-fit: cover; }\n
+    .funnel-products img {\n
+        width: 28px;\n
+        height: 28px;\n
+        border-radius: 6px;\n
+        object-fit: cover;\n
+        border: 2px solid #fff;\n
+        margin-right: -8px;\n
+        background: #f2f3f8;\n
+    }\n
+    .funnel-tabs .nav-link { padding: 0.5rem 0.9rem; }\n
+    .action-toggle.dropdown-toggle::after {\n
+        margin-left: auto;\n
+        width: 100%;\n
+        display: flex;\n
+        align-items: center;\n
+        justify-content: center;\n
+    }\n
+    .funnel-actions .dropdown-item[disabled] { opacity: .5; pointer-events: none; }\n
+    .funnel-actions form { margin: 0; }\n
+    .funnel-actions form button { width: 100%; text-align: left; }\n
+    .min-w-0 { min-width: 0; }\n
+    /* Long titles and addresses are cut, never pushed past a phone's edge. */\n
+    .funnel-name { max-width: min(320px, 52vw); }\n
+    @media (max-width: 575.98px) {\n
+        .funnel-name { max-width: 46vw; }\n
+    }\n
+</style>\n
+\n
+\n
+<div class="aiz-titlebar text-left mt-2 mb-3">\n
+    <div class="row align-items-center">\n
+        <div class="col-md-6">\n
+            <h1 class="h3">Sales Funnels</h1>\n
+            <p class="text-muted mb-0 fs-13">Landing pages that sell your existing products. Orders arrive in the normal Orders list.</p>\n
+        </div>\n
+                    <div class="col-md-6 text-md-right mt-2 mt-md-0">\n
+                <a href="http://localhost/admin/funnels/create" class="btn btn-circle btn-info">\n
+                    <span>Create New Funnel</span>\n
+                </a>\n
+            </div>\n
+            </div>\n
+</div>\n
+\n
+    <ul class="nav nav-tabs funnel-tabs mb-3">\n
+        <li class="nav-item">\n
+            <a class="nav-link active" href="http://localhost/admin/funnels">\n
+                All <span class="badge badge-inline badge-soft-secondary ml-1">4</span>\n
+            </a>\n
+        </li>\n
+                    <li class="nav-item">\n
+                <a class="nav-link " href="http://localhost/admin/funnels?status=draft">\n
+                    Draft <span class="badge badge-inline badge-soft-secondary ml-1">1</span>\n
+                </a>\n
+            </li>\n
+                    <li class="nav-item">\n
+                <a class="nav-link " href="http://localhost/admin/funnels?status=published">\n
+                    Published <span class="badge badge-inline badge-soft-secondary ml-1">3</span>\n
+                </a>\n
+            </li>\n
+                    <li class="nav-item">\n
+                <a class="nav-link " href="http://localhost/admin/funnels?status=scheduled">\n
+                    Scheduled <span class="badge badge-inline badge-soft-secondary ml-1">0</span>\n
+                </a>\n
+            </li>\n
+                    <li class="nav-item">\n
+                <a class="nav-link " href="http://localhost/admin/funnels?status=unpublished">\n
+                    UNPUBLISHED <span class="badge badge-inline badge-soft-secondary ml-1">0</span>\n
+                </a>\n
+            </li>\n
+                    <li class="nav-item">\n
+                <a class="nav-link " href="http://localhost/admin/funnels?status=archived">\n
+                    Archived <span class="badge badge-inline badge-soft-secondary ml-1">0</span>\n
+                </a>\n
+            </li>\n
+            </ul>\n
+\n
+    <div class="card">\n
+        <form id="funnel-filters" action="http://localhost/admin/funnels" method="GET">\n
+                        <div class="card-header row gutters-5">\n
+                <div class="col">\n
+                    <h5 class="mb-0 h6">All Funnels</h5>\n
+                </div>\n
+                <div class="col-md-3">\n
+                    <select class="form-control aiz-selectpicker" name="sort" onchange="this.form.submit()">\n
+                        <option value="updated" selected>Last modified</option>\n
+                        <option value="created" >Newest first</option>\n
+                        <option value="published" >Recently published</option>\n
+                        <option value="title" >Title A–Z</option>\n
+                    </select>\n
+                </div>\n
+                <div class="col-md-4">\n
+                    <input type="text" class="form-control" name="search" value="" placeholder="Search by title, URL or ID and press Enter">\n
+                </div>\n
+            </div>\n
+        </form>\n
+\n
+        <div class="card-body">\n
+                            <table class="table aiz-table mb-0">\n
+                    <thead>\n
+                        <tr>\n
+                            <th>Funnel</th>\n
+                            <th data-breakpoints="md">Status</th>\n
+                            <th data-breakpoints="lg">Products</th>\n
+                                                            <th data-breakpoints="md" class="text-right" title="Visitors: people who opened the page. Conversion: visitors who ordered, divided by visitors. Revenue: orders paid or delivered, not cancelled.">Last 30 days</th>\n
+                                                        <th data-breakpoints="lg">Last modified</th>\n
+                            <th class="text-right">Actions</th>\n
+                        </tr>\n
+                    </thead>\n
+                    <tbody>\n
+                                                                                <tr>\n
+                                <td>\n
+                                    <div class="d-flex align-items-center">\n
+                                        <div class="funnel-thumb mr-3">\n
+                                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#a1a5b3" stroke-width="1.5" aria-hidden="true"><path d="M3 4h18l-7 8v6l-4 2v-8z"/></svg>\n
+                                                                                    </div>\n
+                                        <div class="min-w-0">\n
+                                            <div class="fs-14 fw-700 text-truncate funnel-name">blank page</div>\n
+                                                                                        <div class="fs-12 text-secondary d-flex flex-wrap align-items-center" style="gap: 0 6px;">\n
+                                                <span class="text-truncate funnel-name">/funnel/blank-page</span>\n
+                                                                                                    <button type="button" class="btn btn-link p-0 fs-12 funnel-copy" data-url="http://shop.test/funnel/blank-page" data-done="Copied">Copy Link</button>\n
+                                                                                            </div>\n
+                                            \n
+                                                                                            <a href="http://localhost/admin/funnels/515/builder" class="btn btn-sm btn-primary mt-2 d-md-none funnel-open-builder">Open Visual Builder</a>\n
+                                                                                    </div>\n
+                                    </div>\n
+                                </td>\n
+                                <td>\n
+                                    <span class="badge badge-inline badge-soft-success">Published</span>\n
+                                                                                                        </td>\n
+                                <td>\n
+                                                                                                                <div class="fs-11 text-danger mt-1">\n
+                                            7 products no longer in the catalogue\n
+                                        </div>\n
+                                                                    </td>\n
+                                                                                                        <td class="text-right fs-12 text-nowrap funnel-figures">\n
+                                        <div><span class="text-muted">Visitors</span> <strong>2</strong></div>\n
+                                        <div>\n
+                                            <span class="text-muted">Orders</span> <strong>0</strong>\n
+                                            <span class="text-muted">· 0%</span>\n
+                                        </div>\n
+                                        <div><span class="text-muted">Revenue</span> <strong>৳0</strong></div>\n
+                                    </td>\n
+                                                                <td class="fs-12">\n
+                                    <div>30 Oct 2026, 09:24 AM</div>\n
+                                                                            <div class="text-muted">by Staging admin 9</div>\n
+                                                                    </td>\n
+                                <td>\n
+                                    <div class="d-flex align-items-center justify-content-end funnel-row-actions">\n
+                                                                            <a href="http://localhost/admin/funnels/515/builder" class="btn btn-sm btn-primary text-nowrap mr-2 d-none d-md-inline-block funnel-open-builder">Open Visual Builder</a>\n
+                                                                        <div class="dropdown funnel-actions">\n
+                                        <button class="btn btn-light size-40px action-toggle dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="Actions"></button>\n
+                                        <div class="dropdown-menu dropdown-menu-right">\n
+                                                                                                                                                <a class="dropdown-item" href="http://localhost/admin/funnels/515/builder">Edit</a>\n
+                                                                                            \n
+                                                                                            <a class="dropdown-item" href="http://localhost/admin/all_orders?funnel_id=515">View orders</a>\n
+                                                                                                                                        <a class="dropdown-item" href="http://localhost/admin/funnels/analytics?funnel=515">Analytics</a>\n
+                                                                                                                                        <a class="dropdown-item" href="http://shop.test/funnel/blank-page" target="_blank" rel="noopener">View live page</a>\n
+                                            \n
+                                                                                                                                                                                                <form method="POST" action="http://localhost/admin/funnels/515/unpublish" data-confirm="Unpublish this funnel? Its link will stop working until you publish again.">\n
+                                                        <input type="hidden" name="_token" value="Zx3jjIRkcaVHBlIEvLishxsFJZmIngNFkdG4qSL2">                                                        <button type="submit" class="dropdown-item">Unpublish</button>\n
+                                                    </form>\n
+                                                                                            \n
+                                                                                            <form method="POST" action="http://localhost/admin/funnels/515/duplicate">\n
+                                                    <input type="hidden" name="_token" value="Zx3jjIRkcaVHBlIEvLishxsFJZmIngNFkdG4qSL2">                                                    <button type="submit" class="dropdown-item">Duplicate</button>\n
+                                                </form>\n
+                                                <button type="button" class="dropdown-item" data-save-template="515" data-name="blank page">Save as template</button>\n
+                                            \n
+                                                                                                                                                <form method="POST" action="http://localhost/admin/funnels/515/archive" data-confirm="Archive this funnel? It goes offline and is kept for reference.">\n
+                                                        <input type="hidden" name="_token" value="Zx3jjIRkcaVHBlIEvLishxsFJZmIngNFkdG4qSL2">                                                        <button type="submit" class="dropdown-item">Archive</button>\n
+                                                    </form>\n
+                                                                                            \n
+                                                                                            <div class="dropdown-divider"></div>\n
+                                                <form method="POST" action="http://localhost/admin/funnels/515" data-confirm="Delete this funnel? Orders placed through it are kept. This cannot be undone from the dashboard.">\n
+                                                    <input type="hidden" name="_token" value="Zx3jjIRkcaVHBlIEvLishxsFJZmIngNFkdG4qSL2">                                                    <input type="hidden" name="_method" value="DELETE">                                                    <button type="submit" class="dropdown-item text-danger">Delete</button>\n
+                                                </form>\n
+                                                                                    </div>\n
+                                    </div>\n
+                                    </div>\n
+                                </td>\n
+                            </tr>\n
+                                                                                <tr>\n
+                                <td>\n
+                                    <div class="d-flex align-items-center">\n
+                                        <div class="funnel-thumb mr-3">\n
+                                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#a1a5b3" stroke-width="1.5" aria-hidden="true"><path d="M3 4h18l-7 8v6l-4 2v-8z"/></svg>\n
+                                                                                    </div>\n
+                                        <div class="min-w-0">\n
+                                            <div class="fs-14 fw-700 text-truncate funnel-name">Local setup check</div>\n
+                                                                                            <div class="fs-12 text-muted text-truncate funnel-name">Local setup check (safe to delete)</div>\n
+                                                                                        <div class="fs-12 text-secondary d-flex flex-wrap align-items-center" style="gap: 0 6px;">\n
+                                                <span class="text-truncate funnel-name">/funnel/local-setup-check</span>\n
+                                                                                                    <button type="button" class="btn btn-link p-0 fs-12 funnel-copy" data-url="http://shop.test/funnel/local-setup-check" data-done="Copied">Copy Link</button>\n
+                                                                                            </div>\n
+                                            \n
+                                                                                            <a href="http://localhost/admin/funnels/512/builder" class="btn btn-sm btn-primary mt-2 d-md-none funnel-open-builder">Open Visual Builder</a>\n
+                                                                                    </div>\n
+                                    </div>\n
+                                </td>\n
+                                <td>\n
+                                    <span class="badge badge-inline badge-soft-success">Published</span>\n
+                                                                            <div class="fs-11 text-warning mt-1">Has unpublished changes</div>\n
+                                                                                                        </td>\n
+                                <td>\n
+                                                                                                                <div class="fs-11 text-danger mt-1">\n
+                                            1 product no longer in the catalogue\n
+                                        </div>\n
+                                                                    </td>\n
+                                                                                                        <td class="text-right fs-12 text-nowrap funnel-figures">\n
+                                        <div><span class="text-muted">Visitors</span> <strong>1</strong></div>\n
+                                        <div>\n
+                                            <span class="text-muted">Orders</span> <strong>0</strong>\n
+                                            <span class="text-muted">· 0%</span>\n
+                                        </div>\n
+                                        <div><span class="text-muted">Revenue</span> <strong>৳0</strong></div>\n
+                                    </td>\n
+                                                                <td class="fs-12">\n
+                                    <div>30 Oct 2026, 07:52 AM</div>\n
+                                                                            <div class="text-muted">by Staging admin 9</div>\n
+                                                                    </td>\n
+                                <td>\n
+                                    <div class="d-flex align-items-center justify-content-end funnel-row-actions">\n
+                                                                            <a href="http://localhost/admin/funnels/512/builder" class="btn btn-sm btn-primary text-nowrap mr-2 d-none d-md-inline-block funnel-open-builder">Open Visual Builder</a>\n
+                                                                        <div class="dropdown funnel-actions">\n
+                                        <button class="btn btn-light size-40px action-toggle dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="Actions"></button>\n
+                                        <div class="dropdown-menu dropdown-menu-right">\n
+                                                                                                                                                <a class="dropdown-item" href="http://localhost/admin/funnels/512/builder">Edit</a>\n
+                                                                                            \n
+                                                                                            <a class="dropdown-item" href="http://localhost/admin/all_orders?funnel_id=512">View orders</a>\n
+                                                                                                                                        <a class="dropdown-item" href="http://localhost/admin/funnels/analytics?funnel=512">Analytics</a>\n
+                                                                                                                                        <a class="dropdown-item" href="http://shop.test/funnel/local-setup-check" target="_blank" rel="noopener">View live page</a>\n
+                                            \n
+                                                                                                                                                <form method="POST" action="http://localhost/admin/funnels/512/publish" data-confirm="Publish the current draft? Customers will see it immediately.">\n
+                                                        <input type="hidden" name="_token" value="Zx3jjIRkcaVHBlIEvLishxsFJZmIngNFkdG4qSL2">                                                        <button type="submit" class="dropdown-item">Publish changes</button>\n
+                                                    </form>\n
+                                                                                                                                                    <form method="POST" action="http://localhost/admin/funnels/512/unpublish" data-confirm="Unpublish this funnel? Its link will stop working until you publish again.">\n
+                                                        <input type="hidden" name="_token" value="Zx3jjIRkcaVHBlIEvLishxsFJZmIngNFkdG4qSL2">                                                        <button type="submit" class="dropdown-item">Unpublish</button>\n
+                                                    </form>\n
+                                                                                            \n
+                                                                                            <form method="POST" action="http://localhost/admin/funnels/512/duplicate">\n
+                                                    <input type="hidden" name="_token" value="Zx3jjIRkcaVHBlIEvLishxsFJZmIngNFkdG4qSL2">                                                    <button type="submit" class="dropdown-item">Duplicate</button>\n
+                                                </form>\n
+                                                <button type="button" class="dropdown-item" data-save-template="512" data-name="Local setup check">Save as template</button>\n
+                                            \n
+                                                                                                                                                <form method="POST" action="http://localhost/admin/funnels/512/archive" data-confirm="Archive this funnel? It goes offline and is kept for reference.">\n
+                                                        <input type="hidden" name="_token" value="Zx3jjIRkcaVHBlIEvLishxsFJZmIngNFkdG4qSL2">                                                        <button type="submit" class="dropdown-item">Archive</button>\n
+                                                    </form>\n
+                                                                                            \n
+                                                                                            <div class="dropdown-divider"></div>\n
+                                                <form method="POST" action="http://localhost/admin/funnels/512" data-confirm="Delete this funnel? Orders placed through it are kept. This cannot be undone from the dashboard.">\n
+                                                    <input type="hidden" name="_token" value="Zx3jjIRkcaVHBlIEvLishxsFJZmIngNFkdG4qSL2">                                                    <input type="hidden" name="_method" value="DELETE">                                                    <button type="submit" class="dropdown-item text-danger">Delete</button>\n
+                                                </form>\n
+                                                                                    </div>\n
+                                    </div>\n
+                                    </div>\n
+                                </td>\n
+                            </tr>\n
+                                                                                <tr>\n
+                                <td>\n
+                                    <div class="d-flex align-items-center">\n
+                                        <div class="funnel-thumb mr-3">\n
+                                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#a1a5b3" stroke-width="1.5" aria-hidden="true"><path d="M3 4h18l-7 8v6l-4 2v-8z"/></svg>\n
+                                                                                    </div>\n
+                                        <div class="min-w-0">\n
+                                            <div class="fs-14 fw-700 text-truncate funnel-name">Visual builder check</div>\n
+                                                                                        <div class="fs-12 text-secondary d-flex flex-wrap align-items-center" style="gap: 0 6px;">\n
+                                                <span class="text-truncate funnel-name">/funnel/visual-builder-check-mvuo69vy</span>\n
+                                                                                                    <button type="button" class="btn btn-link p-0 fs-12 funnel-copy" data-url="http://shop.test/funnel/visual-builder-check-mvuo69vy" data-done="Copied">Copy Link</button>\n
+                                                                                            </div>\n
+                                            \n
+                                                                                            <a href="http://localhost/admin/funnels/514/builder" class="btn btn-sm btn-primary mt-2 d-md-none funnel-open-builder">Open Visual Builder</a>\n
+                                                                                    </div>\n
+                                    </div>\n
+                                </td>\n
+                                <td>\n
+                                    <span class="badge badge-inline badge-soft-success">Published</span>\n
+                                                                                                        </td>\n
+                                <td>\n
+                                                                                                                <div class="fs-11 text-danger mt-1">\n
+                                            1 product no longer in the catalogue\n
+                                        </div>\n
+                                                                    </td>\n
+                                                                                                        <td class="text-right fs-12 text-nowrap funnel-figures">\n
+                                        <div><span class="text-muted">Visitors</span> <strong>1</strong></div>\n
+                                        <div>\n
+                                            <span class="text-muted">Orders</span> <strong>0</strong>\n
+                                            <span class="text-muted">· 0%</span>\n
+                                        </div>\n
+                                        <div><span class="text-muted">Revenue</span> <strong>৳0</strong></div>\n
+                                    </td>\n
+                                                                <td class="fs-12">\n
+                                    <div>30 Oct 2026, 07:48 AM</div>\n
+                                                                            <div class="text-muted">by Staging admin 9</div>\n
+                                                                    </td>\n
+                                <td>\n
+                                    <div class="d-flex align-items-center justify-content-end funnel-row-actions">\n
+                                                                            <a href="http://localhost/admin/funnels/514/builder" class="btn btn-sm btn-primary text-nowrap mr-2 d-none d-md-inline-block funnel-open-builder">Open Visual Builder</a>\n
+                                                                        <div class="dropdown funnel-actions">\n
+                                        <button class="btn btn-light size-40px action-toggle dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="Actions"></button>\n
+                                        <div class="dropdown-menu dropdown-menu-right">\n
+                                                                                                                                                <a class="dropdown-item" href="http://localhost/admin/funnels/514/builder">Edit</a>\n
+                                                                                            \n
+                                                                                            <a class="dropdown-item" href="http://localhost/admin/all_orders?funnel_id=514">View orders</a>\n
+                                                                                                                                        <a class="dropdown-item" href="http://localhost/admin/funnels/analytics?funnel=514">Analytics</a>\n
+                                                                                                                                        <a class="dropdown-item" href="http://shop.test/funnel/visual-builder-check-mvuo69vy" target="_blank" rel="noopener">View live page</a>\n
+                                            \n
+                                                                                                                                                                                                <form method="POST" action="http://localhost/admin/funnels/514/unpublish" data-confirm="Unpublish this funnel? Its link will stop working until you publish again.">\n
+                                                        <input type="hidden" name="_token" value="Zx3jjIRkcaVHBlIEvLishxsFJZmIngNFkdG4qSL2">                                                        <button type="submit" class="dropdown-item">Unpublish</button>\n
+                                                    </form>\n
+                                                                                            \n
+                                                                                            <form method="POST" action="http://localhost/admin/funnels/514/duplicate">\n
+                                                    <input type="hidden" name="_token" value="Zx3jjIRkcaVHBlIEvLishxsFJZmIngNFkdG4qSL2">                                                    <button type="submit" class="dropdown-item">Duplicate</button>\n
+                                                </form>\n
+                                                <button type="button" class="dropdown-item" data-save-template="514" data-name="Visual builder check">Save as template</button>\n
+                                            \n
+                                                                                                                                                <form method="POST" action="http://localhost/admin/funnels/514/archive" data-confirm="Archive this funnel? It goes offline and is kept for reference.">\n
+                                                        <input type="hidden" name="_token" value="Zx3jjIRkcaVHBlIEvLishxsFJZmIngNFkdG4qSL2">                                                        <button type="submit" class="dropdown-item">Archive</button>\n
+                                                    </form>\n
+                                                                                            \n
+                                                                                            <div class="dropdown-divider"></div>\n
+                                                <form method="POST" action="http://localhost/admin/funnels/514" data-confirm="Delete this funnel? Orders placed through it are kept. This cannot be undone from the dashboard.">\n
+                                                    <input type="hidden" name="_token" value="Zx3jjIRkcaVHBlIEvLishxsFJZmIngNFkdG4qSL2">                                                    <input type="hidden" name="_method" value="DELETE">                                                    <button type="submit" class="dropdown-item text-danger">Delete</button>\n
+                                                </form>\n
+                                                                                    </div>\n
+                                    </div>\n
+                                    </div>\n
+                                </td>\n
+                            </tr>\n
+                                                                                <tr>\n
+                                <td>\n
+                                    <div class="d-flex align-items-center">\n
+                                        <div class="funnel-thumb mr-3">\n
+                                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#a1a5b3" stroke-width="1.5" aria-hidden="true"><path d="M3 4h18l-7 8v6l-4 2v-8z"/></svg>\n
+                                                                                    </div>\n
+                                        <div class="min-w-0">\n
+                                            <div class="fs-14 fw-700 text-truncate funnel-name">Blender Mega Offfer</div>\n
+                                                                                            <div class="fs-12 text-muted text-truncate funnel-name">Blender-Eid-Campaign-Facebook</div>\n
+                                                                                        <div class="fs-12 text-secondary d-flex flex-wrap align-items-center" style="gap: 0 6px;">\n
+                                                <span class="text-truncate funnel-name">/funnel/blender-mega-offfer</span>\n
+                                                                                            </div>\n
+                                            \n
+                                                                                            <a href="http://localhost/admin/funnels/1/builder" class="btn btn-sm btn-primary mt-2 d-md-none funnel-open-builder">Open Visual Builder</a>\n
+                                                                                    </div>\n
+                                    </div>\n
+                                </td>\n
+                                <td>\n
+                                    <span class="badge badge-inline badge-soft-info">Draft</span>\n
+                                                                                                        </td>\n
+                                <td>\n
+                                                                            <span class="text-muted fs-12">None chosen yet</span>\n
+                                                                                                        </td>\n
+                                                                                                        <td class="text-right fs-12 text-nowrap funnel-figures">\n
+                                        <div><span class="text-muted">Visitors</span> <strong>0</strong></div>\n
+                                        <div>\n
+                                            <span class="text-muted">Orders</span> <strong>0</strong>\n
+                                            <span class="text-muted">· –</span>\n
+                                        </div>\n
+                                        <div><span class="text-muted">Revenue</span> <strong>৳0</strong></div>\n
+                                    </td>\n
+                                                                <td class="fs-12">\n
+                                    <div>23 Oct 2026, 06:48 AM</div>\n
+                                                                            <div class="text-muted">by Staging admin 9</div>\n
+                                                                    </td>\n
+                                <td>\n
+                                    <div class="d-flex align-items-center justify-content-end funnel-row-actions">\n
+                                                                            <a href="http://localhost/admin/funnels/1/builder" class="btn btn-sm btn-primary text-nowrap mr-2 d-none d-md-inline-block funnel-open-builder">Open Visual Builder</a>\n
+                                                                        <div class="dropdown funnel-actions">\n
+                                        <button class="btn btn-light size-40px action-toggle dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="Actions"></button>\n
+                                        <div class="dropdown-menu dropdown-menu-right">\n
+                                                                                                                                                <a class="dropdown-item" href="http://localhost/admin/funnels/1/builder">Edit</a>\n
+                                                                                            \n
+                                                                                            <a class="dropdown-item" href="http://localhost/admin/all_orders?funnel_id=1">View orders</a>\n
+                                                                                                                                        <a class="dropdown-item" href="http://localhost/admin/funnels/analytics?funnel=1">Analytics</a>\n
+                                                                                        \n
+                                                                                                                                                <form method="POST" action="http://localhost/admin/funnels/1/publish" data-confirm="Publish the current draft? Customers will see it immediately.">\n
+                                                        <input type="hidden" name="_token" value="Zx3jjIRkcaVHBlIEvLishxsFJZmIngNFkdG4qSL2">                                                        <button type="submit" class="dropdown-item">Publish</button>\n
+                                                    </form>\n
+                                                                                                                                            \n
+                                                                                            <form method="POST" action="http://localhost/admin/funnels/1/duplicate">\n
+                                                    <input type="hidden" name="_token" value="Zx3jjIRkcaVHBlIEvLishxsFJZmIngNFkdG4qSL2">                                                    <button type="submit" class="dropdown-item">Duplicate</button>\n
+                                                </form>\n
+                                                <button type="button" class="dropdown-item" data-save-template="1" data-name="Blender Mega Offfer">Save as template</button>\n
+                                            \n
+                                                                                                                                                <form method="POST" action="http://localhost/admin/funnels/1/archive" data-confirm="Archive this funnel? It goes offline and is kept for reference.">\n
+                                                        <input type="hidden" name="_token" value="Zx3jjIRkcaVHBlIEvLishxsFJZmIngNFkdG4qSL2">                                                        <button type="submit" class="dropdown-item">Archive</button>\n
+                                                    </form>\n
+                                                                                            \n
+                                                                                            <div class="dropdown-divider"></div>\n
+                                                <form method="POST" action="http://localhost/admin/funnels/1" data-confirm="Delete this funnel? Orders placed through it are kept. This cannot be undone from the dashboard.">\n
+                                                    <input type="hidden" name="_token" value="Zx3jjIRkcaVHBlIEvLishxsFJZmIngNFkdG4qSL2">                                                    <input type="hidden" name="_method" value="DELETE">                                                    <button type="submit" class="dropdown-item text-danger">Delete</button>\n
+                                                </form>\n
+                                                                                    </div>\n
+                                    </div>\n
+                                    </div>\n
+                                </td>\n
+                            </tr>\n
+                                            </tbody>\n
+                </table>\n
+                <div class="aiz-pagination mt-3">\n
+                    \n
+                </div>\n
+                    </div>\n
+    </div>\n
+\n
+                </div>\n
+                <div class="bg-white text-center py-3 px-15px px-lg-25px mt-auto border-top">\n
+                    <p class="mb-0">&copy; Misron v9.0</p>\n
+                </div>\n
+            </div><!-- .aiz-main-content -->\n
+        </div><!-- .aiz-content-wrapper -->\n
+    </div><!-- .aiz-main-wrapper -->\n
+\n
+                <div class="modal fade" id="funnel-save-template" tabindex="-1" role="dialog" aria-labelledby="funnel-save-template-title" aria-hidden="true">\n
+            <div class="modal-dialog modal-dialog-centered" role="document">\n
+                <form class="modal-content" method="POST" id="funnel-save-template-form">\n
+                    <input type="hidden" name="_token" value="Zx3jjIRkcaVHBlIEvLishxsFJZmIngNFkdG4qSL2">                    <div class="modal-header">\n
+                        <h5 class="modal-title h6" id="funnel-save-template-title">Save as template</h5>\n
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>\n
+                    </div>\n
+                    <div class="modal-body">\n
+                        <p class="fs-13 text-muted">The current draft is saved as a reusable design: layout, wording, pictures and offer settings. Products are left out and chosen again for each new funnel.</p>\n
+                        <div class="form-group">\n
+                            <label class="fw-600" for="funnel-save-template-name">Template name</label>\n
+                            <input type="text" class="form-control" id="funnel-save-template-name" name="name" maxlength="150" required>\n
+                        </div>\n
+                        <div class="form-group mb-0">\n
+                            <label class="fw-600" for="funnel-save-template-description">Description</label>\n
+                            <textarea class="form-control" id="funnel-save-template-description" name="description" rows="2" maxlength="500" placeholder="Optional: what the design is good for"></textarea>\n
+                        </div>\n
+                    </div>\n
+                    <div class="modal-footer">\n
+                        <button type="button" class="btn btn-light" data-dismiss="modal">Cancel</button>\n
+                        <button type="submit" class="btn btn-primary">Save template</button>\n
+                    </div>\n
+                </form>\n
+            </div>\n
+        </div>\n
+    \n
+\n
+    <script src="http://localhost/assets/js/vendors.js"></script>\n
+    <script src="http://localhost/assets/js/aiz-core.js?v=9623"></script>\n
+\n
+        <script type="text/javascript">\n
+        // The admin theme's table plugin rebuilds the table rows after this script has run,\n
+        // which drops listeners bound to the buttons inside them, so every handler listens\n
+        // on the document. (Bound directly, the confirmations below were silently skipped.)\n
+        var saveTemplateUrl = "http:\/\/localhost\/admin\/funnels\/__ID__\/save-as-template";\n
+        document.addEventListener('click', function (event) {\n
+            var button = event.target.closest('[data-save-template]');\n
+            if (!button) return;\n
+            document.getElementById('funnel-save-template-form').action = saveTemplateUrl.replace('__ID__', button.getAttribute('data-save-template'));\n
+            document.getElementById('funnel-save-template-name').value = button.getAttribute('data-name') || '';\n
+            $('#funnel-save-template').modal('show');\n
+        });\n
+        // Copies the live address; where the clipboard is not available (plain http) the address is shown to copy by hand.\n
+        document.addEventListener('click', function (event) {\n
+            var button = event.target.closest('.funnel-copy');\n
+            if (!button) return;\n
+            var url = button.getAttribute('data-url');\n
+            var label = button.getAttribute('data-label') || button.textContent;\n
+            button.setAttribute('data-label', label);\n
+            var done = function () { button.textContent = button.getAttribute('data-done'); setTimeout(function () { button.textContent = label; }, 1500); };\n
+            if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(url).then(done, function () { window.prompt('', url); });\n
+            else window.prompt('', url);\n
+        });\n
+        // Confirmation text lives in data-confirm rather than inline JS, so a\n
+        // translated message containing quotes cannot break the handler.\n
+        document.addEventListener('submit', function (event) {\n
+            var form = event.target.closest('.funnel-actions form[data-confirm]');\n
+            if (form && !window.confirm(form.getAttribute('data-confirm'))) {\n
+                event.preventDefault();\n
+            }\n
+        });\n
+    </script>\n
+\n
+    <script type="text/javascript">\n
+                                        \n
+        $('.dropdown-menu a[data-toggle="tab"]').click(function(e) {\n
+            e.stopPropagation()\n
+            $(this).tab('show')\n
+        })\n
+\n
+        if ($('#lang-change').length > 0) {\n
+            $('#lang-change .dropdown-menu a').each(function() {\n
+                $(this).on('click', function(e) {\n
+                    e.preventDefault();\n
+                    var $this = $(this);\n
+                    var locale = $this.data('flag');\n
+                    $.post('http://localhost/language', {\n
+                        _token: 'Zx3jjIRkcaVHBlIEvLishxsFJZmIngNFkdG4qSL2',\n
+                        locale: locale\n
+                    }, function(data) {\n
+                        location.reload();\n
+                    });\n
+\n
+                });\n
+            });\n
+        }\n
+\n
+        function menuSearch() {\n
+            var filter, item;\n
+            filter = $("#menu-search").val().toUpperCase();\n
+            items = $("#main-menu").find("a");\n
+            items = items.filter(function(i, item) {\n
+                if ($(item).find(".aiz-side-nav-text")[0].innerText.toUpperCase().indexOf(filter) > -1 && $(item)\n
+                    .attr('href') !== '#') {\n
+                    return item;\n
+                }\n
+            });\n
+\n
+            if (filter !== '') {\n
+                $("#main-menu").addClass('d-none');\n
+                $("#search-menu").html('')\n
+                if (items.length > 0) {\n
+                    for (i = 0; i < items.length; i++) {\n
+                        const text = $(items[i]).find(".aiz-side-nav-text")[0].innerText;\n
+                        const link = $(items[i]).attr('href');\n
+                        $("#search-menu").append(\n
+                            `<li class="aiz-side-nav-item"><a href="${link}" class="aiz-side-nav-link"><i class="las la-ellipsis-h aiz-side-nav-icon"></i><span>${text}</span></a></li`\n
+                            );\n
+                    }\n
+                } else {\n
+                    $("#search-menu").html(\n
+                        `<li class="aiz-side-nav-item"><span class="text-center text-muted d-block">Nothing found</span></li>`\n
+                        );\n
+                }\n
+            } else {\n
+                $("#main-menu").removeClass('d-none');\n
+                $("#search-menu").html('')\n
+            }\n
+        }\n
+    </script>\n
+\n
+</body>\n
+\n
+</html>\n
+' contains "No sales funnels yet".
+
+/home/user/softcommerce_new/misron_backend/vendor/laravel/framework/src/Illuminate/Testing/TestResponse.php:527
+/home/user/softcommerce_new/misron_backend/tests/Feature/Funnel/FunnelAdminPagesTest.php:18
+
+3) Tests\Feature\Funnel\FunnelAdminPagesTest::test_the_visual_builder_is_one_click_away_from_the_list_and_the_create_page
+the archived funnel gets no button
+Failed asserting that 10 is identical to 2.
+
+/home/user/softcommerce_new/misron_backend/tests/Feature/Funnel/FunnelAdminPagesTest.php:77
+
+4) Tests\Feature\Funnel\FunnelCheckoutTest::test_a_cash_on_delivery_order_becomes_an_ordinary_order_of_the_store
+Failed asserting that 500 is identical to 1800.
+
+/home/user/softcommerce_new/misron_backend/tests/Feature/Funnel/FunnelCheckoutTest.php:269
+
+5) Tests\Feature\Funnel\FunnelCheckoutTest::test_a_stock_refusal_at_the_ledger_leaves_nothing_behind
+Failed asserting that two strings are identical.
+--- Expected
++++ Actual
+@@ @@
+-'rejected'
++'placed'
+
+/home/user/softcommerce_new/misron_backend/tests/Feature/Funnel/FunnelCheckoutTest.php:409
+
+6) Tests\Feature\Funnel\FunnelCheckoutTest::test_the_same_submission_twice_places_one_order_and_deducts_once
+Failed asserting that 2 is identical to 1.
+
+/home/user/softcommerce_new/misron_backend/tests/Feature/Funnel/FunnelCheckoutTest.php:444
+
+7) Tests\Feature\Funnel\FunnelEditorMediaAndCatalogueTest::test_orders_carry_nullable_funnel_attribution
+Failed asserting that 577 is null.
+
+/home/user/softcommerce_new/misron_backend/tests/Feature/Funnel/FunnelEditorMediaAndCatalogueTest.php:203
+
+8) Tests\Feature\Inventory\AccountingReconciliationTest::test_a_normal_receive_invoice_pay_cycle_reconciles_clean
+check payable_vs_open_invoices should be clean after a normal cycle
+Failed asserting that an array contains 'high'.
+
+/home/user/softcommerce_new/misron_backend/tests/Feature/Inventory/AccountingReconciliationTest.php:31
+
+9) Tests\Feature\Inventory\DeadlockWorkflowRetryTest::test_courier_settlement_retries_a_deadlock_and_books_cogs_inventory_and_journal_once
+inventory credited by the 540 of FIFO cost once (540 - 540)
+Failed asserting that 147089280.0 matches expected 0.0.
+
+/home/user/softcommerce_new/misron_backend/tests/Feature/Inventory/DeadlockWorkflowRetryTest.php:166
+
+10) Tests\Feature\Inventory\FinancialReportsLedgerTest::test_estimated_cost_is_kept_apart_from_actual_cost_and_never_becomes_final_profit
+no accounting entry came from an estimate
+Failed asserting that 147089280.0 is identical to 0.0.
+
+/home/user/softcommerce_new/misron_backend/tests/Feature/Inventory/FinancialReportsLedgerTest.php:108
+
+11) Tests\Feature\Inventory\PurchasingAccountingTest::test_receiving_creates_a_fifo_layer_at_actual_cost_and_a_balanced_entry_without_a_payable
+Failed asserting that 147089935.0 matches expected 655.0.
+
+/home/user/softcommerce_new/misron_backend/tests/Feature/Inventory/PurchasingAccountingTest.php:83
+
+12) Tests\Feature\Inventory\PurchasingAccountingTest::test_landed_cost_is_capitalised_into_the_layers_in_proportion_and_the_books_balance
+Failed asserting that 147091310.0 matches expected 2030.0.
+
+/home/user/softcommerce_new/misron_backend/tests/Feature/Inventory/PurchasingAccountingTest.php:102
+
+13) Tests\Feature\Inventory\PurchasingAccountingTest::test_invoice_clears_grni_posts_the_payable_and_records_a_price_difference
+Failed asserting that 147090330.0 matches expected 1050.0.
+
+/home/user/softcommerce_new/misron_backend/tests/Feature/Inventory/PurchasingAccountingTest.php:114
+
+14) Tests\Feature\Inventory\PurchasingAccountingTest::test_invoice_difference_on_units_already_sold_is_expensed_and_history_is_not_rewritten
+Failed asserting that 147090330.0 matches expected 1050.0.
+
+/home/user/softcommerce_new/misron_backend/tests/Feature/Inventory/PurchasingAccountingTest.php:133
+
+15) Tests\Feature\Inventory\PurchasingAccountingTest::test_supplier_return_of_uninvoiced_goods_clears_grni_and_invoiced_goods_credits_the_payable
+Failed asserting that 147089980.0 matches expected 700.0.
+
+/home/user/softcommerce_new/misron_backend/tests/Feature/Inventory/PurchasingAccountingTest.php:149
+
+16) Tests\Feature\Inventory\PurchasingAccountingTest::test_duplicate_invoice_number_and_replayed_invoice_post_once
+Failed asserting that 147089290.0 matches expected 10.0.
+
+/home/user/softcommerce_new/misron_backend/tests/Feature/Inventory/PurchasingAccountingTest.php:180
+
+17) Tests\Feature\Inventory\PurchasingAccountingTest::test_partial_payments_reduce_payable_and_cash_and_are_never_expenses_and_retries_do_not_double_pay
+Failed asserting that 147089880.0 matches expected 600.0.
+
+/home/user/softcommerce_new/misron_backend/tests/Feature/Inventory/PurchasingAccountingTest.php:197
+
+18) Tests\Feature\Inventory\PurchasingAccountingTest::test_supplier_advance_then_applied_to_an_invoice_and_one_payment_across_invoices
+Failed asserting that 147089280.0 matches expected 0.0.
+
+/home/user/softcommerce_new/misron_backend/tests/Feature/Inventory/PurchasingAccountingTest.php:239
+
+19) Tests\Feature\Inventory\PurchasingAccountingTest::test_reversal_posts_the_mirror_once_and_history_is_reported_as_of_a_date
+Failed asserting that 147089780.0 matches expected 500.0.
+
+/home/user/softcommerce_new/misron_backend/tests/Feature/Inventory/PurchasingAccountingTest.php:284
+
+20) Tests\Feature\Inventory\SettlementCostV2Test::test_settlement_books_cogs_at_the_exact_fifo_cost_recorded_at_dispatch_across_layers
+Failed asserting that 147089820.0 matches expected 540.0.
+
+/home/user/softcommerce_new/misron_backend/tests/Feature/Inventory/SettlementCostV2Test.php:24
+
+ERRORS!
+Tests: 641, Assertions: 4112, Errors: 1, Failures: 20, Skipped: 2.
