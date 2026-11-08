@@ -44,4 +44,18 @@ return [
     'quantity_limit' => 10000,
     'max_batch_attempts' => 60,
 
+    /*
+    |--------------------------------------------------------------------------
+    | Storage-engine policy for money and stock tables (T-5 / R-01)
+    |--------------------------------------------------------------------------
+    |
+    | MyISAM tables have no transactions, row locks or rollback. See App\Support\TransactionalEngines.
+    | financial_engine_policy  enforce (default): purchasing / supplier-balance changes are refused while their tables are not InnoDB;
+    |                          warn: log + header, run anyway; off: no gate. In every mode a deadlock retry is never used on non-InnoDB tables.
+    | financial_tables         null = the built-in list; an array overrides it (tests).
+    |
+    */
+    'financial_engine_policy' => env('FINANCIAL_ENGINE_POLICY', 'enforce'),
+    'financial_tables' => null,
+
 ];

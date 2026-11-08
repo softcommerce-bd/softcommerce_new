@@ -41,7 +41,8 @@ final class DeadlockRetry
     /** May the operation that started at $entryLevel be run again after $e? */
     public static function canRetry(int $attempt, int $entryLevel, \Throwable $e): bool
     {
-        return $attempt < self::MAX && $entryLevel === self::$baseLevel && DB::transactionLevel() <= $entryLevel && self::isDeadlock($e);
+        return $attempt < self::MAX && $entryLevel === self::$baseLevel && DB::transactionLevel() <= $entryLevel && self::isDeadlock($e)
+            && TransactionalEngines::retryAllowed(); // never repeat work whose MyISAM part did not roll back
     }
 
     /** @param int $attempt the attempt that just failed (1, 2): the wait grows so that several victims of the same collision stop colliding again */

@@ -56,7 +56,7 @@ class RetryDeadlockedCheckout
 
                 return $response;
             }
-            if ($attempt >= DeadlockRetry::MAX || $entry !== DeadlockRetry::$baseLevel) {
+            if ($attempt >= DeadlockRetry::MAX || $entry !== DeadlockRetry::$baseLevel || !\App\Support\TransactionalEngines::retryAllowed()) {
                 Log::warning("Deadlock persisted after {$attempt} attempt(s); giving up.", ['uri' => $request->path()]);
                 $this->finish($request, $exception);
                 if ($exception) {

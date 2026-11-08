@@ -74,6 +74,7 @@ class Kernel extends HttpKernel
         'app_user_unbanned' => IsAppUserUnbanned::class,
         'admin' => IsAdmin::class,
         'retry.deadlock' => \App\Http\Middleware\RetryDeadlockedCheckout::class,
+        'engine.safe' => \App\Http\Middleware\RequireTransactionalEngine::class,
         'accounting.access' => \App\Http\Middleware\AccountingAccess::class,
         'seller' => IsSeller::class,
         'customer' => IsCustomer::class,
