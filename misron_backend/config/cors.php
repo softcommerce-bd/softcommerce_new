@@ -39,12 +39,17 @@ return [
         'OPTIONS',
     ],
 
-    'allowed_origins' => [
+    // Storefront addresses allowed to call the API from the browser. Add more without editing this file:
+    // CORS_ALLOWED_ORIGINS=https://shop.example.com,https://www.example.com (comma separated, no trailing slash).
+    'allowed_origins' => array_values(array_unique(array_merge([
         'http://localhost:3000',
         'http://localhost:3001',
         'http://127.0.0.1:3000',
         'https://misron-frontend.vercel.app',
-    ],
+        'https://test.misronshop.com',
+        'https://misronshop.com',
+        'https://www.misronshop.com',
+    ], array_filter(array_map('trim', explode(',', (string) env('CORS_ALLOWED_ORIGINS', ''))))))),
 
     'allowed_origins_patterns' => [],
 
