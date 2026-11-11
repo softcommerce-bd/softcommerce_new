@@ -10,6 +10,24 @@ use Gateway\App;
 use Gateway\Deliverer;
 use Gateway\Store;
 
+// cPanel-friendly: load KEY=VALUE lines from gateway/.env (real environment variables win).
+(function (string $file): void {
+    if (!is_readable($file)) {
+        return;
+    }
+    foreach (file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
+        $line = trim($line);
+        if ($line === '' || $line[0] === '#' || !str_contains($line, '=')) {
+            continue;
+        }
+        [$k, $v] = array_map('trim', explode('=', $line, 2));
+        $v = trim($v, "\"'");
+        if (getenv($k) === false) {
+            putenv("$k=$v");
+        }
+    }
+})(__DIR__ . '/../.env');
+
 $env = fn (string $k, $d = null) => getenv($k) !== false ? getenv($k) : $d;
 $key = base64_decode((string) $env('GATEWAY_KEY'), true) ?: '';
 $dsn = $env('GATEWAY_DSN', 'sqlite:' . __DIR__ . '/../storage/gateway.sqlite');
