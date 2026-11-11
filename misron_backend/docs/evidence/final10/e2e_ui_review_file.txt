@@ -1,0 +1,1206 @@
+[WebServer] [Sun Nov  8 12:15:50 2026] PHP 8.3.6 Development Server (http://127.0.0.1:8001) started
+[WebServer] [Sun Nov  8 12:15:50 2026] 127.0.0.1:59218 Accepted
+[WebServer] [Sun Nov  8 12:15:50 2026] 127.0.0.1:59218 Closing
+[WebServer] Failed to fetch SEO settings: TypeError: fetch failed
+[WebServer]     at async k (lib/seo.js:4:22)
+[WebServer]     at async q (app/layout.jsx:110:20)
+[WebServer]   2 | export async function fetchSEOSettings() {
+[WebServer]   3 |   try {
+[WebServer] > 4 |     const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/v2/seo-settings`);
+[WebServer]     |                      ^
+[WebServer]   5 |     
+[WebServer]   6 |     const data = await response.json();
+[WebServer]   7 |     // console.log('seo page e data ki ashce',data); {
+[WebServer]   [cause]: Error: connect ECONNREFUSED 127.0.0.1:3100
+[WebServer]       at ignore-listed frames {
+[WebServer]     errno: -111,
+[WebServer]     code: 'ECONNREFUSED',
+[WebServer]     syscall: 'connect',
+[WebServer]     address: '127.0.0.1',
+[WebServer]     port: 3100
+[WebServer]   }
+[WebServer] }
+[WebServer] Failed to fetch SEO settings: TypeError: fetch failed
+[WebServer]     at async k (lib/seo.js:4:22)
+[WebServer]     at async q (app/layout.jsx:110:20)
+[WebServer]   2 | export async function fetchSEOSettings() {
+[WebServer]   3 |   try {
+[WebServer] > 4 |     const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/v2/seo-settings`);
+[WebServer]     |                      ^
+[WebServer]   5 |     
+[WebServer]   6 |     const data = await response.json();
+[WebServer]   7 |     // console.log('seo page e data ki ashce',data); {
+[WebServer]   [cause]: Error: connect ECONNREFUSED 127.0.0.1:3100
+[WebServer]       at ignore-listed frames {
+[WebServer]     errno: -111,
+[WebServer]     code: 'ECONNREFUSED',
+[WebServer]     syscall: 'connect',
+[WebServer]     address: '127.0.0.1',
+[WebServer]     port: 3100
+[WebServer]   }
+[WebServer] }
+[WebServer] Failed to fetch SEO settings: TypeError: fetch failed
+[WebServer]     at async k (lib/seo.js:4:22)
+[WebServer]     at async q (app/layout.jsx:110:20)
+[WebServer]   2 | export async function fetchSEOSettings() {
+[WebServer]   3 |   try {
+[WebServer] > 4 |     const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/v2/seo-settings`);
+[WebServer]     |                      ^
+[WebServer]   5 |     
+[WebServer]   6 |     const data = await response.json();
+[WebServer]   7 |     // console.log('seo page e data ki ashce',data); {
+[WebServer]   [cause]: Error: connect ECONNREFUSED 127.0.0.1:3100
+[WebServer]       at ignore-listed frames {
+[WebServer]     errno: -111,
+[WebServer]     code: 'ECONNREFUSED',
+[WebServer]     syscall: 'connect',
+[WebServer]     address: '127.0.0.1',
+[WebServer]     port: 3100
+[WebServer]   }
+[WebServer] }
+[WebServer] Failed to fetch SEO settings: TypeError: fetch failed
+[WebServer]     at async k (lib/seo.js:4:22)
+[WebServer]     at async q (app/layout.jsx:110:20)
+[WebServer]   2 | export async function fetchSEOSettings() {
+[WebServer]   3 |   try {
+[WebServer] > 4 |     const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/v2/seo-settings`);
+[WebServer]     |                      ^
+[WebServer]   5 |     
+[WebServer]   6 |     const data = await response.json();
+[WebServer]   7 |     // console.log('seo page e data ki ashce',data); {
+[WebServer]   [cause]: Error: connect ECONNREFUSED 127.0.0.1:3100
+[WebServer]       at ignore-listed frames {
+[WebServer]     errno: -111,
+[WebServer]     code: 'ECONNREFUSED',
+[WebServer]     syscall: 'connect',
+[WebServer]     address: '127.0.0.1',
+[WebServer]     port: 3100
+[WebServer]   }
+[WebServer] }
+[WebServer] Failed to fetch SEO settings: TypeError: fetch failed
+[WebServer]     at async k (lib/seo.js:4:22)
+[WebServer]     at async q (app/layout.jsx:110:20)
+[WebServer]   2 | export async function fetchSEOSettings() {
+[WebServer]   3 |   try {
+[WebServer] > 4 |     const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/v2/seo-settings`);
+[WebServer]     |                      ^
+[WebServer]   5 |     
+[WebServer]   6 |     const data = await response.json();
+[WebServer]   7 |     // console.log('seo page e data ki ashce',data); {
+[WebServer]   [cause]: Error: connect ECONNREFUSED 127.0.0.1:3100
+[WebServer]       at ignore-listed frames {
+[WebServer]     errno: -111,
+[WebServer]     code: 'ECONNREFUSED',
+[WebServer]     syscall: 'connect',
+[WebServer]     address: '127.0.0.1',
+[WebServer]     port: 3100
+[WebServer]   }
+[WebServer] }
+[WebServer] Failed to fetch SEO settings: TypeError: fetch failed
+[WebServer]     at async k (lib/seo.js:4:22)
+[WebServer]     at async q (app/layout.jsx:110:20)
+[WebServer]   2 | export async function fetchSEOSettings() {
+[WebServer]   3 |   try {
+[WebServer] > 4 |     const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/v2/seo-settings`);
+[WebServer]     |                      ^
+[WebServer]   5 |     
+[WebServer]   6 |     const data = await response.json();
+[WebServer]   7 |     // console.log('seo page e data ki ashce',data); {
+[WebServer]   [cause]: Error: connect ECONNREFUSED 127.0.0.1:3100
+[WebServer]       at ignore-listed frames {
+[WebServer]     errno: -111,
+[WebServer]     code: 'ECONNREFUSED',
+[WebServer]     syscall: 'connect',
+[WebServer]     address: '127.0.0.1',
+[WebServer]     port: 3100
+[WebServer]   }
+[WebServer] }
+[WebServer] Failed to fetch SEO settings: TypeError: fetch failed
+[WebServer]     at async k (lib/seo.js:4:22)
+[WebServer]     at async q (app/layout.jsx:110:20)
+[WebServer]   2 | export async function fetchSEOSettings() {
+[WebServer]   3 |   try {
+[WebServer] > 4 |     const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/v2/seo-settings`);
+[WebServer]     |                      ^
+[WebServer]   5 |     
+[WebServer]   6 |     const data = await response.json();
+[WebServer]   7 |     // console.log('seo page e data ki ashce',data); {
+[WebServer]   [cause]: Error: connect ECONNREFUSED 127.0.0.1:3100
+[WebServer]       at ignore-listed frames {
+[WebServer]     errno: -111,
+[WebServer]     code: 'ECONNREFUSED',
+[WebServer]     syscall: 'connect',
+[WebServer]     address: '127.0.0.1',
+[WebServer]     port: 3100
+[WebServer]   }
+[WebServer] }
+[WebServer] Failed to fetch SEO settings: TypeError: fetch failed
+[WebServer]     at async k (lib/seo.js:4:22)
+[WebServer]     at async q (app/layout.jsx:110:20)
+[WebServer]   2 | export async function fetchSEOSettings() {
+[WebServer]   3 |   try {
+[WebServer] > 4 |     const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/v2/seo-settings`);
+[WebServer]     |                      ^
+[WebServer]   5 |     
+[WebServer]   6 |     const data = await response.json();
+[WebServer]   7 |     // console.log('seo page e data ki ashce',data); {
+[WebServer]   [cause]: Error: connect ECONNREFUSED 127.0.0.1:3100
+[WebServer]       at ignore-listed frames {
+[WebServer]     errno: -111,
+[WebServer]     code: 'ECONNREFUSED',
+[WebServer]     syscall: 'connect',
+[WebServer]     address: '127.0.0.1',
+[WebServer]     port: 3100
+[WebServer]   }
+[WebServer] }
+[WebServer] Failed to fetch SEO settings: TypeError: fetch failed
+[WebServer]     at async k (lib/seo.js:4:22)
+[WebServer]     at async q (app/layout.jsx:110:20)
+[WebServer]   2 | export async function fetchSEOSettings() {
+[WebServer]   3 |   try {
+[WebServer] > 4 |     const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/v2/seo-settings`);
+[WebServer]     |                      ^
+[WebServer]   5 |     
+[WebServer]   6 |     const data = await response.json();
+[WebServer]   7 |     // console.log('seo page e data ki ashce',data); {
+[WebServer]   [cause]: Error: connect ECONNREFUSED 127.0.0.1:3100
+[WebServer]       at ignore-listed frames {
+[WebServer]     errno: -111,
+[WebServer]     code: 'ECONNREFUSED',
+[WebServer]     syscall: 'connect',
+[WebServer]     address: '127.0.0.1',
+[WebServer]     port: 3100
+[WebServer]   }
+[WebServer] }
+[WebServer] Failed to fetch SEO settings: TypeError: fetch failed
+[WebServer]     at async k (lib/seo.js:4:22)
+[WebServer]     at async q (app/layout.jsx:110:20)
+[WebServer]   2 | export async function fetchSEOSettings() {
+[WebServer]   3 |   try {
+[WebServer] > 4 |     const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/v2/seo-settings`);
+[WebServer]     |                      ^
+[WebServer]   5 |     
+[WebServer]   6 |     const data = await response.json();
+[WebServer]   7 |     // console.log('seo page e data ki ashce',data); {
+[WebServer]   [cause]: Error: connect ECONNREFUSED 127.0.0.1:3100
+[WebServer]       at ignore-listed frames {
+[WebServer]     errno: -111,
+[WebServer]     code: 'ECONNREFUSED',
+[WebServer]     syscall: 'connect',
+[WebServer]     address: '127.0.0.1',
+[WebServer]     port: 3100
+[WebServer]   }
+[WebServer] }
+[WebServer] Failed to fetch SEO settings: TypeError: fetch failed
+[WebServer]     at async k (lib/seo.js:4:22)
+[WebServer]     at async q (app/layout.jsx:110:20)
+[WebServer]   2 | export async function fetchSEOSettings() {
+[WebServer]   3 |   try {
+[WebServer] > 4 |     const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/v2/seo-settings`);
+[WebServer]     |                      ^
+[WebServer]   5 |     
+[WebServer]   6 |     const data = await response.json();
+[WebServer]   7 |     // console.log('seo page e data ki ashce',data); {
+[WebServer]   [cause]: Error: connect ECONNREFUSED 127.0.0.1:3100
+[WebServer]       at ignore-listed frames {
+[WebServer]     errno: -111,
+[WebServer]     code: 'ECONNREFUSED',
+[WebServer]     syscall: 'connect',
+[WebServer]     address: '127.0.0.1',
+[WebServer]     port: 3100
+[WebServer]   }
+[WebServer] }
+[WebServer] Failed to fetch SEO settings: TypeError: fetch failed
+[WebServer]     at async k (lib/seo.js:4:22)
+[WebServer]     at async q (app/layout.jsx:110:20)
+[WebServer]   2 | export async function fetchSEOSettings() {
+[WebServer]   3 |   try {
+[WebServer] > 4 |     const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/v2/seo-settings`);
+[WebServer]     |                      ^
+[WebServer]   5 |     
+[WebServer]   6 |     const data = await response.json();
+[WebServer]   7 |     // console.log('seo page e data ki ashce',data); {
+[WebServer]   [cause]: Error: connect ECONNREFUSED 127.0.0.1:3100
+[WebServer]       at ignore-listed frames {
+[WebServer]     errno: -111,
+[WebServer]     code: 'ECONNREFUSED',
+[WebServer]     syscall: 'connect',
+[WebServer]     address: '127.0.0.1',
+[WebServer]     port: 3100
+[WebServer]   }
+[WebServer] }
+[WebServer] Failed to fetch SEO settings: TypeError: fetch failed
+[WebServer]     at async k (lib/seo.js:4:22)
+[WebServer]     at async q (app/layout.jsx:110:20)
+[WebServer]   2 | export async function fetchSEOSettings() {
+[WebServer]   3 |   try {
+[WebServer] > 4 |     const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/v2/seo-settings`);
+[WebServer]     |                      ^
+[WebServer]   5 |     
+[WebServer]   6 |     const data = await response.json();
+[WebServer]   7 |     // console.log('seo page e data ki ashce',data); {
+[WebServer]   [cause]: Error: connect ECONNREFUSED 127.0.0.1:3100
+[WebServer]       at ignore-listed frames {
+[WebServer]     errno: -111,
+[WebServer]     code: 'ECONNREFUSED',
+[WebServer]     syscall: 'connect',
+[WebServer]     address: '127.0.0.1',
+[WebServer]     port: 3100
+[WebServer]   }
+[WebServer] }
+[WebServer] Failed to fetch SEO settings: TypeError: fetch failed
+[WebServer]     at async k (lib/seo.js:4:22)
+[WebServer]     at async q (app/layout.jsx:110:20)
+[WebServer]   2 | export async function fetchSEOSettings() {
+[WebServer]   3 |   try {
+[WebServer] > 4 |     const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/v2/seo-settings`);
+[WebServer]     |                      ^
+[WebServer]   5 |     
+[WebServer]   6 |     const data = await response.json();
+[WebServer]   7 |     // console.log('seo page e data ki ashce',data); {
+[WebServer]   [cause]: Error: connect ECONNREFUSED 127.0.0.1:3100
+[WebServer]       at ignore-listed frames {
+[WebServer]     errno: -111,
+[WebServer]     code: 'ECONNREFUSED',
+[WebServer]     syscall: 'connect',
+[WebServer]     address: '127.0.0.1',
+[WebServer]     port: 3100
+[WebServer]   }
+[WebServer] }
+[WebServer] Failed to fetch SEO settings: TypeError: fetch failed
+[WebServer]     at async k (lib/seo.js:4:22)
+[WebServer]     at async q (app/layout.jsx:110:20)
+[WebServer]   2 | export async function fetchSEOSettings() {
+[WebServer]   3 |   try {
+[WebServer] > 4 |     const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/v2/seo-settings`);
+[WebServer]     |                      ^
+[WebServer]   5 |     
+[WebServer]   6 |     const data = await response.json();
+[WebServer]   7 |     // console.log('seo page e data ki ashce',data); {
+[WebServer]   [cause]: Error: connect ECONNREFUSED 127.0.0.1:3100
+[WebServer]       at ignore-listed frames {
+[WebServer]     errno: -111,
+[WebServer]     code: 'ECONNREFUSED',
+[WebServer]     syscall: 'connect',
+[WebServer]     address: '127.0.0.1',
+[WebServer]     port: 3100
+[WebServer]   }
+[WebServer] }
+[WebServer] Failed to fetch SEO settings: TypeError: fetch failed
+[WebServer]     at async k (lib/seo.js:4:22)
+[WebServer]     at async q (app/layout.jsx:110:20)
+[WebServer]   2 | export async function fetchSEOSettings() {
+[WebServer]   3 |   try {
+[WebServer] > 4 |     const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/v2/seo-settings`);
+[WebServer]     |                      ^
+[WebServer]   5 |     
+[WebServer]   6 |     const data = await response.json();
+[WebServer]   7 |     // console.log('seo page e data ki ashce',data); {
+[WebServer]   [cause]: Error: connect ECONNREFUSED 127.0.0.1:3100
+[WebServer]       at ignore-listed frames {
+[WebServer]     errno: -111,
+[WebServer]     code: 'ECONNREFUSED',
+[WebServer]     syscall: 'connect',
+[WebServer]     address: '127.0.0.1',
+[WebServer]     port: 3100
+[WebServer]   }
+[WebServer] }
+[WebServer] Failed to fetch SEO settings: TypeError: fetch failed
+[WebServer]     at async k (lib/seo.js:4:22)
+[WebServer]     at async q (app/layout.jsx:110:20)
+[WebServer]   2 | export async function fetchSEOSettings() {
+[WebServer]   3 |   try {
+[WebServer] > 4 |     const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/v2/seo-settings`);
+[WebServer]     |                      ^
+[WebServer]   5 |     
+[WebServer]   6 |     const data = await response.json();
+[WebServer]   7 |     // console.log('seo page e data ki ashce',data); {
+[WebServer]   [cause]: Error: connect ECONNREFUSED 127.0.0.1:3100
+[WebServer]       at ignore-listed frames {
+[WebServer]     errno: -111,
+[WebServer]     code: 'ECONNREFUSED',
+[WebServer]     syscall: 'connect',
+[WebServer]     address: '127.0.0.1',
+[WebServer]     port: 3100
+[WebServer]   }
+[WebServer] }
+[WebServer] Failed to fetch SEO settings: TypeError: fetch failed
+[WebServer]     at async k (lib/seo.js:4:22)
+[WebServer]     at async q (app/layout.jsx:110:20)
+[WebServer]   2 | export async function fetchSEOSettings() {
+[WebServer]   3 |   try {
+[WebServer] > 4 |     const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/v2/seo-settings`);
+[WebServer]     |                      ^
+[WebServer]   5 |     
+[WebServer]   6 |     const data = await response.json();
+[WebServer]   7 |     // console.log('seo page e data ki ashce',data); {
+[WebServer]   [cause]: Error: connect ECONNREFUSED 127.0.0.1:3100
+[WebServer]       at ignore-listed frames {
+[WebServer]     errno: -111,
+[WebServer]     code: 'ECONNREFUSED',
+[WebServer]     syscall: 'connect',
+[WebServer]     address: '127.0.0.1',
+[WebServer]     port: 3100
+[WebServer]   }
+[WebServer] }
+[WebServer] Failed to fetch SEO settings: TypeError: fetch failed
+[WebServer]     at async k (lib/seo.js:4:22)
+[WebServer]     at async q (app/layout.jsx:110:20)
+[WebServer]   2 | export async function fetchSEOSettings() {
+[WebServer]   3 |   try {
+[WebServer] > 4 |     const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/v2/seo-settings`);
+[WebServer]     |                      ^
+[WebServer]   5 |     
+[WebServer]   6 |     const data = await response.json();
+[WebServer]   7 |     // console.log('seo page e data ki ashce',data); {
+[WebServer]   [cause]: Error: connect ECONNREFUSED 127.0.0.1:3100
+[WebServer]       at ignore-listed frames {
+[WebServer]     errno: -111,
+[WebServer]     code: 'ECONNREFUSED',
+[WebServer]     syscall: 'connect',
+[WebServer]     address: '127.0.0.1',
+[WebServer]     port: 3100
+[WebServer]   }
+[WebServer] }
+[WebServer] Failed to fetch SEO settings: TypeError: fetch failed
+[WebServer]     at async k (lib/seo.js:4:22)
+[WebServer]     at async q (app/layout.jsx:110:20)
+[WebServer]   2 | export async function fetchSEOSettings() {
+[WebServer]   3 |   try {
+[WebServer] > 4 |     const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/v2/seo-settings`);
+[WebServer]     |                      ^
+[WebServer]   5 |     
+[WebServer]   6 |     const data = await response.json();
+[WebServer]   7 |     // console.log('seo page e data ki ashce',data); {
+[WebServer]   [cause]: Error: connect ECONNREFUSED 127.0.0.1:3100
+[WebServer]       at ignore-listed frames {
+[WebServer]     errno: -111,
+[WebServer]     code: 'ECONNREFUSED',
+[WebServer]     syscall: 'connect',
+[WebServer]     address: '127.0.0.1',
+[WebServer]     port: 3100
+[WebServer]   }
+[WebServer] }
+[WebServer] Failed to fetch SEO settings: TypeError: fetch failed
+[WebServer]     at async k (lib/seo.js:4:22)
+[WebServer]     at async q (app/layout.jsx:110:20)
+[WebServer]   2 | export async function fetchSEOSettings() {
+[WebServer]   3 |   try {
+[WebServer] > 4 |     const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/v2/seo-settings`);
+[WebServer]     |                      ^
+[WebServer]   5 |     
+[WebServer]   6 |     const data = await response.json();
+[WebServer]   7 |     // console.log('seo page e data ki ashce',data); {
+[WebServer]   [cause]: Error: connect ECONNREFUSED 127.0.0.1:3100
+[WebServer]       at ignore-listed frames {
+[WebServer]     errno: -111,
+[WebServer]     code: 'ECONNREFUSED',
+[WebServer]     syscall: 'connect',
+[WebServer]     address: '127.0.0.1',
+[WebServer]     port: 3100
+[WebServer]   }
+[WebServer] }
+[WebServer] Failed to fetch SEO settings: TypeError: fetch failed
+[WebServer]     at async k (lib/seo.js:4:22)
+[WebServer]     at async q (app/layout.jsx:110:20)
+[WebServer]   2 | export async function fetchSEOSettings() {
+[WebServer]   3 |   try {
+[WebServer] > 4 |     const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/v2/seo-settings`);
+[WebServer]     |                      ^
+[WebServer]   5 |     
+[WebServer]   6 |     const data = await response.json();
+[WebServer]   7 |     // console.log('seo page e data ki ashce',data); {
+[WebServer]   [cause]: Error: connect ECONNREFUSED 127.0.0.1:3100
+[WebServer]       at ignore-listed frames {
+[WebServer]     errno: -111,
+[WebServer]     code: 'ECONNREFUSED',
+[WebServer]     syscall: 'connect',
+[WebServer]     address: '127.0.0.1',
+[WebServer]     port: 3100
+[WebServer]   }
+[WebServer] }
+[WebServer] Failed to fetch SEO settings: TypeError: fetch failed
+[WebServer]     at async k (lib/seo.js:4:22)
+[WebServer]     at async q (app/layout.jsx:110:20)
+[WebServer]   2 | export async function fetchSEOSettings() {
+[WebServer]   3 |   try {
+[WebServer] > 4 |     const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/v2/seo-settings`);
+[WebServer]     |                      ^
+[WebServer]   5 |     
+[WebServer]   6 |     const data = await response.json();
+[WebServer]   7 |     // console.log('seo page e data ki ashce',data); {
+[WebServer]   [cause]: Error: connect ECONNREFUSED 127.0.0.1:3100
+[WebServer]       at ignore-listed frames {
+[WebServer]     errno: -111,
+[WebServer]     code: 'ECONNREFUSED',
+[WebServer]     syscall: 'connect',
+[WebServer]     address: '127.0.0.1',
+[WebServer]     port: 3100
+[WebServer]   }
+[WebServer] }
+[WebServer] Failed to fetch SEO settings: TypeError: fetch failed
+[WebServer]     at async k (lib/seo.js:4:22)
+[WebServer]     at async q (app/layout.jsx:110:20)
+[WebServer]   2 | export async function fetchSEOSettings() {
+[WebServer]   3 |   try {
+[WebServer] > 4 |     const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/v2/seo-settings`);
+[WebServer]     |                      ^
+[WebServer]   5 |     
+[WebServer]   6 |     const data = await response.json();
+[WebServer]   7 |     // console.log('seo page e data ki ashce',data); {
+[WebServer]   [cause]: Error: connect ECONNREFUSED 127.0.0.1:3100
+[WebServer]       at ignore-listed frames {
+[WebServer]     errno: -111,
+[WebServer]     code: 'ECONNREFUSED',
+[WebServer]     syscall: 'connect',
+[WebServer]     address: '127.0.0.1',
+[WebServer]     port: 3100
+[WebServer]   }
+[WebServer] }
+[WebServer] Failed to fetch SEO settings: TypeError: fetch failed
+[WebServer]     at async k (lib/seo.js:4:22)
+[WebServer]     at async q (app/layout.jsx:110:20)
+[WebServer]   2 | export async function fetchSEOSettings() {
+[WebServer]   3 |   try {
+[WebServer] > 4 |     const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/v2/seo-settings`);
+[WebServer]     |                      ^
+[WebServer]   5 |     
+[WebServer]   6 |     const data = await response.json();
+[WebServer]   7 |     // console.log('seo page e data ki ashce',data); {
+[WebServer]   [cause]: Error: connect ECONNREFUSED 127.0.0.1:3100
+[WebServer]       at ignore-listed frames {
+[WebServer]     errno: -111,
+[WebServer]     code: 'ECONNREFUSED',
+[WebServer]     syscall: 'connect',
+[WebServer]     address: '127.0.0.1',
+[WebServer]     port: 3100
+[WebServer]   }
+[WebServer] }
+[WebServer] Failed to fetch SEO settings: TypeError: fetch failed
+[WebServer]     at async k (lib/seo.js:4:22)
+[WebServer]     at async q (app/layout.jsx:110:20)
+[WebServer]   2 | export async function fetchSEOSettings() {
+[WebServer]   3 |   try {
+[WebServer] > 4 |     const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/v2/seo-settings`);
+[WebServer]     |                      ^
+[WebServer]   5 |     
+[WebServer]   6 |     const data = await response.json();
+[WebServer]   7 |     // console.log('seo page e data ki ashce',data); {
+[WebServer]   [cause]: Error: connect ECONNREFUSED 127.0.0.1:3100
+[WebServer]       at ignore-listed frames {
+[WebServer]     errno: -111,
+[WebServer]     code: 'ECONNREFUSED',
+[WebServer]     syscall: 'connect',
+[WebServer]     address: '127.0.0.1',
+[WebServer]     port: 3100
+[WebServer]   }
+[WebServer] }
+[WebServer] Failed to fetch SEO settings: TypeError: fetch failed
+[WebServer]     at async k (lib/seo.js:4:22)
+[WebServer]     at async q (app/layout.jsx:110:20)
+[WebServer]   2 | export async function fetchSEOSettings() {
+[WebServer]   3 |   try {
+[WebServer] > 4 |     const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/v2/seo-settings`);
+[WebServer]     |                      ^
+[WebServer]   5 |     
+[WebServer]   6 |     const data = await response.json();
+[WebServer]   7 |     // console.log('seo page e data ki ashce',data); {
+[WebServer]   [cause]: Error: connect ECONNREFUSED 127.0.0.1:3100
+[WebServer]       at ignore-listed frames {
+[WebServer]     errno: -111,
+[WebServer]     code: 'ECONNREFUSED',
+[WebServer]     syscall: 'connect',
+[WebServer]     address: '127.0.0.1',
+[WebServer]     port: 3100
+[WebServer]   }
+[WebServer] }
+[WebServer] Failed to fetch SEO settings: TypeError: fetch failed
+[WebServer]     at async k (lib/seo.js:4:22)
+[WebServer]     at async q (app/layout.jsx:110:20)
+[WebServer]   2 | export async function fetchSEOSettings() {
+[WebServer]   3 |   try {
+[WebServer] > 4 |     const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/v2/seo-settings`);
+[WebServer]     |                      ^
+[WebServer]   5 |     
+[WebServer]   6 |     const data = await response.json();
+[WebServer]   7 |     // console.log('seo page e data ki ashce',data); {
+[WebServer]   [cause]: Error: connect ECONNREFUSED 127.0.0.1:3100
+[WebServer]       at ignore-listed frames {
+[WebServer]     errno: -111,
+[WebServer]     code: 'ECONNREFUSED',
+[WebServer]     syscall: 'connect',
+[WebServer]     address: '127.0.0.1',
+[WebServer]     port: 3100
+[WebServer]   }
+[WebServer] }
+[WebServer] Failed to fetch SEO settings: TypeError: fetch failed
+[WebServer]     at async k (lib/seo.js:4:22)
+[WebServer]     at async q (app/layout.jsx:110:20)
+[WebServer]   2 | export async function fetchSEOSettings() {
+[WebServer]   3 |   try {
+[WebServer] > 4 |     const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/v2/seo-settings`);
+[WebServer]     |                      ^
+[WebServer]   5 |     
+[WebServer]   6 |     const data = await response.json();
+[WebServer]   7 |     // console.log('seo page e data ki ashce',data); {
+[WebServer]   [cause]: Error: connect ECONNREFUSED 127.0.0.1:3100
+[WebServer]       at ignore-listed frames {
+[WebServer]     errno: -111,
+[WebServer]     code: 'ECONNREFUSED',
+[WebServer]     syscall: 'connect',
+[WebServer]     address: '127.0.0.1',
+[WebServer]     port: 3100
+[WebServer]   }
+[WebServer] }
+[WebServer] Failed to fetch SEO settings: TypeError: fetch failed
+[WebServer]     at async k (lib/seo.js:4:22)
+[WebServer]     at async q (app/layout.jsx:110:20)
+[WebServer]   2 | export async function fetchSEOSettings() {
+[WebServer]   3 |   try {
+[WebServer] > 4 |     const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/v2/seo-settings`);
+[WebServer]     |                      ^
+[WebServer]   5 |     
+[WebServer]   6 |     const data = await response.json();
+[WebServer]   7 |     // console.log('seo page e data ki ashce',data); {
+[WebServer]   [cause]: Error: connect ECONNREFUSED 127.0.0.1:3100
+[WebServer]       at ignore-listed frames {
+[WebServer]     errno: -111,
+[WebServer]     code: 'ECONNREFUSED',
+[WebServer]     syscall: 'connect',
+[WebServer]     address: '127.0.0.1',
+[WebServer]     port: 3100
+[WebServer]   }
+[WebServer] }
+[WebServer] Failed to fetch SEO settings: TypeError: fetch failed
+[WebServer]     at async k (lib/seo.js:4:22)
+[WebServer]     at async q (app/layout.jsx:110:20)
+[WebServer]   2 | export async function fetchSEOSettings() {
+[WebServer]   3 |   try {
+[WebServer] > 4 |     const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/v2/seo-settings`);
+[WebServer]     |                      ^
+[WebServer]   5 |     
+[WebServer]   6 |     const data = await response.json();
+[WebServer]   7 |     // console.log('seo page e data ki ashce',data); {
+[WebServer]   [cause]: Error: connect ECONNREFUSED 127.0.0.1:3100
+[WebServer]       at ignore-listed frames {
+[WebServer]     errno: -111,
+[WebServer]     code: 'ECONNREFUSED',
+[WebServer]     syscall: 'connect',
+[WebServer]     address: '127.0.0.1',
+[WebServer]     port: 3100
+[WebServer]   }
+[WebServer] }
+[WebServer] Failed to fetch SEO settings: TypeError: fetch failed
+[WebServer]     at async k (lib/seo.js:4:22)
+[WebServer]     at async q (app/layout.jsx:110:20)
+[WebServer]   2 | export async function fetchSEOSettings() {
+[WebServer]   3 |   try {
+[WebServer] > 4 |     const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/v2/seo-settings`);
+[WebServer]     |                      ^
+[WebServer]   5 |     
+[WebServer]   6 |     const data = await response.json();
+[WebServer]   7 |     // console.log('seo page e data ki ashce',data); {
+[WebServer]   [cause]: Error: connect ECONNREFUSED 127.0.0.1:3100
+[WebServer]       at ignore-listed frames {
+[WebServer]     errno: -111,
+[WebServer]     code: 'ECONNREFUSED',
+[WebServer]     syscall: 'connect',
+[WebServer]     address: '127.0.0.1',
+[WebServer]     port: 3100
+[WebServer]   }
+[WebServer] }
+[WebServer] Failed to fetch SEO settings: TypeError: fetch failed
+[WebServer]     at async k (lib/seo.js:4:22)
+[WebServer]     at async q (app/layout.jsx:110:20)
+[WebServer]   2 | export async function fetchSEOSettings() {
+[WebServer]   3 |   try {
+[WebServer] > 4 |     const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/v2/seo-settings`);
+[WebServer]     |                      ^
+[WebServer]   5 |     
+[WebServer]   6 |     const data = await response.json();
+[WebServer]   7 |     // console.log('seo page e data ki ashce',data); {
+[WebServer]   [cause]: Error: connect ECONNREFUSED 127.0.0.1:3100
+[WebServer]       at ignore-listed frames {
+[WebServer]     errno: -111,
+[WebServer]     code: 'ECONNREFUSED',
+[WebServer]     syscall: 'connect',
+[WebServer]     address: '127.0.0.1',
+[WebServer]     port: 3100
+[WebServer]   }
+[WebServer] }
+[WebServer] Failed to fetch SEO settings: TypeError: fetch failed
+[WebServer]     at async k (lib/seo.js:4:22)
+[WebServer]     at async q (app/layout.jsx:110:20)
+[WebServer]   2 | export async function fetchSEOSettings() {
+[WebServer]   3 |   try {
+[WebServer] > 4 |     const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/v2/seo-settings`);
+[WebServer]     |                      ^
+[WebServer]   5 |     
+[WebServer]   6 |     const data = await response.json();
+[WebServer]   7 |     // console.log('seo page e data ki ashce',data); {
+[WebServer]   [cause]: Error: connect ECONNREFUSED 127.0.0.1:3100
+[WebServer]       at ignore-listed frames {
+[WebServer]     errno: -111,
+[WebServer]     code: 'ECONNREFUSED',
+[WebServer]     syscall: 'connect',
+[WebServer]     address: '127.0.0.1',
+[WebServer]     port: 3100
+[WebServer]   }
+[WebServer] }
+[WebServer] Failed to fetch SEO settings: TypeError: fetch failed
+[WebServer]     at async k (lib/seo.js:4:22)
+[WebServer]     at async q (app/layout.jsx:110:20)
+[WebServer]   2 | export async function fetchSEOSettings() {
+[WebServer]   3 |   try {
+[WebServer] > 4 |     const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/v2/seo-settings`);
+[WebServer]     |                      ^
+[WebServer]   5 |     
+[WebServer]   6 |     const data = await response.json();
+[WebServer]   7 |     // console.log('seo page e data ki ashce',data); {
+[WebServer]   [cause]: Error: connect ECONNREFUSED 127.0.0.1:3100
+[WebServer]       at ignore-listed frames {
+[WebServer]     errno: -111,
+[WebServer]     code: 'ECONNREFUSED',
+[WebServer]     syscall: 'connect',
+[WebServer]     address: '127.0.0.1',
+[WebServer]     port: 3100
+[WebServer]   }
+[WebServer] }
+[WebServer] Failed to fetch SEO settings: TypeError: fetch failed
+[WebServer]     at async k (lib/seo.js:4:22)
+[WebServer]     at async q (app/layout.jsx:110:20)
+[WebServer]   2 | export async function fetchSEOSettings() {
+[WebServer]   3 |   try {
+[WebServer] > 4 |     const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/v2/seo-settings`);
+[WebServer]     |                      ^
+[WebServer]   5 |     
+[WebServer]   6 |     const data = await response.json();
+[WebServer]   7 |     // console.log('seo page e data ki ashce',data); {
+[WebServer]   [cause]: Error: connect ECONNREFUSED 127.0.0.1:3100
+[WebServer]       at ignore-listed frames {
+[WebServer]     errno: -111,
+[WebServer]     code: 'ECONNREFUSED',
+[WebServer]     syscall: 'connect',
+[WebServer]     address: '127.0.0.1',
+[WebServer]     port: 3100
+[WebServer]   }
+[WebServer] }
+[WebServer] Failed to fetch SEO settings: TypeError: fetch failed
+[WebServer]     at async k (lib/seo.js:4:22)
+[WebServer]     at async q (app/layout.jsx:110:20)
+[WebServer]   2 | export async function fetchSEOSettings() {
+[WebServer]   3 |   try {
+[WebServer] > 4 |     const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/v2/seo-settings`);
+[WebServer]     |                      ^
+[WebServer]   5 |     
+[WebServer]   6 |     const data = await response.json();
+[WebServer]   7 |     // console.log('seo page e data ki ashce',data); {
+[WebServer]   [cause]: Error: connect ECONNREFUSED 127.0.0.1:3100
+[WebServer]       at ignore-listed frames {
+[WebServer]     errno: -111,
+[WebServer]     code: 'ECONNREFUSED',
+[WebServer]     syscall: 'connect',
+[WebServer]     address: '127.0.0.1',
+[WebServer]     port: 3100
+[WebServer]   }
+[WebServer] }
+[WebServer] Failed to fetch SEO settings: TypeError: fetch failed
+[WebServer]     at async k (lib/seo.js:4:22)
+[WebServer]     at async q (app/layout.jsx:110:20)
+[WebServer]   2 | export async function fetchSEOSettings() {
+[WebServer]   3 |   try {
+[WebServer] > 4 |     const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/v2/seo-settings`);
+[WebServer]     |                      ^
+[WebServer]   5 |     
+[WebServer]   6 |     const data = await response.json();
+[WebServer]   7 |     // console.log('seo page e data ki ashce',data); {
+[WebServer]   [cause]: Error: connect ECONNREFUSED 127.0.0.1:3100
+[WebServer]       at ignore-listed frames {
+[WebServer]     errno: -111,
+[WebServer]     code: 'ECONNREFUSED',
+[WebServer]     syscall: 'connect',
+[WebServer]     address: '127.0.0.1',
+[WebServer]     port: 3100
+[WebServer]   }
+[WebServer] }
+[WebServer] Failed to fetch SEO settings: TypeError: fetch failed
+[WebServer]     at async k (lib/seo.js:4:22)
+[WebServer]     at async q (app/layout.jsx:110:20)
+[WebServer]   2 | export async function fetchSEOSettings() {
+[WebServer]   3 |   try {
+[WebServer] > 4 |     const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/v2/seo-settings`);
+[WebServer]     |                      ^
+[WebServer]   5 |     
+[WebServer]   6 |     const data = await response.json();
+[WebServer]   7 |     // console.log('seo page e data ki ashce',data); {
+[WebServer]   [cause]: Error: connect ECONNREFUSED 127.0.0.1:3100
+[WebServer]       at ignore-listed frames {
+[WebServer]     errno: -111,
+[WebServer]     code: 'ECONNREFUSED',
+[WebServer]     syscall: 'connect',
+[WebServer]     address: '127.0.0.1',
+[WebServer]     port: 3100
+[WebServer]   }
+[WebServer] }
+[WebServer] Failed to fetch SEO settings: TypeError: fetch failed
+[WebServer]     at async k (lib/seo.js:4:22)
+[WebServer]     at async q (app/layout.jsx:110:20)
+[WebServer]   2 | export async function fetchSEOSettings() {
+[WebServer]   3 |   try {
+[WebServer] > 4 |     const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/v2/seo-settings`);
+[WebServer]     |                      ^
+[WebServer]   5 |     
+[WebServer]   6 |     const data = await response.json();
+[WebServer]   7 |     // console.log('seo page e data ki ashce',data); {
+[WebServer]   [cause]: Error: connect ECONNREFUSED 127.0.0.1:3100
+[WebServer]       at ignore-listed frames {
+[WebServer]     errno: -111,
+[WebServer]     code: 'ECONNREFUSED',
+[WebServer]     syscall: 'connect',
+[WebServer]     address: '127.0.0.1',
+[WebServer]     port: 3100
+[WebServer]   }
+[WebServer] }
+[WebServer] Failed to fetch SEO settings: TypeError: fetch failed
+[WebServer]     at async k (lib/seo.js:4:22)
+[WebServer]     at async q (app/layout.jsx:110:20)
+[WebServer]   2 | export async function fetchSEOSettings() {
+[WebServer]   3 |   try {
+[WebServer] > 4 |     const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/v2/seo-settings`);
+[WebServer]     |                      ^
+[WebServer]   5 |     
+[WebServer]   6 |     const data = await response.json();
+[WebServer]   7 |     // console.log('seo page e data ki ashce',data); {
+[WebServer]   [cause]: Error: connect ECONNREFUSED 127.0.0.1:3100
+[WebServer]       at ignore-listed frames {
+[WebServer]     errno: -111,
+[WebServer]     code: 'ECONNREFUSED',
+[WebServer]     syscall: 'connect',
+[WebServer]     address: '127.0.0.1',
+[WebServer]     port: 3100
+[WebServer]   }
+[WebServer] }
+[WebServer] Failed to fetch SEO settings: TypeError: fetch failed
+[WebServer]     at async k (lib/seo.js:4:22)
+[WebServer]     at async q (app/layout.jsx:110:20)
+[WebServer]   2 | export async function fetchSEOSettings() {
+[WebServer]   3 |   try {
+[WebServer] > 4 |     const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/v2/seo-settings`);
+[WebServer]     |                      ^
+[WebServer]   5 |     
+[WebServer]   6 |     const data = await response.json();
+[WebServer]   7 |     // console.log('seo page e data ki ashce',data); {
+[WebServer]   [cause]: Error: connect ECONNREFUSED 127.0.0.1:3100
+[WebServer]       at ignore-listed frames {
+[WebServer]     errno: -111,
+[WebServer]     code: 'ECONNREFUSED',
+[WebServer]     syscall: 'connect',
+[WebServer]     address: '127.0.0.1',
+[WebServer]     port: 3100
+[WebServer]   }
+[WebServer] }
+[WebServer] Failed to fetch SEO settings: TypeError: fetch failed
+[WebServer]     at async k (lib/seo.js:4:22)
+[WebServer]     at async q (app/layout.jsx:110:20)
+[WebServer]   2 | export async function fetchSEOSettings() {
+[WebServer]   3 |   try {
+[WebServer] > 4 |     const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/v2/seo-settings`);
+[WebServer]     |                      ^
+[WebServer]   5 |     
+[WebServer]   6 |     const data = await response.json();
+[WebServer]   7 |     // console.log('seo page e data ki ashce',data); {
+[WebServer]   [cause]: Error: connect ECONNREFUSED 127.0.0.1:3100
+[WebServer]       at ignore-listed frames {
+[WebServer]     errno: -111,
+[WebServer]     code: 'ECONNREFUSED',
+[WebServer]     syscall: 'connect',
+[WebServer]     address: '127.0.0.1',
+[WebServer]     port: 3100
+[WebServer]   }
+[WebServer] }
+[WebServer] Failed to fetch SEO settings: TypeError: fetch failed
+[WebServer]     at async k (lib/seo.js:4:22)
+[WebServer]     at async q (app/layout.jsx:110:20)
+[WebServer]   2 | export async function fetchSEOSettings() {
+[WebServer]   3 |   try {
+[WebServer] > 4 |     const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/v2/seo-settings`);
+[WebServer]     |                      ^
+[WebServer]   5 |     
+[WebServer]   6 |     const data = await response.json();
+[WebServer]   7 |     // console.log('seo page e data ki ashce',data); {
+[WebServer]   [cause]: Error: connect ECONNREFUSED 127.0.0.1:3100
+[WebServer]       at ignore-listed frames {
+[WebServer]     errno: -111,
+[WebServer]     code: 'ECONNREFUSED',
+[WebServer]     syscall: 'connect',
+[WebServer]     address: '127.0.0.1',
+[WebServer]     port: 3100
+[WebServer]   }
+[WebServer] }
+[WebServer] Failed to fetch SEO settings: TypeError: fetch failed
+[WebServer]     at async k (lib/seo.js:4:22)
+[WebServer]     at async q (app/layout.jsx:110:20)
+[WebServer]   2 | export async function fetchSEOSettings() {
+[WebServer]   3 |   try {
+[WebServer] > 4 |     const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/v2/seo-settings`);
+[WebServer]     |                      ^
+[WebServer]   5 |     
+[WebServer]   6 |     const data = await response.json();
+[WebServer]   7 |     // console.log('seo page e data ki ashce',data); {
+[WebServer]   [cause]: Error: connect ECONNREFUSED 127.0.0.1:3100
+[WebServer]       at ignore-listed frames {
+[WebServer]     errno: -111,
+[WebServer]     code: 'ECONNREFUSED',
+[WebServer]     syscall: 'connect',
+[WebServer]     address: '127.0.0.1',
+[WebServer]     port: 3100
+[WebServer]   }
+[WebServer] }
+[WebServer] Failed to fetch SEO settings: TypeError: fetch failed
+[WebServer]     at async k (lib/seo.js:4:22)
+[WebServer]     at async q (app/layout.jsx:110:20)
+[WebServer]   2 | export async function fetchSEOSettings() {
+[WebServer]   3 |   try {
+[WebServer] > 4 |     const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/v2/seo-settings`);
+[WebServer]     |                      ^
+[WebServer]   5 |     
+[WebServer]   6 |     const data = await response.json();
+[WebServer]   7 |     // console.log('seo page e data ki ashce',data); {
+[WebServer]   [cause]: Error: connect ECONNREFUSED 127.0.0.1:3100
+[WebServer]       at ignore-listed frames {
+[WebServer]     errno: -111,
+[WebServer]     code: 'ECONNREFUSED',
+[WebServer]     syscall: 'connect',
+[WebServer]     address: '127.0.0.1',
+[WebServer]     port: 3100
+[WebServer]   }
+[WebServer] }
+[WebServer] [Sun Nov  8 12:15:53 2026] 127.0.0.1:38868 Accepted
+[WebServer] [Sun Nov  8 12:15:53 2026] 127.0.0.1:38868 Closing
+
+Running 5 tests using 1 worker
+
+[WebServer] [Sun Nov  8 12:15:56 2026] 127.0.0.1:38876 Accepted
+[WebServer] [Sun Nov  8 12:15:56 2026] 127.0.0.1:38876 Closing
+[WebServer] [Sun Nov  8 12:15:56 2026] 127.0.0.1:38888 Accepted
+[WebServer] [Sun Nov  8 12:15:56 2026] 127.0.0.1:38898 Accepted
+[WebServer] [Sun Nov  8 12:15:56 2026] 127.0.0.1:38888 Closing
+[WebServer] [Sun Nov  8 12:15:57 2026] 127.0.0.1:38898 Closing
+[WebServer] [Sun Nov  8 12:15:57 2026] 127.0.0.1:38900 Accepted
+[WebServer] [Sun Nov  8 12:15:57 2026] 127.0.0.1:38900 Closing
+[WebServer] [Sun Nov  8 12:15:57 2026] 127.0.0.1:38914 Accepted
+[WebServer] [Sun Nov  8 12:15:57 2026] 127.0.0.1:38914 Closing
+[WebServer] [Sun Nov  8 12:15:57 2026] 127.0.0.1:38926 Accepted
+[WebServer] [Sun Nov  8 12:15:57 2026] 127.0.0.1:38928 Accepted
+[WebServer] [Sun Nov  8 12:15:57 2026] 127.0.0.1:38926 Closing
+[WebServer] [Sun Nov  8 12:15:57 2026] 127.0.0.1:38938 Accepted
+[WebServer] [Sun Nov  8 12:15:57 2026] 127.0.0.1:38928 Closing
+[WebServer] [Sun Nov  8 12:15:57 2026] 127.0.0.1:38938 Closing
+[WebServer] [Sun Nov  8 12:15:57 2026] 127.0.0.1:38950 Accepted
+[WebServer] [Sun Nov  8 12:15:57 2026] 127.0.0.1:38950 Closing
+[WebServer] [Sun Nov  8 12:15:57 2026] 127.0.0.1:38960 Accepted
+[WebServer] [Sun Nov  8 12:15:57 2026] 127.0.0.1:38960 Closing
+[WebServer] [Sun Nov  8 12:15:57 2026] 127.0.0.1:38970 Accepted
+[WebServer] [Sun Nov  8 12:15:57 2026] 127.0.0.1:38970 Closing
+[WebServer] ⨯ upstream image response failed for http://127.0.0.1:8001/assets/img/app.png 404
+[WebServer] [Sun Nov  8 12:15:57 2026] 127.0.0.1:38986 Accepted
+[WebServer] [Sun Nov  8 12:15:58 2026] 127.0.0.1:38986 Closing
+[WebServer] [Sun Nov  8 12:15:58 2026] 127.0.0.1:39000 Accepted
+[WebServer] [Sun Nov  8 12:15:58 2026] 127.0.0.1:39000 Closing
+[WebServer] [Sun Nov  8 12:15:58 2026] 127.0.0.1:39002 Accepted
+[WebServer] [Sun Nov  8 12:15:58 2026] 127.0.0.1:39008 Accepted
+[WebServer] [Sun Nov  8 12:15:58 2026] 127.0.0.1:39002 Closing
+[WebServer] [Sun Nov  8 12:15:58 2026] 127.0.0.1:39008 Closing
+  ✓  1 tests/funnel-editor/e2e/ui-review.spec.js:42:7 › editor at 1024×768: the page stays visible next to the panels (4.2s)
+[WebServer] [Sun Nov  8 12:16:00 2026] 127.0.0.1:39018 Accepted
+[WebServer] [Sun Nov  8 12:16:00 2026] 127.0.0.1:39018 Closing
+[WebServer] [Sun Nov  8 12:16:00 2026] 127.0.0.1:39020 Accepted
+[WebServer] [Sun Nov  8 12:16:00 2026] 127.0.0.1:39020 Closing
+[WebServer] [Sun Nov  8 12:16:00 2026] 127.0.0.1:39026 Accepted
+[WebServer] [Sun Nov  8 12:16:00 2026] 127.0.0.1:39026 Closing
+[WebServer] [Sun Nov  8 12:16:00 2026] 127.0.0.1:39032 Accepted
+[WebServer] [Sun Nov  8 12:16:00 2026] 127.0.0.1:39032 Closing
+[WebServer] [Sun Nov  8 12:16:00 2026] 127.0.0.1:39048 Accepted
+[WebServer] [Sun Nov  8 12:16:00 2026] 127.0.0.1:39048 Closing
+[WebServer] [Sun Nov  8 12:16:00 2026] 127.0.0.1:39054 Accepted
+[WebServer] [Sun Nov  8 12:16:00 2026] 127.0.0.1:39058 Accepted
+[WebServer] [Sun Nov  8 12:16:00 2026] 127.0.0.1:39054 Closing
+[WebServer] [Sun Nov  8 12:16:00 2026] 127.0.0.1:39060 Accepted
+[WebServer] [Sun Nov  8 12:16:00 2026] 127.0.0.1:39058 Closing
+[WebServer] [Sun Nov  8 12:16:00 2026] 127.0.0.1:39060 Closing
+[WebServer] [Sun Nov  8 12:16:00 2026] 127.0.0.1:44232 Accepted
+[WebServer] [Sun Nov  8 12:16:00 2026] 127.0.0.1:44232 Closing
+[WebServer] [Sun Nov  8 12:16:00 2026] 127.0.0.1:44234 Accepted
+[WebServer] [Sun Nov  8 12:16:00 2026] 127.0.0.1:44234 Closing
+[WebServer] [Sun Nov  8 12:16:01 2026] 127.0.0.1:44248 Accepted
+[WebServer] [Sun Nov  8 12:16:01 2026] 127.0.0.1:44248 Closing
+[WebServer] ⨯ upstream image response failed for http://127.0.0.1:8001/assets/img/app.png 404
+[WebServer] [Sun Nov  8 12:16:01 2026] 127.0.0.1:44256 Accepted
+[WebServer] [Sun Nov  8 12:16:01 2026] 127.0.0.1:44256 Closing
+[WebServer] [Sun Nov  8 12:16:01 2026] 127.0.0.1:44262 Accepted
+[WebServer] [Sun Nov  8 12:16:01 2026] 127.0.0.1:44262 Closing
+[WebServer] [Sun Nov  8 12:16:01 2026] 127.0.0.1:44278 Accepted
+[WebServer] [Sun Nov  8 12:16:01 2026] 127.0.0.1:44278 Closing
+[WebServer] [Sun Nov  8 12:16:01 2026] 127.0.0.1:44290 Accepted
+[WebServer] [Sun Nov  8 12:16:01 2026] 127.0.0.1:44290 Closing
+  ✓  2 tests/funnel-editor/e2e/ui-review.spec.js:42:7 › editor at 1280×800: the page stays visible next to the panels (2.8s)
+[WebServer] [Sun Nov  8 12:16:02 2026] 127.0.0.1:44304 Accepted
+[WebServer] [Sun Nov  8 12:16:02 2026] 127.0.0.1:44304 Closing
+[WebServer] [Sun Nov  8 12:16:03 2026] 127.0.0.1:44314 Accepted
+[WebServer] [Sun Nov  8 12:16:03 2026] 127.0.0.1:44314 Closing
+[WebServer] [Sun Nov  8 12:16:03 2026] 127.0.0.1:44316 Accepted
+[WebServer] [Sun Nov  8 12:16:03 2026] 127.0.0.1:44322 Accepted
+[WebServer] [Sun Nov  8 12:16:03 2026] 127.0.0.1:44316 Closing
+[WebServer] [Sun Nov  8 12:16:03 2026] 127.0.0.1:44336 Accepted
+[WebServer] [Sun Nov  8 12:16:03 2026] 127.0.0.1:44322 Closing
+[WebServer] [Sun Nov  8 12:16:03 2026] 127.0.0.1:44336 Closing
+[WebServer] [Sun Nov  8 12:16:03 2026] 127.0.0.1:44344 Accepted
+[WebServer] [Sun Nov  8 12:16:03 2026] 127.0.0.1:44354 Accepted
+[WebServer] [Sun Nov  8 12:16:03 2026] 127.0.0.1:44344 Closing
+[WebServer] [Sun Nov  8 12:16:03 2026] 127.0.0.1:44358 Accepted
+[WebServer] [Sun Nov  8 12:16:03 2026] 127.0.0.1:44354 Closing
+[WebServer] [Sun Nov  8 12:16:03 2026] 127.0.0.1:44358 Closing
+[WebServer] [Sun Nov  8 12:16:03 2026] 127.0.0.1:44368 Accepted
+[WebServer] [Sun Nov  8 12:16:03 2026] 127.0.0.1:44368 Closing
+[WebServer] [Sun Nov  8 12:16:04 2026] 127.0.0.1:44372 Accepted
+[WebServer] [Sun Nov  8 12:16:04 2026] 127.0.0.1:44372 Closing
+[WebServer] [Sun Nov  8 12:16:04 2026] 127.0.0.1:44384 Accepted
+[WebServer] [Sun Nov  8 12:16:04 2026] 127.0.0.1:44384 Closing
+[WebServer] ⨯ upstream image response failed for http://127.0.0.1:8001/assets/img/app.png 404
+[WebServer] [Sun Nov  8 12:16:04 2026] 127.0.0.1:44398 Accepted
+[WebServer] [Sun Nov  8 12:16:04 2026] 127.0.0.1:44398 Closing
+[WebServer] [Sun Nov  8 12:16:04 2026] 127.0.0.1:44406 Accepted
+[WebServer] [Sun Nov  8 12:16:04 2026] 127.0.0.1:44406 Closing
+[WebServer] [Sun Nov  8 12:16:04 2026] 127.0.0.1:44422 Accepted
+[WebServer] [Sun Nov  8 12:16:04 2026] 127.0.0.1:44422 Closing
+[WebServer] [Sun Nov  8 12:16:04 2026] 127.0.0.1:44438 Accepted
+[WebServer] [Sun Nov  8 12:16:04 2026] 127.0.0.1:44438 Closing
+  ✓  3 tests/funnel-editor/e2e/ui-review.spec.js:42:7 › editor at 768×1024: the page stays visible next to the panels (3.4s)
+[WebServer] [Sun Nov  8 12:16:05 2026] 127.0.0.1:44448 Accepted
+[WebServer] [Sun Nov  8 12:16:05 2026] 127.0.0.1:44448 Closing
+[WebServer] [Sun Nov  8 12:16:05 2026] 127.0.0.1:44456 Accepted
+[WebServer] [Sun Nov  8 12:16:05 2026] 127.0.0.1:44472 Accepted
+[WebServer] [Sun Nov  8 12:16:05 2026] 127.0.0.1:44456 Closing
+[WebServer] [Sun Nov  8 12:16:05 2026] 127.0.0.1:44482 Accepted
+[WebServer] [Sun Nov  8 12:16:05 2026] 127.0.0.1:44472 Closing
+[WebServer] [Sun Nov  8 12:16:05 2026] 127.0.0.1:44484 Accepted
+[WebServer] [Sun Nov  8 12:16:05 2026] 127.0.0.1:44482 Closing
+[WebServer] [Sun Nov  8 12:16:06 2026] 127.0.0.1:44484 Closing
+[WebServer] [Sun Nov  8 12:16:06 2026] 127.0.0.1:44494 Accepted
+[WebServer] [Sun Nov  8 12:16:06 2026] 127.0.0.1:44494 Closing
+[WebServer] [Sun Nov  8 12:16:06 2026] 127.0.0.1:44496 Accepted
+[WebServer] [Sun Nov  8 12:16:06 2026] 127.0.0.1:44496 Closing
+[WebServer] [Sun Nov  8 12:16:06 2026] 127.0.0.1:44504 Accepted
+[WebServer] [Sun Nov  8 12:16:06 2026] 127.0.0.1:44504 Closing
+[WebServer] [Sun Nov  8 12:16:06 2026] 127.0.0.1:44508 Accepted
+[WebServer] [Sun Nov  8 12:16:06 2026] 127.0.0.1:44520 Accepted
+[WebServer] [Sun Nov  8 12:16:06 2026] 127.0.0.1:44530 Accepted
+[WebServer] [Sun Nov  8 12:16:06 2026] 127.0.0.1:44532 Accepted
+[WebServer] [Sun Nov  8 12:16:06 2026] 127.0.0.1:44508 Closing
+[WebServer] [Sun Nov  8 12:16:06 2026] 127.0.0.1:44536 Accepted
+[WebServer] [Sun Nov  8 12:16:06 2026] 127.0.0.1:44520 Closing
+[WebServer] [Sun Nov  8 12:16:06 2026] 127.0.0.1:44530 Closing
+[WebServer] [Sun Nov  8 12:16:06 2026] 127.0.0.1:44532 Closing
+[WebServer] [Sun Nov  8 12:16:06 2026] 127.0.0.1:44536 Closing
+[WebServer] [Sun Nov  8 12:16:06 2026] 127.0.0.1:44552 Accepted
+[WebServer] [Sun Nov  8 12:16:06 2026] 127.0.0.1:44564 Accepted
+[WebServer] [Sun Nov  8 12:16:07 2026] 127.0.0.1:44552 Closing
+[WebServer] [Sun Nov  8 12:16:07 2026] 127.0.0.1:44566 Accepted
+[WebServer] [Sun Nov  8 12:16:07 2026] 127.0.0.1:44564 Closing
+[WebServer] [Sun Nov  8 12:16:07 2026] 127.0.0.1:44574 Accepted
+[WebServer] [Sun Nov  8 12:16:07 2026] 127.0.0.1:44566 Closing
+[WebServer] [Sun Nov  8 12:16:07 2026] 127.0.0.1:44590 Accepted
+[WebServer] [Sun Nov  8 12:16:07 2026] 127.0.0.1:44574 Closing
+[WebServer] [Sun Nov  8 12:16:07 2026] 127.0.0.1:44596 Accepted
+[WebServer] [Sun Nov  8 12:16:07 2026] 127.0.0.1:44590 Closing
+[WebServer] [Sun Nov  8 12:16:07 2026] 127.0.0.1:44600 Accepted
+[WebServer] [Sun Nov  8 12:16:07 2026] 127.0.0.1:44596 Closing
+[WebServer] [Sun Nov  8 12:16:07 2026] 127.0.0.1:44608 Accepted
+[WebServer] [Sun Nov  8 12:16:07 2026] 127.0.0.1:44600 Closing
+[WebServer] [Sun Nov  8 12:16:07 2026] 127.0.0.1:44618 Accepted
+[WebServer] [Sun Nov  8 12:16:07 2026] 127.0.0.1:44608 Closing
+[WebServer] [Sun Nov  8 12:16:07 2026] 127.0.0.1:44620 Accepted
+[WebServer] [Sun Nov  8 12:16:07 2026] 127.0.0.1:44618 Closing
+[WebServer] [Sun Nov  8 12:16:07 2026] 127.0.0.1:44630 Accepted
+[WebServer] [Sun Nov  8 12:16:07 2026] 127.0.0.1:44620 Closing
+[WebServer] [Sun Nov  8 12:16:08 2026] 127.0.0.1:44630 Closing
+[WebServer] [Sun Nov  8 12:16:08 2026] 127.0.0.1:44646 Accepted
+[WebServer] [Sun Nov  8 12:16:08 2026] 127.0.0.1:44656 Accepted
+[WebServer] [Sun Nov  8 12:16:08 2026] 127.0.0.1:44646 Closing
+[WebServer] [Sun Nov  8 12:16:08 2026] 127.0.0.1:44666 Accepted
+[WebServer] [Sun Nov  8 12:16:08 2026] 127.0.0.1:44656 Closing
+[WebServer] [Sun Nov  8 12:16:08 2026] 127.0.0.1:44672 Accepted
+[WebServer] [Sun Nov  8 12:16:08 2026] 127.0.0.1:44666 Closing
+[WebServer] [Sun Nov  8 12:16:08 2026] 127.0.0.1:44674 Accepted
+[WebServer] [Sun Nov  8 12:16:08 2026] 127.0.0.1:44672 Closing
+[WebServer] [Sun Nov  8 12:16:08 2026] 127.0.0.1:44678 Accepted
+[WebServer] [Sun Nov  8 12:16:08 2026] 127.0.0.1:44674 Closing
+[WebServer] [Sun Nov  8 12:16:08 2026] 127.0.0.1:44690 Accepted
+[WebServer] [Sun Nov  8 12:16:08 2026] 127.0.0.1:44678 Closing
+[WebServer] [Sun Nov  8 12:16:08 2026] 127.0.0.1:44702 Accepted
+[WebServer] [Sun Nov  8 12:16:08 2026] 127.0.0.1:44690 Closing
+[WebServer] [Sun Nov  8 12:16:08 2026] 127.0.0.1:44702 Closing
+[WebServer] [Sun Nov  8 12:16:09 2026] 127.0.0.1:44708 Accepted
+[WebServer] [Sun Nov  8 12:16:09 2026] 127.0.0.1:44708 Closing
+[WebServer] [Sun Nov  8 12:16:09 2026] 127.0.0.1:44716 Accepted
+[WebServer] [Sun Nov  8 12:16:09 2026] 127.0.0.1:44728 Accepted
+[WebServer] [Sun Nov  8 12:16:09 2026] 127.0.0.1:44736 Accepted
+[WebServer] [Sun Nov  8 12:16:09 2026] 127.0.0.1:44748 Accepted
+[WebServer] [Sun Nov  8 12:16:09 2026] 127.0.0.1:44716 Closing
+[WebServer] [Sun Nov  8 12:16:09 2026] 127.0.0.1:44728 Closing
+[WebServer] [Sun Nov  8 12:16:10 2026] 127.0.0.1:44736 Closing
+[WebServer] [Sun Nov  8 12:16:10 2026] 127.0.0.1:44748 Closing
+[WebServer] [Sun Nov  8 12:16:10 2026] 127.0.0.1:34668 Accepted
+[WebServer] [Sun Nov  8 12:16:10 2026] 127.0.0.1:34668 Closing
+[WebServer] [Sun Nov  8 12:16:10 2026] 127.0.0.1:34676 Accepted
+[WebServer] [Sun Nov  8 12:16:10 2026] 127.0.0.1:34676 Closing
+[WebServer] [Sun Nov  8 12:16:10 2026] 127.0.0.1:34684 Accepted
+[WebServer] [Sun Nov  8 12:16:10 2026] 127.0.0.1:34700 Accepted
+[WebServer] [Sun Nov  8 12:16:10 2026] 127.0.0.1:34706 Accepted
+[WebServer] [Sun Nov  8 12:16:10 2026] 127.0.0.1:34712 Accepted
+[WebServer] [Sun Nov  8 12:16:10 2026] 127.0.0.1:34684 Closing
+[WebServer] [Sun Nov  8 12:16:10 2026] 127.0.0.1:34728 Accepted
+[WebServer] [Sun Nov  8 12:16:10 2026] 127.0.0.1:34700 Closing
+[WebServer] [Sun Nov  8 12:16:11 2026] 127.0.0.1:34706 Closing
+[WebServer] [Sun Nov  8 12:16:11 2026] 127.0.0.1:34712 Closing
+[WebServer] [Sun Nov  8 12:16:11 2026] 127.0.0.1:34732 Accepted
+[WebServer] [Sun Nov  8 12:16:11 2026] 127.0.0.1:34728 Closing
+[WebServer] [Sun Nov  8 12:16:11 2026] 127.0.0.1:34748 Accepted
+[WebServer] [Sun Nov  8 12:16:11 2026] 127.0.0.1:34732 Closing
+[WebServer] [Sun Nov  8 12:16:11 2026] 127.0.0.1:34750 Accepted
+[WebServer] [Sun Nov  8 12:16:11 2026] 127.0.0.1:34748 Closing
+[WebServer] [Sun Nov  8 12:16:11 2026] 127.0.0.1:34758 Accepted
+[WebServer] [Sun Nov  8 12:16:11 2026] 127.0.0.1:34750 Closing
+[WebServer] [Sun Nov  8 12:16:11 2026] 127.0.0.1:34770 Accepted
+[WebServer] [Sun Nov  8 12:16:12 2026] 127.0.0.1:34758 Closing
+[WebServer] [Sun Nov  8 12:16:12 2026] 127.0.0.1:34780 Accepted
+[WebServer] [Sun Nov  8 12:16:12 2026] 127.0.0.1:34770 Closing
+[WebServer] [Sun Nov  8 12:16:12 2026] 127.0.0.1:34796 Accepted
+[WebServer] [Sun Nov  8 12:16:12 2026] 127.0.0.1:34780 Closing
+[WebServer] [Sun Nov  8 12:16:12 2026] 127.0.0.1:34802 Accepted
+[WebServer] [Sun Nov  8 12:16:12 2026] 127.0.0.1:34796 Closing
+[WebServer] [Sun Nov  8 12:16:12 2026] 127.0.0.1:34812 Accepted
+[WebServer] [Sun Nov  8 12:16:12 2026] 127.0.0.1:34802 Closing
+[WebServer] [Sun Nov  8 12:16:12 2026] 127.0.0.1:34814 Accepted
+[WebServer] [Sun Nov  8 12:16:12 2026] 127.0.0.1:34812 Closing
+[WebServer] [Sun Nov  8 12:16:12 2026] 127.0.0.1:34814 Closing
+[WebServer] [Sun Nov  8 12:16:12 2026] 127.0.0.1:34828 Accepted
+[WebServer] [Sun Nov  8 12:16:12 2026] 127.0.0.1:34840 Accepted
+[WebServer] [Sun Nov  8 12:16:12 2026] 127.0.0.1:34854 Accepted
+[WebServer] [Sun Nov  8 12:16:12 2026] 127.0.0.1:34860 Accepted
+[WebServer] [Sun Nov  8 12:16:12 2026] 127.0.0.1:34872 Accepted
+[WebServer] [Sun Nov  8 12:16:12 2026] 127.0.0.1:34828 Closing
+[WebServer] [Sun Nov  8 12:16:13 2026] 127.0.0.1:34840 Closing
+[WebServer] [Sun Nov  8 12:16:13 2026] 127.0.0.1:34854 Closing
+[WebServer] [Sun Nov  8 12:16:13 2026] 127.0.0.1:34860 Closing
+[WebServer] [Sun Nov  8 12:16:13 2026] 127.0.0.1:34872 Closing
+[WebServer] [Sun Nov  8 12:16:13 2026] 127.0.0.1:34886 Accepted
+[WebServer] [Sun Nov  8 12:16:13 2026] 127.0.0.1:34900 Accepted
+[WebServer] [Sun Nov  8 12:16:13 2026] 127.0.0.1:34886 Closing
+[WebServer] [Sun Nov  8 12:16:13 2026] 127.0.0.1:34904 Accepted
+[WebServer] [Sun Nov  8 12:16:13 2026] 127.0.0.1:34900 Closing
+[WebServer] [Sun Nov  8 12:16:13 2026] 127.0.0.1:34904 Closing
+  ✓  4 tests/funnel-editor/e2e/ui-review.spec.js:90:5 › analytics dashboard on a laptop and a phone (8.7s)
+[WebServer] [Sun Nov  8 12:16:14 2026] 127.0.0.1:34910 Accepted
+[WebServer] [Sun Nov  8 12:16:14 2026] 127.0.0.1:34910 Closing
+[WebServer] [Sun Nov  8 12:16:14 2026] 127.0.0.1:34922 Accepted
+[WebServer] [Sun Nov  8 12:16:14 2026] 127.0.0.1:34928 Accepted
+[WebServer] [Sun Nov  8 12:16:14 2026] 127.0.0.1:34932 Accepted
+[WebServer] [Sun Nov  8 12:16:14 2026] 127.0.0.1:34948 Accepted
+[WebServer] [Sun Nov  8 12:16:15 2026] 127.0.0.1:34922 Closing
+[WebServer] [Sun Nov  8 12:16:15 2026] 127.0.0.1:34928 Closing
+[WebServer] [Sun Nov  8 12:16:15 2026] 127.0.0.1:34932 Closing
+[WebServer] [Sun Nov  8 12:16:15 2026] 127.0.0.1:34948 Closing
+[WebServer] [Sun Nov  8 12:16:15 2026] 127.0.0.1:34962 Accepted
+[WebServer] [Sun Nov  8 12:16:15 2026] 127.0.0.1:34962 Closing
+[WebServer] [Sun Nov  8 12:16:15 2026] 127.0.0.1:34968 Accepted
+[WebServer] [Sun Nov  8 12:16:15 2026] 127.0.0.1:34968 Closing
+[WebServer] [Sun Nov  8 12:16:16 2026] 127.0.0.1:34982 Accepted
+[WebServer] [Sun Nov  8 12:16:16 2026] 127.0.0.1:34990 Accepted
+[WebServer] [Sun Nov  8 12:16:16 2026] 127.0.0.1:34996 Accepted
+[WebServer] [Sun Nov  8 12:16:16 2026] 127.0.0.1:35004 Accepted
+[WebServer] [Sun Nov  8 12:16:16 2026] 127.0.0.1:34982 Closing
+[WebServer] [Sun Nov  8 12:16:16 2026] 127.0.0.1:35014 Accepted
+[WebServer] [Sun Nov  8 12:16:16 2026] 127.0.0.1:34990 Closing
+[WebServer] [Sun Nov  8 12:16:16 2026] 127.0.0.1:34996 Closing
+[WebServer] [Sun Nov  8 12:16:16 2026] 127.0.0.1:35004 Closing
+[WebServer] [Sun Nov  8 12:16:16 2026] 127.0.0.1:35014 Closing
+[WebServer] [Sun Nov  8 12:16:16 2026] 127.0.0.1:35024 Accepted
+[WebServer] [Sun Nov  8 12:16:16 2026] 127.0.0.1:35032 Accepted
+[WebServer] [Sun Nov  8 12:16:16 2026] 127.0.0.1:35024 Closing
+[WebServer] [Sun Nov  8 12:16:16 2026] 127.0.0.1:35040 Accepted
+[WebServer] [Sun Nov  8 12:16:16 2026] 127.0.0.1:35032 Closing
+[WebServer] [Sun Nov  8 12:16:16 2026] 127.0.0.1:35046 Accepted
+[WebServer] [Sun Nov  8 12:16:16 2026] 127.0.0.1:35040 Closing
+[WebServer] [Sun Nov  8 12:16:16 2026] 127.0.0.1:35050 Accepted
+[WebServer] [Sun Nov  8 12:16:17 2026] 127.0.0.1:35046 Closing
+[WebServer] [Sun Nov  8 12:16:17 2026] 127.0.0.1:35056 Accepted
+[WebServer] [Sun Nov  8 12:16:17 2026] 127.0.0.1:35050 Closing
+[WebServer] [Sun Nov  8 12:16:17 2026] 127.0.0.1:35072 Accepted
+[WebServer] [Sun Nov  8 12:16:17 2026] 127.0.0.1:35056 Closing
+[WebServer] [Sun Nov  8 12:16:17 2026] 127.0.0.1:35088 Accepted
+[WebServer] [Sun Nov  8 12:16:17 2026] 127.0.0.1:35072 Closing
+[WebServer] [Sun Nov  8 12:16:17 2026] 127.0.0.1:35100 Accepted
+[WebServer] [Sun Nov  8 12:16:17 2026] 127.0.0.1:35088 Closing
+[WebServer] [Sun Nov  8 12:16:17 2026] 127.0.0.1:35114 Accepted
+[WebServer] [Sun Nov  8 12:16:18 2026] 127.0.0.1:35100 Closing
+[WebServer] [Sun Nov  8 12:16:18 2026] 127.0.0.1:35118 Accepted
+[WebServer] [Sun Nov  8 12:16:18 2026] 127.0.0.1:35114 Closing
+[WebServer] [Sun Nov  8 12:16:18 2026] 127.0.0.1:35118 Closing
+[WebServer] [Sun Nov  8 12:16:18 2026] 127.0.0.1:35128 Accepted
+[WebServer] [Sun Nov  8 12:16:18 2026] 127.0.0.1:35128 Closing
+[WebServer] [Sun Nov  8 12:16:18 2026] 127.0.0.1:35134 Accepted
+[WebServer] [Sun Nov  8 12:16:18 2026] 127.0.0.1:35140 Accepted
+[WebServer] [Sun Nov  8 12:16:18 2026] 127.0.0.1:35134 Closing
+[WebServer] [Sun Nov  8 12:16:18 2026] 127.0.0.1:35152 Accepted
+[WebServer] [Sun Nov  8 12:16:18 2026] 127.0.0.1:35140 Closing
+[WebServer] [Sun Nov  8 12:16:18 2026] 127.0.0.1:35158 Accepted
+[WebServer] [Sun Nov  8 12:16:18 2026] 127.0.0.1:35152 Closing
+[WebServer] [Sun Nov  8 12:16:18 2026] 127.0.0.1:35170 Accepted
+[WebServer] [Sun Nov  8 12:16:18 2026] 127.0.0.1:35158 Closing
+[WebServer] [Sun Nov  8 12:16:18 2026] 127.0.0.1:35178 Accepted
+[WebServer] [Sun Nov  8 12:16:18 2026] 127.0.0.1:35170 Closing
+[WebServer] [Sun Nov  8 12:16:18 2026] 127.0.0.1:35180 Accepted
+[WebServer] [Sun Nov  8 12:16:18 2026] 127.0.0.1:35178 Closing
+[WebServer] [Sun Nov  8 12:16:18 2026] 127.0.0.1:35180 Closing
+[WebServer] [Sun Nov  8 12:16:19 2026] 127.0.0.1:35190 Accepted
+[WebServer] [Sun Nov  8 12:16:19 2026] 127.0.0.1:35190 Closing
+
+  ✘  5 tests/funnel-editor/e2e/ui-review.spec.js:110:5 › a merchant saves a funnel as a template and starts a new campaign from it; library pages fit a phone (4.0m)
+
+
+  1) tests/funnel-editor/e2e/ui-review.spec.js:110:5 › a merchant saves a funnel as a template and starts a new campaign from it; library pages fit a phone 
+
+    Test timeout of 240000ms exceeded.
+
+    Error: locator.click: Test ended.
+    Call log:
+      - waiting for locator('#funnel-save-template').getByRole('button', { name: 'Save template' })
+
+
+      147 |       await expect(dialog).toBeVisible();
+      148 |       await dialog.getByLabel("Template name").fill(templateName);
+    > 149 |       await dialog.getByRole("button", { name: "Save template" }).click();
+          |                                                                   ^
+      150 |       await page.waitForURL(/\/admin\/funnels\/templates/);
+      151 |       await expect(page.getByRole("alert").getByText("Saved as a template")).toBeVisible();
+      152 |     }
+        at /home/user/softcommerce_new/misron_frontend/tests/funnel-editor/e2e/ui-review.spec.js:149:67
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/funnel-editor/ui-review-a-merchant-saves-f45e0-t-library-pages-fit-a-phone/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/funnel-editor/ui-review-a-merchant-saves-f45e0-t-library-pages-fit-a-phone/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/funnel-editor/ui-review-a-merchant-saves-f45e0-t-library-pages-fit-a-phone/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/funnel-editor/ui-review-a-merchant-saves-f45e0-t-library-pages-fit-a-phone/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    tests/funnel-editor/e2e/ui-review.spec.js:110:5 › a merchant saves a funnel as a template and starts a new campaign from it; library pages fit a phone 
+  4 passed (4.4m)

@@ -1,0 +1,12 @@
+  ✓  52 tests/funnel-editor/unit/tree-and-rules.spec.js:41:5 › move uses the index measured before the move (1ms)
+  ✓  53 tests/funnel-editor/unit/tree-and-rules.spec.js:55:5 › copies get fresh ids and their own offers (6ms)
+  ✓  51 tests/funnel-editor/unit/tracking.spec.js:75:5 › arrival is recorded with campaign, click id and referring host, and a plain reload keeps it (28ms)
+  ✓  55 tests/funnel-editor/unit/tracking.spec.js:93:5 › refused consent drops ad click ids and keeps the visitor id to the session (24ms)
+  ✓  54 tests/funnel-editor/unit/tree-and-rules.spec.js:84:5 › ids are unique and valid (37ms)
+  ✓  57 tests/funnel-editor/unit/tree-and-rules.spec.js:91:5 › placement rules follow the server registry (2ms)
+  ✓  58 tests/funnel-editor/unit/tree-and-rules.spec.js:110:5 › collects ids and offer keys (2ms)
+  ✓  59 tests/funnel-editor/unit/tree-and-rules.spec.js:117:5 › server error paths point at blocks and fields (2ms)
+  ✓  56 tests/funnel-editor/unit/tracking.spec.js:106:5 › where consent is required, nothing runs until the visitor agrees (34ms)
+  ✓  60 tests/funnel-editor/unit/tracking.spec.js:119:5 › offer contents use the catalogue (stock) id the store's feed publishes (30ms)
+
+  60 passed (1.8s)

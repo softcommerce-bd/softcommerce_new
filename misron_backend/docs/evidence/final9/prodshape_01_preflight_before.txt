@@ -1,0 +1,33 @@
+database=t5_prodshape_test server=8.4.13 policy=enforce
+  account_statement_logs       InnoDB
+  balance_transfers            InnoDB
+  chart_of_accounts            InnoDB
+  courier_settlement_details   InnoDB
+  courier_settlements          InnoDB
+  customer_payments            InnoDB
+  expense_payment_details      InnoDB
+  expense_payments             InnoDB
+  idempotency_keys             InnoDB
+  income_details               InnoDB
+  incomes                      InnoDB
+  order_details                InnoDB
+  order_payment_mappings       InnoDB
+  orders                       InnoDB
+  product_stocks               InnoDB
+  purchase_order_details       InnoDB
+  purchase_orders              InnoDB
+  purchase_products            MyISAM   <-- NOT InnoDB
+  purchase_return_products     MyISAM   <-- NOT InnoDB
+  purchase_returns             MyISAM   <-- NOT InnoDB
+  purchases                    MyISAM   <-- NOT InnoDB
+  stock_adjustment_lines       InnoDB
+  stock_adjustments            InnoDB
+  supplier_payment_purchases   InnoDB
+  supplier_payments            InnoDB
+  suppliers                    MyISAM   <-- NOT InnoDB
+  voucher_details              InnoDB
+  vouchers                     InnoDB
+FAIL: 5 money/stock table(s) are not InnoDB: purchase_products, purchase_return_products, purchase_returns, purchases, suppliers
+  - deadlock retry is DISABLED (a retry would repeat writes that did not roll back)
+  - purchasing / supplier-balance changes are REFUSED (policy enforce)
+  - plan: back up, put the application in maintenance mode, then `php artisan db:convert-engines` (dry run), then with --execute --confirm=t5_prodshape_test (see docs/T5_FINAL_DEPLOYMENT_RUNBOOK.md)

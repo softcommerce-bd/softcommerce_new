@@ -1,0 +1,4 @@
+BEFORE (original test) MySQL 8.4.13: pass=17 fail=3 of 20
+diag copy MySQL 8.4.13: pass=18 fail=2 of 20
+BEFORE (original test) MariaDB 10.11.14: pass=19 fail=1 of 20
+diag copy MariaDB 10.11.14: pass=20 fail=0 of 20

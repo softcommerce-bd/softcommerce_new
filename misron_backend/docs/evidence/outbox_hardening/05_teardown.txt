@@ -1,0 +1,5 @@
+== teardown 2026-11-08T09:45:51Z
+t5mysql84
+containers: 0 volumes: 0
+Deleted: sha256:a81d043930e51745522bd5c430961cf8286f0a23f0a9a2a6e0108f7ea71b0902
+dockerd: 0; port 3307: 0; docker dirs left: 0

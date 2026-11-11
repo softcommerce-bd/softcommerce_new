@@ -140,8 +140,8 @@ class GoodsReceiptService
                 StockBalance::movement(['product_id' => $p['productId'], 'variant' => $p['variant'], 'type' => 'goods_received', 'on_hand_delta' => $p['qty'], 'source_type' => 'goods_receipt', 'source_id' => $receiptId, 'created_by' => $by]);
                 // 3. purchase order line and requirement links
                 if ($p['detail']) {
-                    $pending = (int) $p['detail']->pending_quantity - $p['qty'];
-                    DB::table('purchase_order_details')->where('id', $p['detail']->id)->update(['recieved_quantity' => (int) $p['detail']->recieved_quantity + $p['qty'], 'pending_quantity' => $pending, 'remaining_quantity' => $pending, 'updated_at' => now()]);
+                    $pending = (int) $p['detail']->pending_quantity - $p['qty']; // pending_quantity itself is generated (purchase - received): updating recieved_quantity is what changes it
+                    DB::table('purchase_order_details')->where('id', $p['detail']->id)->update(['recieved_quantity' => (int) $p['detail']->recieved_quantity + $p['qty'], 'remaining_quantity' => $pending, 'updated_at' => now()]);
                     $this->advanceLinks((int) $p['detail']->id, $p['qty']);
                 }
                 $items[$p['productId'] . '|' . $p['variant']] = [$p['productId'], $p['variant']];

@@ -31,6 +31,24 @@ final class DeadlockRetryRoutes
             }
         }
 
+        // purchasing / supplier-balance routes are also refused while their tables are not InnoDB (runs before the retry)
+        foreach ($router->getRoutes()->getRoutes() as $route) {
+            $methods = array_diff($route->methods(), ['GET', 'HEAD', 'OPTIONS']);
+            if (!$methods || !is_string($route->getActionName()) || !str_contains($route->getActionName(), '@')) {
+                continue;
+            }
+            [$class, $method] = explode('@', $route->getActionName(), 2);
+            foreach ((array) config('deadlock_retry.engine_gated', []) as $controller => $only) {
+                if (ltrim($controller, '\\') === ltrim($class, '\\') && ($only === '*' || in_array($method, (array) $only, true))) {
+                    $route->computedMiddleware = null;
+                    if (!in_array('engine.safe', $route->gatherMiddleware(), true)) {
+                        $route->middleware('engine.safe');
+                        $route->computedMiddleware = null;
+                    }
+                }
+            }
+        }
+
         return $attached;
     }
 }

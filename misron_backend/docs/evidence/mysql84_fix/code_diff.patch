@@ -1,0 +1,29 @@
+diff --git a/misron_backend/app/Services/Purchasing/GoodsReceiptService.php b/misron_backend/app/Services/Purchasing/GoodsReceiptService.php
+index 3af0d3e..7480da2 100644
+--- a/misron_backend/app/Services/Purchasing/GoodsReceiptService.php
++++ b/misron_backend/app/Services/Purchasing/GoodsReceiptService.php
+@@ -142,4 +142,4 @@ class GoodsReceiptService
+                 if ($p['detail']) {
+-                    $pending = (int) $p['detail']->pending_quantity - $p['qty'];
+-                    DB::table('purchase_order_details')->where('id', $p['detail']->id)->update(['recieved_quantity' => (int) $p['detail']->recieved_quantity + $p['qty'], 'pending_quantity' => $pending, 'remaining_quantity' => $pending, 'updated_at' => now()]);
++                    $pending = (int) $p['detail']->pending_quantity - $p['qty']; // pending_quantity itself is generated (purchase - received): updating recieved_quantity is what changes it
++                    DB::table('purchase_order_details')->where('id', $p['detail']->id)->update(['recieved_quantity' => (int) $p['detail']->recieved_quantity + $p['qty'], 'remaining_quantity' => $pending, 'updated_at' => now()]);
+                     $this->advanceLinks((int) $p['detail']->id, $p['qty']);
+diff --git a/misron_backend/app/Services/Purchasing/PurchaseOrderService.php b/misron_backend/app/Services/Purchasing/PurchaseOrderService.php
+index 756470a..6e52183 100644
+--- a/misron_backend/app/Services/Purchasing/PurchaseOrderService.php
++++ b/misron_backend/app/Services/Purchasing/PurchaseOrderService.php
+@@ -53,4 +53,5 @@ class PurchaseOrderService
+             foreach ($rows as $r) {
++                // pending_quantity is a GENERATED column (purchase_quantity - recieved_quantity): the database computes it. It is never written here (MySQL 8.4 rejects it, error 3105).
+                 $detailId = DB::table('purchase_order_details')->insertGetId(['purchase_order_id' => $poId, 'product_id' => $r['product']->id, 'product_name' => $r['product']->name, 'variant' => $r['variant'],
+-                    'purchase_quantity' => $r['qty'], 'remaining_quantity' => $r['qty'], 'recieved_quantity' => 0, 'pending_quantity' => $r['qty'], 'buying_unit_cost' => round($r['cost'] / Money::SCALE, 2),
++                    'purchase_quantity' => $r['qty'], 'remaining_quantity' => $r['qty'], 'recieved_quantity' => 0, 'buying_unit_cost' => round($r['cost'] / Money::SCALE, 2),
+                     'total_cost' => Money::cents($r['qty'] * $r['cost']) / 100, 'product_tax' => 0, 'created_at' => now(), 'updated_at' => now()]);
+@@ -82,3 +83,5 @@ class PurchaseOrderService
+             DB::table('purchase_requirement_links')->whereIn('purchase_order_detail_id', $details)->where('status', 'open')->update(['status' => 'cancelled', 'updated_at' => now()]);
+-            DB::table('purchase_order_details')->where('purchase_order_id', $poId)->update(['pending_quantity' => 0, 'remaining_quantity' => 0, 'updated_at' => now()]);
++            DB::table('purchase_order_details')->where('purchase_order_id', $poId)->update(['remaining_quantity' => 0, 'updated_at' => now()]);
++            // pending_quantity is generated (purchase - received) and cannot be written; it does not need to be: a cancelled order (status 'cancelled', or 'received' when it was part-received) is excluded from incoming stock,
++            // from 'awaiting receipt' and from receiving, which all look at the order status, so the quantity that will never arrive is not counted anywhere.
+             DB::table('purchase_orders')->where('id', $poId)->update(['status' => $po->status === 'partially_received' ? 'received' : 'cancelled', 'updated_at' => now()]);

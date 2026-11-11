@@ -53,7 +53,7 @@ class Base64ImageUpload
             return 'Uploading error';
         }
 
-        if (env('FILESYSTEM_DRIVER') == 's3') {
+        if (config('filesystems.default') == 's3') {
             Storage::disk('s3')->put($path, $bytes, ['visibility' => 'public']);
             unlink(public_path($path));
         }

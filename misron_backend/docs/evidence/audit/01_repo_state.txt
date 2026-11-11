@@ -1,0 +1,29 @@
+== audit run 2026-11-08T09:57:11Z at a967de0
+-- git hygiene
+uncommitted paths: 1
+stashes: 0
+distinct HEAD vs origin (1 = identical): 1
+!! .phpunit.result.cache
+!! docs/evidence/db-rehearsal.log
+!! docs/evidence/staging/rehearse.log
+!! docs/evidence/staging/sweep2.log
+!! docs/evidence/verification/migration-sql-parity.log
+!! ../misron_frontend/.next/
+-- test inventory at HEAD (listing only, no database use)
+default (Unit+Feature): 641
+tests/Concurrency: 97
+-- commits that changed app/ or config/ or routes/ (newest first)
+9677c7a 2026-11-08 MYSQL84.2: stop writing the generated column purchase_order_details.pending_quantity (create, cancel, receive); regression tests; M
+25aec82 2026-11-01 T-5 owner decisions: retire bank actions (B-1.1), auto-deposit option C with guard G1, N-1 read-only runbook and script, INC.1 DBA 
+7217e82 2026-10-31 T-5 final remediation: serialize first income number (root cause: index-gap deadlock), B-1 spec, AD-1 addendum, N-1 queries Q7-Q10,
+32da71e 2026-10-31 T-5 update 3: POS cart isolation and bank-disabled tests, AD-1 options, retry backoff, docs
+394f2f5 2026-10-31 POS: lock and consume only the sold cart rows (a sale no longer deletes every walk-in cart), auto-deposit reads the balance under t
+877b441 2026-10-31 Supplier payment edit: apply the new payment on the instance that carries the revert (supplier due/paid no longer drift), allocatio
+bd8eb33 2026-10-31 T-5 verification: parallel coverage tests (incomes, vouchers, transfers, adjustments, supplier/customer payments, returns, cancel),
+1eb98f1 2026-10-31 T-5 verification: method-level deadlock tests for 22 more methods, flash-notifier retry fix, deterministic ascending lock order for
+9c0eda8 2026-10-31 T-5 F-04: existing overdraft rules re-evaluated under the account row lock (balance transfer, expense, bank, supplier payment); sta
+dbf106f 2026-10-31 T-5 F-02/F-03: files stored once and deleted after commit (purchase delete, purchase returns), refusals roll back before answering,
+fdce744 2026-10-31 T-5 Phase A-C, F-01: row-level checkout cart lock with submission identity, index migration, deadlock retry for flash+redirect answ
+c2af604 2026-10-31 T-5 verification report, second edition: real-process HTTP/real-deadlock/side-effect evidence, defects D1-D6, excluded paths, prere
+-- commits after the last app/config change
+a967de0 OUTBOX.1: deterministic killed-worker outbox test (second start barrier + kill-point signal), extra after_lock t

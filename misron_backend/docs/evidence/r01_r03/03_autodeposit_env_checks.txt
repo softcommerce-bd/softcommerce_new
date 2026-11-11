@@ -1,0 +1,8 @@
+Read-only checks (2026-11-08). No .env content exists in this checkout and none was printed.
+.env, .env.example, .env.testing, .env.production: all ABSENT from the repository checkout (the sandbox supplies settings through the process environment). The deployed servers' environment is unknown.
+files containing the upper-case name AUTO_DEPOSIT (excluding vendor/docs): config/accounts.php, app/Console/Commands/AutoDepositFunds.php, tests/Feature/Inventory/AutoDepositPausedGuardTest.php
+phpunit.xml / phpunit.concurrency.xml: no AUTO_DEPOSIT entry
+bootstrap/cache contains only packages.php and services.php (no config.php: configuration is not cached in this checkout)
+tests that turn the body on do it with config('accounts.auto_deposit_approved') at run time in an isolated process (PosAndConsoleParallelTest via the worker 'config' job option; AutoDepositPausedGuardTest) - on disposable databases only
+no controller, route, job, event or other command calls the command class or Artisan::call('accounts:auto-deposit')
+schedule: app/Console/Kernel.php dailyAt 00:01 Asia/Dhaka, withoutOverlapping

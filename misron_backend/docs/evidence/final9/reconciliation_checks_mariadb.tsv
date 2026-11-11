@@ -1,0 +1,16 @@
+check_name	problem_count	detail
+engine: money/stock tables not InnoDB	0.00	
+journal: entries whose debits <> credits	0.00	
+suppliers: due_amount <> sum of open purchase amounts (opening-due suppliers legitimately differ)	1.00	
+purchases: net - paid - due <> 0	0.00	
+supplier payments: live payment not fully allocated (advances are legitimate)	0.00	
+supplier payments: allocation rows of deleted payments (orphans)	0.00	
+stock: FIFO layer units <> shelf quantity per product/variant	0.00	
+stock: negative shelf quantities	0.00	
+numbers: duplicated income / expense / transfer / voucher / customer-payment / adjustment / purchase numbers	0.00	
+enum: blank type/status written by a screen (illegal ENUM value stored as blank)	0.00	see docs/T5_R03_R04_AUTO_DEPOSIT_TRACE.md NB-6
+auto-deposit traces (AD- vouchers, active auto methods) - expected 0 while the job is paused	0.00	
+outbox: committed legacy postings still waiting	0.00	
+info: sum of supplier due / paid	165.00	paid=0.00
+info: sum of chart_of_accounts.current_balance	0.00	13 accounts
+info: FIFO layer units / valued at remaining cost	0.00	value=0.00

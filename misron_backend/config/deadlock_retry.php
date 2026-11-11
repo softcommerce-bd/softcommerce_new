@@ -23,7 +23,15 @@ return [
         \App\Http\Controllers\VoucherController::class => '*',
         \App\Http\Controllers\ExpensePaymentController::class => '*',
         \App\Http\Controllers\IncomeController::class => '*',
-        \App\Http\Controllers\BankTransactionController::class => '*',
         \App\Http\Controllers\BalanceTransferController::class => '*',
+    ],
+
+    // Routes that, in addition, are refused while the purchasing tables are not InnoDB (middleware 'engine.safe', policy FINANCIAL_ENGINE_POLICY).
+    // Selling paths (POS, checkout, order screens) are deliberately NOT here: StockLedger compensates MyISAM batches by hand.
+    'engine_gated' => [
+        \App\Http\Controllers\PurchaseController::class => '*',
+        \App\Http\Controllers\PurchaseOrderController::class => ['store', 'update', 'destroy', 'purchaseUpdatePayment', 'convertToPurchase'],
+        \App\Http\Controllers\SupplierPaymentController::class => '*',
+        \App\Http\Controllers\SupplierController::class => ['processPayment', 'store', 'supplierUpdate', 'supplierDelete'],
     ],
 ];

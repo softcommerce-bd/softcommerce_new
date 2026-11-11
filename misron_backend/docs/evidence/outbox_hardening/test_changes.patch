@@ -1,0 +1,109 @@
+diff --git a/misron_backend/tests/Concurrency/ConcurrencyTestCase.php b/misron_backend/tests/Concurrency/ConcurrencyTestCase.php
+index fcf8c28..2628611 100644
+--- a/misron_backend/tests/Concurrency/ConcurrencyTestCase.php
++++ b/misron_backend/tests/Concurrency/ConcurrencyTestCase.php
+@@ -215,4 +215,10 @@ abstract class ConcurrencyTestCase extends TestCase
+     }
+ 
++    /** The per-test scratch directory (workers' job and result files live here); tests may put synchronisation files in it. */
++    protected function workDirectory(): string
++    {
++        return $this->workDir;
++    }
++
+     private function diagnostics(): string
+     {
+diff --git a/misron_backend/tests/Concurrency/OutboxVerificationTest.php b/misron_backend/tests/Concurrency/OutboxVerificationTest.php
+index f753ea0..bdd50fa 100644
+--- a/misron_backend/tests/Concurrency/OutboxVerificationTest.php
++++ b/misron_backend/tests/Concurrency/OutboxVerificationTest.php
+@@ -53,14 +53,55 @@ class OutboxVerificationTest extends VerificationCase
+     }
+ 
++    /**
++     * HARDENED (OUTBOX.1). The old version released three workers together and hoped the one meant to be killed would reach a group before the
++     * other two had finished all twelve; when the two survivors drained the backlog first (3 of 20 runs on MySQL 8.4, 1 of 20 on MariaDB) the
++     * "killer" found nothing to process, never reached the kill point and the test failed for a reason that had nothing to do with the processor.
++     * Now the order is forced: the doomed worker starts alone, takes the row locks of the first waiting group (and, at after_journal, has already
++     * written that group's journal entry), tells the others "I am here holding my locks" through a file, and is SIGKILLed. Only then do the
++     * survivors start, so they always run while the dead worker's transaction is being cleaned up by the server. They must finish without error
++     * and the dead worker's group must be completed exactly once. Nothing was weakened: every old assertion is still made, plus new ones that
++     * prove the order of events.
++     */
+     public function test_a_killed_worker_does_not_block_the_other_workers()
++    {
++        $this->killedWorkerDoesNotBlockOthers('after_journal');
++    }
++
++    public function test_a_worker_killed_while_holding_only_the_group_row_locks_does_not_block_the_others()
++    {
++        $this->killedWorkerDoesNotBlockOthers('after_lock');
++    }
++
++    private function killedWorkerDoesNotBlockOthers(string $boundary): void
+     {
+         $a = $this->account(); $b = $this->account('expense', 'expense', 0);
+         $tokens = $this->backlog(12, $a, $b);
+-        $results = $this->race([['action' => 'outbox_kill_at', 'at' => 'after_journal', 'may_die' => true], ['action' => 'outbox_process'], ['action' => 'outbox_process']], 90);
+-        $this->assertTrue($results[0]['died'] ?? false, 'the first worker was killed');
+-        $this->assertTrue(!empty($results[1]['ok']) && !empty($results[2]['ok']), 'the surviving workers finished without error: ' . json_encode($results));
+-        $this->runOne(['action' => 'outbox_process']);
+-        $this->assertSame(12, DB::table('journal_entries')->whereIn('idempotency_key', array_map(fn ($t) => 'legacy:' . $t, $tokens))->count());
+-        $this->assertSame(0, DB::table('ledger_outbox')->whereIn('token', $tokens)->whereNull('processed_at')->count());
++        $keys = array_map(fn ($t) => 'legacy:' . $t, $tokens);
++        $signal = $this->workDirectory() . DIRECTORY_SEPARATOR . 'killer-at-' . $boundary;
++        $entriesBefore = DB::table('journal_entries')->whereIn('idempotency_key', $keys)->count();
++        $this->assertSame(0, $entriesBefore);
++        $this->assertSame(12, DB::table('ledger_outbox')->whereIn('token', $tokens)->whereNull('processed_at')->groupBy('token')->get()->count(), 'twelve groups are waiting');
++
++        $results = $this->race([
++            ['action' => 'outbox_kill_at', 'at' => $boundary, 'may_die' => true, 'signal_file' => $signal],
++            ['action' => 'outbox_process', 'wait_for' => $signal, 'wait_for_timeout' => 40],
++            ['action' => 'outbox_process', 'wait_for' => $signal, 'wait_for_timeout' => 40],
++        ], 120);
++
++        $this->assertTrue($results[0]['died'] ?? false, 'the doomed worker really reached the kill point ' . $boundary . ' and was killed (it wrote no result): ' . json_encode($results[0]));
++        $this->assertFileExists($signal, 'it announced the kill point before dying');
++        foreach ([1, 2] as $i) {
++            $this->assertArrayNotHasKey('wait_for_timed_out', $results[$i], "survivor {$i} started because the doomed worker signalled, not because it gave up waiting");
++            $this->assertTrue(!empty($results[$i]['ok']), "survivor {$i} finished without error: " . json_encode($results[$i]));
++            $this->assertSame(0, $results[$i]['outbox']['failed'], "survivor {$i}: no group failed");
++            $this->assertLessThan(30.0, $results[$i]['finished'] - $results[$i]['waited_until'], "survivor {$i} was not held up by the dead worker's locks for long (server lock wait is 50 s)");
++        }
++
++        $this->runOne(['action' => 'outbox_process']); // anything still waiting after the survivors (nothing should be)
++        $this->assertSame(12, DB::table('journal_entries')->whereIn('idempotency_key', $keys)->count(), 'every group, including the dead worker\'s, produced exactly one entry');
++        $this->assertSame(0, DB::table('journal_entries')->whereIn('idempotency_key', $keys)->groupBy('idempotency_key')->havingRaw('COUNT(*) > 1')->count(), 'no group posted twice');
++        $this->assertSame(0, DB::table('ledger_outbox')->whereIn('token', $tokens)->whereNull('processed_at')->count(), 'nothing is left waiting');
++        $this->assertSame(24, DB::table('ledger_outbox')->whereIn('token', $tokens)->whereNotNull('journal_entry_id')->count());
++        $this->assertTrue(JournalService::trialBalance(now()->toDateString())['balanced']);
+     }
+ 
+diff --git a/misron_backend/tests/Concurrency/worker.php b/misron_backend/tests/Concurrency/worker.php
+index 7083409..fa0051b 100644
+--- a/misron_backend/tests/Concurrency/worker.php
++++ b/misron_backend/tests/Concurrency/worker.php
+@@ -66,4 +66,15 @@ if (!empty($job['delay_ms'])) { // let another process get going first
+     usleep($job['delay_ms'] * 1000);
+ }
++if (!empty($job['wait_for'])) { // second barrier: do not start until another worker has reached a given point (it creates this file). Bounded, and a timeout is reported, never silent.
++    $until = microtime(true) + ($job['wait_for_timeout'] ?? 30);
++    while (!file_exists($job['wait_for'])) {
++        if (microtime(true) > $until) {
++            $result['wait_for_timed_out'] = true;
++            break;
++        }
++        usleep(500);
++    }
++    $result['waited_until'] = microtime(true);
++}
+ 
+ try {
+@@ -293,4 +304,7 @@ try {
+             App\Services\Accounting\LedgerOutboxProcessor::$boundaryHook = function ($name) use ($job) {
+                 if ($name === $job['at']) {
++                    if (!empty($job['signal_file'])) { // tell the other workers "I am at the kill point holding my locks": they start now
++                        touch($job['signal_file']);
++                    }
+                     function_exists('posix_kill') ? posix_kill(getmypid(), 9) : exit(137);
+                 }

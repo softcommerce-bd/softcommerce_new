@@ -159,6 +159,7 @@ class VoucherController extends Controller
 
         try {
             DB::beginTransaction();
+            \App\Support\NumberSerializer::hold(Voucher::voucherSeries($request->type)); // number series before any account lock
 
             $voucherEntries = [];
 
@@ -428,6 +429,7 @@ class VoucherController extends Controller
         $prefix = $prefixes[$type];
         $year = date('y');
         $month = date('m');
+        \App\Support\NumberSerializer::hold(Voucher::voucherSeries($type));
 
         $lastVoucher = Voucher::withTrashed()
             ->where('voucher_no', 'like', $prefix . '-' . $year . $month . '%')

@@ -1,0 +1,8 @@
+== referenced evidence paths that are NOT tracked in git
+distinct evidence paths referenced: 33
+NOT TRACKED: docs/evidence/final2/fingerprint_test_db_
+untracked references: 1
+== referenced docs/T5_*.md / tests files that do not exist
+done
+== possible personal data in tracked evidence (emails/phones not synthetic)
+files with an email-like string: 0

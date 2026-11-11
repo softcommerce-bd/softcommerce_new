@@ -51,8 +51,9 @@ class PurchaseOrderService
                 'payment_note' => $data['note'] ?? null, 'expected_delivery_date' => $data['expected_delivery_date'] ?? null, 'status' => $status, 'created_at' => now(), 'updated_at' => now()]);
 
             foreach ($rows as $r) {
+                // pending_quantity is a GENERATED column (purchase_quantity - recieved_quantity): the database computes it. It is never written here (MySQL 8.4 rejects it, error 3105).
                 $detailId = DB::table('purchase_order_details')->insertGetId(['purchase_order_id' => $poId, 'product_id' => $r['product']->id, 'product_name' => $r['product']->name, 'variant' => $r['variant'],
-                    'purchase_quantity' => $r['qty'], 'remaining_quantity' => $r['qty'], 'recieved_quantity' => 0, 'pending_quantity' => $r['qty'], 'buying_unit_cost' => round($r['cost'] / Money::SCALE, 2),
+                    'purchase_quantity' => $r['qty'], 'remaining_quantity' => $r['qty'], 'recieved_quantity' => 0, 'buying_unit_cost' => round($r['cost'] / Money::SCALE, 2),
                     'total_cost' => Money::cents($r['qty'] * $r['cost']) / 100, 'product_tax' => 0, 'created_at' => now(), 'updated_at' => now()]);
                 $this->link($detailId, (int) $r['product']->id, $r['variant'], $r['qty'], $r['demand_ids']);
             }
@@ -80,7 +81,9 @@ class PurchaseOrderService
             }
             $details = DB::table('purchase_order_details')->where('purchase_order_id', $poId)->pluck('id');
             DB::table('purchase_requirement_links')->whereIn('purchase_order_detail_id', $details)->where('status', 'open')->update(['status' => 'cancelled', 'updated_at' => now()]);
-            DB::table('purchase_order_details')->where('purchase_order_id', $poId)->update(['pending_quantity' => 0, 'remaining_quantity' => 0, 'updated_at' => now()]);
+            DB::table('purchase_order_details')->where('purchase_order_id', $poId)->update(['remaining_quantity' => 0, 'updated_at' => now()]);
+            // pending_quantity is generated (purchase - received) and cannot be written; it does not need to be: a cancelled order (status 'cancelled', or 'received' when it was part-received) is excluded from incoming stock,
+            // from 'awaiting receipt' and from receiving, which all look at the order status, so the quantity that will never arrive is not counted anywhere.
             DB::table('purchase_orders')->where('id', $poId)->update(['status' => $po->status === 'partially_received' ? 'received' : 'cancelled', 'updated_at' => now()]);
         }, \App\Support\DeadlockRetry::MAX);
     }

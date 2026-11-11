@@ -1,5 +1,7 @@
 # Inventory, Purchasing & Accounting upgrade
 
+> **NOTE (T-5, `98339a1`):** for the MyISAM -> InnoDB step use `php artisan db:convert-engines` or `sqlupdates/t5_engine_only_conversion.sql`; `inventory_v2_innodb_conversion.sql` mentioned below also adds a unique key on `purchases.reference_no` (decision 14, not approved). See `T5_FINAL_DEPLOYMENT_RUNBOOK.md`.
+
 Status: implemented on a disposable MariaDB 10.11 test database; **nothing has been run against production**. `INVENTORY_CONFIRMED_ONLY` ships **off**: with it off, order handling is the same as before the upgrade.
 
 ## 1. Model (one source of truth per quantity)

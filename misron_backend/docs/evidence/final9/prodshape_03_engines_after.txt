@@ -1,0 +1,5 @@
+purchase_products	InnoDB	3463
+purchase_return_products	InnoDB	1
+purchase_returns	InnoDB	1
+purchases	InnoDB	104
+suppliers	InnoDB	6

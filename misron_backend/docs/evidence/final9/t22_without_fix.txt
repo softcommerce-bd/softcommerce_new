@@ -1,0 +1,7 @@
+== WITHOUT the series locks (old code), MariaDB
+Failed asserting that two arrays are identical.
+Tests: 1, Assertions: 181, Failures: 1.
+Failed asserting that two arrays are identical.
+Tests: 1, Assertions: 181, Failures: 1.
+Failed asserting that two arrays are identical.
+Tests: 1, Assertions: 181, Failures: 1.

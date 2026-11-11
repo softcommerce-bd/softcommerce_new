@@ -1,0 +1,2 @@
+MySQL 8.4.13: pass=9 fail=3 of 12
+MariaDB 10.11.14: pass=12 fail=0 of 12

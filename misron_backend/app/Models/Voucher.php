@@ -202,8 +202,16 @@ class Voucher extends Model
     /**
  * Generate voucher number
  */
+public static function voucherSeries($type): string
+{
+    $known = ['CP', 'BP', 'CR', 'BR', 'JV', 'CV'];
+
+    return 'voucher:' . (in_array($type, $known, true) ? $type : 'VCH') . '-' . date('ym');
+}
+
 public static function generateVoucherNo($type)
 {
+    \App\Support\NumberSerializer::hold(self::voucherSeries($type));
     $prefixes = [
         'CP' => 'CP',
         'BP' => 'BP',

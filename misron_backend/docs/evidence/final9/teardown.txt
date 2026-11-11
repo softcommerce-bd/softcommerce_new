@@ -1,0 +1,6 @@
+== teardown 2026-11-08T11:15:30Z
+information_schema misron_test mysql performance_schema sys t5_mysql84_test t5_prodshape_test 
+t5mysql84
+containers: 0 volumes: 0
+Deleted: sha256:a81d043930e51745522bd5c430961cf8286f0a23f0a9a2a6e0108f7ea71b0902
+dockerd: 0; port 3307: 0; docker dirs: 0; local DBs: dev_idx_a dev_idx_b dumpcopy2_test dumpcopy_test information_schema inv_v2_test misron_test mysql parity_artisan_test parity_sql_test performance_schema rehearsal_a_test rehearsal_b_test rehearsal_c_test sc_staging sc_stg_pre sc_stg_rb sc_stg_sql sys 

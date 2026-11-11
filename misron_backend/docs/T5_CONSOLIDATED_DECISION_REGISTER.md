@@ -1,18 +1,24 @@
 # T-5 consolidated decision register
 
-## Decision status (latest ruling)
-| Item | Ruling |
+## Decision status (authoritative summary - refreshed by the final acceptance audit, UPDATE 11)
+**T-5 and staging acceptance remain OPEN.** Full matrix: `T5_FINAL_ACCEPTANCE_AUDIT.md`; every outstanding approval: `T5_OUTSTANDING_APPROVALS_CHECKLIST.md`. Detailed texts of each decision follow below and are history unless this table says otherwise.
+
+| Item | Ruling / state |
 |---|---|
-| P-1 POS cart isolation | **APPROVED**: a POS sale deletes only its own cart rows; a registered customer's separate website cart stays untouched (test: `PosCartIsolationTest`) |
-| Supplier payment edit treatment | **APPROVED** as intended application behaviour: reverse the old payment's effects, apply the new payment exactly once; journal and allocation integrity preserved; **no historical correction authorized** |
-| AD-1 auto-deposit schema | **OPTION C SELECTED (UPDATE 6)**; superseded text follows:  option comparison and recommendation in `T5_AD1_AUTO_DEPOSIT_OPTIONS.md` (recommendation: keep disabled now = option c; if nightly deposits are wanted, option a with a non-login system user; b not recommended) |
-| B-1 bank numbering | **B-1.1 APPROVED (UPDATE 6): the four duplicate bank actions are RETIRED; the balance-transfer workflow is the supported mechanism; cheque clearing NOT implemented.** Numbering is therefore not needed (B-1.2-B-1.6 stay unanswered and only matter if bank screens are ever revived) |
-| N-1 historical supplier drift | **PENDING ACCOUNTANT REVIEW**: no historical supplier balance is modified |
-T-5 and staging acceptance remain open.
+| P-1 POS cart isolation | **APPROVED and implemented** (`PosCartIsolationTest`) |
+| Supplier payment edit treatment | **APPROVED and implemented**: reverse the old payment's effects, apply the new one once; no historical correction authorised |
+| B-1 bank actions | **B-1.1 APPROVED: the five bank POST actions are RETIRED (HTTP 410); balance transfers are the supported mechanism; cheque clearing not built.** B-1.2-B-1.6 moot. (`BankActionsRetiredTest`) |
+| AD-1 auto-deposit | **Option C selected; guard G1 implemented and tested** (paused, exit 0, no DB access). Options a/b remain open (DEC-16). |
+| N-1 supplier drift | **N-1.1 APPROVED, tooling prepared, NOT RUN on real data**; N-1.2 (correction procedure) and N-1.3 (audit table) OPEN; accountant review pending; no historical balance modified |
+| INC.1 income-number lock | **Checklist approved and prepared; no DBA answer received** (BLOCKED) |
+| MYSQL84.1 / MYSQL84.2 / OUTBOX.1 | **APPROVED and DONE** (rehearsal on disposable MySQL 8.4.13; generated-column fix; outbox test hardening) |
+| Decisions 1-11, 13-15 | **OPEN** - no ruling given (see list below) |
+| Decision 12 | supplier part approved as N-1.1; the full audit's data access OPEN |
+| P6 (enable the inventory flag on staging) | **NOT GIVEN** |
 
 ---
 
-**No decision here has been taken or implemented.** Until each is approved in writing, today's behaviour stays exactly as it is. "Existing" = verified in code/tests (evidence in `T5_PHASE0_AUDIT_REPORT.md`, `T5_FINAL_VERIFICATION_REPORT.md`). Approvers: **Accounting**, **Order desk**, **Purchasing**, **Tech lead**, **Management**. Every item is **REQUIRES BUSINESS APPROVAL**.
+**Historical note (original header, superseded by the table above and by UPDATE 6-10):** when this register was first written no decision had been taken. Decisions 1-11 and 13-15 still have not. "Existing" = verified in code/tests (evidence in `T5_PHASE0_AUDIT_REPORT.md`, `T5_FINAL_VERIFICATION_REPORT.md`). Approvers: **Accounting**, **Order desk**, **Purchasing**, **Tech lead**, **Management**.
 
 | ID | Subject | Blocks | Approver |
 |---|---|---|---|
@@ -197,3 +203,43 @@ Report: `T5_MYSQL84_REHEARSAL_REPORT.md`; evidence `docs/evidence/mysql84/`. Dis
 * **NEW FINDING F1 (needs a decision): `PurchaseOrderService` (insert `:55`, update `:83`) and `GoodsReceiptService` (`:144`) write to the generated column `purchase_order_details.pending_quantity`; MySQL 8.4 rejects this (error 3105), MariaDB ignores it silently.** On 8.4 purchase-order creation, receiving, bulk commit and the requirements screen fail (8 tests). Proposed: **MYSQL84.2 - approve removing `pending_quantity` from those three writes** (no schema change, no financial rule change, MariaDB behaviour unchanged) and reviewing the cancel write at `:83`. Not changed.
 * Other findings: F3 the rehearsal script needs updating (migrate step, engine conversion, unified_chat path, mask, `misron_test`); F5 the passing baseline depends on the seed state of `inv_v2_test`; strict mode exposes legacy 1364 errors (informational).
 * Production compatibility remains UNKNOWN (P1 BLOCKED).
+
+---
+## UPDATE 9 - MYSQL84.2 implemented (owner-approved, limited scope) - T-5 and staging acceptance remain OPEN
+Fix for finding F1: `pending_quantity` (generated column) is no longer written by `PurchaseOrderService` (create, cancel) or `GoodsReceiptService`; the cancellation write was equally invalid and was removed (no behaviour change: it was a no-op on MariaDB and every reader filters by order status). No schema or financial-rule change. 6 regression tests; MariaDB and MySQL 8.4.13 both: 641 tests, only the 3 known unrelated failures; purchase tests 69/69 on both. Details and evidence: `T5_PENDING_QUANTITY_FIX.md`, `docs/evidence/mysql84_fix/`.
+Open (new): the timing-dependent outbox test on 8.4 (3/12 isolated failures, 0/12 on MariaDB) - OUTBOX.1: approve hardening it (backlog size or start barrier)? Recommended: yes.
+
+---
+## UPDATE 10 - OUTBOX.1 approved and implemented (tests only) - T-5 and staging acceptance remain OPEN
+`OutboxVerificationTest::test_a_killed_worker_does_not_block_the_other_workers` was a race in the test (the worker meant to die could find the backlog already drained by the survivors): 3/20 failures on MySQL 8.4 and 1/20 on MariaDB before. Now deterministic with a second start barrier plus a "kill point reached" signal; all old assertions kept and new ones added; production code untouched (no defect found). 30/30 consecutive passes on each engine for the hardened test and for a new after_lock variant; full concurrency suite 97 tests OK on both engines. Report `T5_OUTBOX_TEST_HARDENING.md`, evidence `docs/evidence/outbox_hardening/`. OUTBOX.1 closed. Still open: everything in `T5_REMAINING_REQUIREMENTS.md` sections A-D that is not marked done.
+
+
+---
+## UPDATE 11 - final closure-readiness audit (2026-11-08, commit `a967de0`) - T-5 and staging acceptance remain OPEN
+Documents: `T5_FINAL_ACCEPTANCE_AUDIT.md` (65-row acceptance matrix, compatibility evidence on MariaDB 10.11 and MySQL 8.4, findings R-01..R-09), `T5_OUTSTANDING_APPROVALS_CHECKLIST.md` (every unchecked approval by role), evidence `docs/evidence/audit/`. No approval was recorded, none invented; no code, database, schema, flag or schedule was changed.
+* **Completed technical work** (18 items verified + 4 awaiting written acceptance: T-07 overdraft rules, T-09 D3, T-10 D4, T-11 checkout identity) is separated from **22 open decisions** (18 owner/business + 4 accountant), **6 prepared items** waiting for a named person, **10 blocked items**.
+* **New finding R-01 (critical dependency, no code change):** the supplied backup keeps `purchases`, `purchase_products`, `suppliers`, `purchase_returns`, `purchase_return_products` (and 11 smaller tables) on MyISAM; every T-5 locking/retry guarantee is void on MyISAM and no runtime gate on the legacy screens checks for it. New questions: **R01.1** add an InnoDB gate to the activation checklist/preflight (recommended yes); **DBA-05** confirm production engines.
+* **New finding R-03:** guard G1 would pause `accounts:auto-deposit` even if production runs it successfully today; DBA-04 must answer before deploy.
+* Documentation drift corrected (this register's header/status table, `T5_REMAINING_REQUIREMENTS.md`).
+
+---
+## UPDATE 12 - R-01 / R-03 / R-04 investigation (documentation only; PROPOSED, NOT APPROVED) - T-5 and staging acceptance remain OPEN
+New documents: `T5_R01_MYISAM_INVESTIGATION.md`, `T5_R03_R04_AUTO_DEPOSIT_TRACE.md`, `T5_DECISION_TRACKER.md` (48 items, 0 approved), `T5_APPROVAL_REMEDIATION_ROADMAP.md`; evidence `docs/evidence/r01_r03/`. No approval was recorded, no code/database/flag/schedule changed.
+New decision requests (all NOT DECIDED): **R01-A** conversion rehearsal on a masked restore · **R01-B** engine-only conversion script (the existing one also adds a unique key = decision 14) · **R01-C** InnoDB gate in the activation checklist/preflight · **R01-D** disposable MyISAM retry-hazard experiment · **R03-A** confirm option C after DBA-04 · **R04-A** activation safeguards S1-S9.
+New findings: retry on MyISAM can duplicate writes (NB-1); the auto-deposit old body also needs ENUM values, a charge-expense creator and statement lines (NB-2; AD-1 options a/b are not sufficient alone); no suite has run on the backup's real engine configuration (NB-4); rollback to a release before `25aec82` re-enables the old auto-deposit body (NB-5); balance transfers write `status='completed'` which is not a legal ENUM value in the dump schema (NB-6, to be verified by the DBA).
+
+---
+## UPDATE 13 - full autonomous completion mandate (engineering authority given by the owner; NO business/accounting decision was taken or invented) - T-5 and staging acceptance remain OPEN
+Documents: `T5_FINAL_COMPLETION_REPORT.md` (acceptance matrix with honest statuses, external dependencies E1-E11), `T5_FINAL_TEST_EVIDENCE.md`, `T5_DATABASE_MIGRATION_REPORT.md`, `T5_FINAL_DEPLOYMENT_RUNBOOK.md`; evidence `docs/evidence/final9/`.
+**Engineering decisions taken (conservative, reversible, documented; none is a business approval):**
+* **R-01:** deadlock retry is never used on non-InnoDB money/stock tables; purchasing/supplier-balance routes are refused while their tables are not InnoDB (policy `FINANCIAL_ENGINE_POLICY`, default `enforce`; `warn`/`off` exist but are an operator/owner choice); conversion tooling is dry-run by default. The policy default is an engineering safety choice; the owner may relax it. R01-A..D from the roadmap are now implemented as tooling and rehearsed on disposable databases; **running the conversion on staging/production still needs the DBA's facts, a restore proof and the owner's written plan**.
+* **R-03/R-04:** switch + readiness (system user, legal ENUMs, InnoDB, no charged method). Safeguards S1-S3, S6, S7 are in the runbook; S4 (schema self-check inside the command) and S8 (no repository file enables the switch) are implemented and tested. Charged auto-deposit methods are unsupported (open accounting ruling ACC-03); the ENUM schema step is a separate SQL file awaiting AD-1 option a.
+* **T-22:** number-series locks implemented (no schema change); SEQ.1 (`document_sequences`) stays the long-term design and remains a DEC-07 decision.
+* **T-10:** supplier edit/delete now re-read under the row lock (technical part of decision 4); the edit semantics (A/B/C) remain DEC-04.
+* **Known failures:** all three fixed in code/tests.
+**Unchanged and still requiring people:** DEC-01..DEC-20, AD-1, N-1.2/N-1.3, ACC-01..07, DBA-01..05, P4-P8, VER-03/04, P6.
+New open items: **F-G** tests/feature code attempt outbound SMS/courier calls (use sandbox credentials on staging); **T-33** two funnel-admin UI specs fail under the stand-in theme (DEFERRED, theme).
+
+---
+## UPDATE 14 - handover package (no decision taken, none invented) - T-5 and staging acceptance remain OPEN
+Documents: `T5_HANDOVER_README.md`, `T5_HANDOVER_DEPENDENCY_TRACKER.md` (E1-E11 as actions, owners, deliverables, with the Claude-independent / external split), `T5_DBA_INFORMATION_REQUEST.md`, `T5_ACCOUNTANT_INFORMATION_REQUEST.md`, `T5_OWNER_DECISION_REQUEST.md`, `T5_STAGING_EXECUTION_SEQUENCE.md`, `T5_E2E_DEFERRED_FAILURES.md`. `tests/staging/rehearse.sh` now uses the engine-only SQL (the old script also adds the unapproved unique key). Stale documents carry status banners. Every item in the tracker is OPEN and needs the named role.

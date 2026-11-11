@@ -177,10 +177,17 @@ class ExpensePayment extends Model
     /**
      * Generate voucher number
      */
+    /** the number series of one year (see App\Support\NumberSerializer) */
+    public static function voucherSeries(): string
+    {
+        return 'expense:EXP-' . date('y');
+    }
+
     public static function generateVoucherNo()
     {
         $prefix = 'EXP';
         $year = date('y');
+        \App\Support\NumberSerializer::hold(self::voucherSeries()); // first number of a year: nothing to row-lock, concurrent creators would deadlock on the index gap
         $lastVoucher = self::withTrashed()
             ->where('voucher_no', 'like', $prefix . '-' . $year . '%')
             ->orderBy('id', 'desc')

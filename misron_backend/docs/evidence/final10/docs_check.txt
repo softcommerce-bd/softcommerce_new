@@ -1,0 +1,3 @@
+path references checked: 211 | missing: 1
+  MISSING ('docs/T5_B1_BANK_TRANSACTION_SPECIFICATION.md', 'resources/views/backend/accounts/modals/bank_modal.blade.php')
+artisan commands referenced: 12 | not defined in app/Console/Commands: []
