@@ -14,6 +14,12 @@ class ShippingController extends Controller
 {
     public function pickup_list()
     {
+        // Pickup is its own admin feature (Setup & Configurations > Activation > Pickup Point).
+        // Switched off means no points are offered, so the storefront hides pickup altogether.
+        if (get_setting('pickup_point') != 1) {
+            return PickupPointResource::collection(collect());
+        }
+
         $pickup_point_list = PickupPoint::where('pick_up_status', '=', 1)->get();
 
         return PickupPointResource::collection($pickup_point_list);

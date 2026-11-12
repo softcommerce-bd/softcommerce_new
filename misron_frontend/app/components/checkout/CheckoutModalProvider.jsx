@@ -69,6 +69,7 @@ export default function CheckoutModalProvider({ children }) {
         onClose={closeCheckout}
         ariaLabel="Checkout"
         showClose={false}
+        floating
         size="lg"
         className="overflow-hidden bg-[#FAF8F5] sm:max-w-xl"
         bodyClassName="p-0 pb-[env(safe-area-inset-bottom)]"

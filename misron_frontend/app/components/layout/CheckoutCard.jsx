@@ -551,6 +551,11 @@ export default function CheckoutCard({
         payment_type: selectedPayment,
         delivery_type: deliveryType,
         pickup_point_id: pickupPointId,
+        // Inside / outside city is its own choice, shown to staff on the order as "Additional info".
+        additional_info:
+          localStorage.getItem("shippingRegion") === "outside_city"
+            ? "Shipping region: Outside City"
+            : "Shipping region: Inside City",
         gift_box: giftBox,
         ip_tracking: {
           ip_address: ipAddress,

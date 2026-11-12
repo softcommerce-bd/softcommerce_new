@@ -46,6 +46,9 @@ export default function Modal({
   // Accessible name for a dialog that draws its own heading instead of taking
   // `title`.
   ariaLabel,
+  // Floating: the panel keeps a gap from the screen edges on every side (all corners rounded)
+  // and only its content scrolls, instead of sitting against the bottom edge as a sheet.
+  floating = false,
 }) {
   const panelRef = useRef(null);
   const previouslyFocused = useRef(null);
@@ -134,7 +137,11 @@ export default function Modal({
   if (!open || typeof document === "undefined") return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-[1000] flex items-end justify-center sm:items-center">
+    <div
+      className={`fixed inset-0 z-[1000] flex justify-center ${
+        floating ? "items-center p-3 sm:p-6" : "items-end sm:items-center"
+      }`}
+    >
       {/* Scrim — dims and blurs the page rather than blacking it out. */}
       <div
         className="animate-fade-in absolute inset-0 bg-ink/40 backdrop-blur-[3px]"
@@ -149,9 +156,10 @@ export default function Modal({
         aria-label={ariaLabel ?? (typeof title === "string" ? title : undefined)}
         tabIndex={-1}
         className={[
-          "animate-scale-in relative z-10 flex max-h-[92dvh] w-full flex-col",
+          "animate-scale-in relative z-10 flex w-full flex-col",
+          floating ? "max-h-[calc(100dvh-1.5rem)] sm:max-h-[calc(100dvh-3rem)]" : "max-h-[92dvh]",
           "bg-surface shadow-e4 outline-none",
-          "rounded-t-2xl sm:rounded-2xl",
+          floating ? "rounded-2xl" : "rounded-t-2xl sm:rounded-2xl",
           SIZES[size] ?? SIZES.md,
           className,
         ].join(" ")}
