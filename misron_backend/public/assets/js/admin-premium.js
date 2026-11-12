@@ -50,6 +50,24 @@
     });
   });
 
+
+  // 1c. dark-mode safety net: a big surface that still paints near-white gets the glass look (runs on load and on switch) -----
+  safe(function () {
+    var root = document.documentElement;
+    function sweep() {
+      if (root.getAttribute('data-ui-theme') !== 'dark') return;
+      var els = document.querySelectorAll('.aiz-main-content div, .aiz-main-content section, .aiz-main-content aside, .aiz-main-content table'), n = 0;
+      for (var i = 0; i < els.length && n < 200; i++) {
+        var e = els[i], r = e.getBoundingClientRect();
+        if (r.width * r.height < 8000) continue;
+        var m = getComputedStyle(e).backgroundColor.match(/[\d.]+/g);
+        if (m && +m[0] > 200 && +m[1] > 200 && +m[2] > 190 && (m[3] === undefined || +m[3] > 0.85)) { e.classList.add('ui-dk-fix'); n++; }
+      }
+    }
+    window.addEventListener('load', function () { setTimeout(sweep, 250); });
+    document.addEventListener('click', function (ev) { if (ev.target.closest && ev.target.closest('.ui-theme-toggle')) setTimeout(sweep, 60); });
+  });
+
   // 2. staggered reveal ---------------------------------------------------------------------------------------
   safe(function () {
     if (reduce) return;

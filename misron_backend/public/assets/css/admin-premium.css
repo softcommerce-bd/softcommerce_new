@@ -348,3 +348,48 @@ body.ui-premium .aiz-side-nav-link:hover, body.ui-premium .aiz-side-nav-link:foc
 }
 body.ui-premium .aiz-side-nav-link:hover .aiz-side-nav-text, body.ui-premium .aiz-side-nav-link:hover .aiz-side-nav-icon,
 body.ui-premium .aiz-side-nav-link:hover .las, body.ui-premium .aiz-side-nav-link:hover svg { color: #fff !important; }
+
+/* ============ module sweep: panels with their own hard-coded whites, readable in dark; contrast in light ============ */
+body.ui-premium .mini-card, body.ui-premium .dashboard-card-custom, body.ui-premium .page-side-nav, body.ui-premium .dashboard-page,
+body.ui-premium .ft-card, body.ui-premium .fa-kpi, body.ui-premium .filter-card, body.ui-premium .uc, body.ui-premium .uc-nav,
+body.ui-premium .custom-file-label, body.ui-premium .list-group-item {
+  background: var(--ui-glass) !important; color: var(--ui-text) !important; border-color: var(--ui-line) !important;
+}
+body.ui-premium .total-row, body.ui-premium .total-row td { background: rgba(250,115,25,.10) !important; color: var(--ui-text) !important; }
+body.ui-premium .custom-file-name, body.ui-premium .list-group-item.text-dark, body.ui-premium .list-group-item *,
+body.ui-premium .mini-card *, body.ui-premium .dashboard-card-custom *, body.ui-premium .ft-card *, body.ui-premium .fa-kpi *,
+body.ui-premium .filter-card label, body.ui-premium .uc-btn, body.ui-premium .uc-nav * { color: var(--ui-text); }
+body.ui-premium .ft-card .text-muted, body.ui-premium .fa-kpi .text-muted, body.ui-premium .mini-card .text-muted,
+body.ui-premium .dashboard-card-custom .text-muted, body.ui-premium .courier-wrap .text-muted, body.ui-premium .text-muted { color: var(--ui-muted) !important; }
+body.ui-premium .uc-btn { background: var(--ui-glass-strong) !important; border: 1px solid var(--ui-line) !important; }
+body.ui-premium .alert-warning, body.ui-premium .alert-success, body.ui-premium .alert-danger, body.ui-premium .alert-secondary, body.ui-premium .alert-light {
+  background: rgba(250,115,25,.10) !important; color: var(--ui-text) !important; border-color: var(--ui-line) !important;
+}
+body.ui-premium .alert-danger { background: rgba(220,53,69,.14) !important; }
+body.ui-premium .alert-success { background: rgba(25,135,84,.14) !important; }
+body.ui-premium .module-header, body.ui-premium .page-side-nav .module-header { color: var(--ui-muted) !important; }
+/* light mode: orange-on-pale text goes a shade darker so it reads */
+html:not([data-ui-theme="dark"]) body.ui-premium .alert-info a, html:not([data-ui-theme="dark"]) body.ui-premium .alert-link { color: #b24a06 !important; }
+html:not([data-ui-theme="dark"]) body.ui-premium .nav-tabs .nav-link.active, html:not([data-ui-theme="dark"]) body.ui-premium .nav-link.active { color: #b24a06 !important; }
+html:not([data-ui-theme="dark"]) body.ui-premium .text-warning { color: #9a5b00 !important; }
+html:not([data-ui-theme="dark"]) body.ui-premium .text-success { color: #14733f !important; }
+html:not([data-ui-theme="dark"]) body.ui-premium h2.display-5 { color: var(--ui-text) !important; }
+html[data-ui-theme="dark"] body.ui-premium .ui-dk-fix { background: var(--ui-glass) !important; color: var(--ui-text) !important; border-color: var(--ui-line) !important; }
+
+/* ============ last dark/light fixes from the module audit ============ */
+html[data-ui-theme="dark"] body.ui-premium .page-content { background-image: none !important; background-color: transparent !important; }
+html[data-ui-theme="dark"] body.ui-premium .aiz-main-content h1, html[data-ui-theme="dark"] body.ui-premium .aiz-main-content h2,
+html[data-ui-theme="dark"] body.ui-premium .aiz-main-content h3, html[data-ui-theme="dark"] body.ui-premium .aiz-main-content h4,
+html[data-ui-theme="dark"] body.ui-premium .aiz-main-content h5, html[data-ui-theme="dark"] body.ui-premium .aiz-main-content h6,
+html[data-ui-theme="dark"] body.ui-premium .fa-section-title { color: var(--ui-text) !important; }
+html[data-ui-theme="dark"] body.ui-premium .page-side-nav .nav-link:not(.active), html[data-ui-theme="dark"] body.ui-premium .nav-tabs .nav-link:not(.active) { color: var(--ui-muted) !important; }
+html[data-ui-theme="dark"] body.ui-premium .page-side-nav .nav-link:not(.active):hover { color: var(--ui-text) !important; background: rgba(250,115,25,.16) !important; }
+html[data-ui-theme="dark"] body.ui-premium .fa-root span, html[data-ui-theme="dark"] body.ui-premium .fa-kpi span { color: var(--ui-text); }
+html:not([data-ui-theme="dark"]) body.ui-premium .page-side-nav .nav-link.active { color: #fff !important; }
+html:not([data-ui-theme="dark"]) body.ui-premium .nav-link.active:not(.page-side-nav .nav-link) { color: #b24a06 !important; }
+html:not([data-ui-theme="dark"]) body.ui-premium .dashboard-subtitle, html:not([data-ui-theme="dark"]) body.ui-premium .alert strong { color: #4a4036 !important; }
+html[data-ui-theme="dark"] body.ui-premium .trend-success { color: #4ade80 !important; background: rgba(74,222,128,.12) !important; }
+html[data-ui-theme="dark"] body.ui-premium .trend-danger { color: #f87171 !important; background: rgba(248,113,113,.12) !important; }
+html[data-ui-theme="dark"] body.ui-premium .text-primary-custom, html[data-ui-theme="dark"] body.ui-premium .insight-value { color: var(--ember-hi) !important; }
+html[data-ui-theme="dark"] body.ui-premium .badge-optimal { background: rgba(250,115,25,.2) !important; color: #ffd2b0 !important; }
+html[data-ui-theme="dark"] body.ui-premium .mini-card [class*="icon"] { background: rgba(250,115,25,.16) !important; }
