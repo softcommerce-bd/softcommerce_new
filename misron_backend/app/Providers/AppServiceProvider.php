@@ -35,6 +35,8 @@ class AppServiceProvider extends ServiceProvider
    */
   public function register()
   {
-    //
+    if (!function_exists('iconv')) {
+      require_once app_path('Support/iconv_fallback.php');
+    }
   }
 }
