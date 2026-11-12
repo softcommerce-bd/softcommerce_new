@@ -30,6 +30,9 @@ import { Skeleton } from "../ui";
 /** Quick Links shows Home, All Collections, this many categories, then Track Order. */
 const QUICK_LINK_CATEGORY_LIMIT = 4;
 
+/** Placeholder categories that must never appear in Quick Links (compare lower-case). */
+const HIDDEN_QUICK_LINK_NAMES = ["test"];
+
 export default function Footer() {
   // Shared with the header strip, the floating social bar and the mobile nav,
   // which all read the same payload.
@@ -70,21 +73,17 @@ export default function Footer() {
   const quickLinks = [
     { label: "Home", href: "/" },
     { label: "All Collections", href: "/shop_page" },
-    ...(categories || []).slice(0, QUICK_LINK_CATEGORY_LIMIT).map((category) => ({
+    ...(categories || [])
+      .filter((category) => !HIDDEN_QUICK_LINK_NAMES.includes(String(category.name).trim().toLowerCase()))
+      .slice(0, QUICK_LINK_CATEGORY_LIMIT).map((category) => ({
       label: category.name,
       href: `/shop_page?categories=${category.id}`,
     })),
     { label: "Track Order", href: "/track-order" },
   ];
 
-  // The admin keeps "about" and "useful links" as two menus; the reference has
-  // one "About & Policies" column, so the two are listed together.
-  const aboutItems = (
-    footerData.about_menu?.length > 0 ? footerData.about_menu : STATIC_ABOUT_MENU
-  ).map((item) => ({
-    label: item.label,
-    href: item.href ?? resolveMenuLink(item.link),
-  })).filter((item) => item.href);
+  // "About & Policies" lists only what the admin enters under
+  // Website Setup > Footer > Useful Links (label + link), in that order.
   const policyItems = (footerData.useful_links_menu || []).map((item) => ({
     label: item.label,
     href: resolveMenuLink(item.link),
@@ -134,7 +133,7 @@ export default function Footer() {
           {/* ── About & Policies ──────────────────────────────────────── */}
           <FooterColumn
             title="About & Policies"
-            items={[...aboutItems, ...policyItems]}
+            items={policyItems}
             className="lg:col-span-2"
           />
 
@@ -301,18 +300,6 @@ const PAYMENT_BADGES = [
   { label: "VISA", className: "text-blue-400" },
   { label: "Mastercard", className: "text-orange-400" },
   { label: "COD", className: "text-emerald-400" },
-];
-
-/**
- * Fallback "About" links, used only when the admin has not configured the
- * about widget in Website Settings > Footer.
- */
-const STATIC_ABOUT_MENU = [
-  { label: "Our Story", href: "/pages/our-story" },
-  { label: "Our Mission", href: "/pages/our-mission" },
-  { label: "Our Vision", href: "/pages/our-vision" },
-  { label: "Our Values", href: "/pages/our-values" },
-  { label: "Craftsmanship & Quality", href: "/pages/craftsmanship-quality" },
 ];
 
 /**
