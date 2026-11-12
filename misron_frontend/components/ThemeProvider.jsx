@@ -1,7 +1,7 @@
 // components/ThemeProvider.jsx
 'use client';
 import { useEffect } from 'react';
-import { contrastInkChannels } from '@/lib/color';
+import { contrastInkChannels, parseColor } from '@/lib/color';
 
 export function ThemeProvider({ children }) {
   useEffect(() => {
@@ -14,14 +14,15 @@ export function ThemeProvider({ children }) {
           const colors = data.data;
           const root = document.documentElement;
 
+          const set = (name, value) => { if (parseColor(value)) root.style.setProperty(name, String(value).trim()); };
           // Set CSS variables dynamically
         //   root.style.setProperty('--background', colors.base_color);
-          root.style.setProperty('--main', colors.base_color);
-          root.style.setProperty('--main-hov', colors.base_hov_color);
-          root.style.setProperty('--second-color', colors.secondary_base_color);
-          root.style.setProperty('--second-hov-color', colors.secondary_base_hov_color);
-          root.style.setProperty('--header-topbar-color', colors.header_topbar_color);
-          root.style.setProperty('--header-bottom-color', colors.header_bottom_color);
+          set('--main', colors.base_color);
+          set('--main-hov', colors.base_hov_color);
+          set('--second-color', colors.secondary_base_color);
+          set('--second-hov-color', colors.secondary_base_hov_color);
+          set('--header-topbar-color', colors.header_topbar_color);
+          set('--header-bottom-color', colors.header_bottom_color);
 
           // The footer ground follows the admin too, but it carries type, so the
           // colour alone is not enough: the picker allows any value (it is

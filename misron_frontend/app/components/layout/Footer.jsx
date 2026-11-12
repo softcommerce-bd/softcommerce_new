@@ -51,15 +51,15 @@ export default function Footer() {
 
   if (loading) {
     return (
-      <footer className="border-t border-stone-800 bg-[#181614]">
+      <footer className="border-t border-footer-hairline bg-footer">
         <div className="container-page py-14 sm:py-16">
           <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-12">
             {[0, 1, 2, 3].map((i) => (
               <div key={i} className="space-y-3 lg:col-span-3">
-                <Skeleton className="h-3 w-24 bg-stone-800" />
-                <Skeleton className="h-3 w-full bg-stone-800" />
-                <Skeleton className="h-3 w-4/5 bg-stone-800" />
-                <Skeleton className="h-3 w-3/5 bg-stone-800" />
+                <Skeleton className="h-3 w-24 bg-footer-wash-strong" />
+                <Skeleton className="h-3 w-full bg-footer-wash-strong" />
+                <Skeleton className="h-3 w-4/5 bg-footer-wash-strong" />
+                <Skeleton className="h-3 w-3/5 bg-footer-wash-strong" />
               </div>
             ))}
           </div>
@@ -95,16 +95,16 @@ export default function Footer() {
   const worktime = footerData.contact_worktime;
 
   return (
-    <footer className="border-t border-stone-800 bg-[#181614] pb-12 pt-14 text-stone-300 sm:pt-16">
+    <footer className="border-t border-footer-hairline bg-footer pb-12 pt-14 text-footer-ink-strong sm:pt-16">
       <div className="container-page">
-        <div className="grid grid-cols-1 gap-10 border-b border-stone-800 pb-12 sm:gap-12 md:grid-cols-2 lg:grid-cols-12">
+        <div className="grid grid-cols-1 gap-10 border-b border-footer-hairline pb-12 sm:gap-12 md:grid-cols-2 lg:grid-cols-12">
           {/* ── Brand ─────────────────────────────────────────────────── */}
           <div className="space-y-4 lg:col-span-4">
             {footerData.logo && <FooterLogo src={footerData.logo} />}
 
             {/* `.footer-richtext` pins every descendant, itself included, to
                 its parent's type, so the size and colour sit on this wrapper. */}
-            <div className="max-w-sm text-xs leading-relaxed text-stone-400">
+            <div className="max-w-sm text-xs leading-relaxed text-footer-ink-muted">
               <div
                 className="footer-richtext"
                 dangerouslySetInnerHTML={{
@@ -114,14 +114,14 @@ export default function Footer() {
             </div>
 
             {footerData.show_social_links && (
-              <div className="pt-2 text-stone-400">
+              <div className="pt-2 text-footer-ink-muted">
                 <SocialIcons
                   socialLinks={footerData.social_links}
                   className="h-4 w-4"
                   gap="gap-3"
                   // `SocialIcons` fades on hover and only transitions opacity;
                   // the reference tints the icon and washes the disc instead.
-                  linkClassName="h-8 w-8 rounded-full bg-stone-900 transition-colors! hover:bg-stone-800 hover:text-amber-400 hover:opacity-100!"
+                  linkClassName="h-8 w-8 rounded-full bg-footer-wash transition-colors! hover:bg-footer-wash-strong hover:text-amber-400 hover:opacity-100!"
                 />
               </div>
             )}
@@ -139,14 +139,14 @@ export default function Footer() {
 
           {/* ── Get in Touch ──────────────────────────────────────────── */}
           <div className="space-y-3 lg:col-span-4">
-            <h3 className="type-footer-heading text-white">Get in Touch</h3>
-            <div className="space-y-2.5 text-xs text-stone-400">
+            <h3 className="type-footer-heading text-footer-ink">Get in Touch</h3>
+            <div className="space-y-2.5 text-xs text-footer-ink-muted">
               {phone && (
                 <ContactRow icon={Phone}>
                   Customer Care:{" "}
                   <a
                     href={`tel:${String(phone).replace(/[^\d+]/g, "")}`}
-                    className="font-mono font-bold text-stone-200 transition-colors hover:text-amber-400"
+                    className="font-mono font-bold text-footer-ink transition-colors hover:text-amber-400"
                   >
                     {phone}
                   </a>
@@ -157,7 +157,7 @@ export default function Footer() {
                   Email:{" "}
                   <a
                     href={`mailto:${email}`}
-                    className="break-all font-bold text-stone-200 transition-colors hover:text-amber-400"
+                    className="break-all font-bold text-footer-ink transition-colors hover:text-amber-400"
                   >
                     {email}
                   </a>
@@ -170,7 +170,7 @@ export default function Footer() {
         </div>
 
         {/* ── Bottom bar ───────────────────────────────────────────────── */}
-        <div className="flex flex-col items-center justify-between gap-4 pt-6 text-xs text-stone-500 sm:flex-row">
+        <div className="flex flex-col items-center justify-between gap-4 pt-6 text-xs text-footer-ink-tertiary sm:flex-row">
           <div className="text-center sm:text-left">
             <div
               className="footer-richtext"
@@ -179,8 +179,8 @@ export default function Footer() {
           </div>
 
           <div className="flex items-center gap-3">
-            <span className="text-[11px] text-stone-400">Secure Payment Options:</span>
-            <div className="flex items-center gap-2 rounded-lg border border-stone-800 bg-stone-900 px-3 py-1.5">
+            <span className="text-[11px] text-footer-ink-muted">Secure Payment Options:</span>
+            <div className="flex items-center gap-2 rounded-lg border border-footer-hairline bg-footer-wash px-3 py-1.5">
               {footerData.payment_methods_image ? (
                 <div className="relative h-5 w-48">
                   <Image
@@ -212,8 +212,8 @@ function FooterColumn({ title, items, className = "" }) {
 
   return (
     <div className={`space-y-3 ${className}`}>
-      <h3 className="type-footer-heading text-white">{title}</h3>
-      <ul className="space-y-2 text-xs text-stone-400">
+      <h3 className="type-footer-heading text-footer-ink">{title}</h3>
+      <ul className="space-y-2 text-xs text-footer-ink-muted">
         {items.map((item, idx) => (
           <li key={`${item.label}-${idx}`}>
             <Link href={item.href} className="transition-colors hover:text-amber-400">

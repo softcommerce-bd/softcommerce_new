@@ -9,6 +9,7 @@ import { fetchSEOSettings } from "@/lib/seo";
 import Script from "next/script";
 import { Suspense } from "react";
 import { consentBlockedExpression } from "@/lib/consent";
+import { contrastInkChannels, parseColor } from "@/lib/color";
 
 // Body face, matching the reference design: Hind Siliguri covers Latin and
 // Bengali in one family, so Bangla product names and addresses render in the
@@ -43,6 +44,38 @@ const cormorant = Cormorant_Garamond({
 const BRAND_NAME = process.env.NEXT_PUBLIC_APP_NAME || "Misron";
 const BRAND_TAGLINE = "Tees Worth Wearing";
 const BRAND_DESCRIPTION = `Shop the latest t-shirts at ${BRAND_NAME}. Quality prints with fast delivery.`;
+
+
+// Admin colours (Website Setup > Appearance > General Settings), written into the first HTML
+// so the page paints in the right colours; ThemeProvider keeps them fresh on the client.
+const THEME_VARS = {
+  "--main": "base_color",
+  "--main-hov": "base_hov_color",
+  "--second-color": "secondary_base_color",
+  "--second-hov-color": "secondary_base_hov_color",
+  "--header-topbar-color": "header_topbar_color",
+  "--header-bottom-color": "header_bottom_color",
+  "--footer-color": "footer_color",
+};
+
+async function fetchThemeCss() {
+  try {
+    const base = process.env.BACKEND_API_URL || process.env.NEXT_PUBLIC_API_URL;
+    const res = await fetch(`${base}/all-custom-color`, { next: { revalidate: 120 } });
+    const json = await res.json();
+    if (!json?.success) return "";
+    const rules = [];
+    for (const [name, key] of Object.entries(THEME_VARS)) {
+      const value = json.data?.[key];
+      if (parseColor(value) && /^[#a-zA-Z0-9(),.%\s/-]+$/.test(value)) rules.push(`${name}:${String(value).trim()}`);
+    }
+    const ink = contrastInkChannels(json.data?.footer_color);
+    if (ink) rules.push(`--footer-ink-rgb:${ink}`);
+    return rules.length ? `:root{${rules.join(";")}}` : "";
+  } catch {
+    return "";
+  }
+}
 
 // Dynamic metadata for layout
 export async function generateMetadata() {
@@ -116,6 +149,7 @@ export default async function RootLayout({ children }) {
     console.error("Error fetching SEO settings for layout:", error);
   }
   
+  const themeCss = await fetchThemeCss();
   const gtmId = process.env.NEXT_PUBLIC_GTM_ID ?? '';
   
   return (
@@ -125,6 +159,7 @@ export default async function RootLayout({ children }) {
         <meta name="app-url" content={process.env.NEXT_PUBLIC_API_URL || "/api/v2"} />
         <meta name="file-base-url" content={process.env.NEXT_PUBLIC_FILE_BASE_URL || ""} />
         
+        {themeCss && <style id="admin-theme" dangerouslySetInnerHTML={{ __html: themeCss }} />}
         <link rel="icon" href={siteIcon} />
         <link rel="apple-touch-icon" href={siteIcon} />
         

@@ -58,7 +58,7 @@ export default function TopHeader({ topHeader, promoText, promoCode }) {
 
   return (
     <div
-      className={`w-full bg-stone-900 text-[11px] text-stone-200 sm:text-xs ${
+      className={`w-full bg-header-topbar text-[11px] text-stone-200 sm:text-xs ${
         announcement || helpline ? "" : "hidden md:block"
       }`}
     >

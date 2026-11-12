@@ -58,13 +58,13 @@
      different theme — most visibly a teal band across the top of the page on
      mobile. Grey reads as chrome, so the swap to the admin's colour looks like
      the page finishing rather than changing its mind. */
-  --main: #3f3f46;
-  --main-hov: #27272a;
-  --second-color: #52525b;
-  --second-hov-color: #3f3f46;
-  --header-topbar-color: #27272a;
-  --header-bottom-color: #3f3f46;
-  --footer-color: #27272a;
+  --main: #a27339;
+  --main-hov: #8e632d;
+  --second-color: #181614;
+  --second-hov-color: #2d2825;
+  --header-topbar-color: #1c1917;
+  --header-bottom-color: #ffffff;
+  --footer-color: #181614;
 
   /* ── Colour: footer foreground ramp ───────────────────────────────────────
      The footer ground is admin-configurable, so its type cannot be hardcoded
@@ -93,7 +93,7 @@
   --brand: var(--main);
   --brand-hover: var(--main-hov);
   --brand-contrast: #ffffff;
-  --brand-tint: rgba(63, 63, 70, 0.08);     /* wash behind selected states */
+  --brand-tint: color-mix(in srgb, var(--main) 8%, transparent);     /* wash behind selected states */
 
   /* ── Colour: status ───────────────────────────────────────────────────────
      One hue per meaning, each with a solid, a tint and a text variant so
@@ -116,8 +116,8 @@
      The cart drawer's palette, taken from the reference design. Kept apart
      from `--brand` because that one is rewritten by ThemeProvider. */
   --cream: #faf8f5;
-  --gold: #a27339;
-  --gold-hover: #8e632d;
+  --gold: var(--main);
+  --gold-hover: var(--main-hov);
 
   /* ── Space ────────────────────────────────────────────────────────────────
      A 4px base with the mid-range doubled. Every margin, padding and gap in
@@ -188,6 +188,22 @@
    Exposes the tokens above as Tailwind utilities. `bg-surface`, `text-ink`,
    `border-hairline`, `rounded-lg`, `shadow-e2`, `p-6` all resolve here. */
 @theme inline {
+  /* Admin primary colour drives the design's warm accent scale. Every amber-* utility in
+     the app is derived from --main (Website Setup > Appearance > Website Base Color), so a
+     change in the admin reaches buttons, links, highlights and washes without per-file edits. */
+  --color-amber-50: color-mix(in srgb, var(--main) 7%, white);
+  --color-amber-100: color-mix(in srgb, var(--main) 14%, white);
+  --color-amber-200: color-mix(in srgb, var(--main) 28%, white);
+  --color-amber-300: color-mix(in srgb, var(--main) 48%, white);
+  --color-amber-400: color-mix(in srgb, var(--main) 72%, white);
+  --color-amber-500: color-mix(in srgb, var(--main) 90%, white);
+  --color-amber-600: var(--main);
+  --color-amber-700: var(--main-hov);
+  --color-amber-800: color-mix(in srgb, var(--main-hov) 85%, black);
+  --color-amber-900: color-mix(in srgb, var(--main-hov) 65%, black);
+  --color-amber-950: color-mix(in srgb, var(--main-hov) 45%, black);
+  --color-yellow-600: var(--main);
+  --color-orange-400: color-mix(in srgb, var(--main) 72%, white);
   /* Colour */
   --color-canvas: var(--canvas);
   --color-canvas-sunken: var(--canvas-sunken);

@@ -615,7 +615,7 @@ export default function Header() {
                     aria-label={
                       totalQuantity > 0 ? `Cart, ${totalQuantity} items` : "Cart"
                     }
-                    className={`relative inline-flex h-9 items-center gap-4 rounded-full bg-stone-900 py-0 text-white shadow-sm transition-all duration-150 ease-standard hover:bg-[#2D2825] hover:shadow active:scale-95 sm:h-10 ${
+                    className={`relative inline-flex h-9 items-center gap-4 rounded-full bg-second py-0 text-white shadow-sm transition-all duration-150 ease-standard hover:bg-second-hov hover:shadow active:scale-95 sm:h-10 ${
                       hasCartItems
                         ? "pl-3.5 pr-4 sm:pl-4"
                         : "w-9 justify-center sm:w-10 md:w-auto md:justify-start md:px-4"
@@ -659,7 +659,7 @@ export default function Header() {
               rather than wrapping if the admin's category names run long. */}
           <nav
             aria-label="Primary"
-            className="hidden border-t border-stone-200/60 bg-white lg:block"
+            className="hidden border-t border-stone-200/60 bg-header-bottom lg:block"
           >
             <div className="container-page overflow-x-auto scrollbar-hide">
               <ul className="mx-auto flex w-max items-center justify-center gap-8 py-2.5 text-[13.5px] font-normal text-stone-600">
