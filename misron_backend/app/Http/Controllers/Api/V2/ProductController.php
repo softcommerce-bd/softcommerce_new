@@ -186,9 +186,24 @@ class ProductController extends Controller
 
     public function categoryProducts($slug, Request $request)
     {
-        $category = Category::where('slug', $slug)->first();
-        $category = Category::with('childrenCategories')->find($category->id);
-        $products = $category->products();
+        $category = Category::where('slug', $slug)->firstOrFail();
+
+        // The category, plus every category below it. The home tab shows a product count
+        // for this whole subtree, so the list has to cover the same products.
+        $parentOf = \DB::table('categories')->pluck('parent_id', 'id');
+        $ids = [(int) $category->id];
+        for ($i = 0; $i < count($ids); $i++) {
+            foreach ($parentOf as $childId => $parentId) {
+                if ((int) $parentId === $ids[$i] && !in_array((int) $childId, $ids, true)) {
+                    $ids[] = (int) $childId;
+                }
+            }
+        }
+
+        $products = Product::where(function ($q) use ($ids) {
+            $q->whereIn('category_id', $ids)
+              ->orWhereIn('id', \DB::table('product_categories')->whereIn('category_id', $ids)->select('product_id'));
+        });
 
         if ($request->name != "" || $request->name != null) {
             $products = $products->where('name', 'like', '%' . $request->name . '%');

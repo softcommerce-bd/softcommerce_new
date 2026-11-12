@@ -844,8 +844,8 @@ export default function CheckoutCard({
       <div
         className={
           onClose
-            ? "w-full bg-[#FAF8F5]"
-            : "mx-auto w-full max-w-xl overflow-hidden rounded-2xl border border-stone-200/80 bg-[#FAF8F5] shadow-2xl"
+            ? "checkout-card w-full bg-[#FAF8F5]"
+            : "checkout-card mx-auto w-full max-w-xl overflow-hidden rounded-2xl border border-stone-200/80 bg-[#FAF8F5] shadow-2xl"
         }
       >
         {/* ── Header ──────────────────────────────────────────────────────
@@ -966,10 +966,19 @@ export default function CheckoutCard({
               </div>
             )}
 
+            {/* In the popup on a phone the confirm button stays pinned to the bottom of the
+                sheet, so it is always in reach however long the form is. */}
+            <div
+              className={
+                onClose
+                  ? "max-sm:sticky max-sm:bottom-0 max-sm:z-10 max-sm:-mx-4 max-sm:border-t max-sm:border-stone-200 max-sm:bg-[#FAF8F5]/95 max-sm:px-4 max-sm:pb-[max(0.75rem,env(safe-area-inset-bottom))] max-sm:pt-3 max-sm:backdrop-blur"
+                  : ""
+              }
+            >
             <button
               type="submit"
               disabled={isConfirmDisabled}
-              className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-[#A27339] py-3.5 text-sm font-semibold text-white shadow-md transition-all hover:bg-[#8B5F2A] disabled:cursor-not-allowed disabled:opacity-75"
+              className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-brand py-3.5 text-sm font-semibold text-white shadow-md transition-all hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-75"
             >
               {isProcessing ? (
                 <span>Processing Order...</span>
@@ -980,6 +989,7 @@ export default function CheckoutCard({
                 </>
               )}
             </button>
+            </div>
 
             {/* The order summary sits below the confirm button, so the form
                 and payment choice come first, then the totals, then the

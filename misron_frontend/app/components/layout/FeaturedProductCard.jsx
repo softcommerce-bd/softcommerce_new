@@ -231,7 +231,7 @@ const FeaturedProductCard = memo(({ item, priority = false, featured = true }) =
             {outOfStock ? (
               <span
                 aria-disabled="true"
-                className="flex cursor-not-allowed items-center justify-center gap-1 rounded-lg bg-[#A27339] px-1 py-1.5 text-[11px] font-semibold text-white opacity-40 sm:px-2.5 sm:py-2 sm:text-xs"
+                className="flex cursor-not-allowed items-center justify-center gap-1 rounded-lg bg-brand px-1 py-1.5 text-[11px] font-semibold text-white opacity-40 sm:px-2.5 sm:py-2 sm:text-xs"
               >
                 <Zap className="h-3 w-3 fill-current text-amber-200" aria-hidden="true" />
                 <span>Order</span>
@@ -240,7 +240,7 @@ const FeaturedProductCard = memo(({ item, priority = false, featured = true }) =
               <Link
                 href={productHref}
                 prefetch={false}
-                className="flex items-center justify-center gap-1 rounded-lg bg-[#A27339] px-1 py-1.5 text-[11px] font-semibold text-white shadow-xs transition-colors hover:bg-[#8B5F2A] sm:px-2.5 sm:py-2 sm:text-xs"
+                className="flex items-center justify-center gap-1 rounded-lg bg-brand px-1 py-1.5 text-[11px] font-semibold text-white shadow-xs transition-colors hover:bg-brand-hover sm:px-2.5 sm:py-2 sm:text-xs"
               >
                 <Zap className="h-3 w-3 fill-current text-amber-200" aria-hidden="true" />
                 <span>Order</span>

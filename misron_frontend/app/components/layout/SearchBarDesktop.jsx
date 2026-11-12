@@ -522,8 +522,8 @@ const handleSuggestionClick = (suggestion) => {
         aria-label="Search"
         className={
           isPill
-            ? "absolute right-1 top-1/2 flex size-7 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-gold text-white shadow-xs transition-colors duration-fast ease-standard hover:bg-gold-hover lg:right-1.5 lg:size-8"
-            : "bg-main  px-4 lg:px-6 py-2 lg:py-3 rounded-r-md  flex items-center justify-center border border-l-0 border-hairline transition-colors"
+            ? "absolute right-1 top-1/2 flex size-7 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-main text-white shadow-xs transition-colors duration-fast ease-standard hover:bg-second lg:right-1.5 lg:size-8"
+            : "bg-main hover:bg-second px-4 lg:px-6 py-2 lg:py-3 rounded-r-md  flex items-center justify-center border border-l-0 border-hairline transition-colors"
         }
       >
         {isSearching ? (

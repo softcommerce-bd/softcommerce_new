@@ -420,7 +420,7 @@ export default function SearchbarMobile({
         {/* Search Button */}
         <button 
           onClick={handleSearch}
-          className="bg-main px-3 py-2 rounded-r-md hover:bg-main-hov flex items-center justify-center border border-l-0 border-hairline"
+          className="bg-main px-3 py-2 rounded-r-md hover:bg-second flex items-center justify-center border border-l-0 border-hairline"
         >
           {isSearching ? (
             <div className="animate-spin rounded-full h-3 w-3 border-2 border-black border-t-transparent"></div>

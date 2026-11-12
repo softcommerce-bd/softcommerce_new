@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Best-selling products, shown as the "Featured Jewelry Collection" section.
+ * Featured products (the ones marked Featured and active in the admin), shown as the "Featured Collection" section.
  *
  * One row of four framed cards under a pill label, a serif title and a "View
  * All Pieces" link, after the reference design. Anything past the fourth
@@ -15,13 +15,13 @@
 
 import { useEffect, useState, useRef, useCallback } from "react";
 import Link from "next/link";
-import { AlertCircle, ArrowRight, Flame, PackageSearch } from "lucide-react";
+import { AlertCircle, ArrowRight, Flame } from "lucide-react";
 
 import FeaturedProductCard from "../components/layout/FeaturedProductCard";
-import { Button, EmptyState, Skeleton } from "@/app/components/ui";
+import { Button, Skeleton } from "@/app/components/ui";
 
 const CACHE_DURATION = 10 * 60 * 1000; // 10 minutes
-const CACHE_KEY = "best_selling_products_v3";
+const CACHE_KEY = "featured_products_v1";
 /** The reference shows one row of four. */
 const FEATURED_COUNT = 4;
 
@@ -51,19 +51,19 @@ function FeaturedHeader() {
       <div>
         <div className="mb-1.5 inline-flex items-center gap-1.5 rounded-full border border-amber-300 bg-amber-100/80 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-amber-900 sm:mb-2 sm:px-3 sm:text-xs">
           <Flame size={14} className="fill-amber-500 text-amber-600" aria-hidden="true" />
-          <span>Top Picks &amp; Best Sellers</span>
+          <span>Featured Products</span>
         </div>
-        <h2 className="type-title-serif text-stone-900">Featured Jewelry Collection</h2>
+        <h2 className="type-title-serif text-stone-900">Featured Collection</h2>
         <p className="mt-0.5 text-xs font-light text-stone-500 sm:mt-1 sm:text-sm">
-          Our most coveted, highest-rated signature handcrafted jewelry
+          Handpicked products from our store, chosen for you
         </p>
       </div>
 
       <Link
-        href="/shop_page?sort=best-selling"
+        href="/shop_page"
         className="group inline-flex items-center gap-1.5 self-start text-xs font-semibold text-amber-800 transition-colors hover:text-amber-950 sm:self-auto"
       >
-        <span>View All Pieces</span>
+        <span>View All</span>
         <ArrowRight
           size={14}
           className="transition-transform group-hover:translate-x-1"
@@ -133,7 +133,7 @@ export default function BestSelling() {
         }, 10000);
 
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/products/best-selling`,
+          `${process.env.NEXT_PUBLIC_API_URL}/products/featured`,
           {
             signal: controller.signal,
             headers: {
@@ -222,7 +222,7 @@ export default function BestSelling() {
       <section className="container-page section">
         <div className="flex flex-col items-center rounded-xl bg-canvas-sunken px-6 py-14 text-center">
           <AlertCircle size={26} className="mb-4 text-ink-tertiary" strokeWidth={1.5} />
-          <h3 className="type-title-3 text-ink">Couldn&apos;t load best sellers</h3>
+          <h3 className="type-title-3 text-ink">Couldn&apos;t load featured products</h3>
           <p className="type-footnote mt-2 text-ink-tertiary">{error}</p>
           <Button variant="secondary" className="mt-6" onClick={handleRetry}>
             Try again
@@ -249,18 +249,9 @@ export default function BestSelling() {
     );
   }
 
-  if (products.length === 0) {
-    return (
-      <section className="container-page section">
-        <FeaturedHeader />
-        <EmptyState
-          icon={PackageSearch}
-          title="No best sellers yet"
-          description="Check back soon — this list updates as orders come in."
-        />
-      </section>
-    );
-  }
+  // Only products the admin marked Featured appear here. With none, the whole
+  // section is left out rather than filled with something else.
+  if (products.length === 0) return null;
 
   return (
     <section className="container-page section">

@@ -65,19 +65,10 @@ class CategoryController extends Controller
             ? array_values(array_filter(array_map('intval', $selected)))
             : [];
 
+        // Only the categories the admin picked under Website Setup > Homepage Settings.
+        // Nothing picked means nothing is listed (no automatic fallback).
         if (empty($selected)) {
-            $parent_id = $this->resolveParentId($parent_id);
-
-            $categories = Category::where('parent_id', $parent_id)
-                ->where('digital', 0)
-                ->inDisplayOrder()
-                ->limit(4)
-                ->get();
-
-            // The home tab strip shows each tab's product count.
-            $this->attachProductCounts($categories);
-
-            return new CategoryCollection($categories);
+            return new CategoryCollection(collect());
         }
 
         $categories = Category::whereIn('id', $selected)

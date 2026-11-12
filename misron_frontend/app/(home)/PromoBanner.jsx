@@ -71,16 +71,18 @@ function BannerTile({ banner, index, tall = false, sizes, priority, onBroken }) 
       href={banner.url || "#"}
       target="_blank"
       rel="noopener noreferrer"
-      className={`group relative block overflow-hidden rounded-xl bg-canvas-sunken shadow-e1 transition-shadow duration-base ease-standard hover:shadow-e2 ${
-        tall ? "h-[200px] md:h-[480px]" : "h-[110px] md:h-60"
-      }`}
+      className="group relative block overflow-hidden rounded-xl bg-canvas-sunken shadow-e1 transition-shadow duration-base ease-standard hover:shadow-e2"
     >
+      {/* No fixed height and no cropping: the whole banner shows at its own
+          proportions, full width of its box, on every screen size. */}
       <Image
         src={src}
         alt={banner.title || `Banner ${index + 1}`}
-        fill
+        width={1600}
+        height={600}
         sizes={sizes}
-        className="object-cover transition-transform duration-slower ease-standard group-hover:scale-[1.04]"
+        style={{ width: "100%", height: "auto" }}
+        className="block transition-transform duration-slower ease-standard group-hover:scale-[1.02]"
         priority={priority}
         loading={priority ? "eager" : "lazy"}
         quality={78}
@@ -145,7 +147,7 @@ export default function PromoBanner({
   if (loading && banners.length === 0) {
     return (
       <section className="container-page section">
-        <Skeleton className="h-[200px] w-full md:h-[480px]" rounded="xl" />
+        <Skeleton className="aspect-[16/6] w-full" rounded="xl" />
       </section>
     );
   }
@@ -190,11 +192,12 @@ export default function PromoBanner({
 
   // A slot can hold up to three images. They stay within their own slot's row
   // rather than merging with another slot's.
-  const gridClass = visible.length === 2 ? "grid-cols-2" : "grid-cols-3";
+  const gridClass =
+    visible.length === 2 ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3";
 
   return (
     <section className="container-page section">
-      <div className={`grid gap-5 ${gridClass}`}>
+      <div className={`grid items-start gap-3 sm:gap-5 ${gridClass}`}>
         {visible.map(({ banner, index, key }, position) => (
           <BannerTile
             key={key}

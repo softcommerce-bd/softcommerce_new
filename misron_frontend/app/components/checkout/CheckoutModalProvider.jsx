@@ -71,7 +71,7 @@ export default function CheckoutModalProvider({ children }) {
         showClose={false}
         size="lg"
         className="overflow-hidden bg-[#FAF8F5] sm:max-w-xl"
-        bodyClassName="p-0"
+        bodyClassName="p-0 pb-[env(safe-area-inset-bottom)]"
       >
         <CheckoutFlow onClose={closeCheckout} />
       </Modal>

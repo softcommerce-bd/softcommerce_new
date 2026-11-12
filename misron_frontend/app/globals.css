@@ -1571,3 +1571,14 @@ button {
 }
 
 .z-3000 { z-index: 3000; }
+
+
+/* Checkout (popup and page): fields are 16px on phones. Smaller text makes iOS Safari zoom the
+   page when a field is tapped, which breaks the layout of the popup. */
+@media (max-width: 639px) {
+  .checkout-card input:not([type="checkbox"]):not([type="radio"]),
+  .checkout-card select,
+  .checkout-card textarea {
+    font-size: 16px;
+  }
+}
