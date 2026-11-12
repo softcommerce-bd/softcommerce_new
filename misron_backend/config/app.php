@@ -77,6 +77,9 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
 
+    // Premium admin skin (public/assets/css/admin-premium.css). Set ADMIN_UI_PREMIUM=false to return to the plain theme.
+    'admin_ui_premium' => (bool) env('ADMIN_UI_PREMIUM', true),
+
     /*
     |--------------------------------------------------------------------------
     | Application Timezone

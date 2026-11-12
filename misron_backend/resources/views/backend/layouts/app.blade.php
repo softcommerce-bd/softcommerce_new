@@ -37,7 +37,12 @@
     @if (\App\Models\Language::where('code', Session::get('locale', Config::get('app.locale')))->first()->rtl == 1)
         <link rel="stylesheet" href="{{ static_asset('assets/css/bootstrap-rtl.min.css') }}">
     @endif
-    <link rel="stylesheet" href="{{ static_asset('assets/css/aiz-core.css?v=') }}{{ rand(1000,9999) }}">
+    <link rel="stylesheet" href="{{ static_asset('assets/css/aiz-core.css?v=') }}{{ @filemtime(public_path('assets/css/aiz-core.css')) ?: 1 }}">
+    @if (config('app.admin_ui_premium'))
+        {{-- Premium skin: paint-only layer on top of the theme. Off switch: ADMIN_UI_PREMIUM=false in .env --}}
+        <script>try{var t=localStorage.getItem('ui-theme');if(t==='dark'||t==='light')document.documentElement.setAttribute('data-ui-theme',t);}catch(e){}</script>
+        <link rel="stylesheet" href="{{ static_asset('assets/css/admin-premium.css') }}?v={{ @filemtime(public_path('assets/css/admin-premium.css')) ?: 1 }}">
+    @endif
 
  
 
@@ -136,7 +141,7 @@
 
 </head>
 
-<body class="">
+<body class="{{ config('app.admin_ui_premium') ? 'ui-premium' : '' }}">
 
     <div class="aiz-main-wrapper " style="background-color:#F6F8FA;">
         @include('backend.inc.admin_sidenav')
@@ -157,7 +162,10 @@
 
 
     <script src="{{ static_asset('assets/js/vendors.js') }}"></script>
-    <script src="{{ static_asset('assets/js/aiz-core.js?v=') }}{{ rand(1000,9999) }}"></script>
+    <script src="{{ static_asset('assets/js/aiz-core.js?v=') }}{{ @filemtime(public_path('assets/js/aiz-core.js')) ?: 1 }}"></script>
+    @if (config('app.admin_ui_premium'))
+        <script src="{{ static_asset('assets/js/admin-premium.js') }}?v={{ @filemtime(public_path('assets/js/admin-premium.js')) ?: 1 }}" defer></script>
+    @endif
 
     @yield('script')
 
