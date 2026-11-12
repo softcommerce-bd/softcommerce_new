@@ -37,6 +37,19 @@
     set(root.getAttribute('data-ui-theme') === 'dark' ? 'dark' : 'light');
   });
 
+  // 1b. logo fallback: a missing/broken logo image becomes the shop name as text ---------------------------------
+  safe(function () {
+    document.querySelectorAll('.aiz-side-nav-logo-wrap img').forEach(function (img) {
+      function swap() {
+        if (img.dataset.uiSwapped) return; img.dataset.uiSwapped = '1';
+        var t = document.createElement('span'); t.className = 'ui-logo-text';
+        t.textContent = img.getAttribute('alt') || (document.title.split('|')[0] || 'Admin').trim();
+        img.replaceWith(t);
+      }
+      if (img.complete && img.naturalWidth === 0) swap(); else img.addEventListener('error', swap);
+    });
+  });
+
   // 2. staggered reveal ---------------------------------------------------------------------------------------
   safe(function () {
     if (reduce) return;

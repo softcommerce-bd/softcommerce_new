@@ -91,30 +91,33 @@ body.ui-premium *::-webkit-scrollbar-thumb { background: rgba(120, 110, 100, .35
 body.ui-premium *::-webkit-scrollbar-thumb:hover { background: var(--ember); }
 
 /* ============ sidebar: onyx glass ============ */
-body.ui-premium .aiz-sidebar-wrap {
+/* The sidebar is painted on BOTH the wrapper and the panel itself: the theme sizes/fixes the panel, so painting only the wrapper (or making
+   the panel transparent) lets the pale page show through and the light menu text disappears. Inner containers stay transparent. */
+body.ui-premium .aiz-sidebar-wrap, body.ui-premium .aiz-sidebar {
   background:
-    radial-gradient(420px 260px at 0% 0%, rgba(250, 115, 25, .20), transparent 70%),
-    linear-gradient(180deg, var(--ui-ink) 0%, var(--ui-ink-2) 100%) !important;
-  border-right: 1px solid rgba(255, 255, 255, .06);
+    radial-gradient(420px 260px at 0% 0%, rgba(250, 115, 25, .22), transparent 70%),
+    linear-gradient(180deg, #0b0b0c 0%, #151517 100%) !important;
+  color: #cfc8c0;
 }
-body.ui-premium .aiz-sidebar, body.ui-premium .aiz-side-nav-wrap, body.ui-premium .aiz-side-nav-logo-wrap, body.ui-premium .aiz-side-nav-list { background: transparent !important; }
+body.ui-premium .aiz-sidebar-wrap { border-right: 1px solid rgba(255, 255, 255, .06); }
+body.ui-premium .aiz-side-nav-wrap, body.ui-premium .aiz-side-nav-logo-wrap, body.ui-premium .aiz-side-nav-list, body.ui-premium .aiz-side-nav-item { background: transparent !important; }
 body.ui-premium .aiz-side-nav-logo-wrap { border-bottom: 1px solid rgba(255, 255, 255, .07); }
 body.ui-premium .aiz-side-nav-logo-wrap img { filter: brightness(0) invert(1); opacity: .96; }
 body.ui-premium #menu-search {
   background: rgba(255, 255, 255, .07) !important; border: 1px solid rgba(255, 255, 255, .10); color: #fff !important; border-radius: var(--ui-radius-sm);
   transition: border-color .2s var(--ui-ease), box-shadow .2s var(--ui-ease), background .2s;
 }
-body.ui-premium #menu-search::placeholder { color: var(--ui-ink-text); opacity: .75; }
+body.ui-premium #menu-search::placeholder { color: #b9b1a8; opacity: .9; }
 body.ui-premium #menu-search:focus { border-color: var(--ember); box-shadow: 0 0 0 3px var(--ember-glow); background: rgba(255, 255, 255, .10) !important; }
-body.ui-premium #menu-search + span svg path { fill: var(--ui-ink-text); }
+body.ui-premium #menu-search + span svg path { fill: #b9b1a8; }
 body.ui-premium .aiz-side-nav-wrap svg path, body.ui-premium .aiz-side-nav-wrap svg rect, body.ui-premium .aiz-side-nav-wrap svg circle { fill: currentColor; }
 
-body.ui-premium .aiz-side-nav-link, body.ui-premium .aiz-side-nav-link .aiz-side-nav-text, body.ui-premium .aiz-side-nav-link svg, body.ui-premium .aiz-side-nav-link .aiz-side-nav-arrow { color: var(--ui-ink-text) !important; }
+body.ui-premium .aiz-side-nav-link, body.ui-premium .aiz-side-nav-link .aiz-side-nav-text, body.ui-premium .aiz-side-nav-link svg, body.ui-premium .aiz-side-nav-link .aiz-side-nav-arrow { color: #d9d2ca !important; }
 body.ui-premium .aiz-side-nav-link {
   border-radius: var(--ui-radius-sm); background: transparent;
   transition: background-color .2s var(--ui-ease), color .2s var(--ui-ease), transform .2s var(--ui-ease), box-shadow .2s;
 }
-body.ui-premium .aiz-side-nav-link:hover { background: rgba(255, 255, 255, .08) !important; transform: translateX(3px); }
+body.ui-premium .aiz-side-nav-link:hover { background: rgba(250, 115, 25, .20) !important; box-shadow: inset 3px 0 0 var(--ember); transform: translateX(3px); }
 body.ui-premium .aiz-side-nav-link:hover, body.ui-premium .aiz-side-nav-link:hover .aiz-side-nav-text, body.ui-premium .aiz-side-nav-link:hover svg, body.ui-premium .aiz-side-nav-link:hover .aiz-side-nav-arrow { color: #fff !important; }
 body.ui-premium .aiz-side-nav-link.active, body.ui-premium .aiz-side-nav-item > .aiz-side-nav-link.active {
   background: linear-gradient(180deg, var(--ember-hi) 0%, var(--ember) 52%, var(--ember-lo) 100%) !important;
@@ -322,3 +325,26 @@ body.ui-premium .bg-info { background-color: #1d1d21 !important; }
 /* page titles: a quiet accent bar so every module opens with the same signature */
 body.ui-premium .aiz-titlebar h1, body.ui-premium .aiz-main-content > div > .aiz-titlebar .h3 { position: relative; padding-left: 14px; }
 body.ui-premium .aiz-titlebar h1::before, body.ui-premium .aiz-titlebar .h3::before { content: ""; position: absolute; left: 0; top: 12%; bottom: 12%; width: 4px; border-radius: 4px; background: linear-gradient(180deg, var(--ember-hi), var(--ember-lo)); }
+
+/* logo missing or broken: show the shop name as a styled wordmark instead of a broken-image box */
+body.ui-premium .ui-logo-text { display: block; font-weight: 800; font-size: 22px; letter-spacing: .14em; text-transform: uppercase; color: #fff; padding: 6px 0; background: linear-gradient(90deg, #fff 55%, var(--ember-hi)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+
+/* ============ final pass: bare .dashboard-card, alerts, table heads, nav hover (light + dark) ============ */
+body.ui-premium .dashboard-card {
+  background: var(--ui-glass) !important; color: var(--ui-text);
+  border: 1px solid var(--ui-line); border-radius: 22px; box-shadow: var(--ui-shadow);
+}
+body.ui-premium .dashboard-card h1, body.ui-premium .dashboard-card h2, body.ui-premium .dashboard-card h3,
+body.ui-premium .dashboard-card h4, body.ui-premium .dashboard-card h5, body.ui-premium .dashboard-card h6 { color: var(--ui-text) !important; }
+body.ui-premium .dashboard-card [style*="F8F8F9" i] { background: rgba(250,115,25,.08) !important; }
+body.ui-premium .alert-info { background: rgba(250,115,25,.10) !important; color: var(--ui-text) !important; border-color: rgba(250,115,25,.35) !important; }
+body.ui-premium .alert-info a, body.ui-premium .alert-info strong { color: var(--ember) !important; }
+html[data-ui-theme="dark"] body.ui-premium .alert-info { background: rgba(250,115,25,.14) !important; }
+html[data-ui-theme="dark"] body.ui-premium .alert-info a { color: var(--ember-hi) !important; }
+body.ui-premium thead th { color: var(--ui-text) !important; opacity: .85; }
+/* sidebar hover/focus: unmistakable in both themes (the bar is always dark) */
+body.ui-premium .aiz-side-nav-link:hover, body.ui-premium .aiz-side-nav-link:focus-visible {
+  background: rgba(250,115,25,.28) !important; box-shadow: inset 3px 0 0 var(--ember);
+}
+body.ui-premium .aiz-side-nav-link:hover .aiz-side-nav-text, body.ui-premium .aiz-side-nav-link:hover .aiz-side-nav-icon,
+body.ui-premium .aiz-side-nav-link:hover .las, body.ui-premium .aiz-side-nav-link:hover svg { color: #fff !important; }
