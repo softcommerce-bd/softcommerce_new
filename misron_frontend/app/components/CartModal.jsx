@@ -212,8 +212,15 @@ export default function CartModal() {
   // yet. Gating this on `selectedVariant` let a fully sold-out product open
   // with a live "Order now" button, contradicting its own product page. The
   // same expression runs on the page, so the two can no longer disagree.
+  // A backorder / preorder product stays orderable at zero stock, up to the server's limit.
+  const orderableWithoutStock =
+    productData?.can_order === true &&
+    (productData?.stock_state === "available_on_order" || productData?.stock_state === "preorder");
+  const maxQty = orderableWithoutStock || productData?.stock_policy === "backorder" || productData?.stock_policy === "preorder"
+    ? Math.max(currentStock, Number(productData?.max_order_qty) || 99)
+    : currentStock;
   const isOutOfStock =
-    !productData || !hasAnyStock(productData) || currentStock <= 0;
+    !productData || (!orderableWithoutStock && (!hasAnyStock(productData) || currentStock <= 0));
 
   const cartProduct = productData
     ? {
@@ -440,8 +447,8 @@ export default function CartModal() {
 
               <button
                 type="button"
-                onClick={() => setQuantity(Math.min(currentStock, quantity + 1))}
-                disabled={!isSelectionEnabled || quantity >= currentStock}
+                onClick={() => setQuantity(Math.min(maxQty, quantity + 1))}
+                disabled={!isSelectionEnabled || quantity >= maxQty}
                 className="flex h-9 w-9 items-center justify-center rounded-r-md text-ink-secondary transition-colors hover:bg-surface-hover disabled:opacity-30"
                 aria-label="Increase quantity"
               >

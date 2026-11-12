@@ -246,6 +246,10 @@ class ProductDetailCollection extends ResourceCollection
                     'stock_policy' => $availability['policy'],
                     'stock_state' => $availability['state'],
                     'can_order' => $availability['can_order'],
+                    // Most units one order may hold under the selling policy (stock, plus backorder / preorder room).
+                    'max_order_qty' => min(999, (int) $data->stocks->map(function ($stock) {
+                        return \App\Services\Inventory\StockPolicy::effectiveQty($stock);
+                    })->max()),
                     'expected_at' => $availability['expected_at'],
                     
                     // Variant-specific stock (now mapped to size only)

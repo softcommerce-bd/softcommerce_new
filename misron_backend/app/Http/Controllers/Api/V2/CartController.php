@@ -117,7 +117,8 @@ class CartController extends Controller
                         $shop_items_data_item["shipping_cost"] = (float) $shop_items_raw_data_item["shipping_cost"];
                         $shop_items_data_item["quantity"] = intval($shop_items_raw_data_item["quantity"]);
                         $shop_items_data_item["lower_limit"] = intval($product->min_qty);
-                        $shop_items_data_item["upper_limit"] = intval($product->stocks->where('variant', $shop_items_raw_data_item['variation'])->first()->qty);
+                        // What the selling policy allows right now: shelf stock normally, plus the backorder / preorder room.
+                        $shop_items_data_item["upper_limit"] = min(999, \App\Services\Inventory\StockPolicy::effectiveQty($product->stocks->where('variant', $shop_items_raw_data_item['variation'])->first()));
                         // SKU of the exact stock row in the cart. The Meta
                         // catalogue feed publishes this same SKU as an item's
                         // id, and checkout and purchase tracking send it back

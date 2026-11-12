@@ -137,7 +137,7 @@ export default function Details({
         resolveVariantStock(productData, selectedVariant, selectedColor)
           ?.quantity || 0;
       setVariantStock(available);
-      setQuantity((current) => (current > available ? 1 : current));
+      setQuantity((current) => (productData.stock_policy === "backorder" || productData.stock_policy === "preorder" || current <= available ? current : 1));
     } else {
       setVariantStock(productData.current_stock);
     }
@@ -188,6 +188,9 @@ export default function Details({
     ? false
     : !productHasStock || currentStock <= 0;
   const isLowStock = !isOutOfStock && !orderableWithoutStock && currentStock <= 5;
+  // Backorder / preorder products can be ordered past the shelf stock; the server sets how far.
+  const allowsMore = productData.stock_policy === "backorder" || productData.stock_policy === "preorder" || orderableWithoutStock;
+  const maxQty = allowsMore ? Math.max(currentStock, Number(productData.max_order_qty) || 99) : currentStock;
 
   // Resolved through the colour+size pair, so `full_variant` on the cart
   // payload names the exact stock row rather than the size rollup.
@@ -455,8 +458,8 @@ export default function Details({
 
                 <button
                   type="button"
-                  onClick={() => setQuantity(Math.min(currentStock, quantity + 1))}
-                  disabled={quantity >= currentStock}
+                  onClick={() => setQuantity(Math.min(maxQty, quantity + 1))}
+                  disabled={quantity >= maxQty}
                   className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-md text-stone-600 transition-colors hover:bg-stone-100 disabled:cursor-not-allowed disabled:opacity-30"
                   aria-label="Increase quantity"
                 >
