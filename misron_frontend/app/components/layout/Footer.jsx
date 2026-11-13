@@ -42,6 +42,26 @@ export default function Footer() {
     30 * 60 * 1000,
   );
 
+  // Payment methods the admin has switched on (the same list checkout offers). Loaded on its own
+  // because the cached hook above returns only `data`, and Cash on Delivery sits beside it.
+  const [activePayments, setActivePayments] = useState([]);
+  useEffect(() => {
+    let alive = true;
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/active-payment-methods`)
+      .then((res) => res.json())
+      .then((json) => {
+        if (!alive || !json?.success) return;
+        const online = (Array.isArray(json.data) ? json.data : [])
+          .filter((method) => Number(method.active) === 1)
+          .map((method) => PAYMENT_NAMES[String(method.name).toLowerCase()] || String(method.name).replace(/[_-]+/g, " "));
+        setActivePayments([...(String(json.cash_on_delivery) === "1" ? ["Cash on Delivery"] : []), ...online]);
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, []);
+
   // Same tree the menu reads, so the footer lists categories in the same order.
   const { data: categories } = useCachedFetch(
     `${process.env.NEXT_PUBLIC_API_URL}/categories/tree`,
@@ -179,26 +199,30 @@ export default function Footer() {
           </div>
 
           <div className="flex items-center gap-3">
-            <span className="text-[11px] text-footer-ink-muted">Secure Payment Options:</span>
-            <div className="flex items-center gap-2 rounded-lg border border-footer-hairline bg-footer-wash px-3 py-1.5">
-              {footerData.payment_methods_image ? (
-                <div className="relative h-5 w-48">
-                  <Image
-                    src={footerData.payment_methods_image}
-                    alt="Accepted payment methods"
-                    fill
-                    className="object-contain object-left"
-                    sizes="192px"
-                  />
+            {(footerData.payment_methods_image || activePayments.length > 0) && (
+              <>
+                <span className="text-[11px] text-footer-ink-muted">Secure Payment Options:</span>
+                <div className="flex flex-wrap items-center gap-2 rounded-lg border border-footer-hairline bg-footer-wash px-3 py-1.5">
+                  {footerData.payment_methods_image ? (
+                    <div className="relative h-5 w-48">
+                      <Image
+                        src={footerData.payment_methods_image}
+                        alt="Accepted payment methods"
+                        fill
+                        className="object-contain object-left"
+                        sizes="192px"
+                      />
+                    </div>
+                  ) : (
+                    activePayments.map((label) => (
+                      <span key={label} className="text-xs font-bold tracking-wider text-footer-ink">
+                        {label}
+                      </span>
+                    ))
+                  )}
                 </div>
-              ) : (
-                PAYMENT_BADGES.map(({ label, className }) => (
-                  <span key={label} className={`text-xs font-bold tracking-wider ${className}`}>
-                    {label}
-                  </span>
-                ))
-              )}
-            </div>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -294,13 +318,16 @@ function ContactRow({ icon: Icon, children }) {
  * Payment options shown when the admin has not uploaded a payment-methods
  * image. These are the methods the checkout offers.
  */
-const PAYMENT_BADGES = [
-  { label: "bKash", className: "text-rose-400" },
-  { label: "Nagad", className: "text-amber-500" },
-  { label: "VISA", className: "text-blue-400" },
-  { label: "Mastercard", className: "text-orange-400" },
-  { label: "COD", className: "text-emerald-400" },
-];
+const PAYMENT_NAMES = {
+  bkash: "bKash",
+  nagad: "Nagad",
+  rocket: "Rocket",
+  sslcommerz: "SSLCommerz",
+  paystation: "PayStation",
+  aamarpay: "aamarPay",
+  stripe: "Stripe",
+  paypal: "PayPal",
+};
 
 /**
  * Brand blurb under the footer logo, used only when `footer_description` is

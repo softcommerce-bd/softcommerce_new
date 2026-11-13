@@ -100,11 +100,16 @@ export function useQuickAdd(item) {
           false,
         );
 
-        if (result && result.result === true) toast.success('Added to cart');
-        else toast.error(result?.message || 'Failed to add to cart');
+        if (result && result.result === true) {
+          toast.success('Added to cart');
+          return true;
+        }
+        toast.error(result?.message || 'Failed to add to cart');
+        return false;
       } catch (err) {
         console.error('Quick add error:', err);
         openModal();
+        return false;
       } finally {
         busyRef.current = false;
         setAdding(false);

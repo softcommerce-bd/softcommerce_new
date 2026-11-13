@@ -27,9 +27,10 @@ class ProductController extends Controller
     }
     public function buyWatchProducts()
     {
-        $products = Product::where('custom_video', '!=', null)
+        // Only products that can be bought today (published, approved), newest first.
+        $products = filter_products(Product::where('custom_video', '!=', null)->where('custom_video', '!=', ''))
             ->latest()
-            ->limit(20)
+            ->limit(30)
             ->get();
 
         return new ProductMiniCollection($products);

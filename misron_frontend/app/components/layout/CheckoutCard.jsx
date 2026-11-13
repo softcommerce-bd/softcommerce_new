@@ -62,7 +62,7 @@ export default function CheckoutCard({
   // Use prop IP if provided, otherwise use detected IP
   const ipAddress = propIpAddress || detectedIp;
   
-  const [selectedPayment, setSelectedPayment] = useState("cash_on_delivery");
+  const [selectedPayment, setSelectedPayment] = useState("");
   const [giftBox, setGiftBox] = useState(false);
   const [voucherCode, setVoucherCode] = useState("");
   const [appliedVoucher, setAppliedVoucher] = useState(null);
@@ -74,7 +74,7 @@ export default function CheckoutCard({
   const [shippingDetails, setShippingDetails] = useState(null);
   const [isCalculatingShipping, setIsCalculatingShipping] = useState(false);
   const [paymentMethods, setPaymentMethods] = useState([]);
-  const [isCashOnDeliveryEnabled, setIsCashOnDeliveryEnabled] = useState(true);
+  const [isCashOnDeliveryEnabled, setIsCashOnDeliveryEnabled] = useState(false);
   const [isLoadingPaymentMethods, setIsLoadingPaymentMethods] = useState(true);
   const [ipRiskLevel, setIpRiskLevel] = useState(null); // 'low', 'medium', 'high'
   const [ipValidated, setIpValidated] = useState(false);
@@ -242,26 +242,23 @@ export default function CheckoutCard({
       const data = await response.json();
 
       if (data.success) {
-        // Set cash on delivery status
-        setIsCashOnDeliveryEnabled(data.cash_on_delivery === "1");
-        
-        // Process payment methods from API
-        const methods = data.data
-          .filter(method => method.active === 1)
-          .map(method => ({
+        // Only what the admin has switched on: Cash on Delivery through its own setting, and each
+        // active online method from Payment Methods. Nothing here is added by the storefront.
+        const cashOn = String(data.cash_on_delivery) === "1";
+        setIsCashOnDeliveryEnabled(cashOn);
+
+        const methods = (Array.isArray(data.data) ? data.data : [])
+          .filter((method) => Number(method.active) === 1)
+          .map((method) => ({
             value: method.name,
             label: getPaymentMethodLabel(method.name),
-            id: method.id
+            id: method.id,
           }));
-        
+
         setPaymentMethods(methods);
-        
-        // Set default payment method
-        if (methods.length > 0 && data.cash_on_delivery !== "1") {
-          setSelectedPayment(methods[0].value);
-        } else if (data.cash_on_delivery === "1") {
-          setSelectedPayment("cash_on_delivery");
-        }
+
+        // Start on the first option the shopper really has: Cash on Delivery when it is on.
+        setSelectedPayment(cashOn ? "cash_on_delivery" : methods[0]?.value || "");
       }
     } catch (error) {
       console.error("Error fetching payment methods:", error);
@@ -274,14 +271,19 @@ export default function CheckoutCard({
   // Get display label for payment methods
   const getPaymentMethodLabel = (methodName) => {
     const labels = {
-      'sslcommerz': 'Pay with SSL Commerz (Card/Mobile Banking)',
-      'paystation': 'Pay with card, bKash, Nagad, Rocket or Upay',
-      'bkash': 'Pay with bKash',
-      'nagad': 'Pay with Nagad',
-      'rocket': 'Pay with Rocket',
-      'cod': 'Cash on Delivery'
+      sslcommerz: "Pay with SSLCommerz (Card / Mobile Banking)",
+      paystation: "Pay with PayStation (Card / Mobile Banking)",
+      bkash: "Pay with bKash",
+      nagad: "Pay with Nagad",
+      rocket: "Pay with Rocket",
+      aamarpay: "Pay with aamarPay",
+      stripe: "Pay with Card (Stripe)",
+      paypal: "Pay with PayPal",
     };
-    return labels[methodName] || methodName.charAt(0).toUpperCase() + methodName.slice(1);
+    const key = String(methodName || "").toLowerCase();
+    if (labels[key]) return labels[key];
+    const pretty = key.replace(/[_-]+/g, " ").trim();
+    return `Pay with ${pretty.charAt(0).toUpperCase()}${pretty.slice(1)}`;
   };
 
   // Extract numeric value from price string (e.g., "Tk 5,000" -> 5000)
