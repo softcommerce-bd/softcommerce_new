@@ -4,34 +4,36 @@
  * Shipping region and (optional) pickup.
  *
  * Two separate choices:
- *  1. Shipping Region: Inside City / Outside City. Always shown. It is only the
- *     customer's region; it is sent with the order and never opens a pickup list.
- *  2. Delivery method: Home delivery or Pick up from a store. This belongs to the
- *     admin's Pickup Point feature, so it appears only when the admin has turned
- *     the feature on and added at least one active pickup point. Without that, the
- *     order is simply home delivery and nothing about pickup is drawn.
+ *  1. Shipping Region: the cities the admin has set up under Shipping Cities (each with its own
+ *     cost). A few cities show as tiles, many as a drop-down. The chosen city drives the shipping
+ *     cost. Shown only where a city is needed (guest checkout; a signed-in shopper's city comes from
+ *     the saved address) and when the admin has at least one active city.
+ *  2. Delivery method: Home delivery or Pick up from a store. This belongs to the admin's Pickup
+ *     Point feature, so it appears only when that feature is on and has at least one active point.
  *
- * The localStorage keys, the callback signature and the pickup-list endpoint are
- * unchanged; `shippingRegion` is new.
+ * The localStorage keys, the callback signature and the pickup-list endpoint are unchanged.
  */
 
 import { useEffect, useState } from "react";
-import { Store } from "lucide-react";
+import { MapPin, Store } from "lucide-react";
+
+import { toTk } from "@/utils/currency";
 
 import { GroupLegend, IconField, OptionRow } from "@/app/components/checkout/CheckoutFields";
 
-const DeliveryType = ({ onDeliveryTypeChange }) => {
-  const [region, setRegion] = useState("inside_city");
+const DeliveryType = ({
+  onDeliveryTypeChange,
+  // Shipping Cities from the admin: [{ id, name, cost }], the chosen id, and its setter.
+  cities = [],
+  cityId = "",
+  onCityChange,
+}) => {
   const [deliveryType, setDeliveryType] = useState("home");
   const [pickupPoints, setPickupPoints] = useState([]);
   const [selectedPickupPoint, setSelectedPickupPoint] = useState("");
 
   // Region, and any earlier delivery choice
   useEffect(() => {
-    const savedRegion = localStorage.getItem("shippingRegion");
-    setRegion(savedRegion === "outside_city" ? "outside_city" : "inside_city");
-    localStorage.setItem("shippingRegion", savedRegion === "outside_city" ? "outside_city" : "inside_city");
-
     const savedDeliveryType = localStorage.getItem("deliveryType") || "home_delivery";
     const savedPickupPoint = localStorage.getItem("selectedPickupPoint");
     setDeliveryType(savedDeliveryType === "pickup_point" ? "pickup" : "home");
@@ -69,11 +71,6 @@ const DeliveryType = ({ onDeliveryTypeChange }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleRegionChange = (value) => {
-    setRegion(value);
-    localStorage.setItem("shippingRegion", value);
-  };
-
   const handleDeliveryTypeChange = (type) => {
     setDeliveryType(type);
     const deliveryTypeValue = type === "home" ? "home_delivery" : "pickup_point";
@@ -98,27 +95,44 @@ const DeliveryType = ({ onDeliveryTypeChange }) => {
 
   return (
     <>
-      <fieldset>
-        <GroupLegend>Shipping Region:</GroupLegend>
-        <div className="grid grid-cols-2 gap-2.5">
-          <OptionRow
-            layout="tile"
-            name="shippingRegion"
-            checked={region === "inside_city"}
-            onChange={() => handleRegionChange("inside_city")}
-          >
-            Inside City
-          </OptionRow>
-          <OptionRow
-            layout="tile"
-            name="shippingRegion"
-            checked={region === "outside_city"}
-            onChange={() => handleRegionChange("outside_city")}
-          >
-            Outside City
-          </OptionRow>
-        </div>
-      </fieldset>
+      {cities.length > 0 && onCityChange && (
+        <fieldset>
+          <GroupLegend>Shipping Region:</GroupLegend>
+          {cities.length <= 4 ? (
+            <div className={`grid gap-2.5 ${cities.length === 1 ? "grid-cols-1" : "grid-cols-2"}`}>
+              {cities.map((city) => (
+                <OptionRow
+                  key={city.id}
+                  layout="tile"
+                  name="shippingRegion"
+                  checked={String(cityId) === String(city.id)}
+                  onChange={() => onCityChange(String(city.id))}
+                >
+                  {city.name}
+                  {Number(city.cost) > 0 ? ` (${toTk(city.cost)})` : " (Free)"}
+                </OptionRow>
+              ))}
+            </div>
+          ) : (
+            <IconField
+              as="select"
+              label="Select your area *"
+              icon={MapPin}
+              value={String(cityId)}
+              onChange={(e) => onCityChange(e.target.value)}
+              required
+            >
+              <option value="">Select region</option>
+              {cities.map((city) => (
+                <option key={city.id} value={city.id}>
+                  {city.name}
+                  {Number(city.cost) > 0 ? ` (${toTk(city.cost)})` : " (Free)"}
+                </option>
+              ))}
+            </IconField>
+          )}
+        </fieldset>
+      )}
 
       {pickupAvailable && (
         <fieldset>

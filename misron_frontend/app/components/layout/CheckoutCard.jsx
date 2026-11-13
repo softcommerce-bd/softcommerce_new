@@ -551,11 +551,6 @@ export default function CheckoutCard({
         payment_type: selectedPayment,
         delivery_type: deliveryType,
         pickup_point_id: pickupPointId,
-        // Inside / outside city is its own choice, shown to staff on the order as "Additional info".
-        additional_info:
-          localStorage.getItem("shippingRegion") === "outside_city"
-            ? "Shipping region: Outside City"
-            : "Shipping region: Inside City",
         gift_box: giftBox,
         ip_tracking: {
           ip_address: ipAddress,
@@ -671,7 +666,7 @@ export default function CheckoutCard({
       if (
         !guestFormData?.name ||
         !guestFormData?.phone ||
-        // !guestFormData?.city_id ||
+        (cities?.length > 0 && !guestFormData?.city_id) ||
         !guestFormData?.address
       ) {
         toast.error("Please fill in all required fields");

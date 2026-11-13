@@ -68,7 +68,9 @@ const ProductCard1 = memo(({ item, priority = false }) => {
 
     const stock =
       mergedItem.recent_stock ?? mergedItem.stock ?? mergedItem.quantity ?? 0;
-    const outOfStock = Number(stock) <= 0;
+    const outOfStock =
+      Number(stock) <= 0 &&
+      !(mergedItem.can_order === true && (mergedItem.stock_state === "available_on_order" || mergedItem.stock_state === "preorder"));
 
     let mainPriceStr = "৳ 0";
     if (mergedItem.main_price) mainPriceStr = tkText(mergedItem.main_price);

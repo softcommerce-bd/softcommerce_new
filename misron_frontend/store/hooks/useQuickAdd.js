@@ -50,13 +50,21 @@ export function useQuickAdd(item) {
         const product = json?.data?.[0];
         if (!json?.success || !product) return openModal();
 
-        if (!hasAnyStock(product)) {
+        // Backorder / preorder products stay orderable with nothing on the shelf.
+        const orderableWithoutStock =
+          product.can_order === true &&
+          (product.stock_state === 'available_on_order' || product.stock_state === 'preorder');
+
+        if (!orderableWithoutStock && !hasAnyStock(product)) {
           toast.error('Sorry! This product is out of stock.');
           return;
         }
 
         const hasSizes = (product.choice_options?.[0]?.options || []).length > 0;
         const colors = product.colors_name || [];
+
+        // Nothing is "in stock" to default to, so a product with sizes or colours lets the shopper choose.
+        if (orderableWithoutStock && (hasSizes || colors.length > 0)) return openModal();
 
         let variant = '';
         let color = '';

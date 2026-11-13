@@ -22,7 +22,7 @@ import { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { SlidersHorizontal, X, PackageSearch } from "lucide-react";
 
-import ProductCard1 from "@/app/components/layout/ProductCard1";
+import FeaturedProductCard from "@/app/components/layout/FeaturedProductCard";
 import Breadcrumb from "@/app/components/layout/Breadcrumb";
 import SidebarContent from "@/app/components/layout/SidebarContent";
 import {
@@ -397,9 +397,9 @@ export default function Shop() {
             />
           ) : (
             <>
-              <div className="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-6 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+              <div className="grid grid-cols-2 gap-3 sm:gap-6 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
                 {products.map((product, index) => (
-                  <ProductCard1 key={product.id} item={product} priority={index < 6} />
+                  <FeaturedProductCard key={product.id} item={product} priority={index < 6} featured={false} />
                 ))}
               </div>
 

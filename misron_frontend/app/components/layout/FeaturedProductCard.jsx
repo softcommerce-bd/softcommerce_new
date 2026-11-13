@@ -28,7 +28,7 @@ const FeaturedProductCard = memo(({ item, priority = false, featured = true }) =
   const [imageError, setImageError] = useState(false);
   const { quickAdd, adding, openModal } = useQuickAdd(item);
 
-  const { productId, discount, outOfStock, mainPrice, strokedPrice, rating } =
+  const { productId, discount, outOfStock, stockLabel, mainPrice, strokedPrice, rating } =
     useMemo(() => {
       let disc = null;
       if (item.discount && item.discount !== "-0%") disc = item.discount;
@@ -49,7 +49,9 @@ const FeaturedProductCard = memo(({ item, priority = false, featured = true }) =
       return {
         productId: item.id || item.product_id,
         discount: disc,
-        outOfStock: Number(stock) <= 0,
+        // A backorder / preorder product is still orderable at zero stock.
+        outOfStock: Number(stock) <= 0 && !(item.can_order === true && (item.stock_state === "available_on_order" || item.stock_state === "preorder")),
+        stockLabel: item.stock_state === "preorder" ? "Preorder" : item.stock_state === "available_on_order" ? "Available on order" : "In Stock",
         mainPrice: main,
         // The API sends the same string for both prices when nothing is
         // discounted; a struck-through copy of the price is only noise.
@@ -171,7 +173,7 @@ const FeaturedProductCard = memo(({ item, priority = false, featured = true }) =
               <span
                 className={`shrink-0 font-medium ${outOfStock ? "text-rose-600" : "text-teal-700"}`}
               >
-                {outOfStock ? "Out of Stock" : "In Stock"}
+                {outOfStock ? "Out of Stock" : stockLabel}
               </span>
             ) : rating > 0 && (
               <span className="flex shrink-0 items-center gap-0.5 text-amber-500 sm:gap-1">

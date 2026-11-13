@@ -102,6 +102,9 @@ export default function GuestUserCheckout({ onClose }) {
     return () => clearTimeout(timer);
   }, [formData, deliveryInfo, saveDraft]);
 
+  // Until the shopper picks one, the first active Shipping City stands in, so the cost is quoted at once.
+  const cityId = formData.city_id || (cities?.length > 0 ? String(cities[0].id) : "");
+
   const handleDeliveryTypeChange = (deliveryType, pickupPointId) => {
     setDeliveryInfo({
       deliveryType,
@@ -148,6 +151,7 @@ export default function GuestUserCheckout({ onClose }) {
     <CheckoutCard
       guestFormData={{
         ...formData,
+        city_id: cityId,
         ip_address: ipAddress,
       }}
       isGuest={true}
@@ -238,7 +242,12 @@ export default function GuestUserCheckout({ onClose }) {
         rows={2}
       /> */}
 
-      <DeliveryType onDeliveryTypeChange={handleDeliveryTypeChange} />
+      <DeliveryType
+        onDeliveryTypeChange={handleDeliveryTypeChange}
+        cities={cities}
+        cityId={cityId}
+        onCityChange={(id) => setFormData((prev) => ({ ...prev, city_id: id }))}
+      />
     </CheckoutCard>
   );
 }

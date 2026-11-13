@@ -46,6 +46,24 @@ class ProductMiniCollection extends ResourceCollection
                     }
                 }
 
+                // Selling state for the card. Stock-only products need nothing more than the stock number;
+                // backorder / preorder products are asked what the selling policy says right now.
+                $recentStock = (int) (stocks_check($data->id) ?? 0);
+                $stockState = $recentStock > 0 ? 'in_stock' : 'out_of_stock';
+                $canOrder = $recentStock > 0;
+                if (in_array($data->stock_policy ?? 'stock_only', ['backorder', 'preorder'], true)) {
+                    $rank = ['in_stock' => 3, 'available_on_order' => 2, 'preorder' => 1, 'out_of_stock' => 0];
+                    $stockState = 'out_of_stock';
+                    $canOrder = false;
+                    foreach ($data->stocks as $stockRow) {
+                        $one = \App\Services\Inventory\StockPolicy::storefrontState((int) $data->id, $stockRow->variant);
+                        if ($rank[$one['state']] >= $rank[$stockState] && ($one['can_order'] || !$canOrder)) {
+                            $stockState = $one['state'];
+                            $canOrder = $one['can_order'];
+                        }
+                    }
+                }
+
                 return [
                     'id' => $data->id,
                     'slug' => $data->slug,
@@ -63,6 +81,8 @@ class ProductMiniCollection extends ResourceCollection
                     'stroked_price' => home_base_price($data),
                     'main_price' => home_discounted_base_price($data),
                     'recent_stock' => stocks_check($data->id) ?? 0,
+                    'stock_state' => $stockState, // in_stock | available_on_order | preorder | out_of_stock
+                    'can_order' => $canOrder,
                     'rating' => (float) $data->rating,
                     'sales' => (int) $data->num_of_sale,
                     'custom_video' => $video_url,
