@@ -67,7 +67,7 @@ html[data-ui-theme="dark"] body.ui-premium {
 
 /* ambient light behind the glass (one fixed layer: cheap, and gives the blur something to show) */
 body.ui-premium::before {
-  content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
   background:
     radial-gradient(900px 520px at 92% -6%, rgba(250, 115, 25, .20), transparent 62%),
     radial-gradient(780px 480px at -4% 100%, rgba(250, 115, 25, .12), transparent 58%),
@@ -78,7 +78,8 @@ html[data-ui-theme="dark"] body.ui-premium::before {
     radial-gradient(900px 520px at 92% -6%, rgba(250, 115, 25, .20), transparent 62%),
     radial-gradient(780px 480px at -4% 100%, rgba(250, 115, 25, .10), transparent 58%);
 }
-body.ui-premium .aiz-main-wrapper { background: transparent !important; position: relative; z-index: 1; }
+/* No z-index here: a stacking layer around the whole page would trap every modal underneath the page-level dim layer. */
+body.ui-premium .aiz-main-wrapper { background: transparent !important; position: relative; }
 body.ui-premium .aiz-main-content { color: var(--ui-text); }
 body.ui-premium h1, body.ui-premium h2, body.ui-premium h3, body.ui-premium h4, body.ui-premium h5, body.ui-premium h6 { letter-spacing: -.012em; }
 body.ui-premium .text-dark, body.ui-premium .text-black { color: var(--ui-text) !important; }
@@ -402,3 +403,7 @@ body.ui-premium .card, body.ui-premium .dashboard-box, body.ui-premium .dashboar
 body.ui-premium .dashboard-wide-box, body.ui-premium .dashboard-box-full { position: relative; }
 body.ui-premium .card:has(.dropdown-menu.show, .bootstrap-select.show, .select2-container--open, .daterangepicker[style*="display: block"]),
 body.ui-premium .ui-raise { z-index: 60 !important; }
+
+/* Modals sit over the page's dim layer, so they are almost solid: a see-through dialog there looks faded. */
+body.ui-premium .modal-content { background: rgba(255, 255, 255, .97) !important; }
+html[data-ui-theme="dark"] body.ui-premium .modal-content { background: rgba(26, 26, 29, .98) !important; }
