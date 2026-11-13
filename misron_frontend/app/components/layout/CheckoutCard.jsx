@@ -19,6 +19,7 @@
  * missing.
  */
 
+import { GATEWAYS, isSupportedGateway } from "@/utils/paymentGateways";
 import { ArrowRight, AlertTriangle, ShieldAlert, ShieldCheck, Gift, X } from "lucide-react";
 import Link from "next/link";
 import { Button, Modal } from "../ui";
@@ -248,9 +249,9 @@ export default function CheckoutCard({
         setIsCashOnDeliveryEnabled(cashOn);
 
         const methods = (Array.isArray(data.data) ? data.data : [])
-          .filter((method) => Number(method.active) === 1)
+          .filter((method) => Number(method.active) === 1 && isSupportedGateway(method.name))
           .map((method) => ({
-            value: method.name,
+            value: String(method.name).toLowerCase(),
             label: getPaymentMethodLabel(method.name),
             id: method.id,
           }));
@@ -496,25 +497,22 @@ export default function CheckoutCard({
   // Asks the backend for a hosted checkout link and sends the browser there.
   // Returns false when the gateway could not be reached, so the caller can
   // fall back to the order page rather than stranding the shopper.
-  const startPaystationPayment = async (combinedOrderId) => {
+  const startGatewayPayment = async (gatewayKey, combinedOrderId) => {
+    const gateway = GATEWAYS[gatewayKey];
+    if (!gateway) return false;
+
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/paystation/begin`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            ...(localStorage.getItem("token") && {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            }),
-          },
-          body: JSON.stringify({
-            payment_type: "cart_payment",
-            combined_order_id: combinedOrderId,
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/${gateway.path}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          ...(localStorage.getItem("token") && {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           }),
         },
-      );
+        body: JSON.stringify(gateway.body(combinedOrderId)),
+      });
 
       const data = await response.json();
 
@@ -526,7 +524,7 @@ export default function CheckoutCard({
       toast.error(data.message || "Could not reach the payment gateway");
       return false;
     } catch (error) {
-      console.error("Paystation error:", error);
+      console.error("Payment gateway error:", error);
       toast.error("Could not reach the payment gateway");
       return false;
     }
@@ -622,8 +620,8 @@ export default function CheckoutCard({
         // amount and an invoice, so the shopper leaves for the checkout page
         // only once the order is stored — unpaid until the gateway says
         // otherwise.
-        if (selectedPayment === "paystation" && data.combined_order_id) {
-          const redirected = await startPaystationPayment(data.combined_order_id);
+        if (GATEWAYS[selectedPayment] && data.combined_order_id) {
+          const redirected = await startGatewayPayment(selectedPayment, data.combined_order_id);
           if (redirected) return;
           // Falls through to the order page when the gateway is unreachable,
           // so the order the shopper just placed is not lost.

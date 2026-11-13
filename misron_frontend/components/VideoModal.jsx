@@ -66,6 +66,28 @@ const readLikes = () => {
   }
 };
 
+/** A random key this browser keeps, so guests can like once per video. */
+const visitorKey = () => {
+  try {
+    let key = localStorage.getItem("reel_visitor_v1");
+    if (!key) {
+      key = (crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}${Math.random().toString(36).slice(2)}`).replace(/[^A-Za-z0-9_-]/g, "");
+      key = key.padEnd(16, "0").slice(0, 64);
+      localStorage.setItem("reel_visitor_v1", key);
+    }
+    return key;
+  } catch {
+    return null;
+  }
+};
+
+/** 1,200 -> 1.2K, like Facebook. */
+const formatCount = (n) => {
+  if (n >= 1e6) return `${(n / 1e6).toFixed(n >= 1e7 ? 0 : 1).replace(/\.0$/, "")}M`;
+  if (n >= 1e3) return `${(n / 1e3).toFixed(n >= 1e4 ? 0 : 1).replace(/\.0$/, "")}K`;
+  return String(n);
+};
+
 const Reel = memo(function Reel({ item, active, near, muted, onToggleMute, onClose, onNext, hasMore }) {
   const videoRef = useRef(null);
   const tapTimer = useRef(null);
@@ -73,7 +95,10 @@ const Reel = memo(function Reel({ item, active, near, muted, onToggleMute, onClo
   const [playing, setPlaying] = useState(true);
   const [progress, setProgress] = useState(0);
   const [failed, setFailed] = useState(false);
-  const [liked, setLiked] = useState(() => readLikes().includes(item.id));
+  // The server's answer wins when it gave one; otherwise this browser's own memory.
+  const [liked, setLiked] = useState(() => item.liked ?? readLikes().includes(item.id));
+  const [likes, setLikes] = useState(typeof item.likes_count === "number" ? item.likes_count : null);
+  const likedRef = useRef(liked);
   const [bursts, setBursts] = useState([]);
   const { quickAdd, adding } = useQuickAdd(item);
   const { openCheckout } = useCheckoutModal();
@@ -82,8 +107,11 @@ const Reel = memo(function Reel({ item, active, near, muted, onToggleMute, onClo
   const unorderable = isUnorderable(item);
 
   const saveLike = useCallback(
-    (value) => {
+    async (value) => {
+      if (value === likedRef.current) return; // a double tap on an already liked reel keeps the like
+      likedRef.current = value;
       setLiked(value);
+      setLikes((n) => (n === null ? n : Math.max(0, n + (value ? 1 : -1))));
       try {
         const set = new Set(readLikes());
         if (value) set.add(item.id);
@@ -91,6 +119,22 @@ const Reel = memo(function Reel({ item, active, near, muted, onToggleMute, onClo
         localStorage.setItem(LIKES_KEY, JSON.stringify([...set]));
       } catch {
         // Private mode: the heart still reacts for this view.
+      }
+      // Ask the server to record it; it answers with the real count.
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/video-likes/toggle`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify({ product_id: item.id, visitor_key: visitorKey() }),
+        });
+        const json = await res.json();
+        if (json?.success) {
+          likedRef.current = !!json.liked;
+          setLiked(!!json.liked);
+          setLikes(Number(json.count) || 0);
+        }
+      } catch {
+        // Offline: the like stays on this device.
       }
     },
     [item.id],
@@ -242,14 +286,14 @@ const Reel = memo(function Reel({ item, active, near, muted, onToggleMute, onClo
         <div className="flex flex-col items-center gap-1">
           <button
             type="button"
-            onClick={() => saveLike(!liked)}
+            onClick={() => saveLike(!likedRef.current)}
             aria-label={liked ? "Unlike" : "Like"}
             aria-pressed={liked}
             className={`${railButton} ${liked ? "text-red-500" : ""}`}
           >
             <Heart size={22} fill={liked ? "currentColor" : "none"} />
           </button>
-          <span className="text-[11px] font-medium text-white drop-shadow">{liked ? "Liked" : "Like"}</span>
+          <span className="text-[11px] font-medium text-white drop-shadow">{likes ? formatCount(likes) : liked ? "Liked" : "Like"}</span>
         </div>
 
         <div className="flex flex-col items-center gap-1">
@@ -382,7 +426,8 @@ export default function VideoModal() {
     (async () => {
       let videos = [];
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/buy-watch-products`);
+        const key = visitorKey();
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/buy-watch-products${key ? `?visitor_key=${encodeURIComponent(key)}` : ""}`);
         const json = await res.json();
         if (json?.success && Array.isArray(json.data)) videos = json.data.filter((v) => v.custom_video);
       } catch {

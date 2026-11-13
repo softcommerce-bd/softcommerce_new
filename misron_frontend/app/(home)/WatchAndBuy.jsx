@@ -17,7 +17,6 @@ import { Navigation } from "swiper/modules";
 import { Video } from "lucide-react";
 
 import VideoCard from "../components/VideoCard";
-import VideoModal from "@/components/VideoModal";
 import {
   SectionHeader,
   CarouselNav,
@@ -101,7 +100,6 @@ export default function WatchAndBuy() {
         )}
       </section>
 
-      <VideoModal />
     </>
   );
 }

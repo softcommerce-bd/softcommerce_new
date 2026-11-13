@@ -325,6 +325,7 @@ Route::group(['prefix' => 'v2', 'middleware' => ['app_language']], function () {
     Route::controller(ProductController::class)->group(function () {
         Route::get('products/inhouse', 'inhouse');
         Route::get('buy-watch-products', 'buyWatchProducts');
+        Route::post('video-likes/toggle', [\App\Http\Controllers\Api\V2\VideoLikeController::class, 'toggle'])->middleware('throttle:60,1');
         Route::get('products/seller/{id}', 'seller');
         Route::get('products/category/{slug}', 'categoryProducts')->name('api.products.category');
         // Route::get('category-wise-products/{slug}', 'categoryProducts')->name('api.products.category');
@@ -427,6 +428,12 @@ Route::group(['prefix' => 'v2', 'middleware' => ['app_language']], function () {
     });
 
     Route::get('sslcommerz/begin', [SslCommerzController::class, 'begin']);
+    Route::controller(\App\Http\Controllers\Api\V2\SslCommerzStorefrontController::class)->group(function () {
+        Route::post('sslcommerz/storefront/begin', 'begin');
+        // Hit by SSLCommerz and the shopper's browser coming back, so neither is authenticated.
+        Route::any('sslcommerz/storefront/return/{result}', 'back')->whereIn('result', ['success', 'fail', 'cancel']);
+        Route::post('sslcommerz/storefront/ipn', 'ipn');
+    });
 
     Route::controller(PaystationController::class)->group(function () {
         Route::post('paystation/begin', 'begin');

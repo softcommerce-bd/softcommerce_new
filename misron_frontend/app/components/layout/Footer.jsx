@@ -25,6 +25,7 @@ import { Clock, Mail, MapPin, Phone } from "lucide-react";
 import imageLoader from "@/lib/imageLoader";
 import SocialIcons from "../SocialIcons";
 import useCachedFetch from "../../utils/useCachedFetch";
+import { isSupportedGateway } from "@/utils/paymentGateways";
 import { Skeleton } from "../ui";
 
 /** Quick Links shows Home, All Collections, this many categories, then Track Order. */
@@ -52,7 +53,7 @@ export default function Footer() {
       .then((json) => {
         if (!alive || !json?.success) return;
         const online = (Array.isArray(json.data) ? json.data : [])
-          .filter((method) => Number(method.active) === 1)
+          .filter((method) => Number(method.active) === 1 && isSupportedGateway(method.name))
           .map((method) => PAYMENT_NAMES[String(method.name).toLowerCase()] || String(method.name).replace(/[_-]+/g, " "));
         setActivePayments([...(String(json.cash_on_delivery) === "1" ? ["Cash on Delivery"] : []), ...online]);
       })
@@ -414,7 +415,7 @@ function trimTransparentMargin(src) {
  * Links to them are dropped from the footer, so Next.js never prefetches a 404.
  * Remove an entry once its page exists.
  */
-const UNAVAILABLE_ROUTES = ["/flash-deal"];
+const UNAVAILABLE_ROUTES = [];
 
 function isUnavailableRoute(href) {
   const path = href.replace(/^(https?:)?\/\/[^/]+/i, "").replace(/^\/?/, "/");
@@ -445,7 +446,7 @@ function resolveMenuLink(link) {
     "/pages",
     "/blogs",
     "/shop_page",
-    // "/flash-deal", // No flash-deal page yet; see UNAVAILABLE_ROUTES.
+    "/flash-deal",
     "/track-order",
     "/wishlist",
   ];

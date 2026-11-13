@@ -33,7 +33,19 @@ class ProductController extends Controller
             ->limit(30)
             ->get();
 
-        return new ProductMiniCollection($products);
+        $payload = (new ProductMiniCollection($products))->response()->getData(true);
+
+        // Like counts and whether this visitor already liked each video (see video_likes_v1.sql).
+        $ids = collect($payload['data'] ?? [])->pluck('id')->map(fn ($id) => (int) $id)->all();
+        $counts = VideoLikeController::counts($ids);
+        $liked = VideoLikeController::likedBy(request('visitor_key'), $ids);
+        foreach ($payload['data'] as &$item) {
+            $item['likes_count'] = $counts[(int) $item['id']] ?? 0;
+            $item['liked'] = $liked[(int) $item['id']] ?? false;
+        }
+        unset($item);
+
+        return response()->json($payload);
     }
 
     public function product_details($slug, $user_id = null)

@@ -44,10 +44,17 @@ const Footer = dynamic(() => import('@/app/components/layout/Footer'), {
 // <BottomNav /> render below, and put back the bottom clearance it needs:
 // `pb-16 lg:pb-0` on the dashboard <main>, `pb-16 lg:pb-0` on the loading
 // footer and `pb-16 … lg:pb-12` on the main footer in Footer.jsx.
-// const BottomNav = dynamic(() => import('@/app/components/layout/BottomNav'), {
-//   ssr: false,
-//   loading: () => null
-// });
+const BottomNav = dynamic(() => import('@/app/components/layout/BottomNav'), {
+  ssr: false,
+  loading: () => null
+});
+
+// The reels viewer is opened from the home rail, the product page's floating player and the
+// bottom bar, so it is mounted once for the whole site.
+const VideoModal = dynamic(() => import('@/components/VideoModal'), {
+  ssr: false,
+  loading: () => null
+});
 
 const ReferralTrackerWrapper = dynamic(() => import('@/components/ReferralTrackerWrapper'), {
   ssr: false,
@@ -230,7 +237,14 @@ export default function LayoutDetector({ children }) {
       {/* {!isDashboardRoute && <FloatingSocialBar />} */}
       {/* {!isDashboardRoute && <SupportChat />} */}
 
-      {/* <BottomNav onAccountClick={() => setShowLogin(true)} /> */}
+      {!isDashboardRoute && !isBuilderRoute && (
+        <>
+          {/* Clearance so the fixed mobile bar never covers the end of the page. */}
+          <div className="h-14 lg:hidden" aria-hidden="true" />
+          <BottomNav />
+        </>
+      )}
+      <VideoModal />
 
       <LoginModal
         open={showLogin}
