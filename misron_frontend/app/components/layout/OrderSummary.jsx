@@ -153,7 +153,7 @@ export default function OrderSummary() {
         <div className="type-subhead flex justify-between">
           <dt className="text-ink-secondary">Shipping</dt>
           <dd className="tabular text-ink">
-            {shippingFee > 0 ? formatPrice(shippingFee) : "Free"}
+            {shippingFee > 0 ? formatPrice(shippingFee) : "At checkout"}
           </dd>
         </div>
 

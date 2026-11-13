@@ -135,8 +135,8 @@ export default function Description({ productData }) {
                   delivery within 48 to 72 hours.
                 </li>
                 <li>
-                  <strong>Delivery Charge:</strong> 100% Free Shipping on all orders
-                  during this seasonal event!
+                  <strong>Delivery Charge:</strong> Worked out at checkout from your
+                  shipping region.
                 </li>
               </ul>
             </div>

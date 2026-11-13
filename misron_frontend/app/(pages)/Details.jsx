@@ -49,7 +49,7 @@ import {
 // Reassurances under the price. The same four points appear on the delivery
 // tab, so a change to the policy means changing both.
 const TRUST_POINTS = [
-  { icon: Truck, text: "Free Nationwide Express Delivery" },
+  { icon: Truck, text: "Nationwide Delivery" },
   { icon: ShieldCheck, text: "100% Premium Quality Guaranteed" },
   { icon: RotateCcw, text: "7-Day Hassle-Free Returns" },
   { icon: CreditCard, text: "Cash on Delivery (Inspect First)" },

@@ -170,14 +170,14 @@ export default function CheckoutSummary({
       {/* The reference lists lines and a total only, with free shipping noted
           beside the total. The breakdown appears only when something moves the
           total: a shipping charge, a voucher or a gift box. */}
-      {(shippingCost > 0 || discount > 0 || giftBoxCharge > 0) && (
+      {(shippingCost > 0 || shippingStatus === "quoted" || discount > 0 || giftBoxCharge > 0) && (
         <dl className="mt-3 space-y-1.5 border-t border-stone-100 pt-2.5">
           <div className={ROW}>
             <dt className="text-stone-500">Subtotal</dt>
             <dd className="font-medium tabular-nums text-stone-900">{toTk(subtotal)}</dd>
           </div>
 
-          {shippingCost > 0 && (
+          {(shippingCost > 0 || shippingStatus === "quoted") && (
             <div className={ROW}>
               <dt className="text-stone-500">Shipping</dt>
               <dd className="font-medium tabular-nums text-stone-900">
@@ -207,12 +207,7 @@ export default function CheckoutSummary({
       <div className="mt-3 flex items-center justify-between border-t border-stone-100 pt-2.5 text-xs font-semibold text-stone-900">
         <span>Total Payable:</span>
         <span className="text-base tabular-nums text-amber-900">
-          {toTk(total)}{" "}
-          {shippingStatus === "quoted" && shippingCost === 0 && (
-            <span className="text-xs font-normal text-emerald-700">
-              (Free Express Shipping)
-            </span>
-          )}
+          {toTk(total)}
         </span>
       </div>
     </div>

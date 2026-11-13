@@ -109,7 +109,7 @@ const DeliveryType = ({
                   onChange={() => onCityChange(String(city.id))}
                 >
                   {city.name}
-                  {Number(city.cost) > 0 ? ` (${toTk(city.cost)})` : " (Free)"}
+                  {Number(city.cost) > 0 ? ` (${toTk(city.cost)})` : ""}
                 </OptionRow>
               ))}
             </div>
@@ -126,7 +126,7 @@ const DeliveryType = ({
               {cities.map((city) => (
                 <option key={city.id} value={city.id}>
                   {city.name}
-                  {Number(city.cost) > 0 ? ` (${toTk(city.cost)})` : " (Free)"}
+                  {Number(city.cost) > 0 ? ` (${toTk(city.cost)})` : ""}
                 </option>
               ))}
             </IconField>

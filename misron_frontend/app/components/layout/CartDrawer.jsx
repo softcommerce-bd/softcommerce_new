@@ -19,7 +19,7 @@
 
 import { useState, useEffect, useCallback, useMemo, memo } from "react";
 import Image from "next/image";
-import { ArrowRight, Check, Minus, Plus, ShoppingBag, Trash2, Truck, X } from "lucide-react";
+import { ArrowRight, Check, Minus, Plus, ShoppingBag, Trash2, X } from "lucide-react";
 
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { useCart } from "@/store/hooks/useCart";
@@ -29,8 +29,6 @@ import { Button, Sheet, Skeleton } from "../ui";
 import { useCheckoutModal } from "@/app/components/checkout/CheckoutModalProvider";
 
 // Store policy copy, kept together so a change of delivery terms is one edit.
-const DELIVERY_NOTE = "Nationwide Free Delivery";
-const DELIVERY_STATUS = "Free Express Shipping Applied";
 
 /** Who is shopping: the signed-in user, or the guest id the cart was built under. */
 function readIdentity(tempUserId) {
@@ -173,18 +171,7 @@ function DrawerHeader({ count, onClose }) {
         </button>
       </header>
 
-      <div className="border-y border-amber-100 bg-amber-50 px-5 py-2">
-        <div className="flex items-center justify-between gap-3 text-[0.6875rem] font-medium">
-          <span className="flex items-center gap-1.5 text-amber-900">
-            <Truck size={13} aria-hidden="true" />
-            {DELIVERY_NOTE}
-          </span>
-          <span className="text-right font-semibold text-emerald-700">{DELIVERY_STATUS}</span>
-        </div>
-        <div className="mt-1.5 h-1 overflow-hidden rounded-full bg-amber-200/70">
-          <div className="h-full w-full rounded-full bg-amber-700" />
-        </div>
-      </div>
+
     </>
   );
 }
@@ -369,8 +356,8 @@ export default function CartDrawer({ loading, onClose }) {
         )}
         <TotalRow
           label="Shipping Fee"
-          value={shippingFee > 0 ? toTk(shippingFee) : "Free"}
-          className={shippingFee > 0 ? "text-stone-600" : "text-emerald-700"}
+          value={shippingFee > 0 ? toTk(shippingFee) : "At checkout"}
+          className="text-stone-600"
         />
         <div className="flex items-baseline justify-between border-t border-stone-100 pt-2.5 text-stone-900">
           <dt className="text-[0.875rem] font-bold">Total Payable</dt>
