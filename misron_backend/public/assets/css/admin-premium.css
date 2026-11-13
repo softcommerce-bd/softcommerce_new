@@ -393,3 +393,12 @@ html[data-ui-theme="dark"] body.ui-premium .trend-danger { color: #f87171 !impor
 html[data-ui-theme="dark"] body.ui-premium .text-primary-custom, html[data-ui-theme="dark"] body.ui-premium .insight-value { color: var(--ember-hi) !important; }
 html[data-ui-theme="dark"] body.ui-premium .badge-optimal { background: rgba(250,115,25,.2) !important; color: #ffd2b0 !important; }
 html[data-ui-theme="dark"] body.ui-premium .mini-card [class*="icon"] { background: rgba(250,115,25,.16) !important; }
+
+/* ============ open dropdowns stay on top of the cards below them ============
+   Each glass card (backdrop-filter) is its own stacking layer, so a select list opening inside one
+   was painted underneath the next card. The card that holds an open list is lifted above its
+   neighbours; `.ui-raise` is the same thing set by script for browsers without :has(). */
+body.ui-premium .card, body.ui-premium .dashboard-box, body.ui-premium .dashboard-single-box,
+body.ui-premium .dashboard-wide-box, body.ui-premium .dashboard-box-full { position: relative; }
+body.ui-premium .card:has(.dropdown-menu.show, .bootstrap-select.show, .select2-container--open, .daterangepicker[style*="display: block"]),
+body.ui-premium .ui-raise { z-index: 60 !important; }

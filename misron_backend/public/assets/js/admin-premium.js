@@ -68,6 +68,27 @@
     document.addEventListener('click', function (ev) { if (ev.target.closest && ev.target.closest('.ui-theme-toggle')) setTimeout(sweep, 60); });
   });
 
+
+  // 1d. a card holding an open dropdown sits above the cards after it (see .ui-raise in the CSS) ---------------------
+  safe(function () {
+    var raised = null;
+    function lift(el) {
+      var card = el && el.closest ? el.closest('.card, .dashboard-box, .dashboard-single-box, .dashboard-wide-box, .dashboard-box-full') : null;
+      if (raised && raised !== card) raised.classList.remove('ui-raise');
+      raised = card;
+      if (card) card.classList.add('ui-raise');
+    }
+    document.addEventListener('show.bs.dropdown', function (e) { lift(e.target); }, true);
+    document.addEventListener('shown.bs.select', function (e) { lift(e.target); }, true);
+    document.addEventListener('hidden.bs.dropdown', function () { if (raised) { raised.classList.remove('ui-raise'); raised = null; } }, true);
+    document.addEventListener('hidden.bs.select', function () { if (raised) { raised.classList.remove('ui-raise'); raised = null; } }, true);
+    // bootstrap-select and jQuery plugins fire these through jQuery, which native listeners cannot see
+    if (window.jQuery) {
+      window.jQuery(document).on('show.bs.dropdown shown.bs.select', function (e) { lift(e.target); })
+        .on('hidden.bs.dropdown hidden.bs.select', function () { if (raised) { raised.classList.remove('ui-raise'); raised = null; } });
+    }
+  });
+
   // 2. staggered reveal ---------------------------------------------------------------------------------------
   safe(function () {
     if (reduce) return;
