@@ -229,6 +229,9 @@ export default function CartModal() {
         variant: selectedVariant || "",
         color: selectedColor || "",
         current_stock: currentStock,
+        // The server's selling-policy answer; without it the buttons fall back to the stock number and
+        // a backorder / preorder product reads "Out of stock".
+        can_order: productData.can_order,
         name: productData.name,
         price: parseFloat(currentPrice),
         image: productData.thumbnail_image,
@@ -254,7 +257,7 @@ export default function CartModal() {
           The panel's own close button is rendered over the gallery instead of
           in the Modal header: a header strip would push the image down and
           crop the discount and wishlist controls pinned to its top corners. */}
-      <div className="relative aspect-square w-full overflow-hidden rounded-t-2xl bg-canvas-sunken md:aspect-4/5 md:h-full md:rounded-l-2xl md:rounded-tr-none">
+      <div className="relative aspect-square w-full overflow-hidden rounded-t-2xl bg-white md:aspect-4/5 md:h-full md:rounded-l-2xl md:rounded-tr-none">
         {loading ? (
           <Skeleton className="h-full w-full" rounded="sm" />
         ) : galleryImages.length > 0 ? (
@@ -278,7 +281,7 @@ export default function CartModal() {
                       src={image.src}
                       alt={image.alt}
                       fill
-                      className="object-cover"
+                      className="object-contain"
                       sizes="(max-width: 768px) 100vw, 512px"
                       onError={(e) => {
                         e.currentTarget.style.display = "none";
@@ -296,7 +299,7 @@ export default function CartModal() {
                 src={galleryImages[0].src}
                 alt={galleryImages[0].alt}
                 fill
-                className="object-cover"
+                className="object-contain"
                 sizes="(max-width: 768px) 100vw, 512px"
               />
             </div>
